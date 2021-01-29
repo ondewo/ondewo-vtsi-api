@@ -1,0 +1,215 @@
+// Copyright 2020 ONDEWO GmbH
+// Licensed under the ONDEWO GmbH license, Version 1.0 (the "License");
+// you must not use this file except in compliance with the License.
+// You must obtain a copy of the License at
+// office@ondewo.com
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package ondewo.nlu;
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+
+// call log endpoints to be used by ondewo-sip-sim instances to transfer their log info to the voip manager
+service VoipCallLogs {
+
+//    // get all call IDs associated with a sip-id [PROTOTYPE IF MULTIPLE CALLS PER SIP INSTANCE ARE REALIZED, REMOVED FOR CLARITY]
+//    rpc GetCallIds (GetCallIdsRequest) returns (GetCallIdsResponse) {
+//      option (google.api.http) = {
+//        post: "/v2/{session=projects/*/agent/sessions/*}:GetCallIds"
+//        body: "*"
+//      };
+//    }
+
+    // start logging of a call
+    rpc StartVoipLog (StartVoipLogRequest) returns (VoipLogResponse) {
+      option (google.api.http) = {
+        post: "/v2/{session=projects/*/agent/sessions/*}:StartVoipLog"
+        body: "*"
+      };
+    }
+
+    // finish logging of a call
+    rpc FinishVoipLog (FinishVoipLogRequest) returns (VoipLogResponse) {
+      option (google.api.http) = {
+        post: "/v2/{session=projects/*/agent/sessions/*}:FinishVoipLog"
+        body: "*"
+      };
+    }
+
+    // update logging of a call
+    rpc UpdateVoipLog (UpdateVoipLogRequest) returns (VoipLogResponse) {
+      option (google.api.http) = {
+        post: "/v2/{session=projects/*/agent/sessions/*}:UpdateVoipLog"
+        body: "*"
+      };
+    }
+
+    // get call log for single call instance
+    rpc GetVoipLog (GetVoipLogRequest) returns (GetVoipLogResponse) {
+      option (google.api.http) = {
+        post: "/v2/{session=projects/*/agent/sessions/*}:GetVoipLog"
+        body: "*"
+      };
+    }
+
+    // get call log of manifest
+    rpc GetManifestVoipLog (GetManifestVoipLogRequest) returns (ManifestVoipLog) {
+      option (google.api.http) = {
+        post: "/v2/{session=projects/*/agent/sessions/*}:GetManifestVoipLog"
+        body: "*"
+      };
+    }
+
+    // activate saving call logs in the voip manager
+    rpc ActivateSaveCallLogs (SaveCallLogsRequest) returns (SaveCallLogsResponse) {
+      option (google.api.http) = {
+        post: "/v2/{session=projects/*/agent/sessions/*}:SaveCallLogs"
+        body: "*"
+      };
+    }
+
+}
+
+// request to get all call_id-s associated with a sip_id
+// (current implementation only supports 1 associated call_id per sip-id)
+message GetCallIdsRequest {
+    // sip id sending the request
+    string sip_id = 1;
+}
+
+// response with all call_id-s associated with the request's sip_id
+message GetCallIdsResponse {
+    // sip_id sent in the request
+    string sip_id = 1;
+
+    // call_id-s linked to request's sip_id
+    // (current implementation only supports 1 associated call_id per sip-id)
+    repeated string call_ids = 2;
+}
+
+// request to start logging of a call
+message StartVoipLogRequest {
+    // id to assign log to
+    string call_id = 1;
+
+    // start time of log
+    float start_time = 2;
+}
+
+// request to finish logging of a call
+message FinishVoipLogRequest {
+    // id to assign log to
+    string call_id = 1;
+
+    // end time of log
+    float end_time = 2;
+}
+
+// request to update logging of a call
+message UpdateVoipLogRequest {
+    // id to assign log to
+    string call_id = 1;
+
+    // name of the service of the log message
+    string service_name = 2;
+
+    // message of the service doing the logging
+    string log_message = 3;
+
+    // (optional) billing counters
+    Counters counters = 4;
+}
+
+message VoipLogResponse {
+    // whether the logging operation succeeded
+    bool success = 1;
+
+    // relevant information in case logging operation failed
+    string log_message = 2;
+
+    // current duration of call
+    float duration = 3;
+}
+
+// request to get a call instance's call logs
+message GetVoipLogRequest {
+  // id of call
+  string call_id = 1;
+}
+
+// response with call logs
+message GetVoipLogResponse {
+  VoipLog active_log = 1;
+
+  // logs of calls associated with call instance
+  repeated VoipLog done_logs = 2;
+}
+
+// call log
+message VoipLog {
+  // id of call instance
+  string call_id = 1;
+
+  // start time of log
+  float start_time = 2;
+
+  // end time of log
+  float end_time = 3;
+
+  // log entries
+  repeated LogEntry logs = 4;
+
+  // billing counters
+  Counters counters = 5;
+}
+
+// billing counters
+message Counters {
+  // 15s counter (30s-> 2, 60s -> 4)
+  int64 fifteen_s_counter = 1;
+
+  // 30s counter (30s -> 1, 60s -> 2)
+  int64 sixty_s_counter = 2;
+}
+
+// single log entry
+message LogEntry {
+  // timestamp of log (python expected: time.time())
+  float timestamp = 1;
+
+  // name of service doing the logging
+  string service_name = 2;
+
+  // message to log
+  string log_message = 3;
+}
+
+message GetManifestVoipLogRequest {
+  // id of manifest
+  string manifest_id = 1;
+}
+
+message ManifestVoipLog {
+  // logs of associated caller instances
+  repeated GetVoipLogResponse caller_logs = 1;
+
+  // logs of associated listener instances
+  repeated GetVoipLogResponse listener_logs = 2;
+}
+
+
+message SaveCallLogsRequest {
+  google.protobuf.Empty empty = 1;
+}
+
+message SaveCallLogsResponse {
+  // whether the operation succeeded
+  bool success = 1;
+}
