@@ -1,13 +1,19 @@
 # Release History
 *****************
 
-## Release ONDEWO VTSI APIS 0.2.1
+## Release ONDEWO APIS 0.2.2
+
+### Improvements
+Updated README.
+
+*****************
+## Release ONDEWO APIS 0.2.1
 
 ### New Features
 
 Fixed license header.
 
-### Improvements
+###
 ### Bug fixes
 ### Breaking Changes
 ### Known issues not covered in this release
@@ -29,8 +35,7 @@ No longer closed source.
 ### Breaking Changes
 
 ### Known issues not covered in this release
-
-### Migration Guide
+ Migration Guide
 
 [Replace submodule](https://stackoverflow.com/a/1260982/7756727) in the client.
 
