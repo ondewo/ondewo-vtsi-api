@@ -4,6 +4,12 @@
 ## Release ONDEWO APIS 0.2.2
 
 ### Improvements
+Updated license
+
+*****************
+## Release ONDEWO APIS 0.2.2
+
+### Improvements
 Updated README.
 
 *****************
