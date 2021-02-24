@@ -60,32 +60,12 @@ service VoipSessions {
           };
     }
 
-      /////////////
-     // CALLERS //
-    /////////////
-
-    // perform a single call with the given parameters in the request
-    rpc PerformCall (PerformCallRequest) returns (PerformCallResponse) {
-        option (google.api.http) = {
-            post: "/v2/{session=projects/*/agent/sessions/*}:PerformCall"
-            body: "*"
-        };
-    }
-
-    // stop an ongoing call
-    rpc StopCall (StopCallRequest) returns (StopCallResponse) {
-        option (google.api.http) = {
-            post: "/v2/{session=projects/*/agent/sessions/*}:StopCall"
-            body: "*"
-        };
-    }
-
-      ///////////////
-     // LISTENERS //
-    ///////////////
+      ///////////
+     // CALLS //
+    ///////////
 
     // start an ondewo-sip-sim instance that listens for calls with the given parameters
-    rpc StartListener (StartListenerRequest) returns (StartListenerResponse) {
+    rpc StartCallIstanceRequest (StartCallIstanceRequest) returns (StartCallInstanceResponse) {
         option (google.api.http) = {
             post: "/v2/{session=projects/*/agent/sessions/*}:StartListener"
             body: "*"
@@ -93,7 +73,7 @@ service VoipSessions {
     }
 
     // stop/kill an ondewo-sip-sim listener instance
-    rpc StopListener (StopCallRequest) returns (StopListenerResponse) {
+    rpc StopCallInstance (StopCallInstanceRequest) returns (StopCallInstanceResponse) {
       option (google.api.http) = {
         post: "/v2/{session=projects/*/agent/sessions/*}:StopListener"
         body: "*"
@@ -171,10 +151,7 @@ message VoipManifest {
   repeated Context contexts = 2;
 
   // list of calls to perform
-  repeated PerformCallRequest callers = 9;
-
-  // list of listener instances to start
-  repeated StartListenerRequest listeners = 10;
+  repeated StartCallIstanceRequest callers = 9;
 }
 
 // request sent to a manifest-related endpoint with its ID
@@ -195,10 +172,8 @@ message RemoveManifestResponse {
   ManifestRequest request = 1;
   // whether the removal succeeded
   bool success = 2;
-  // responses from callers
-  repeated StopCallResponse caller_responses = 9;
-  // responses from listeners
-  repeated StopListenerResponse listener_responses = 10;
+  // responses
+  repeated StopCallInstanceResponse caller_responses = 9;
 }
 
 // configuration of services (ondewo-cai, text-to-speech, speech-to-text, asterisk)
@@ -237,7 +212,7 @@ message VoipManifestResponse {
 /////////////
 
 // parameters of a call that is to be performed
-message PerformCallRequest {
+message StartCallIstanceRequest {
   // uuid of the call
   string call_id = 1;
 
@@ -247,7 +222,7 @@ message PerformCallRequest {
   // ondewo-cai project ID with which to perform the call
   string project_id = 3;
 
-    // phone number to call
+  // phone number to call
   string phone_number = 4;
 
   // ondewo-cai context information
@@ -273,15 +248,15 @@ message PerformCallRequest {
 }
 
 // response from the voip manager concerning the started call
-message PerformCallResponse {
+message StartCallInstanceResponse {
   // request sent to the voip manager
-  PerformCallRequest request = 1;
+  StartCallIstanceRequest request = 1;
     // success status
   bool success = 2;
 }
 
 // parameters of the call to stop
-message StopCallRequest {
+message StopCallInstanceRequest {
   // calls can be stopped with either the call-ID or the ondewo-sip-sim ID
   oneof id {
     // ID of the call
@@ -293,65 +268,12 @@ message StopCallRequest {
 }
 
 // response from the voip manager concerning the stop-call request
-message StopCallResponse {
+message StopCallInstanceResponse {
   // request sent to the voip manager
-  StopCallRequest request = 1;
+  StopCallInstanceRequest request = 1;
   // whether listener was successfully stopped
   bool success = 2;
   // Optional. log message
-  string log_message = 3;
-}
-
-  ///////////////
- // LISTENERS //
-///////////////
-
-// request to start an ondewo-sip-sim instance to listen for calls
-message StartListenerRequest {
-  // uuid of the call
-  string call_id = 1;
-
-  // version of sip-sim to use for call
-  string sip_sim_version = 2;
-
-  // ondewo-cai project ID with which to perform the call
-  string project_id = 3;
-
-  // initial text the sip-sim instance should say when someone calls
-  string init_text = 4;
-
-  // asterisk service configuration
-  ServiceConfig asterisk_config = 7;
-
-  // ondewo-cai configuration
-  ServiceConfig cai_config = 8;
-
-  // speech-to-text service configuration
-  ServiceConfig stt_config = 9;
-
-  // speech-to-text demuxer configuration
-  ServiceConfig demux_config = 10;
-
-  // text-to-speech service configuration
-  ServiceConfig tts_config = 11;
-
-}
-
-// response from the voip manager concerning the started listener instance
-message StartListenerResponse {
-  // request sent to the voip manager
-  StartListenerRequest request = 1;
-  // success status
-  bool success = 2;
-}
-
-// response when stopping a listener instance
-message StopListenerResponse{
-  // request sent to the voip manager
-  StopCallRequest request = 1;
-  // whether listener was successfully stopped
-  bool success = 2;
-  // log message
   string log_message = 3;
 }
 
@@ -370,10 +292,7 @@ message VoipManifestStatus {
   VoipManifestStatusRequest request = 1;
 
   // status of caller instances
-  repeated VoipStatus callers_status = 2;
-
-  // status of listener instances
-  repeated VoipStatus listeners_status = 3;
+  repeated VoipStatus calls_status = 2;
 }
 
 message GetVoipStatusRequest {
