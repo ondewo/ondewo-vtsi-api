@@ -65,7 +65,7 @@ service VoipSessions {
     ///////////
 
     // start an ondewo-sip-sim instance that listens for calls with the given parameters
-    rpc StartCallInstanceRequest (StartCallInstanceRequest) returns (StartCallInstanceResponse) {
+    rpc StartCallInstance (StartCallInstanceRequest) returns (StartCallInstanceResponse) {
         option (google.api.http) = {
             post: "/v2/{session=projects/*/agent/sessions/*}:StartListener"
             body: "*"
