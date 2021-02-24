@@ -65,7 +65,7 @@ service VoipSessions {
     ///////////
 
     // start an ondewo-sip-sim instance that listens for calls with the given parameters
-    rpc StartCallIstanceRequest (StartCallIstanceRequest) returns (StartCallInstanceResponse) {
+    rpc StartCallInstanceRequest (StartCallInstanceRequest) returns (StartCallInstanceResponse) {
         option (google.api.http) = {
             post: "/v2/{session=projects/*/agent/sessions/*}:StartListener"
             body: "*"
@@ -151,7 +151,7 @@ message VoipManifest {
   repeated Context contexts = 2;
 
   // list of calls to perform
-  repeated StartCallIstanceRequest callers = 9;
+  repeated StartCallInstanceRequest callers = 9;
 }
 
 // request sent to a manifest-related endpoint with its ID
@@ -212,7 +212,7 @@ message VoipManifestResponse {
 /////////////
 
 // parameters of a call that is to be performed
-message StartCallIstanceRequest {
+message StartCallInstanceRequest {
   // uuid of the call
   string call_id = 1;
 
@@ -250,7 +250,7 @@ message StartCallIstanceRequest {
 // response from the voip manager concerning the started call
 message StartCallInstanceResponse {
   // request sent to the voip manager
-  StartCallIstanceRequest request = 1;
+  StartCallInstanceRequest request = 1;
     // success status
   bool success = 2;
 }
