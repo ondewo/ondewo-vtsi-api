@@ -1,7 +1,16 @@
 # Release History
 *****************
 
-## Release ONDEWO APIS 0.2.2
+*****************
+## Release ONDEWO APIS 0.3.0
+
+### Improvements
+
+* simplified the call initiation (no difference between listeners and callers)
+
+
+*****************
+## Release ONDEWO APIS 0.2.3
 
 ### Improvements
 Updated license
@@ -18,12 +27,6 @@ Updated README.
 ### New Features
 
 Fixed license header.
-
-###
-### Bug fixes
-### Breaking Changes
-### Known issues not covered in this release
-### Migration Guide
 
 *****************
 ## Release ONDEWO VTSI APIS 0.2.0
