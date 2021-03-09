@@ -93,6 +93,14 @@ service VoipSessions {
           };
     }
 
+    // get session ID
+    rpc GetSessionID (GetSessionIDRequest) returns (GetSessionIDResponse) {
+          option (google.api.http) = {
+              post: "/v2/{session=projects/*/agent/sessions/*}:GetSessionID"
+              body: "*"
+          };
+    }
+
     // shutdown any deployed call with unhealthy status
     rpc ShutdownUnhealthyCalls (ShutdownUnhealthyCallsRequest) returns (ShutdownUnhealthyCallsResponse) {
           option (google.api.http) = {
@@ -382,6 +390,15 @@ message GetCallIDsRequest {
 
 message GetCallIDsResponse {
   repeated string call_ids = 1;
+}
+
+message GetSessionIDRequest {
+  string call_id = 1;
+}
+
+message GetSessionIDResponse {
+  string call_id = 1;
+  string session_id = 2;
 }
 
 message ShutdownUnhealthyCallsRequest {
