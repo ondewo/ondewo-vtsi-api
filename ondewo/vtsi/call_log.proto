@@ -185,7 +185,7 @@ message Counters {
 // single log entry
 message LogEntry {
   // timestamp of log (python expected: time.time())
-  float timestamp = 1;
+  double timestamp = 1;
 
   // name of service doing the logging
   string service_name = 2;
