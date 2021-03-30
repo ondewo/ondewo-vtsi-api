@@ -70,14 +70,6 @@ service VoipCallLogs {
       };
     }
 
-    // activate saving call logs in the voip manager
-    rpc ActivateSaveCallLogs (SaveCallLogsRequest) returns (SaveCallLogsResponse) {
-      option (google.api.http) = {
-        post: "/v2/{session=projects/*/agent/sessions/*}:SaveCallLogs"
-        body: "*"
-      };
-    }
-
 }
 
 // request to get all call_id-s associated with a sip_id
@@ -205,14 +197,4 @@ message ManifestVoipLog {
 
   // logs of associated listener instances
   repeated GetVoipLogResponse listener_logs = 2;
-}
-
-
-message SaveCallLogsRequest {
-  google.protobuf.Empty empty = 1;
-}
-
-message SaveCallLogsResponse {
-  // whether the operation succeeded
-  bool success = 1;
 }
