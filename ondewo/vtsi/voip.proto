@@ -240,20 +240,23 @@ message StartCallInstanceRequest {
   // initial text the sip-sim instance should say when someone calls
   string init_text = 6;
 
+  // prefix of sip name and sip container name
+  string sip_prefix = 7;
+
   // asterisk service configuration
-  ServiceConfig asterisk_config = 7;
+  ServiceConfig asterisk_config = 8;
 
   // ondewo-cai configuration
-  ServiceConfig cai_config = 8;
+  ServiceConfig cai_config = 9;
 
   // speech-to-text service configuration
-  ServiceConfig stt_config = 9;
+  ServiceConfig stt_config = 10;
 
   // speech-to-text demuxer configuration
-  ServiceConfig demux_config = 10;
+  ServiceConfig demux_config = 11;
 
   // text-to-speech service configuration
-  ServiceConfig tts_config = 11;
+  ServiceConfig tts_config = 12;
 }
 
 // response from the voip manager concerning the started call
