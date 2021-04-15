@@ -18,6 +18,7 @@ package ondewo.nlu;
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "ondewo/nlu/context.proto";
+import "google/protobuf/struct.proto";
 
 
 // session manager for phone calls
@@ -243,20 +244,26 @@ message StartCallInstanceRequest {
   // prefix of sip name and sip container name
   string sip_prefix = 7;
 
+  // name of the sip instance
+  string sip_name = 8;
+
+  // dictionary of sip passwords
+  google.protobuf.Struct password_dictionary = 9;
+
   // asterisk service configuration
-  ServiceConfig asterisk_config = 8;
+  ServiceConfig asterisk_config = 10;
 
   // ondewo-cai configuration
-  ServiceConfig cai_config = 9;
+  ServiceConfig cai_config = 11;
 
   // speech-to-text service configuration
-  ServiceConfig stt_config = 10;
+  ServiceConfig stt_config = 12;
 
   // speech-to-text demuxer configuration
-  ServiceConfig demux_config = 11;
+  ServiceConfig demux_config = 13;
 
   // text-to-speech service configuration
-  ServiceConfig tts_config = 12;
+  ServiceConfig tts_config = 14;
 }
 
 // response from the voip manager concerning the started call
