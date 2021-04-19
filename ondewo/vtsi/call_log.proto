@@ -161,10 +161,10 @@ message VoipLog {
   string call_id = 1;
 
   // start time of log
-  float start_time = 2;
+  double start_time = 2;
 
   // end time of log
-  float end_time = 3;
+  double end_time = 3;
 
   // log entries
   repeated LogEntry logs = 4;
@@ -185,7 +185,7 @@ message Counters {
 // single log entry
 message LogEntry {
   // timestamp of log (python expected: time.time())
-  float timestamp = 1;
+  double timestamp = 1;
 
   // name of service doing the logging
   string service_name = 2;
