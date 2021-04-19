@@ -5,6 +5,7 @@
 ### Improvements
 
 * added sip prefix and name and passwords
+* changed timestamps and start/end times to doubles
 
 *****************
 ## Release ONDEWO APIS 0.3.0
