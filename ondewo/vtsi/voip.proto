@@ -254,6 +254,9 @@ message StartCallInstanceRequest {
 
   // text-to-speech service configuration
   ServiceConfig tts_config = 11;
+
+  // intent to trigger at the start of the call
+  string trigger_intent = 12;
 }
 
 // response from the voip manager concerning the started call
