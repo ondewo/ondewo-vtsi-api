@@ -18,6 +18,7 @@ package ondewo.nlu;
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "ondewo/nlu/context.proto";
+import "google/protobuf/struct.proto";
 
 
 // session manager for phone calls
@@ -254,6 +255,15 @@ message StartCallInstanceRequest {
 
   // text-to-speech service configuration
   ServiceConfig tts_config = 11;
+
+  // prefix of sip name and sip container name
+  string sip_prefix = 12;
+
+  // name of the sip instance
+  string sip_name = 13;
+
+  // dictionary of sip passwords
+  google.protobuf.Struct password_dictionary = 14;
 }
 
 // response from the voip manager concerning the started call
