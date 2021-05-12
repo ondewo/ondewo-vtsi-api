@@ -31,30 +31,6 @@ service VoipCallLogs {
 //      };
 //    }
 
-    // start logging of a call
-    rpc StartVoipLog (StartVoipLogRequest) returns (VoipLogResponse) {
-      option (google.api.http) = {
-        post: "/v2/{session=projects/*/agent/sessions/*}:StartVoipLog"
-        body: "*"
-      };
-    }
-
-    // finish logging of a call
-    rpc FinishVoipLog (FinishVoipLogRequest) returns (VoipLogResponse) {
-      option (google.api.http) = {
-        post: "/v2/{session=projects/*/agent/sessions/*}:FinishVoipLog"
-        body: "*"
-      };
-    }
-
-    // update logging of a call
-    rpc UpdateVoipLog (UpdateVoipLogRequest) returns (VoipLogResponse) {
-      option (google.api.http) = {
-        post: "/v2/{session=projects/*/agent/sessions/*}:UpdateVoipLog"
-        body: "*"
-      };
-    }
-
     // get call log for single call instance
     rpc GetVoipLog (GetVoipLogRequest) returns (GetVoipLogResponse) {
       option (google.api.http) = {
