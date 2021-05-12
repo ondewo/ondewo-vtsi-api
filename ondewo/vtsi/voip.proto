@@ -262,6 +262,7 @@ message StartCallInstanceRequest {
   // dictionary of sip passwords
   google.protobuf.Struct password_dictionary = 14;
 
+  // name of intent to trigger at the start of a call
   string initial_intent = 15;
 }
 
