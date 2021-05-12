@@ -14,8 +14,9 @@
 
 syntax = "proto3";
 
-package ondewo.nlu;
+package ondewo.sip;
 import "google/protobuf/empty.proto";
+import "ondewo/sip/sip.proto";
 import "google/api/annotations.proto";
 
 
@@ -71,7 +72,7 @@ service VoipCallLogs {
     }
 
     // activate saving call logs in the voip manager
-    rpc ActivateSaveCallLogs (SaveCallLogsRequest) returns (SaveCallLogsResponse) {
+    rpc ActivateSaveCallLogs (google.protobuf.Empty) returns (SaveCallLogsResponse) {
       option (google.api.http) = {
         post: "/v2/{session=projects/*/agent/sessions/*}:SaveCallLogs"
         body: "*"
@@ -95,50 +96,6 @@ message GetCallIdsResponse {
     // call_id-s linked to request's sip_id
     // (current implementation only supports 1 associated call_id per sip-id)
     repeated string call_ids = 2;
-}
-
-// request to start logging of a call
-message StartVoipLogRequest {
-    // id to assign log to
-    string call_id = 1;
-
-    // start time of log
-    float start_time = 2;
-}
-
-// request to finish logging of a call
-message FinishVoipLogRequest {
-    // id to assign log to
-    string call_id = 1;
-
-    // end time of log
-    float end_time = 2;
-}
-
-// request to update logging of a call
-message UpdateVoipLogRequest {
-    // id to assign log to
-    string call_id = 1;
-
-    // name of the service of the log message
-    string service_name = 2;
-
-    // message of the service doing the logging
-    string log_message = 3;
-
-    // (optional) billing counters
-    Counters counters = 4;
-}
-
-message VoipLogResponse {
-    // whether the logging operation succeeded
-    bool success = 1;
-
-    // relevant information in case logging operation failed
-    string log_message = 2;
-
-    // current duration of call
-    float duration = 3;
 }
 
 // request to get a call instance's call logs
@@ -167,7 +124,7 @@ message VoipLog {
   double end_time = 3;
 
   // log entries
-  repeated LogEntry logs = 4;
+  repeated SipStatus status_history = 4;
 
   // billing counters
   Counters counters = 5;
@@ -182,17 +139,6 @@ message Counters {
   int64 sixty_s_counter = 2;
 }
 
-// single log entry
-message LogEntry {
-  // timestamp of log (python expected: time.time())
-  double timestamp = 1;
-
-  // name of service doing the logging
-  string service_name = 2;
-
-  // message to log
-  string log_message = 3;
-}
 
 message GetManifestVoipLogRequest {
   // id of manifest
@@ -205,11 +151,6 @@ message ManifestVoipLog {
 
   // logs of associated listener instances
   repeated GetVoipLogResponse listener_logs = 2;
-}
-
-
-message SaveCallLogsRequest {
-  google.protobuf.Empty empty = 1;
 }
 
 message SaveCallLogsResponse {
