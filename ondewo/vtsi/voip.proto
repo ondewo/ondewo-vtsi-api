@@ -250,9 +250,6 @@ message StartCallInstanceRequest {
   // speech-to-text service configuration
   ServiceConfig stt_config = 9;
 
-  // speech-to-text demuxer configuration
-  ServiceConfig demux_config = 10;
-
   // text-to-speech service configuration
   ServiceConfig tts_config = 11;
 
@@ -264,6 +261,8 @@ message StartCallInstanceRequest {
 
   // dictionary of sip passwords
   google.protobuf.Struct password_dictionary = 14;
+
+  string initial_intent = 15;
 }
 
 // response from the voip manager concerning the started call
