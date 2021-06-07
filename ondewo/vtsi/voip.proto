@@ -69,7 +69,7 @@ service VoipSessions {
     // start an ondewo-sip-sim instance that listens for calls with the given parameters
     rpc StartCallInstance (StartCallInstanceRequest) returns (StartCallInstanceResponse) {
         option (google.api.http) = {
-            post: "/v2/{session=projects/*/agent/sessions/*}:StartListener"
+            post: "/v2/{session=projects/*/agent/sessions/*}:StartCallInstance"
             body: "*"
         };
     }
@@ -77,9 +77,17 @@ service VoipSessions {
     // stop/kill an ondewo-sip-sim listener instance
     rpc StopCallInstance (StopCallInstanceRequest) returns (StopCallInstanceResponse) {
       option (google.api.http) = {
-        post: "/v2/{session=projects/*/agent/sessions/*}:StopListener"
+        post: "/v2/{session=projects/*/agent/sessions/*}:StopCallInstance"
         body: "*"
       };
+    }
+
+    // start an ondewo-sip-sim instance that listens for calls with the given parameters
+    rpc StartMultipleCallInstances (StartMultipleCallInstancesRequest) returns (StartMultipleCallInstancesResponse) {
+        option (google.api.http) = {
+            post: "/v2/{session=projects/*/agent/sessions/*}:StartMultipleCallInstances"
+            body: "*"
+        };
     }
 
       /////////////
@@ -270,6 +278,19 @@ message StartCallInstanceRequest {
 message StartCallInstanceResponse {
   // request sent to the voip manager
   StartCallInstanceRequest request = 1;
+    // success status
+  bool success = 2;
+}
+
+// collection of calls to start
+message StartMultipleCallInstancesRequest {
+  repeated StartCallInstanceRequest requests = 1;
+}
+
+// response from the voip manager concerning the multiple started calls
+message StartMultipleCallInstancesResponse {
+  // request sent to the voip manager
+  StartMultipleCallInstancesRequest request = 1;
     // success status
   bool success = 2;
 }
