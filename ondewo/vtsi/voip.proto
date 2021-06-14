@@ -82,7 +82,7 @@ service VoipSessions {
       };
     }
 
-    // start an ondewo-sip-sim instance that listens for calls with the given parameters
+    // start multiple ondewo-sip-sim instances, callers and/or listeners
     rpc StartMultipleCallInstances (StartMultipleCallInstancesRequest) returns (StartMultipleCallInstancesResponse) {
         option (google.api.http) = {
             post: "/v2/{session=projects/*/agent/sessions/*}:StartMultipleCallInstances"
@@ -230,6 +230,7 @@ message VoipManifestResponse {
 /////////////
 
 // parameters of a call that is to be performed
+// if phone number is attached, a caller instance will be started, otherwise a listener
 message StartCallInstanceRequest {
   // uuid of the call
   string call_id = 1;
@@ -283,6 +284,7 @@ message StartCallInstanceResponse {
 }
 
 // collection of calls to start
+// if phone number is attached to the given call_id, caller instance will be started, otherwise listener
 message StartMultipleCallInstancesRequest {
   repeated StartCallInstanceRequest requests = 1;
 }
@@ -291,7 +293,8 @@ message StartMultipleCallInstancesRequest {
 message StartMultipleCallInstancesResponse {
   // request sent to the voip manager
   StartMultipleCallInstancesRequest request = 1;
-    // success status - refers to general success
+    // success status - refers to general success: False if at least one call-deployment fails,
+    // True if all call were successful
   bool success = 2;
 }
 
