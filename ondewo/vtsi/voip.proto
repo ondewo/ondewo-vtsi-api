@@ -291,7 +291,7 @@ message StartMultipleCallInstancesRequest {
 message StartMultipleCallInstancesResponse {
   // request sent to the voip manager
   StartMultipleCallInstancesRequest request = 1;
-    // success status
+    // success status - refers to general success
   bool success = 2;
 }
 
