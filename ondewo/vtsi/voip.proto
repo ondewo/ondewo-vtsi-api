@@ -69,7 +69,7 @@ service VoipSessions {
     // start an ondewo-sip-sim instance that listens for calls with the given parameters
     rpc StartCallInstance (StartCallInstanceRequest) returns (StartCallInstanceResponse) {
         option (google.api.http) = {
-            post: "/v2/{session=projects/*/agent/sessions/*}:StartListener"
+            post: "/v2/{session=projects/*/agent/sessions/*}:StartCallInstance"
             body: "*"
         };
     }
@@ -77,9 +77,17 @@ service VoipSessions {
     // stop/kill an ondewo-sip-sim listener instance
     rpc StopCallInstance (StopCallInstanceRequest) returns (StopCallInstanceResponse) {
       option (google.api.http) = {
-        post: "/v2/{session=projects/*/agent/sessions/*}:StopListener"
+        post: "/v2/{session=projects/*/agent/sessions/*}:StopCallInstance"
         body: "*"
       };
+    }
+
+    // start multiple ondewo-sip-sim instances, callers and/or listeners
+    rpc StartMultipleCallInstances (StartMultipleCallInstancesRequest) returns (StartMultipleCallInstancesResponse) {
+        option (google.api.http) = {
+            post: "/v2/{session=projects/*/agent/sessions/*}:StartMultipleCallInstances"
+            body: "*"
+        };
     }
 
       /////////////
@@ -222,6 +230,7 @@ message VoipManifestResponse {
 /////////////
 
 // parameters of a call that is to be performed
+// if phone number is attached, a caller instance will be started, otherwise a listener
 message StartCallInstanceRequest {
   // uuid of the call
   string call_id = 1;
@@ -250,9 +259,6 @@ message StartCallInstanceRequest {
   // speech-to-text service configuration
   ServiceConfig stt_config = 9;
 
-  // speech-to-text demuxer configuration
-  ServiceConfig demux_config = 10;
-
   // text-to-speech service configuration
   ServiceConfig tts_config = 11;
 
@@ -264,6 +270,9 @@ message StartCallInstanceRequest {
 
   // dictionary of sip passwords
   google.protobuf.Struct password_dictionary = 14;
+
+  // name of intent to trigger at the start of a call
+  string initial_intent = 15;
 }
 
 // response from the voip manager concerning the started call
@@ -271,6 +280,21 @@ message StartCallInstanceResponse {
   // request sent to the voip manager
   StartCallInstanceRequest request = 1;
     // success status
+  bool success = 2;
+}
+
+// collection of calls to start
+// if phone number is attached to the given call_id, caller instance will be started, otherwise listener
+message StartMultipleCallInstancesRequest {
+  repeated StartCallInstanceRequest requests = 1;
+}
+
+// response from the voip manager concerning the multiple started calls
+message StartMultipleCallInstancesResponse {
+  // request sent to the voip manager
+  StartMultipleCallInstancesRequest request = 1;
+    // success status - refers to general success: False if at least one call-deployment fails,
+    // True if all call were successful
   bool success = 2;
 }
 
