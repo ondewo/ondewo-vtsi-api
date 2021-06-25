@@ -1,5 +1,13 @@
 # Release History
 *****************
+## Release ONDEWO APIS 0.4.0
+
+### Improvements
+
+* deleted unnecessary call logs
+* new endpoint to start multiple calls added
+
+*****************
 ## Release ONDEWO APIS 0.3.1
 
 ### Improvements
