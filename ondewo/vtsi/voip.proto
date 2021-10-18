@@ -214,6 +214,8 @@ message ServiceConfig {
   // for a list of the currently supported language codes.
   string language_code = 5;
 
+  // Optional: GRPC cert for the giver service
+  string grpc_cert = 6;
 }
 
 // message returned by voip-manager
