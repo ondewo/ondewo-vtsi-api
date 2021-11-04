@@ -2,6 +2,13 @@
 
 *****************
 
+## Release ONDEWO VTSI APIS 1.1.0
+
+## New features
+* ServiceConfig extended with grpc_cert field
+
+*****************
+
 ## Release ONDEWO VTSI APIS 1.0.0
 
 ## New features
