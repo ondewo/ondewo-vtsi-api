@@ -279,9 +279,9 @@ message StartCallInstanceRequest {
   string initial_intent = 15;
 
 
-  ondewo.s2t.TranscribeRequestConfig s2t_config
+  ondewo.s2t.TranscribeRequestConfig s2t_config = 16;
 
-  ondewo.t2s.RequestConfig t2s_config = 16;
+  ondewo.t2s.RequestConfig t2s_config = 17;
 }
 
 // response from the voip manager concerning the started call
