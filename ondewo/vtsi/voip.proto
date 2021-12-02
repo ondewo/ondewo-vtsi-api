@@ -27,261 +27,119 @@ import "ondewo/t2s/text-to-speech.proto";
 // endpoints of voip server that manages instances of ondewo-sip-sim, which handle individual calls
 service VoipSessions {
 
-      //////////////
-     // MANIFEST //
-    //////////////
+  ///////////
+  // CALLS //
+  ///////////
 
-    // load a manifest of calls to perform and listener-instances to start
-    // includes configurations of services: ondewo-cai, speech-to-text & text-to-speech
-    rpc LoadManifest (VoipManifest) returns (VoipManifestResponse) {
-        option (google.api.http) = {
-            post: "/v2/{session=projects/*/agent/sessions/*}:GiveManifest"
-            body: "*"
-        };
-    }
+  // start an ondewo-sip-sim instance that listens for calls with the given parameters
+  rpc StartCallInstance (StartCallInstanceRequest) returns (StartCallInstanceResponse);
 
-    // run a manifest by its ID
-    rpc RunManifest (ManifestRequest) returns (RunManifestResponse) {
-          option (google.api.http) = {
-              post: "/v2/{session=projects/*/agent/sessions/*}:RunManifest"
-              body: "*"
-          };
-    }
+  // stop/kill an ondewo-sip-sim listener instance
+  rpc StopCallInstance (StopCallInstanceRequest) returns (StopCallInstanceResponse);
 
-    // remove a manifest by its ID
-    rpc RemoveManifest (ManifestRequest) returns (RemoveManifestResponse) {
-          option (google.api.http) = {
-              post: "/v2/{session=projects/*/agent/sessions/*}:RemoveManifest"
-              body: "*"
-          };
-    }
+  // start multiple ondewo-sip-sim instances, callers and/or listeners
+  rpc StartMultipleCallInstances (StartMultipleCallInstancesRequest) returns (StartMultipleCallInstancesResponse);
 
-    // get all active manifests
-    rpc GetManifestIDs (GetManifestIDsRequest) returns (GetManifestIDsResponse) {
-          option (google.api.http) = {
-              post: "/v2/{session=projects/*/agent/sessions/*}:GetManifestIDs"
-              body: "*"
-          };
-    }
+  ////////////
+  // STATUS //
+  ////////////
+  rpc GetInstanceStatus (GetVoipStatusRequest) returns (VoipStatus);
 
-      ///////////
-     // CALLS //
-    ///////////
+  rpc UpdateServicesStatus (UpdateServicesStatusRequest) returns (UpdateServicesStatusResponse);
 
-    // start an ondewo-sip-sim instance that listens for calls with the given parameters
-    rpc StartCallInstance (StartCallInstanceRequest) returns (StartCallInstanceResponse) {
-        option (google.api.http) = {
-            post: "/v2/{session=projects/*/agent/sessions/*}:StartCallInstance"
-            body: "*"
-        };
-    }
-
-    // stop/kill an ondewo-sip-sim listener instance
-    rpc StopCallInstance (StopCallInstanceRequest) returns (StopCallInstanceResponse) {
-      option (google.api.http) = {
-        post: "/v2/{session=projects/*/agent/sessions/*}:StopCallInstance"
-        body: "*"
-      };
-    }
-
-    // start multiple ondewo-sip-sim instances, callers and/or listeners
-    rpc StartMultipleCallInstances (StartMultipleCallInstancesRequest) returns (StartMultipleCallInstancesResponse) {
-        option (google.api.http) = {
-            post: "/v2/{session=projects/*/agent/sessions/*}:StartMultipleCallInstances"
-            body: "*"
-        };
-    }
-
-      /////////////
-     // GENERAL //
-    /////////////
-
-    // get all call IDs
-    rpc GetCallIDs (GetCallIDsRequest) returns (GetCallIDsResponse) {
-          option (google.api.http) = {
-              post: "/v2/{session=projects/*/agent/sessions/*}:GetCallIDs"
-              body: "*"
-          };
-    }
-
-    // get session ID
-    rpc GetSessionID (GetSessionIDRequest) returns (GetSessionIDResponse) {
-          option (google.api.http) = {
-              post: "/v2/{session=projects/*/agent/sessions/*}:GetSessionID"
-              body: "*"
-          };
-    }
-
-    // shutdown any deployed call with unhealthy status
-    rpc ShutdownUnhealthyCalls (ShutdownUnhealthyCallsRequest) returns (ShutdownUnhealthyCallsResponse) {
-          option (google.api.http) = {
-              post: "/v2/{session=projects/*/agent/sessions/*}:ShutdownUnhealthyCalls"
-              body: "*"
-          };
-    }
-
-      ////////////
-     // STATUS //
-    ////////////
-
-    rpc GetManifestStatus (VoipManifestStatusRequest) returns (VoipManifestStatus) {
-        option (google.api.http) = {
-            post: "/v2/{session=projects/*/agent/sessions/*}:GetManifestStatus"
-            body: "*"
-        };
-    }
-
-    rpc GetInstanceStatus (GetVoipStatusRequest) returns (VoipStatus) {
-        option (google.api.http) = {
-            post: "/v2/{session=projects/*/agent/sessions/*}:GetInstanceStatus"
-            body: "*"
-        };
-    }
-
-    rpc UpdateServicesStatus (UpdateServicesStatusRequest) returns (UpdateServicesStatusResponse) {
-        option (google.api.http) = {
-            post: "/v2/{session=projects/*/agent/sessions/*}:UpdateServicesStatus"
-            body: "*"
-        };
-    }
-
-      //////////////////
-     // PRECONDITION //
-    //////////////////
-
-    rpc DeployPreconditionForWorkingSetup (DeployPreconditionRequest) returns (DeployPreconditionResponse) {
-        option (google.api.http) = {
-            post: "/v2/{session=projects/*/agent/sessions/*}:UpdateServicesStatus"
-            body: "*"
-        };
-    }
-}
-
-  //////////////
- // MANIFEST //
-//////////////
-
-// manifest of calls to perform and listener-instances to start
-message VoipManifest {
-
-  // ID of the manifest
-  string manifest_id = 1;
-
-  // ondewo-cai context information for all caller instances
-  repeated ondewo.nlu.Context contexts = 2;
-
-  // list of calls to perform
-  repeated StartCallInstanceRequest callers = 9;
-}
-
-// request sent to a manifest-related endpoint with its ID
-message ManifestRequest {
-  // ID of the manifest to remove
-  string manifest_id = 1;
-}
-
-// response sent by the voip server when attempting to remove a manifest
-message RunManifestResponse {
-  ManifestRequest request = 1;
-  // whether the run operation started
-  bool started = 2;
-}
-
-// response sent by the voip server when attempting to remove a complete manifest
-message RemoveManifestResponse {
-  ManifestRequest request = 1;
-  // whether the removal succeeded
-  bool success = 2;
-  // responses
-  repeated StopCallInstanceResponse caller_responses = 9;
-}
-
-// configuration of services (ondewo-cai, text-to-speech, speech-to-text, asterisk)
-message ServiceConfig {
-  // service host IP
-  string host = 1;
-
-  // service port
-  int32 port = 2;
-
-  // Optional.
-  // which service to use
-  // for text-to-speech this could be "Ondewo-Text-To-Speech" / "Google" / "IBM" / "Azure"
-  // for speech-to-text this could be "Ondewo-Speech-To-Text" / "Google" / "IBM" / "Azure" / "Amazon"
-  // not required for ondewo-cai and asterisk
-  string service_identifier = 3;
-
-  // language code
-  // See [Language Support](https://dialogflow.com/docs/reference/language)
-  // for a list of the currently supported language codes.
-  string language_code = 5;
-
-  // Optional: GRPC cert for the given service
-  string grpc_cert = 6;
-}
-
-// message returned by voip-manager
-message VoipManifestResponse {
-  // request sent to the voip manager
-  VoipManifest request = 1;
-
-  // whether the load-manifest operation succeeded
-  bool success = 2;
 }
 
   /////////////
  // CALLERS //
 /////////////
 
-// parameters of a call that is to be performed
-// if phone number is attached, a caller instance will be started, otherwise a listener
-message StartCallInstanceRequest {
+// base configuration of services (ondewo-cai, text-to-speech, speech-to-text, asterisk)
+message BaseConfig{
+  // service host IP
+  string host = 1;
+
+  // service port
+  int32 port = 2;
+
+  // Optional: GRPC cert for the given service
+  string grpc_cert = 3;
+}
+
+message NLUConfig{
+  // Base config
+  // Host, Port, and [Optional] GRPC cert
+  BaseConfig base_config = 1;
+
+  // language code
+  // See [Language Support](https://dialogflow.com/docs/reference/language)
+  // for a list of the currently supported language codes.
+  string language_code = 2;
+
+  // ondewo-cai project ID with which to perform the call
+  string project_id = 3;
+
+  // name of intent to trigger at the start of a call
+  string initial_intent = 4;
+
+  // ondewo-cai context information
+  repeated ondewo.nlu.Context contexts = 5;
+}
+
+message T2SConfig{
+  // Host, Port, and [Optional] GRPC cert
+  BaseConfig base_config = 1;
+  ondewo.t2s.RequestConfig t2s_config = 2;
+}
+
+message S2TConfig{
+  // Host, Port, and [Optional] GRPC cert
+  BaseConfig base_config = 1;
+  ondewo.s2t.TranscribeRequestConfig s2t_config = 2;
+}
+
+message AsteriskConfig{
+  // Host, Port, and [Optional] GRPC cert
+  BaseConfig base_config = 1;
+}
+
+message SIPConfig{
   // uuid of the call
   string call_id = 1;
 
   // version of sip-sim to use for call
   string sip_sim_version = 2;
 
-  // ondewo-cai project ID with which to perform the call
-  string project_id = 3;
-
   // phone number to call
-  string phone_number = 4;
-
-  // ondewo-cai context information
-  repeated ondewo.nlu.Context contexts = 5;
-
-  // initial text the sip-sim instance should say when someone calls
-  string init_text = 6;
-
-  // asterisk service configuration
-  ServiceConfig asterisk_config = 7;
-
-  // ondewo-cai configuration
-  ServiceConfig cai_config = 8;
-
-  // speech-to-text service configuration
-  ServiceConfig stt_config = 9;
-
-  // text-to-speech service configuration
-  ServiceConfig tts_config = 11;
+  string phone_number = 3;
 
   // prefix of sip name and sip container name
-  string sip_prefix = 12;
+  string sip_prefix = 4;
 
   // name of the sip instance
-  string sip_name = 13;
+  string sip_name = 5;
 
   // dictionary of sip passwords
-  google.protobuf.Struct password_dictionary = 14;
+  google.protobuf.Struct password_dictionary = 6;
+}
 
-  // name of intent to trigger at the start of a call
-  string initial_intent = 15;
+// parameters of a call that is to be performed
+// if phone number is attached, a caller instance will be started, otherwise a listener
+message StartCallInstanceRequest {
 
+  // SIP service configuration
+  SIPConfig sip_config =1 ;
 
-  ondewo.s2t.TranscribeRequestConfig s2t_config = 16;
+  // Asterisk service configuration
+  AsteriskConfig asterisk_config = 2;
 
-  ondewo.t2s.RequestConfig t2s_config = 17;
+  // ondewo-cai configuration
+  NLUConfig cai_config = 3;
+
+  // speech-to-text service configuration
+  S2TConfig stt_config = 4;
+
+  // text-to-speech service configuration
+  T2SConfig tts_config = 5;
 }
 
 // response from the voip manager concerning the started call
@@ -332,21 +190,6 @@ message StopCallInstanceResponse {
   ////////////
  // STATUS //
 ////////////
-
-// get the status of a full manifest of calls to perform and listeners to deploy
-message VoipManifestStatusRequest {
-  // ID of the manifest
-  string manifest_id = 1;
-}
-
-// status of all manifest-associated instances
-message VoipManifestStatus {
-  VoipManifestStatusRequest request = 1;
-
-  // status of caller instances
-  repeated VoipStatus calls_status = 2;
-}
-
 message GetVoipStatusRequest {
   // monitoring can be done by call-ID or ondewo-sip-sim ID
   oneof id {
@@ -386,68 +229,4 @@ message ServiceStatus {
 
   // last log entry
   string last_log = 2;
-}
-
-message UpdateServicesStatusRequest {
-  oneof id {
-    // ID of the call
-    string call_id = 1;
-    // ID of the ondewo-sip-sim instance
-    string sip_id = 2;
-    // ID of manifest
-    string manifest_id = 3;
-  }
-}
-
-message UpdateServicesStatusResponse {
-    google.protobuf.Empty empty = 1;
-}
-
-  //////////////////
- // PRECONDITION //
-//////////////////
-
-message DeployPreconditionRequest {
-  // version of sip-sim to use for call
-  string sip_sim_version = 1;
-
-  // asterisk service configuration
-  ServiceConfig asterisk_config = 2;
-}
-
-message DeployPreconditionResponse {
-  bool success = 1;
-}
-
-message GetManifestIDsRequest {
-  google.protobuf.Empty empty = 1;
-}
-
-message GetManifestIDsResponse {
-  repeated string manifest_ids = 1;
-}
-
-message GetCallIDsRequest {
-  google.protobuf.Empty empty = 1;
-}
-
-message GetCallIDsResponse {
-  repeated string call_ids = 1;
-}
-
-message GetSessionIDRequest {
-  string call_id = 1;
-}
-
-message GetSessionIDResponse {
-  string call_id = 1;
-  string session_id = 2;
-}
-
-message ShutdownUnhealthyCallsRequest {
-  google.protobuf.Empty empty = 1;
-}
-
-message ShutdownUnhealthyCallsResponse {
-  bool success = 1;
 }
