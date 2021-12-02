@@ -14,13 +14,13 @@
 
 syntax = "proto3";
 
-package ondewo.nlu;
+package ondewo.vtsi;
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "ondewo/nlu/context.proto";
 import "google/protobuf/struct.proto";
-import "ondewo/s2t/speech_to_text.proto";
-import "ondewo/t2s/text_to_speech.proto";
+import "ondewo/s2t/speech-to-text.proto";
+import "ondewo/t2s/text-to-speech.proto";
 
 
 // session manager for phone calls
@@ -168,7 +168,7 @@ message VoipManifest {
   string manifest_id = 1;
 
   // ondewo-cai context information for all caller instances
-  repeated Context contexts = 2;
+  repeated ondewo.nlu.Context contexts = 2;
 
   // list of calls to perform
   repeated StartCallInstanceRequest callers = 9;
@@ -249,7 +249,7 @@ message StartCallInstanceRequest {
   string phone_number = 4;
 
   // ondewo-cai context information
-  repeated Context contexts = 5;
+  repeated ondewo.nlu.Context contexts = 5;
 
   // initial text the sip-sim instance should say when someone calls
   string init_text = 6;
@@ -278,7 +278,10 @@ message StartCallInstanceRequest {
   // name of intent to trigger at the start of a call
   string initial_intent = 15;
 
-  RequestConfig request_config = 16;
+
+  ondewo.s2t.TranscribeRequestConfig s2t_config
+
+  ondewo.t2s.RequestConfig t2s_config = 16;
 }
 
 // response from the voip manager concerning the started call
