@@ -23,55 +23,11 @@ import "google/api/annotations.proto";
 // call log endpoints to be used by ondewo-sip-sim instances to transfer their log info to the voip manager
 service VoipCallLogs {
 
-//    // get all call IDs associated with a sip-id [PROTOTYPE IF MULTIPLE CALLS PER SIP INSTANCE ARE REALIZED, REMOVED FOR CLARITY]
-//    rpc GetCallIds (GetCallIdsRequest) returns (GetCallIdsResponse) {
-//      option (google.api.http) = {
-//        post: "/v2/{session=projects/*/agent/sessions/*}:GetCallIds"
-//        body: "*"
-//      };
-//    }
-
     // get call log for single call instance
-    rpc GetVoipLog (GetVoipLogRequest) returns (GetVoipLogResponse) {
-      option (google.api.http) = {
-        post: "/v2/{session=projects/*/agent/sessions/*}:GetVoipLog"
-        body: "*"
-      };
-    }
-
-    // get call log of manifest
-    rpc GetManifestVoipLog (GetManifestVoipLogRequest) returns (ManifestVoipLog) {
-      option (google.api.http) = {
-        post: "/v2/{session=projects/*/agent/sessions/*}:GetManifestVoipLog"
-        body: "*"
-      };
-    }
+    rpc GetVoipLog (GetVoipLogRequest) returns (GetVoipLogResponse) ;
 
     // activate saving call logs in the voip manager
-    rpc ActivateSaveCallLogs (google.protobuf.Empty) returns (SaveCallLogsResponse) {
-      option (google.api.http) = {
-        post: "/v2/{session=projects/*/agent/sessions/*}:SaveCallLogs"
-        body: "*"
-      };
-    }
-
-}
-
-// request to get all call_id-s associated with a sip_id
-// (current implementation only supports 1 associated call_id per sip-id)
-message GetCallIdsRequest {
-    // sip id sending the request
-    string sip_id = 1;
-}
-
-// response with all call_id-s associated with the request's sip_id
-message GetCallIdsResponse {
-    // sip_id sent in the request
-    string sip_id = 1;
-
-    // call_id-s linked to request's sip_id
-    // (current implementation only supports 1 associated call_id per sip-id)
-    repeated string call_ids = 2;
+    rpc ActivateSaveCallLogs (google.protobuf.Empty) returns (SaveCallLogsResponse) ;
 }
 
 // request to get a call instance's call logs
@@ -101,32 +57,6 @@ message VoipLog {
 
   // log entries
   repeated ondewo.sip.SipStatus status_history = 4;
-
-  // billing counters
-  Counters counters = 5;
-}
-
-// billing counters
-message Counters {
-  // 15s counter (30s-> 2, 60s -> 4)
-  int64 fifteen_s_counter = 1;
-
-  // 30s counter (30s -> 1, 60s -> 2)
-  int64 sixty_s_counter = 2;
-}
-
-
-message GetManifestVoipLogRequest {
-  // id of manifest
-  string manifest_id = 1;
-}
-
-message ManifestVoipLog {
-  // logs of associated caller instances
-  repeated GetVoipLogResponse caller_logs = 1;
-
-  // logs of associated listener instances
-  repeated GetVoipLogResponse listener_logs = 2;
 }
 
 message SaveCallLogsResponse {

@@ -19,38 +19,55 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "ondewo/nlu/context.proto";
 import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
 import "ondewo/s2t/speech-to-text.proto";
 import "ondewo/t2s/text-to-speech.proto";
 
 
 // session manager for phone calls
-// endpoints of voip server that manages instances of ondewo-sip-sim, which handle individual calls
+// endpoints of voip server that manages instances of ondewo-sip, which handle individual calls
 service VoipSessions {
 
   ///////////
   // CALLS //
   ///////////
 
-  // start an ondewo-sip-sim instance that listens for calls with the given parameters
-  rpc StartCallInstance (StartCallInstanceRequest) returns (StartCallInstanceResponse);
+  // start an ondewo-sip listener instance
+  rpc StartListener (StartListenerRequest) returns (StartListenerResponse);
 
-  // stop/kill an ondewo-sip-sim listener instance
-  rpc StopCallInstance (StopCallInstanceRequest) returns (StopCallInstanceResponse);
+  // start an ondewo-sip caller instance
+  rpc StartCaller (StartCallerRequest) returns (StartCallerResponse);
 
-  // start multiple ondewo-sip-sim instances, callers and/or listeners
-  rpc StartMultipleCallInstances (StartMultipleCallInstancesRequest) returns (StartMultipleCallInstancesResponse);
+  rpc StartScheduledCaller (StartScheduledCallerRequest) returns (StartScheduledCallerResponse);
+
+  // stop/kill an ondewo-sip listener or caller instance
+  rpc StopCall (StopCallRequest) returns (StopCallResponse);
+
+  // start multiple ondewo-sip listeners instances
+  rpc StartMultipleListeners (StartMultipleListenersRequest) returns (StartMultipleListenersResponse);
+
+  // start multiple ondewo-sip callers instances
+  rpc StartMultipleCallers (StartMultipleCallersRequest) returns (StartMultipleCallersResponse);
+
+  // start multiple ondewo-sip callers instances with schedules
+  rpc StartMultipleScheduledCallers (StartMultipleScheduledCallersRequest) returns (StartMultipleScheduledCallersResponse);
+
+  // Transfer a call from a listener to another number
+  rpc TransferCall (TransferCallRequest) returns (TransferCallResponse);
+
+  // ConferenceCall .. to be added in the future
+  //rpc ConferenceCall (ConferenceCallRequest) returns (ConferenceCallResponse);
 
   ////////////
   // STATUS //
   ////////////
-  rpc GetInstanceStatus (GetVoipStatusRequest) returns (VoipStatus);
-
-  rpc UpdateServicesStatus (UpdateServicesStatusRequest) returns (UpdateServicesStatusResponse);
+  rpc GetStatus (GetVoipStatusRequest) returns (VoipStatus);
+  rpc GetAllStasuses (google.protobuf.Empty) returns (ALLVoipStatuses);
 
 }
 
-  /////////////
- // CALLERS //
+/////////////
+// CALLERS //
 /////////////
 
 // base configuration of services (ondewo-cai, text-to-speech, speech-to-text, asterisk)
@@ -81,7 +98,7 @@ message NLUConfig{
   // name of intent to trigger at the start of a call
   string initial_intent = 4;
 
-  // ondewo-cai context information
+  // ondewo-cai list of contexts
   repeated ondewo.nlu.Context contexts = 5;
 }
 
@@ -102,105 +119,202 @@ message AsteriskConfig{
   BaseConfig base_config = 1;
 }
 
-message SIPConfig{
-  // uuid of the call
-  string call_id = 1;
-
-  // version of sip-sim to use for call
-  string sip_sim_version = 2;
-
-  // phone number to call
-  string phone_number = 3;
-
-  // prefix of sip name and sip container name
-  string sip_prefix = 4;
-
-  // name of the sip instance
-  string sip_name = 5;
-
-  // dictionary of sip passwords
-  google.protobuf.Struct password_dictionary = 6;
-}
-
-// parameters of a call that is to be performed
-// if phone number is attached, a caller instance will be started, otherwise a listener
-message StartCallInstanceRequest {
-
-  // SIP service configuration
-  SIPConfig sip_config =1 ;
-
+message ServicesConfigs{
   // Asterisk service configuration
-  AsteriskConfig asterisk_config = 2;
+  AsteriskConfig asterisk_config = 1;
 
   // ondewo-cai configuration
-  NLUConfig cai_config = 3;
+  NLUConfig cai_config = 2;
 
   // speech-to-text service configuration
-  S2TConfig stt_config = 4;
+  S2TConfig stt_config = 3;
 
   // text-to-speech service configuration
-  T2SConfig tts_config = 5;
+  T2SConfig tts_config = 4;
 }
 
-// response from the voip manager concerning the started call
-message StartCallInstanceResponse {
+// The base config is for both the listener and caller .. If you only provide it you will get a listener
+// You will need to provide SIPCallerConfig for the caller
+message SIPBaseConfig{
+  // uuid of the call instance
+  string call_id = 1;
+
+  // version of sip to use for call
+  string sip_sim_version = 2;
+
+  // you either use sip_name for an exact sip instance .. or sip_prefix to get one or instances matched
+
+  // prefix of sip name and sip container name
+  string sip_prefix = 3;
+
+  // name of the sip instance which is in Asterisk
+  string sip_name = 4;
+
+  // password dictionary is passed depending on the account info you have in asterisk's sip.conf
+  // dictionary of sip passwords that are in Asterisk
+  map<string, string> password_dictionary = 5;
+}
+
+message SIPCallerConfig{
+  SIPBaseConfig sip_base_config = 1;
+  // phone number to call
+  string phone_number = 2;
+
+  // dictionary of sip headers that are sent on call
+  map<string, string> headers = 3;
+}
+
+// request for starting a listener
+message StartListenerRequest {
+
+  // SIP service configuration
+  SIPBaseConfig sip_config = 1 ;
+
+  // Service Configs of Asterisk, cai,stt, tts
+  ServicesConfigs servies_configs = 2;
+}
+
+// response from the voip manager concerning the started listener
+message StartListenerResponse {
   // request sent to the voip manager
-  StartCallInstanceRequest request = 1;
-    // success status
+  StartListenerRequest request = 1;
+  // success status
   bool success = 2;
 }
 
-// collection of calls to start
-// if phone number is attached to the given call_id, caller instance will be started, otherwise listener
-message StartMultipleCallInstancesRequest {
-  repeated StartCallInstanceRequest requests = 1;
+// request for starting a caller
+message StartCallerRequest {
+
+  // SIP service configuration
+  SIPCallerConfig sip_config = 1 ;
+
+  // Service Configs of Asterisk, cai,stt, tts
+  ServicesConfigs servies_configs = 2;
 }
 
-// response from the voip manager concerning the multiple started calls
-message StartMultipleCallInstancesResponse {
+// response from the voip manager concerning the started caller
+message StartCallerResponse {
   // request sent to the voip manager
-  StartMultipleCallInstancesRequest request = 1;
-    // success status - refers to general success: False if at least one call-deployment fails,
-    // True if all call were successful
+  StartCallerRequest request = 1;
+  // success status
+  bool success = 2;
+}
+
+
+// request for starting a scheduled call
+message StartScheduledCallerRequest {
+  // Normal start caller request
+  StartCallerRequest request = 1;
+  // Time you want the call to be scheduled at
+  DateTime scheduled_time = 2;
+}
+
+// response from the voip manager concerning the scheduled call
+message StartScheduledCallerResponse {
+  // request sent to the voip manager
+  StartScheduledCallerRequest request = 1;
+  // success status
+  bool success = 2;
+}
+
+// collection of listeners to start
+message StartMultipleListenersRequest {
+  repeated StartListenerRequest requests = 1;
+}
+
+// response from the voip manager concerning the multiple started listeners
+message StartMultipleListenersResponse {
+  // request sent to the voip manager
+  StartMultipleListenersRequest request = 1;
+  // success status - refers to general success: False if at least one call-deployment fails,
+  // True if all call were successful
+  bool success = 2;
+}
+
+// collection of callers to start
+message StartMultipleCallersRequest {
+  repeated StartCallerRequest requests = 1;
+}
+
+// response from the voip manager concerning the multiple started callers
+message StartMultipleCallersResponse {
+  // request sent to the voip manager
+  StartMultipleCallersRequest request = 1;
+  // success status - refers to general success: False if at least one call-deployment fails,
+  // True if all call were successful
+  bool success = 2;
+}
+
+// collection of scheduled callers to start
+message StartMultipleScheduledCallersRequest {
+  repeated StartScheduledCallerRequest requests = 1;
+}
+
+// response from the voip manager concerning the multiple scheduled callers
+message StartMultipleScheduledCallersResponse {
+  // request sent to the voip manager
+  StartMultipleScheduledCallersRequest request = 1;
+  // success status - refers to general success: False if at least one call-deployment fails,
+  // True if all call were successful
   bool success = 2;
 }
 
 // parameters of the call to stop
-message StopCallInstanceRequest {
-  // calls can be stopped with either the call-ID or the ondewo-sip-sim ID
+message StopCallRequest {
+  // calls can be stopped with either the call-ID or the ondewo-sip ID
+  // The last field you set is the value that is set
   oneof id {
     // ID of the call
     string call_id = 1;
 
-    // ID of the ondewo-sip-sim instance
+    // ID of the ondewo-sip instance
     string sip_id = 2;
   }
 }
 
 // response from the voip manager concerning the stop-call request
-message StopCallInstanceResponse {
+message StopCallResponse {
   // request sent to the voip manager
-  StopCallInstanceRequest request = 1;
+  StopCallRequest request = 1;
   // whether listener was successfully stopped
   bool success = 2;
   // Optional. log message
   string log_message = 3;
 }
 
-  ////////////
- // STATUS //
-////////////
-message GetVoipStatusRequest {
-  // monitoring can be done by call-ID or ondewo-sip-sim ID
+message TransferCallRequest{
   oneof id {
     // ID of the call
     string call_id = 1;
-    // ID of the ondewo-sip-sim instance
+    // ID of the ondewo-sip instance
+    string sip_id = 2;
+  }
+  // Number you want to be transfered too
+  string transfer_id = 3;
+}
+
+message TransferCallResponse{
+  // request sent to the voip manager
+  TransferCallRequest request = 1;
+  // whether transfer request was successfully sent
+  bool success = 2;
+}
+
+////////////
+// STATUS //
+////////////
+message GetVoipStatusRequest {
+  // monitoring can be done by call-ID or ondewo-sip ID
+  // The last field you set is the value that is set
+  oneof id {
+    // ID of the call
+    string call_id = 1;
+    // ID of the ondewo-sip instance
     string sip_id = 2;
   }
 }
 
-// status of ondewo-sip-sim instance
+// status of ondewo-sip instance
 message VoipStatus {
   // health status
   bool healthy = 1;
@@ -222,11 +336,24 @@ message VoipStatus {
 
 }
 
-// status of ondewo-cai
+message ALLVoipStatuses{
+  repeated VoipStatus voip_status = 1;
+}
+
+// status of service
 message ServiceStatus {
   // health status
   bool healthy = 1;
 
   // last log entry
   string last_log = 2;
+}
+
+// Message for a date time object.
+message DateTime {
+  message TimeZone {
+  }
+    // Set only if the offset can be determined. Positive for time ahead of UTC.
+    // E.g. For "UTC-9", this value is -540.
+    int32 offset_minutes = 1;
 }
