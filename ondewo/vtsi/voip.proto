@@ -46,6 +46,10 @@ service VoipSessions {
   // "stops both Inbound and Outbound calls"
   rpc StopCall (StopCallRequest) returns (StopCallResponse);
 
+  // stop/kill an ondewo-sip listener or caller instance
+  // "stops both Inbound and Outbound calls"
+  rpc StopAllCalls (google.protobuf.Empty) returns (StopAllCallsResponse);
+
   // Transfer a call from a listener to another number
   rpc TransferCall (TransferCallRequest) returns (TransferCallResponse);
 
@@ -298,6 +302,10 @@ message StopCallResponse {
   string success_state = 2;
   // Optional. log message
   string log_message = 3;
+}
+
+message StopAllCallsResponse{
+  repeated StopCallResponse stop_call_responses= 1;
 }
 
 message TransferCallRequest{
