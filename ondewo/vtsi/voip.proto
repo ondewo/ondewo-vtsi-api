@@ -46,8 +46,8 @@ service VoipSessions {
   // "stops both Inbound and Outbound calls"
   rpc StopCall (StopCallRequest) returns (StopCallResponse);
 
-  // stop/kill an ondewo-sip listener or caller instance
-  // "stops both Inbound and Outbound calls"
+  // stop/kill all ondewo-sip listener or caller instance
+  // "stops all Inbound and Outbound calls"
   rpc StopAllCalls (google.protobuf.Empty) returns (StopAllCallsResponse);
 
   // Transfer a call from a listener to another number
