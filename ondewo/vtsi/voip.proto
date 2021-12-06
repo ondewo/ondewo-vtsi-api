@@ -76,9 +76,9 @@ service VoipSessions {
   rpc GetCallIDsFromSipAccount (GetCallIDsFromSipAccountRequest) returns (GetCallIDsFromSipAccountResponse);
 }
 
-/////////////
-// CALLERS //
-/////////////
+  /////////////
+  // CALLERS //
+  /////////////
 
 // base configuration of services (ondewo-cai, text-to-speech, speech-to-text, asterisk)
 message BaseServiceConfig{
