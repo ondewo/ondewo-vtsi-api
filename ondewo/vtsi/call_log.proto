@@ -14,7 +14,7 @@
 
 syntax = "proto3";
 
-package ondewo.sip;
+package ondewo.vtsi;
 import "google/protobuf/empty.proto";
 import "ondewo/sip/sip.proto";
 import "google/api/annotations.proto";
@@ -100,7 +100,7 @@ message VoipLog {
   double end_time = 3;
 
   // log entries
-  repeated SipStatus status_history = 4;
+  repeated ondewo.sip.SipStatus status_history = 4;
 
   // billing counters
   Counters counters = 5;

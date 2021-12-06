@@ -14,11 +14,14 @@
 
 syntax = "proto3";
 
-package ondewo.nlu;
+package ondewo.vtsi;
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "ondewo/nlu/context.proto";
 import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "ondewo/s2t/speech-to-text.proto";
+import "ondewo/t2s/text-to-speech.proto";
 
 
 // session manager for phone calls
@@ -166,7 +169,7 @@ message VoipManifest {
   string manifest_id = 1;
 
   // ondewo-cai context information for all caller instances
-  repeated Context contexts = 2;
+  repeated ondewo.nlu.Context contexts = 2;
 
   // list of calls to perform
   repeated StartCallInstanceRequest callers = 9;
@@ -194,37 +197,84 @@ message RemoveManifestResponse {
   repeated StopCallInstanceResponse caller_responses = 9;
 }
 
-// configuration of services (ondewo-cai, text-to-speech, speech-to-text, asterisk)
-message ServiceConfig {
+// base configuration of services (ondewo-cai, text-to-speech, speech-to-text, asterisk)
+message BaseServiceConfig{
   // service host IP
   string host = 1;
-
   // service port
   int32 port = 2;
-
-  // Optional.
-  // which service to use
-  // for text-to-speech this could be "Ondewo-Text-To-Speech" / "Google" / "IBM" / "Azure"
-  // for speech-to-text this could be "Ondewo-Speech-To-Text" / "Google" / "IBM" / "Azure" / "Amazon"
-  // not required for ondewo-cai and asterisk
-  string service_identifier = 3;
-
+  // Optional: GRPC cert for the given service
+  string grpc_cert = 3;
+}
+message Credentials {
+  string account_name = 1;
+  string password = 2;
+}
+message NLUConfig{
+  // Base config
+  // Host, Port, and [Optional] GRPC cert
+  BaseServiceConfig base_config = 1;
+  oneof authentication {
+    Credentials credentials =2;
+    string auth_token = 3;
+  }
   // language code
   // See [Language Support](https://dialogflow.com/docs/reference/language)
   // for a list of the currently supported language codes.
-  string language_code = 5;
-
-  // Optional: GRPC cert for the given service
-  string grpc_cert = 6;
+  string language_code = 4;
+  // ondewo-cai project ID with which to perform the call
+  string project_id = 5;
+  // name of intent to trigger at the start of a call
+  string initial_intent = 6;
+  // ondewo-cai list of contexts
+  repeated ondewo.nlu.Context contexts = 7;
 }
-
-// message returned by voip-manager
-message VoipManifestResponse {
-  // request sent to the voip manager
-  VoipManifest request = 1;
-
-  // whether the load-manifest operation succeeded
-  bool success = 2;
+message T2SConfig{
+  // Host, Port, and [Optional] GRPC cert
+  BaseServiceConfig base_config = 1;
+  ondewo.t2s.RequestConfig t2s_config = 2;
+}
+message S2TConfig{
+  // Host, Port, and [Optional] GRPC cert
+  BaseServiceConfig base_config = 1;
+  ondewo.s2t.TranscribeRequestConfig s2t_config = 2;
+}
+message AsteriskConfig{
+  // Host, Port, and [Optional] GRPC cert
+  BaseServiceConfig base_config = 1;
+}
+// It is common for both inbound and outbound / listener and caller
+message CommonServicesConfigs{
+  // Asterisk service configuration
+  AsteriskConfig asterisk_config = 1;
+  // ondewo-cai configuration
+  NLUConfig cai_config = 2;
+  // speech-to-text service configuration
+  S2TConfig stt_config = 3;
+  // text-to-speech service configuration
+  T2SConfig tts_config = 4;
+}
+// The base config is for both the listener and caller .. If you only provide it you will get a listener
+// You will need to provide SIPCallerConfig for the caller
+message SIPConfig{
+  // uuid of the call instance [optional] .. It's created if not provided
+  string call_id = 1;
+  // display name (or description) (can be filled with the NLU project name if not provided)
+  string call_display_name = 2;
+  // version of sip to use for call
+  string sip_sim_version = 3;
+  // you either use sip_account for an exact sip instance .. or sip_prefix to get one or instances matched
+  // prefix of sip name and sip container name
+  string sip_prefix = 4;
+  // name of the sip instance which is in Asterisk
+  string sip_account = 5;
+  // password dictionary is passed depending on the account info you have in asterisk's sip.conf
+  // dictionary of sip accounts and passwords that are in Asterisk
+  map<string, string> account_password_dictionary = 6;
+  // phone number to call
+  string phone_number = 7;
+  // dictionary of sip headers that are sent on call
+  map<string, string> headers = 8;
 }
 
   /////////////
@@ -234,47 +284,10 @@ message VoipManifestResponse {
 // parameters of a call that is to be performed
 // if phone number is attached, a caller instance will be started, otherwise a listener
 message StartCallInstanceRequest {
-  // uuid of the call
-  string call_id = 1;
-
-  // version of sip-sim to use for call
-  string sip_sim_version = 2;
-
-  // ondewo-cai project ID with which to perform the call
-  string project_id = 3;
-
-  // phone number to call
-  string phone_number = 4;
-
-  // ondewo-cai context information
-  repeated Context contexts = 5;
-
-  // initial text the sip-sim instance should say when someone calls
-  string init_text = 6;
-
-  // asterisk service configuration
-  ServiceConfig asterisk_config = 7;
-
-  // ondewo-cai configuration
-  ServiceConfig cai_config = 8;
-
-  // speech-to-text service configuration
-  ServiceConfig stt_config = 9;
-
-  // text-to-speech service configuration
-  ServiceConfig tts_config = 11;
-
-  // prefix of sip name and sip container name
-  string sip_prefix = 12;
-
-  // name of the sip instance
-  string sip_name = 13;
-
-  // dictionary of sip passwords
-  google.protobuf.Struct password_dictionary = 14;
-
-  // name of intent to trigger at the start of a call
-  string initial_intent = 15;
+  // SIP service configuration
+  SIPConfig sip_config = 1;
+  // Service Configs of Asterisk, cai,stt, tts
+  CommonServicesConfigs services_configs = 2;
 }
 
 // response from the voip manager concerning the started call
