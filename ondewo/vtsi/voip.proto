@@ -25,7 +25,7 @@ import "ondewo/t2s/text-to-speech.proto";
 import "ondewo/sip/sip.proto";
 
 
-// session manager for phone calls
+// session manager for phone calls.
 // endpoints of voip server that manages instances of ondewo-sip, which handle individual calls
 service VoipSessions {
 
