@@ -375,8 +375,7 @@ message GetVoipCallInfoRequest {
     string sip_account = 2;
   }
 
-  // you can specify the view to be shallow or full .. see above for more info
-  VoipCallInfoView voip_call_info_view = 3;
+  /* you can specify the view to be shallow or full .. see above for more info*/ VoipCallInfoView voip_call_info_view = 3;
 
   // both by default or inbound or outbound
   CallType call_type = 4;
@@ -415,7 +414,7 @@ message VoipCallInfo {
   string sip_account = 2;
 
   // display name (or description) (can be filled with the NLU project name if not provided)
-  string display_name = 3
+  string display_name = 3;
 
   // container name which you get from docker ps
   string container_name = 4;
