@@ -39,13 +39,6 @@ service VoipCallLogs {
       };
     }
 
-    // get call log of manifest
-    rpc GetManifestVoipLog (GetManifestVoipLogRequest) returns (ManifestVoipLog) {
-      option (google.api.http) = {
-        post: "/v2/{session=projects/*/agent/sessions/*}:GetManifestVoipLog"
-        body: "*"
-      };
-    }
 
     // activate saving call logs in the voip manager
     rpc ActivateSaveCallLogs (google.protobuf.Empty) returns (SaveCallLogsResponse) {
@@ -115,19 +108,6 @@ message Counters {
   int64 sixty_s_counter = 2;
 }
 
-
-message GetManifestVoipLogRequest {
-  // id of manifest
-  string manifest_id = 1;
-}
-
-message ManifestVoipLog {
-  // logs of associated caller instances
-  repeated GetVoipLogResponse caller_logs = 1;
-
-  // logs of associated listener instances
-  repeated GetVoipLogResponse listener_logs = 2;
-}
 
 message SaveCallLogsResponse {
   // whether the operation succeeded
