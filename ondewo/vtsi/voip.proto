@@ -69,10 +69,10 @@ service VoipSessions {
   // Helpers //
   ////////////
 
+  // Gets all the sip accounts that are active
   rpc GetSipAccounts (google.protobuf.Empty) returns (GetSipAccountsResponse);
 
-  rpc GetCallIDs (google.protobuf.Empty) returns (GetCallIDsResponse);
-
+  // get a call id from a sip account
   rpc GetCallIDsFromSipAccount (GetCallIDsFromSipAccountRequest) returns (GetCallIDsFromSipAccountResponse);
 }
 
@@ -161,7 +161,7 @@ message SIPBaseConfig{
   string call_id = 1;
 
   // display name (or description) (can be filled with the NLU project name if not provided)
-  string display_name = 2
+  string call_display_name = 2;
 
   // version of sip to use for call
   string sip_sim_version = 3;
@@ -174,8 +174,8 @@ message SIPBaseConfig{
   string sip_account = 5;
 
   // password dictionary is passed depending on the account info you have in asterisk's sip.conf
-  // dictionary of sip passwords that are in Asterisk
-  map<string, string> password_dictionary = 6;
+  // dictionary of sip accounts and passwords that are in Asterisk
+  map<string, string> account_password_dictionary = 6;
 }
 
 message SIPCallerConfig{
@@ -375,7 +375,11 @@ message GetVoipCallInfoRequest {
     string sip_account = 2;
   }
 
+  // you can specify the view to be shallow or full .. see above for more info
   VoipCallInfoView voip_call_info_view = 3;
+
+  // both by default or inbound or outbound
+  CallType call_type = 4;
 }
 
 enum VoipCallInfoView {
@@ -394,6 +398,14 @@ message GetVoipCallInfoResponse {
   repeated VoipCallInfo done_logs = 2;
 }
 
+enum CallType {
+    both = 0;
+
+    inbound = 1;
+
+    outbound = 2;
+}
+
 // call log
 message VoipCallInfo {
   // id of call instance
@@ -408,9 +420,8 @@ message VoipCallInfo {
   // container name which you get from docker ps
   string container_name = 4;
 
-
-  // Inbound or outbound
-  string call_type = 5;
+  // Inbound or outbound enum .. if not specified
+  CallType call_type = 5;
 
   string phone_number = 6;
 
@@ -433,6 +444,9 @@ message VoipCallInfo {
 message ListVoipCallInfoRequest{
   // you can specify the view to be shallow or full .. see above for more info
   VoipCallInfoView voip_call_info_view = 1;
+
+  // both by default or inbound or outbound
+  CallType call_type = 2;
 }
 
 message ListVoipCallInfoResponse{
@@ -475,9 +489,6 @@ message GetSipAccountsResponse{
   repeated string asterisk_accounts = 1;
 }
 
-message GetCallIDsResponse{
-  repeated string call_ids = 1;
-}
 
 message GetCallIDsFromSipAccountRequest{
   repeated string asterisk_account = 1;
