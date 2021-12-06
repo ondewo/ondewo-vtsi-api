@@ -32,14 +32,6 @@ service VoipSessions {
      // MANIFEST //
     //////////////
 
-    // load a manifest of calls to perform and listener-instances to start
-    // includes configurations of services: ondewo-cai, speech-to-text & text-to-speech
-    rpc LoadManifest (VoipManifest) returns (VoipManifestResponse) {
-        option (google.api.http) = {
-            post: "/v2/{session=projects/*/agent/sessions/*}:GiveManifest"
-            body: "*"
-        };
-    }
 
     // run a manifest by its ID
     rpc RunManifest (ManifestRequest) returns (RunManifestResponse) {
@@ -418,7 +410,7 @@ message DeployPreconditionRequest {
   string sip_sim_version = 1;
 
   // asterisk service configuration
-  ServiceConfig asterisk_config = 2;
+  AsteriskConfig asterisk_config = 2;
 }
 
 message DeployPreconditionResponse {
