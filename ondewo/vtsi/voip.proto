@@ -61,9 +61,9 @@ service VoipSessions {
   ////////////
 
   // get call log for single call instance
-  rpc GetVoipCallStatus (GetVoipCallStatusRequest) returns (GetVoipCallStatusResponse);
+  rpc GetVoipCallInfo (GetVoipCallInfoRequest) returns (GetVoipCallInfoResponse);
   // get call log for all call instances
-  rpc GetAllVoipCallStasuses (GetAllVoipCallStatusesRequest) returns (GetAllVoipCallStatusesResponse);
+  rpc ListVoipCallInfo (ListVoipCallInfoRequest) returns (ListVoipCallInfoResponse);
 
   ////////////
   // Helpers //
@@ -102,7 +102,7 @@ message NLUConfig{
   // Host, Port, and [Optional] GRPC cert
   BaseServiceConfig base_config = 1;
 
-  oneof nlu_connection {
+  oneof authentication {
     Credentials credentials =2;
     string auth_token = 3;
   }
@@ -160,20 +160,22 @@ message SIPBaseConfig{
   // uuid of the call instance [optional] .. It's created if not provided
   string call_id = 1;
 
+  // display name (or description) (can be filled with the NLU project name if not provided)
+  string display_name = 2
+
   // version of sip to use for call
-  string sip_sim_version = 2;
+  string sip_sim_version = 3;
 
-  // you either use sip_name for an exact sip instance .. or sip_prefix to get one or instances matched
-
+  // you either use sip_account for an exact sip instance .. or sip_prefix to get one or instances matched
   // prefix of sip name and sip container name
-  string sip_prefix = 3;
+  string sip_prefix = 4;
 
   // name of the sip instance which is in Asterisk
-  string sip_name = 4;
+  string sip_account = 5;
 
   // password dictionary is passed depending on the account info you have in asterisk's sip.conf
   // dictionary of sip passwords that are in Asterisk
-  map<string, string> password_dictionary = 5;
+  map<string, string> password_dictionary = 6;
 }
 
 message SIPCallerConfig{
@@ -199,8 +201,12 @@ message StartListenerRequest {
 message StartListenerResponse {
   // request sent to the voip manager
   StartListenerRequest request = 1;
+
   // success status
-  string success_state = 2;
+  bool success = 2;
+
+  // error messages if there are any
+  string error_messages = 3;
 }
 
 // request for starting a caller
@@ -217,8 +223,12 @@ message StartCallerRequest {
 message StartCallerResponse {
   // request sent to the voip manager
   StartCallerRequest request = 1;
+
   // success status
-  string success_state = 2;
+  bool success = 2;
+
+  // error messages if there are any
+  string error_messages = 3;
 }
 
 
@@ -235,8 +245,12 @@ message StartScheduledCallerRequest {
 message StartScheduledCallerResponse {
   // request sent to the voip manager
   StartScheduledCallerRequest request = 1;
+
   // success status
-  string success_state = 2;
+  bool success = 2;
+
+  // error messages if there are any
+  string error_messages = 3;
 }
 
 // collection of listeners to start
@@ -249,8 +263,12 @@ message StartListenersResponse {
   // request sent to the voip manager
   StartListenersRequest request = 1;
   // success status - refers to general success: False if at least one call-deployment fails,
+
   // True if all call were successful
-  string success_state = 2;
+  bool success = 2;
+
+  // error messages if there are any
+  string error_messages = 3;
 }
 
 // collection of callers to start
@@ -263,8 +281,12 @@ message StartCallersResponse {
   // request sent to the voip manager
   StartCallersRequest request = 1;
   // success status - refers to general success: False if at least one call-deployment fails,
+
   // True if all call were successful
-  string success_state = 2;
+  bool success = 2;
+
+  // error messages if there are any
+  string error_messages = 3;
 }
 
 // collection of scheduled callers to start
@@ -277,8 +299,12 @@ message StartScheduledCallersResponse {
   // request sent to the voip manager
   StartScheduledCallersRequest request = 1;
   // success status - refers to general success: False if at least one call-deployment fails,
+
   // True if all call were successful
-  string success_state = 2;
+  bool success = 2;
+
+  // error messages if there are any
+  string error_messages = 3;
 }
 
 // parameters of the call to stop
@@ -298,8 +324,12 @@ message StopCallRequest {
 message StopCallResponse {
   // request sent to the voip manager
   StopCallRequest request = 1;
+
   // whether listener was successfully stopped
-  string success_state = 2;
+  bool success = 2;
+
+  // error messages if there are any
+  string error_messages = 3;
   // Optional. log message
   string log_message = 3;
 }
@@ -322,8 +352,12 @@ message TransferCallRequest{
 message TransferCallResponse{
   // request sent to the voip manager
   TransferCallRequest request = 1;
+
   // whether transfer request was successfully sent
-  string success_state = 2;
+  bool success = 2;
+
+  // error messages if there are any
+  string error_messages = 3;
 }
 
 ////////////
@@ -331,7 +365,7 @@ message TransferCallResponse{
 ////////////
 
 // request to get a call instance's call logs
-message GetVoipCallStatusRequest {
+message GetVoipCallInfoRequest {
   // monitoring can be done by call-ID or ondewo-sip ID
   // The last field you set is the value that is set
   oneof id {
@@ -341,46 +375,68 @@ message GetVoipCallStatusRequest {
     string sip_account = 2;
   }
 
-  VoipCallStatusView voip_call_status_view = 3;
+  VoipCallInfoView voip_call_info_view = 3;
 }
 
-enum VoipCallStatusView {
-    Status_VIEW_SHALLOW = 0;
+enum VoipCallInfoView {
+    // Gives you all basic info like call_id, start_time, end_time, current sip status
+    Info_VIEW_SHALLOW = 0;
 
-    Status_VIEW_FULL = 1;
+    // Gives you the full info with status history and the services statuses
+    Info_VIEW_FULL = 1;
 }
 
 // response with call logs
-message GetVoipCallStatusResponse {
-  VoipCallStatus active_log = 1;
+message GetVoipCallInfoResponse {
+  VoipCallInfo active_log = 1;
 
   // logs of calls associated with call instance
-  repeated VoipCallStatus done_logs = 2;
+  repeated VoipCallInfo done_logs = 2;
 }
 
 // call log
-message VoipCallStatus {
+message VoipCallInfo {
   // id of call instance
   string call_id = 1;
 
+  // sip account used
+  string sip_account = 2;
+
+  // display name (or description) (can be filled with the NLU project name if not provided)
+  string display_name = 3
+
+  // container name which you get from docker ps
+  string container_name = 4;
+
+
+  // Inbound or outbound
+  string call_type = 5;
+
+  string phone_number = 6;
+
   // start time of log
-  double start_time = 2;
+  double start_time = 7;
 
   // end time of log
-  double end_time = 3;
+  double end_time = 8;
 
-  // log entries
-  repeated ondewo.sip.SipStatus status_history = 4;
+  // current sip status
+  ondewo.sip.SipStatus sip_status = 9;
 
-  AllservicesStatuses services_statuses = 5;
+  // sip status history
+  ondewo.sip.SipStatusHistoryResponse sip_status_history = 10;
+
+  // All container health statuses
+  AllservicesStatuses services_statuses = 11;
 }
 
-message GetAllVoipCallStatusesRequest{
-  VoipCallStatusView voip_call_status_view = 1;
+message ListVoipCallInfoRequest{
+  // you can specify the view to be shallow or full .. see above for more info
+  VoipCallInfoView voip_call_info_view = 1;
 }
 
-message GetAllVoipCallStatusesResponse{
-  repeated VoipCallStatus voip_status = 1;
+message ListVoipCallInfoResponse{
+  repeated VoipCallInfo voip_info = 1;
 }
 
 // status of ondewo-sip instance
@@ -405,6 +461,8 @@ message AllservicesStatuses {
 message ServiceStatus {
   // health status
   bool healthy = 1;
+  // error messages if you have any so if it's unhealthy
+  string error_messsages = 2;
 }
 
 
