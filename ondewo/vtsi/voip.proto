@@ -331,7 +331,7 @@ message StopCallResponse {
   // error messages if there are any
   string error_messages = 3;
   // Optional. log message
-  string log_message = 3;
+  string log_message = 4;
 }
 
 message StopAllCallsResponse{
