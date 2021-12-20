@@ -2,6 +2,13 @@
 
 *****************
 
+## Release ONDEWO VTSI APIS 2.0.0
+
+## New features
+Adaptation to new s2t and t2s configs
+
+*****************
+
 ## Release ONDEWO VTSI APIS 1.1.0
 
 ## New features
