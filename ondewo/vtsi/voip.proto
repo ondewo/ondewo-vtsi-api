@@ -245,6 +245,9 @@ message CommonServicesConfigs{
   S2TConfig stt_config = 3;
   // text-to-speech service configuration
   T2SConfig tts_config = 4;
+
+  // csi service configuration
+  CsiConfig csi_config = 5;
 }
 // The base config is for both the listener and caller .. If you only provide it you will get a listener
 // You will need to provide SIPCallerConfig for the caller
@@ -267,6 +270,52 @@ message SIPConfig{
   string phone_number = 7;
   // dictionary of sip headers that are sent on call
   map<string, string> headers = 8;
+}
+
+
+message CsiConfig{
+  AudioObjectStorageConfig audio_object_store_config = 1;
+  S2tCallbacks s2t_callbacks = 2;
+  NluCallbacks nlu_callbacks = 3;
+  T2sCallbacks t2s_callbacks = 4;
+}
+
+message AudioObjectStorageConfig{
+  oneof audio_storage_config{
+    MinioConfig minio_config = 1;
+  }
+}
+
+message MinioConfig{
+  // where the minio server runs (host_ip:port)
+  string endpoint = 1;
+
+  // access key of server
+  string access_key = 2;
+  // secret key of server
+  string secret_key = 3;
+
+  // if you need to do a secure connection "ssl"
+  bool secure = 4;
+  // session_token in case you need secure connection
+  string session_token = 5;
+}
+
+message S2tCallbacks{
+  repeated string pre_s2t_callbacks = 1;
+  repeated string post_s2t_callbacks = 2;
+}
+
+message NluCallbacks{
+  repeated string pre_nlu_callbacks = 1;
+  repeated string post_nlu_callbacks = 2;
+
+}
+
+message T2sCallbacks{
+  repeated string pre_t2s_callbacks = 1;
+  repeated string post_t2s_callbacks = 2;
+
 }
 
   /////////////
