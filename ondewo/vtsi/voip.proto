@@ -286,22 +286,24 @@ message AudioObjectStorageConfig{
   }
 }
 
+message Endpoint{
+  string host = 1;
+  string port = 2;
+}
+
 message MinioConfig{
   // where the minio server runs (host_ip:port)
-  message Endpoint{
-    string host = 1;
-    string port = 2;
-  }
+  Endpoint endpoint = 1
 
   // access key of server
-  string access_key = 3;
+  string access_key = 2;
   // secret key of server
-  string secret_key = 4;
+  string secret_key = 3;
 
   // if you need to do a secure connection "ssl"
-  bool secure = 5;
+  bool secure = 4;
   // session_token in case you need secure connection
-  string session_token = 6;
+  string session_token = 5;
 }
 
 message S2tCallbacks{
