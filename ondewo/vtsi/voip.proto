@@ -293,7 +293,7 @@ message Endpoint{
 
 message MinioConfig{
   // where the minio server runs (host_ip:port)
-  Endpoint endpoint = 1
+  Endpoint endpoint = 1;
 
   // access key of server
   string access_key = 2;
