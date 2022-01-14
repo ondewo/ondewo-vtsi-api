@@ -2,6 +2,13 @@
 
 *****************
 
+## Release ONDEWO VTSI APIS 2.1.0
+
+## New features
+CSI configs can be passed like MINIO configs
+
+*****************
+
 ## Release ONDEWO VTSI APIS 2.0.0
 
 ## New features
