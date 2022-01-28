@@ -274,16 +274,38 @@ message SIPConfig{
 
 
 message CsiConfig{
-  AudioObjectStorageConfig audio_object_store_config = 1;
-  S2tCallbacks s2t_callbacks = 2;
-  NluCallbacks nlu_callbacks = 3;
-  T2sCallbacks t2s_callbacks = 4;
+  S2tCallbacks s2t_callbacks = 1;
+  NluCallbacks nlu_callbacks = 2;
+  T2sCallbacks t2s_callbacks = 3;
+  AudioObjectStorageConfig audio_object_store_config = 4;
+  MessageBrokerConfig message_broker_config = 5;
+
 }
 
 message AudioObjectStorageConfig{
   oneof audio_storage_config{
     MinioConfig minio_config = 1;
   }
+}
+
+message MessageBrokerConfig{
+  oneof message_broker_config{
+    RabbitMqConfig rabbit_mq_confiq = 1;
+  }
+}
+
+
+message RabbitMqConfig{
+  // host where the rabbit mq server runs
+  string host = 1;
+  // port where the rabbit mq server runs
+  string port = 2;
+  // port where the rabbit mq server runs
+  string port_2 = 3;
+  // user of server
+  string user = 4;
+  // password of server
+  string password = 5;
 }
 
 message Endpoint{
