@@ -290,7 +290,7 @@ message AudioObjectStorageConfig{
 
 message MessageBrokerConfig{
   oneof message_broker_config{
-    RabbitMqConfig rabbit_mq_confiq = 1;
+    RabbitMqConfig rabbit_mq_config = 1;
   }
 }
 
