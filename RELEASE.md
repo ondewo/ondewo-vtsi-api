@@ -2,6 +2,11 @@
 
 *****************
 
+## Release ONDEWO VTSI APIS 2.2.0
+
+## New features
+CSI configs can be passed like Rabbit mq configs
+
 ## Release ONDEWO VTSI APIS 2.1.0
 
 ## New features
