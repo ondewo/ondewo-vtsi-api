@@ -42,7 +42,7 @@ service VoipSessions {
   // start multiple ondewo-sip callers instances with schedules
   rpc StartScheduledCallers (StartScheduledCallersRequest) returns (StartScheduledCallersResponse);
 
-  // stop/kill an ondewo-sip listener or caller instance
+  // stop/kill a list of ondewo-sip listener or caller instances
   // "stops both Inbound and Outbound calls"
   rpc StopCalls (StopCallsRequest) returns (StopCallsResponse);
 
