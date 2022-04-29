@@ -1,5 +1,13 @@
 # Release History
 
+
+## Release ONDEWO VTSI APIS 2.3.0
+
+## New features
+Added endpoints for minio data retrieval
+
+*****************
+
 *****************
 
 ## Release ONDEWO VTSI APIS 2.2.0
