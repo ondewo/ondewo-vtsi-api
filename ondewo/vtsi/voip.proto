@@ -552,7 +552,7 @@ message GetAudioFileResponse{
 
 message GetFullConversationAudioFileRequest{
   string bucket_name = 1;
-  string session_id = 2;
+  repeated string object_names = 2;
   // Optional to add if you want to retrieve it from a specific minio server
   MinioConfig minio_config = 3;
 }
