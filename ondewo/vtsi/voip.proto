@@ -148,6 +148,15 @@ service VoipSessions {
             body: "*"
         };
     }
+
+      /////////////////////////
+     // Retrieving Audio files //
+    ////////////////////////////
+
+    // Get a s2t or t2s audio file for this conversation if it exists in Minio
+    rpc GetAudioFile (GetAudioFileRequest) returns (GetAudioFileResponse) {};
+    // Get The whole conversation in an audio file
+    rpc GetFullConversationAudioFile (GetFullConversationAudioFileRequest) returns (GetFullConversationAudioFileResponse) {};
 }
 
   //////////////
@@ -524,4 +533,30 @@ message ShutdownUnhealthyCallsRequest {
 
 message ShutdownUnhealthyCallsResponse {
   bool success = 1;
+}
+
+
+/////////////////////////
+// Retrieving Audio files //
+////////////////////////////
+message GetAudioFileRequest{
+  string bucket_name = 1;
+  string object_name = 2;
+  // Optional to add if you want to retrieve it from a specific minio server
+  MinioConfig minio_config = 3;
+}
+
+message GetAudioFileResponse{
+  bytes audio = 1;
+}
+
+message GetFullConversationAudioFileRequest{
+  string bucket_name = 1;
+  string session_id = 2;
+  // Optional to add if you want to retrieve it from a specific minio server
+  MinioConfig minio_config = 3;
+}
+
+message GetFullConversationAudioFileResponse{
+  bytes audio = 1;
 }
