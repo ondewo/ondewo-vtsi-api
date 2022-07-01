@@ -74,7 +74,17 @@ service VoipSessions {
 
   // get a call id from a sip account
   rpc GetCallIDsFromSipAccount (GetCallIDsFromSipAccountRequest) returns (GetCallIDsFromSipAccountResponse);
+
+  /////////////////////////
+   // Retrieving Audio files //
+  ////////////////////////////
+
+  // Get a s2t or t2s audio file for this conversation if it exists in Minio
+  rpc GetAudioFile (GetAudioFileRequest) returns (GetAudioFileResponse) {};
+  // Get The whole conversation in an audio file
+  rpc GetFullConversationAudioFile (GetFullConversationAudioFileRequest) returns (GetFullConversationAudioFileResponse) {};
 }
+
 
 /////////////
 // CALLERS //
@@ -581,4 +591,29 @@ message GetCallIDsFromSipAccountRequest{
 
 message GetCallIDsFromSipAccountResponse{
   repeated string call_ids = 1;
+}
+
+/////////////////////////
+// Retrieving Audio files //
+////////////////////////////
+message GetAudioFileRequest{
+  string bucket_name = 1;
+  string object_name = 2;
+  // Optional to add if you want to retrieve it from a specific minio server
+  MinioConfig minio_config = 3;
+}
+
+message GetAudioFileResponse{
+  bytes audio = 1;
+}
+
+message GetFullConversationAudioFileRequest{
+  string bucket_name = 1;
+  repeated string object_names = 2;
+  // Optional to add if you want to retrieve it from a specific minio server
+  MinioConfig minio_config = 3;
+}
+
+message GetFullConversationAudioFileResponse{
+  bytes audio = 1;
 }
