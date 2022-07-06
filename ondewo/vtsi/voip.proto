@@ -211,14 +211,16 @@ message CsiConfig{
 }
 
 message AudioObjectStorageConfig{
+  bool activate_audio_object_storage = 1;
   oneof audio_storage_config{
-    MinioConfig minio_config = 1;
+    MinioConfig minio_config = 2;
   }
 }
 
 message MessageBrokerConfig{
+  bool activate_message_broker = 1;
   oneof message_broker_config{
-    RabbitMqConfig rabbit_mq_config = 1;
+    RabbitMqConfig rabbit_mq_config = 2;
   }
 }
 
