@@ -207,23 +207,41 @@ message CsiConfig{
   T2sCallbacks t2s_callbacks = 3;
   AudioObjectStorageConfig audio_object_store_config = 4;
   MessageBrokerConfig message_broker_config = 5;
+  bool activate_control_messages = 6;
 
 }
 
 message AudioObjectStorageConfig{
-  bool activate_audio_object_storage = 1;
-  oneof audio_storage_config{
-    MinioConfig minio_config = 2;
+  oneof activate_audio_object_storage_oneof{
+    bool activate_audio_object_storage = 1;
+    AudioObjectStorageServicesActivationConfig audio_object_storage_services_activation_config = 2;
   }
+  oneof audio_storage_config{
+    MinioConfig minio_config = 3;
+  }
+}
+
+message AudioObjectStorageServicesActivationConfig{
+  bool activate_s2t = 1;
+  bool activate_t2s = 2;
 }
 
 message MessageBrokerConfig{
-  bool activate_message_broker = 1;
+  oneof activate_message_broker_oneof{
+    bool activate_message_broker = 1;
+    MessageBrokerServicesActivationConfig message_broker_services_activation_config = 2;
+  }
   oneof message_broker_config{
-    RabbitMqConfig rabbit_mq_config = 2;
+    RabbitMqConfig rabbit_mq_config = 3;
   }
 }
 
+message MessageBrokerServicesActivationConfig{
+  bool activate_s2t = 1;
+  bool activate_nlu = 2;
+  bool activate_t2s = 3;
+  bool activate_sip = 4;
+}
 
 message RabbitMqConfig{
   // host where the rabbit mq server runs
