@@ -172,7 +172,6 @@ message RegisterProjectConfigsResponse{
   string error_messages = 3;
 }
 
-    }
 message GetProjectConfigsRequest{
   // Project id of the NLU project.
   string project_id = 1;
