@@ -28,6 +28,22 @@ import "ondewo/sip/sip.proto";
 // session manager for phone calls.
 // endpoints of voip server that manages instances of ondewo-sip, which handle individual calls
 service VoipSessions {
+  ///////////
+  // Projects //
+  ///////////
+
+  // Register an NLU project with configs.
+  rpc RegisterProjectConfigs (RegisterProjectConfigsRequest) returns (RegisterProjectConfigsResponse);
+
+  // Get an NLU project with configs.
+  rpc GetProjectConfigs (GetProjectConfigsRequest) returns (GetProjectConfigsResponse);
+
+  // Update an NLU project with configs.
+  rpc UpdateProjectConfigs (UpdateProjectConfigsRequest) returns (UpdateProjectConfigsResponse);
+
+  // Delete an NLU project with configs.
+  rpc DeleteProjectConfigs (DeleteProjectConfigsRequest) returns (DeleteProjectConfigsResponse);
+
 
   ///////////
   // CALLS //
@@ -76,7 +92,7 @@ service VoipSessions {
   rpc GetCallIDsFromSipAccount (GetCallIDsFromSipAccountRequest) returns (GetCallIDsFromSipAccountResponse);
 
   /////////////////////////
-   // Retrieving Audio files //
+  // Retrieving Audio files //
   ////////////////////////////
 
   // Get a s2t or t2s audio file for this conversation if it exists in Minio
@@ -84,6 +100,123 @@ service VoipSessions {
   // Get The whole conversation in an audio file
   rpc GetFullConversationAudioFile (GetFullConversationAudioFileRequest) returns (GetFullConversationAudioFileResponse) {};
 }
+
+
+
+///////////
+// Projects //
+///////////
+
+message ProjectConfigs{
+  // The maximum number of callers that this project can have.
+  int32 max_callers = 1;
+  // The maximum number of listeners that this project can have.
+  int32 max_listeners = 2;
+  // Configs to start the asterisk server.
+  AsteriskConfigs asterisk_configs = 3;
+
+}
+
+message AsteriskConfigsVariables{
+  // SIP trunk username.
+  string sip_trunk_username = 1;
+  // SIP trunk password.
+  string sip_trunk_password = 2;
+  // SIP trunk host.
+  string sip_trunk_host = 3;
+  // Transfer number.
+  string transfer_number = 4;
+  // Transfer number host.
+  string transfer_number_host = 5;
+  // SIP trunk phone number.
+  string sip_trunk_phone_number = 6;
+}
+
+message AsteriskConfigsFiles{
+  // sip.conf file.
+  string sip_conf_file_string = 1;
+  // extensions.conf file.
+  string extensions_conf_file_string = 2;
+  // queues.conf file.
+  string queues_conf_file_string = 3;
+  // modules.conf file.
+  string modules_conf_file_string = 4;
+}
+
+message AsteriskConfigs{
+  oneof asterisk_configs_oneof{
+    // Configs as variables which will fill those variables using a blue print.
+    AsteriskConfigsVariables asterisk_configs_variables = 1;
+    // Configs as files which will set up the configs using those files.
+    AsteriskConfigsFiles asterisk_configs_files = 2;
+    // Configs will be mapped in from a preconfigured asterisk target directory.
+    string asterisk_configs_target_directory_name = 3;
+  }
+
+  // The port where Asterisk should start. {Optional}
+  int32 asterisk_port = 4;
+}
+
+message RegisterProjectConfigsRequest{
+  // Project id of the NLU project.
+  string project_id = 1;
+  // Project Configs.
+  ProjectConfigs project_configs = 2;
+}
+message RegisterProjectConfigsResponse{
+  // The request that was sent.
+  RegisterProjectConfigsRequest request = 1;
+  // success status.
+  bool success = 2;
+  // error messages if there are any.
+  string error_messages = 3;
+}
+
+    }
+message GetProjectConfigsRequest{
+  // Project id of the NLU project.
+  string project_id = 1;
+}
+
+message GetProjectConfigsResponse{
+  // Project Configs.
+  ProjectConfigs project_configs = 1;
+  // error messages if there are any.
+  string error_messages = 2;
+  // The request that was sent.
+  GetProjectConfigsRequest request = 3;
+}
+
+message UpdateProjectConfigsRequest{
+  // Project id of the NLU project.
+  string project_id = 1;
+  // Project Configs.
+  ProjectConfigs project_configs = 2;
+}
+
+message UpdateProjectConfigsResponse{
+  // The request that was sent.
+  UpdateProjectConfigsRequest request = 1;
+  // success status.
+  bool success = 2;
+  // error messages if there are any.
+  string error_messages = 3;
+}
+
+message DeleteProjectConfigsRequest{
+  // Project id of the NLU project.
+  string project_id = 1;
+}
+
+message DeleteProjectConfigsResponse{
+  // The request that was sent.
+  DeleteProjectConfigsRequest request = 1;
+  // success status.
+  bool success = 2;
+  // error messages if there are any.
+  string error_messages = 3;
+}
+
 
 
 /////////////
@@ -113,7 +246,7 @@ message NLUConfig{
   BaseServiceConfig base_config = 1;
 
   oneof authentication {
-    Credentials credentials =2;
+    Credentials credentials = 2;
     string auth_token = 3;
   }
 
@@ -451,7 +584,7 @@ message StopCallsResponse {
 }
 
 message StopAllCallsResponse{
-  repeated StopCallResponse stop_call_responses= 1;
+  repeated StopCallResponse stop_call_responses = 1;
 }
 
 message TransferCallRequest{
@@ -498,11 +631,11 @@ message GetVoipCallInfoRequest {
 }
 
 enum VoipCallInfoView {
-    // Gives you all basic info like call_id, start_time, end_time, current sip status
-    Info_VIEW_SHALLOW = 0;
+  // Gives you all basic info like call_id, start_time, end_time, current sip status
+  Info_VIEW_SHALLOW = 0;
 
-    // Gives you the full info with status history and the services statuses
-    Info_VIEW_FULL = 1;
+  // Gives you the full info with status history and the services statuses
+  Info_VIEW_FULL = 1;
 }
 
 // response with call logs
@@ -514,11 +647,11 @@ message GetVoipCallInfoResponse {
 }
 
 enum CallType {
-    both = 0;
+  both = 0;
 
-    inbound = 1;
+  inbound = 1;
 
-    outbound = 2;
+  outbound = 2;
 }
 
 // call log
@@ -595,9 +728,9 @@ message ServiceStatus {
 }
 
 
-  ////////////
-  // Helpers //
-  ////////////
+////////////
+// Helpers //
+////////////
 
 
 message GetSipAccountsResponse{
