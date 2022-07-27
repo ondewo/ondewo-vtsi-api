@@ -33,16 +33,16 @@ service VoipSessions {
   ///////////
 
   // Register an NLU project with configs.
-  rpc RegisterProjectConfigs (RegisterProjectConfigsRequest) returns (RegisterProjectConfigsResponse);
+  rpc RegisterProjectConfigs (RegisterProjectConfigsRequest) returns (google.protobuf.Empty);
 
   // Get an NLU project with configs.
   rpc GetProjectConfigs (GetProjectConfigsRequest) returns (GetProjectConfigsResponse);
 
   // Update an NLU project with configs.
-  rpc UpdateProjectConfigs (UpdateProjectConfigsRequest) returns (UpdateProjectConfigsResponse);
+  rpc UpdateProjectConfigs (UpdateProjectConfigsRequest) returns (google.protobuf.Empty);
 
   // Delete an NLU project with configs.
-  rpc DeleteProjectConfigs (DeleteProjectConfigsRequest) returns (DeleteProjectConfigsResponse);
+  rpc DeleteProjectConfigs (DeleteProjectConfigsRequest) returns (google.protobuf.Empty);
 
 
   ///////////
@@ -50,27 +50,27 @@ service VoipSessions {
   ///////////
 
   // start multiple ondewo-sip listeners instances
-  rpc StartListeners (StartListenersRequest) returns (StartListenersResponse);
+  rpc StartListeners (StartListenersRequest) returns (google.protobuf.Empty);
 
   // start multiple ondewo-sip callers instances
-  rpc StartCallers (StartCallersRequest) returns (StartCallersResponse);
+  rpc StartCallers (StartCallersRequest) returns (google.protobuf.Empty);
 
   // start multiple ondewo-sip callers instances with schedules
-  rpc StartScheduledCallers (StartScheduledCallersRequest) returns (StartScheduledCallersResponse);
+  rpc StartScheduledCallers (StartScheduledCallersRequest) returns (google.protobuf.Empty);
 
   // stop/kill a list of ondewo-sip listener or caller instances
   // "stops both Inbound and Outbound calls"
-  rpc StopCalls (StopCallsRequest) returns (StopCallsResponse);
+  rpc StopCalls (StopCallsRequest) returns (google.protobuf.Empty);
 
   // stop/kill all ondewo-sip listener or caller instance
   // "stops all Inbound and Outbound calls"
-  rpc StopAllCalls (google.protobuf.Empty) returns (StopAllCallsResponse);
+  rpc StopAllCalls (google.protobuf.Empty) returns (google.protobuf.Empty);
 
   // Transfer a call from a listener to another number
-  rpc TransferCall (TransferCallRequest) returns (TransferCallResponse);
+  rpc TransferCall (TransferCallRequest) returns (google.protobuf.Empty);
 
   // ConferenceCall .. to be added in the future
-  //rpc ConferenceCall (ConferenceCallRequest) returns (ConferenceCallResponse);
+  //rpc ConferenceCall (ConferenceCallRequest) returns (google.protobuf.Empty);
 
   ////////////
   // STATUS //
@@ -163,14 +163,6 @@ message RegisterProjectConfigsRequest{
   // Project Configs.
   ProjectConfigs project_configs = 2;
 }
-message RegisterProjectConfigsResponse{
-  // The request that was sent.
-  RegisterProjectConfigsRequest request = 1;
-  // success status.
-  bool success = 2;
-  // error messages if there are any.
-  string error_messages = 3;
-}
 
 message GetProjectConfigsRequest{
   // Project id of the NLU project.
@@ -193,30 +185,10 @@ message UpdateProjectConfigsRequest{
   ProjectConfigs project_configs = 2;
 }
 
-message UpdateProjectConfigsResponse{
-  // The request that was sent.
-  UpdateProjectConfigsRequest request = 1;
-  // success status.
-  bool success = 2;
-  // error messages if there are any.
-  string error_messages = 3;
-}
-
 message DeleteProjectConfigsRequest{
   // Project id of the NLU project.
   string project_id = 1;
 }
-
-message DeleteProjectConfigsResponse{
-  // The request that was sent.
-  DeleteProjectConfigsRequest request = 1;
-  // success status.
-  bool success = 2;
-  // error messages if there are any.
-  string error_messages = 3;
-}
-
-
 
 /////////////
 // CALLERS //
@@ -302,25 +274,9 @@ message CommonServicesConfigs{
 // The base config is for both the listener and caller .. If you only provide it you will get a listener
 // You will need to provide SIPCallerConfig for the caller
 message SIPBaseConfig{
-  // uuid of the call instance [optional] .. It's created if not provided
-  string call_id = 1;
-
-  // display name (or description) (can be filled with the NLU project name if not provided)
-  string call_display_name = 2;
-
   // version of sip to use for call
-  string sip_sim_version = 3;
+  string sip_sim_version = 1;
 
-  // you either use sip_account for an exact sip instance .. or sip_prefix to get one or instances matched
-  // prefix of sip name and sip container name
-  string sip_prefix = 4;
-
-  // name of the sip instance which is in Asterisk
-  string sip_account = 5;
-
-  // password dictionary is passed depending on the account info you have in asterisk's sip.conf
-  // dictionary of sip accounts and passwords that are in Asterisk
-  map<string, string> account_password_dictionary = 6;
 }
 
 message SIPCallerConfig{
@@ -435,18 +391,6 @@ message StartListenerRequest {
   CommonServicesConfigs services_configs = 2;
 }
 
-// response from the voip manager concerning the started listener
-message StartListenerResponse {
-  // request sent to the voip manager
-  StartListenerRequest request = 1;
-
-  // success status
-  bool success = 2;
-
-  // error messages if there are any
-  string error_messages = 3;
-}
-
 // request for starting a caller
 message StartCallerRequest {
 
@@ -457,19 +401,6 @@ message StartCallerRequest {
   CommonServicesConfigs services_configs = 2;
 }
 
-// response from the voip manager concerning the started caller
-message StartCallerResponse {
-  // request sent to the voip manager
-  StartCallerRequest request = 1;
-
-  // success status
-  bool success = 2;
-
-  // error messages if there are any
-  string error_messages = 3;
-}
-
-
 // request for starting a scheduled call
 message StartScheduledCallerRequest {
   // Normal start caller request
@@ -479,34 +410,9 @@ message StartScheduledCallerRequest {
   google.protobuf.Timestamp scheduled_time = 2; ///////////////////////////////////////////
 }
 
-// response from the voip manager concerning the scheduled call
-message StartScheduledCallerResponse {
-  // request sent to the voip manager
-  StartScheduledCallerRequest request = 1;
-
-  // success status
-  bool success = 2;
-
-  // error messages if there are any
-  string error_messages = 3;
-}
-
 // collection of listeners to start
 message StartListenersRequest {
   repeated StartListenerRequest requests = 1;
-}
-
-// response from the voip manager concerning the multiple started listeners
-message StartListenersResponse {
-  // request sent to the voip manager
-  StartListenersRequest request = 1;
-  // success status - refers to general success: False if at least one call-deployment fails,
-
-  // True if all call were successful
-  bool success = 2;
-
-  // error messages if there are any
-  string error_messages = 3;
 }
 
 // collection of callers to start
@@ -514,35 +420,9 @@ message StartCallersRequest {
   repeated StartCallerRequest requests = 1;
 }
 
-// response from the voip manager concerning the multiple started callers
-message StartCallersResponse {
-  // request sent to the voip manager
-  StartCallersRequest request = 1;
-  // success status - refers to general success: False if at least one call-deployment fails,
-
-  // True if all call were successful
-  bool success = 2;
-
-  // error messages if there are any
-  string error_messages = 3;
-}
-
 // collection of scheduled callers to start
 message StartScheduledCallersRequest {
   repeated StartScheduledCallerRequest requests = 1;
-}
-
-// response from the voip manager concerning the multiple scheduled callers
-message StartScheduledCallersResponse {
-  // request sent to the voip manager
-  StartScheduledCallersRequest request = 1;
-  // success status - refers to general success: False if at least one call-deployment fails,
-
-  // True if all call were successful
-  bool success = 2;
-
-  // error messages if there are any
-  string error_messages = 3;
 }
 
 // parameters of the call to stop
@@ -558,32 +438,9 @@ message StopCallRequest {
   }
 }
 
-// response from the voip manager concerning the stop-call request
-message StopCallResponse {
-  // request sent to the voip manager
-  StopCallRequest request = 1;
-
-  // whether listener was successfully stopped
-  bool success = 2;
-
-  // error messages if there are any
-  string error_messages = 3;
-  // Optional. log message
-  string log_message = 4;
-}
-
 // parameters of the calls to stop
 message StopCallsRequest {
   repeated StopCallRequest requests = 1;
-}
-
-// response from the voip manager concerning the stop-calls request
-message StopCallsResponse {
-  repeated StopCallResponse responses = 1;
-}
-
-message StopAllCallsResponse{
-  repeated StopCallResponse stop_call_responses = 1;
 }
 
 message TransferCallRequest{
@@ -597,16 +454,6 @@ message TransferCallRequest{
   string transfer_id = 3;
 }
 
-message TransferCallResponse{
-  // request sent to the voip manager
-  TransferCallRequest request = 1;
-
-  // whether transfer request was successfully sent
-  bool success = 2;
-
-  // error messages if there are any
-  string error_messages = 3;
-}
 
 ////////////
 // STATUS //
