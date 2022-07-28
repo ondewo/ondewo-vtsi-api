@@ -59,11 +59,11 @@ service VoipSessions {
   rpc StartScheduledCallers (StartScheduledCallersRequest) returns (google.protobuf.Empty);
 
   // stop/kill a list of ondewo-sip listener or caller instances for a specific nlu-project.
-  // "stops both Inbound and Outbound calls"
+  // "stops both Listener and Caller calls"
   rpc StopCalls (StopCallsRequest) returns (google.protobuf.Empty);
 
   // stop/kill all ondewo-sip listener or caller instance for a specific nlu-project.
-  // "stops all Inbound and Outbound calls"
+  // "stops all Listener and Caller calls"
   rpc StopAllCalls (StopAllCallsRequest) returns (google.protobuf.Empty);
 
   // Transfer a call from a listener to another number for a specific nlu-project.
@@ -80,16 +80,6 @@ service VoipSessions {
   rpc GetVoipCallInfo (GetVoipCallInfoRequest) returns (GetVoipCallInfoResponse);
   // get call log for all call instances
   rpc ListVoipCallInfo (ListVoipCallInfoRequest) returns (ListVoipCallInfoResponse);
-
-  ////////////
-  // Helpers //
-  ////////////
-
-  // Gets all the sip accounts that are active
-  rpc GetSipAccounts (google.protobuf.Empty) returns (GetSipAccountsResponse);
-
-  // get a call id from a sip account
-  rpc GetCallIDsFromSipAccount (GetCallIDsFromSipAccountRequest) returns (GetCallIDsFromSipAccountResponse);
 
   /////////////////////////
   // Retrieving Audio files //
@@ -250,7 +240,7 @@ message AsteriskConfig{
   BaseServiceConfig base_config = 1;
 }
 
-// It is common for both inbound and outbound / listener and caller
+// It is common for both listener and caller
 message CommonServicesConfigs{
   // Asterisk service configuration
   AsteriskConfig asterisk_config = 1;
@@ -477,19 +467,14 @@ message TransferCallRequest{
 
 // request to get a call instance's call logs
 message GetVoipCallInfoRequest {
-  // monitoring can be done by call-ID or ondewo-sip ID
-  // The last field you set is the value that is set
-  oneof id {
-    // ID of the call
-    string call_id = 1;
-    // Account of the ondewo-sip instance
-    string sip_account = 2;
-  }
+  // ondewo-cai project ID.
+  string project_id = 1;
 
-  /* you can specify the view to be shallow or full .. see above for more info*/ VoipCallInfoView voip_call_info_view = 3;
+  // ID of the call
+  string call_id = 2;
 
-  // both by default or inbound or outbound
-  CallType call_type = 4;
+  /* you can specify the view to be shallow or full .. see above for more info*/
+  VoipCallInfoView voip_call_info_view = 3;
 }
 
 enum VoipCallInfoView {
@@ -511,9 +496,9 @@ message GetVoipCallInfoResponse {
 enum CallType {
   both = 0;
 
-  inbound = 1;
+  listener = 1;
 
-  outbound = 2;
+  caller = 2;
 }
 
 // call log
@@ -524,39 +509,39 @@ message VoipCallInfo {
   // sip account used
   string sip_account = 2;
 
-  // display name (or description) (can be filled with the NLU project name if not provided)
-  string display_name = 3;
-
   // container name which you get from docker ps
-  string container_name = 4;
+  string container_name = 3;
 
-  // Inbound or outbound enum .. if not specified
-  CallType call_type = 5;
+  // Listener or caller enum .. if not specified
+  CallType call_type = 4;
 
-  string phone_number = 6;
+  string phone_number = 5;
 
   // start time of log
-  double start_time = 7;
+  double start_time = 6;
 
   // end time of log
-  double end_time = 8;
+  double end_time = 7;
 
   // current sip status
-  ondewo.sip.SipStatus sip_status = 9;
+  ondewo.sip.SipStatus sip_status = 8;
 
   // sip status history
-  ondewo.sip.SipStatusHistoryResponse sip_status_history = 10;
+  ondewo.sip.SipStatusHistoryResponse sip_status_history = 9;
 
   // All container health statuses
-  AllServicesStatuses services_statuses = 11;
+  AllServicesStatuses services_statuses = 10;
 }
 
 message ListVoipCallInfoRequest{
-  // you can specify the view to be shallow or full .. see above for more info
-  VoipCallInfoView voip_call_info_view = 1;
+  // ondewo-cai project ID.
+  string project_id = 1;
 
-  // both by default or inbound or outbound
-  CallType call_type = 2;
+  // you can specify the view to be shallow or full .. see above for more info
+  VoipCallInfoView voip_call_info_view = 2;
+
+  // both by default or listener or caller
+  CallType call_type = 3;
 }
 
 message ListVoipCallInfoResponse{
@@ -587,25 +572,6 @@ message ServiceStatus {
   bool healthy = 1;
   // error messages if you have any so if it's unhealthy
   string error_messsages = 2;
-}
-
-
-////////////
-// Helpers //
-////////////
-
-
-message GetSipAccountsResponse{
-  repeated string asterisk_accounts = 1;
-}
-
-
-message GetCallIDsFromSipAccountRequest{
-  repeated string asterisk_account = 1;
-}
-
-message GetCallIDsFromSipAccountResponse{
-  repeated string call_ids = 1;
 }
 
 /////////////////////////
