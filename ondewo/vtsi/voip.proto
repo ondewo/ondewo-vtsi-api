@@ -49,24 +49,24 @@ service VoipSessions {
   // CALLS //
   ///////////
 
-  // start multiple ondewo-sip listeners instances
-  rpc StartListeners (StartListenersRequest) returns (google.protobuf.Empty);
+  // start multiple ondewo-sip listeners instances for a specific nlu-project.
+  rpc StartListeners (StartListenersRequest) returns (StartListenersResponse);
 
-  // start multiple ondewo-sip callers instances
-  rpc StartCallers (StartCallersRequest) returns (google.protobuf.Empty);
+  // start multiple ondewo-sip callers instances for a specific nlu-project.
+  rpc StartCallers (StartCallersRequest) returns (StartCallersResponse);
 
   // start multiple ondewo-sip callers instances with schedules
   rpc StartScheduledCallers (StartScheduledCallersRequest) returns (google.protobuf.Empty);
 
-  // stop/kill a list of ondewo-sip listener or caller instances
+  // stop/kill a list of ondewo-sip listener or caller instances for a specific nlu-project.
   // "stops both Inbound and Outbound calls"
   rpc StopCalls (StopCallsRequest) returns (google.protobuf.Empty);
 
-  // stop/kill all ondewo-sip listener or caller instance
+  // stop/kill all ondewo-sip listener or caller instance for a specific nlu-project.
   // "stops all Inbound and Outbound calls"
-  rpc StopAllCalls (google.protobuf.Empty) returns (google.protobuf.Empty);
+  rpc StopAllCalls (StopAllCallsRequest) returns (google.protobuf.Empty);
 
-  // Transfer a call from a listener to another number
+  // Transfer a call from a listener to another number for a specific nlu-project.
   rpc TransferCall (TransferCallRequest) returns (google.protobuf.Empty);
 
   // ConferenceCall .. to be added in the future
@@ -226,14 +226,11 @@ message NLUConfig{
   // for a list of the currently supported language codes.
   string language_code = 4;
 
-  // ondewo-cai project ID with which to perform the call
-  string project_id = 5;
-
   // name of intent to trigger at the start of a call
-  string initial_intent = 6;
+  string initial_intent = 5;
 
   // ondewo-cai list of contexts
-  repeated ondewo.nlu.Context contexts = 7;
+  repeated ondewo.nlu.Context contexts = 6;
 }
 
 message T2SConfig{
@@ -412,44 +409,63 @@ message StartScheduledCallerRequest {
 
 // collection of listeners to start
 message StartListenersRequest {
-  repeated StartListenerRequest requests = 1;
+  // ondewo-cai project ID with which to perform the call
+  string project_id = 1;
+  repeated StartListenerRequest requests = 2;
+}
+
+message StartListenersResponse {
+  // ondewo-cai project ID.
+  string project_id = 1;
+  // The call ids that were assigned to each call
+  repeated string call_id = 2;
 }
 
 // collection of callers to start
 message StartCallersRequest {
-  repeated StartCallerRequest requests = 1;
+  // ondewo-cai project ID with which to perform the call
+  string project_id = 1;
+  repeated StartCallerRequest requests = 2;
+}
+
+message StartCallersResponse {
+  // ondewo-cai project ID.
+  string project_id = 1;
+  // The call ids that were assigned to each call
+  repeated string call_id = 2;
 }
 
 // collection of scheduled callers to start
 message StartScheduledCallersRequest {
-  repeated StartScheduledCallerRequest requests = 1;
+  // ondewo-cai project ID with which to perform the call
+  string project_id = 1;
+  repeated StartScheduledCallerRequest requests = 2;
 }
 
 // parameters of the call to stop
 message StopCallRequest {
-  // calls can be stopped with either the call-ID or the ondewo-sip ID
-  // The last field you set is the value that is set
-  oneof id {
-    // ID of the call
-    string call_id = 1;
-
-    // Account of the ondewo-sip instance
-    string sip_account = 2;
-  }
+  // calls can be stopped the call-ID
+  string call_id = 1;
 }
 
 // parameters of the calls to stop
 message StopCallsRequest {
-  repeated StopCallRequest requests = 1;
+  // ondewo-cai project ID.
+  string project_id = 1;
+  repeated StopCallRequest requests = 2;
+}
+
+// parameters of the calls to stop
+message StopAllCallsRequest {
+  // ondewo-cai project ID.
+  string project_id = 1;
 }
 
 message TransferCallRequest{
-  oneof id {
-    // ID of the call
-    string call_id = 1;
-    // Account of the ondewo-sip instance
-    string sip_account = 2;
-  }
+  // ondewo-cai project ID.
+  string project_id = 1;
+  // call-ID to transfer
+  string call_id = 2;
   // Number you want to be transfered too
   string transfer_id = 3;
 }
