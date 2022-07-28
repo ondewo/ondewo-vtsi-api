@@ -100,8 +100,10 @@ checkout_defined_submodule_versions:  ## Update submodule versions
 	if [ -d ondewo/s2t ]; then rm -Rf ondewo/s2t; fi
 	if [ -d ondewo/t2s ]; then rm -Rf ondewo/t2s; fi
 	if [ -d ondewo/sip ]; then rm -Rf ondewo/sip; fi
+	if [ -d ondewo/qa ]; then rm -Rf ondewo/sip; fi
 	cp -r "${ONDEWO_NLU_DIR}/googleapis" .
 	cp -r "${ONDEWO_NLU_DIR}/ondewo/nlu" ondewo
+	cp -r "${ONDEWO_NLU_DIR}/ondewo/qa" ondewo
 	cp -r "${ONDEWO_T2S_DIR}/ondewo/t2s" ondewo
 	cp -r "${ONDEWO_S2T_DIR}/ondewo/s2t" ondewo
 	cp -r "${ONDEWO_SIP_DIR}/ondewo/sip" ondewo
