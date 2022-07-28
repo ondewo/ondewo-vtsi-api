@@ -1,0 +1,434 @@
+// Copyright 2020 ONDEWO GmbH
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.https://ondewo.slack.com/archives/CAWPP61NY
+
+syntax = "proto3";
+
+package ondewo.s2t;
+import "google/protobuf/empty.proto";
+
+// endpoints of speech-to-text service
+service Speech2Text {
+  rpc TranscribeFile (TranscribeFileRequest) returns (TranscribeFileResponse) {
+  };
+
+  // Transcribes an audio stream.
+  rpc TranscribeStream (stream TranscribeStreamRequest) returns (stream TranscribeStreamResponse) {
+  };
+  // Gets a speech to text pipeline corresponding to the id specified in S2tPipelineId. If no corresponding id is
+  // found, raises ModuleNotFoundError in server.
+  rpc GetS2tPipeline (S2tPipelineId) returns (Speech2TextConfig) {
+  };
+  // Creates a new speech to text pipeline from a Speech2TextConfig and registers the new pipeline in the server.
+  rpc CreateS2tPipeline (Speech2TextConfig) returns (S2tPipelineId) {
+  };
+  // Deletes a pipeline corresponding to the id parsed in S2TPipelineId. If no corresponding id is
+  // found, raises ModuleNotFoundError in server.
+  rpc DeleteS2tPipeline (S2tPipelineId) returns (google.protobuf.Empty) {
+  };
+  // Updates a pipeline with the id specified in Speech2TextConfig with the new config. If no corresponding id is
+  // found, raises ModuleNotFoundError in server.
+  rpc UpdateS2tPipeline (Speech2TextConfig) returns (google.protobuf.Empty) {
+  };
+  // Lists all speech to text pipelines.
+  rpc ListS2tPipelines (ListS2tPipelinesRequest) returns (ListS2tPipelinesResponse) {
+  };
+  // Returns a message containing a list of all languages for which there exist pipelines.
+  rpc ListS2tLanguages (ListS2tLanguagesRequest) returns (ListS2tLanguagesResponse) {
+  };
+  // Returns a message containing a list of all domains for which there exist pipelines.
+  rpc ListS2tDomains (ListS2tDomainsRequest) returns (ListS2tDomainsResponse) {
+  };
+  // Returns a message containing the version of the running speech to text server.
+  rpc GetServiceInfo (google.protobuf.Empty) returns (S2TGetServiceInfoResponse) {
+  };
+  // Given a list of pipeline ids, returns a list of LanguageModelPipelineId messages containing the pipeline
+  // id and a list of the language models loaded in the pipeline.
+  rpc ListS2tLanguageModels (ListS2tLanguageModelsRequest) returns (ListS2tLanguageModelsResponse) {
+  };
+}
+
+///////////////////////////
+// Configuration Message //
+///////////////////////////
+
+message TranscribeRequestConfig {
+  // Required. id of the pipeline (model setup) that will generate audio
+  string s2t_pipeline_id = 1;
+
+  // Optional. CTC decoding type
+  CTCDecoding ctc_decoding = 2;
+
+  // Optional. Language model name for decoding (in none, default will be taken from config file)
+  oneof oneof_language_model_name {
+    string language_model_name = 3;
+  }
+  // Optional. Configuration of spelling correction and normalization
+  oneof oneof_post_processing {
+    PostProcessingOptions post_processing = 4;
+  }
+  // Optional. Configuration for the detection of utterances
+  oneof oneof_utterance_detection {
+    UtteranceDetectionOptions utterance_detection = 5;
+  }
+  // Optional. Which method to be used for voice activity detection
+  oneof voice_activity_detection {
+    Pyannote pyannote = 6;
+    Matchbox matchbox = 7;
+  }
+  // Optional. Specify which data to return
+  oneof oneof_return_options {
+    TranscriptionReturnOptions return_options = 8;
+  }
+}
+
+message TranscriptionReturnOptions {
+  bool return_start_of_speech = 1;  // should server make response indicating that the beginning of the speech was detected
+  bool return_audio = 2; // should s2t server return audio bytes of transcribed utterance
+  bool return_alternative_transcriptions = 3; // Whether or not to return alternative results from beam-search
+  bool return_confidence_score = 4; // Whether or not to return confidence scores
+  bool return_word_timing = 8; // Optional. Whether or not to return timestamps of start and end of the words. Only used in TranscribeFile.
+}
+
+message UtteranceDetectionOptions {
+  // Whether or not to transcribe unfinished utterances.
+  oneof oneof_transcribe_not_final {
+    bool transcribe_not_final = 1;
+  }
+  // Specifies the minimal duration of voice signal to indicate the start of an utterance
+  float start_of_utterance_threshold = 2;
+  // Specifies the minimal duration of a non-voice signal to indicate the end of an utterance
+  float end_of_utterance_threshold = 3;
+  // if time between audio chunks exceeds next_chunk_timeout, stream will be stopped
+  float next_chunk_timeout = 4;
+}
+
+message PostProcessingOptions {
+  // Whether or not to use spelling correction
+  bool spelling_correction = 1;
+  // Whether or not to disable normalization
+  bool normalize = 2;
+  // Post-processing configuration specifying the active post-processors in the pipeline, as well as their individual
+  // configuration. If not set, all values are replaced by the ones in current pipeline.
+  PostProcessing config = 3;
+}
+
+///////////////////////
+// TRANSCRIBE STREAM //
+///////////////////////
+
+message TranscribeStreamRequest {
+  // wav file to transcribe
+  bytes audio_chunk = 1;
+  // if it's the final chunk of the stream
+  bool end_of_stream = 2;
+  // The configuration to override the default configuration
+  TranscribeRequestConfig config = 3;
+  // Whether or not to mute the audio signal. Defaults to false.
+  bool mute_audio = 4;
+}
+message Transcription {
+  // The transcribed text
+  string transcription = 1;
+  // The corresponding confidence score
+  float confidence_score = 2;
+}
+
+message TranscribeStreamResponse {
+  // List of transcriptions with confidence level
+  repeated Transcription transcriptions = 1;
+  // The time the transcription took
+  float time = 2;
+  // Whether or not this transcription is final (transcribed texts might change if transcription is
+  // started before the end of an utterance).
+  bool final = 3;
+  // is audio bytes of the utterance in response
+  bool return_audio = 4;
+  // audio bytes of the transcribed utterance
+  bytes audio = 5;
+  // is it a start of the utterance
+  bool utterance_start = 6;
+  // id of the transcribed audio file
+  string audio_uuid = 7;
+  // The configuration to override the default configuration
+  oneof oneof_config {
+    TranscribeRequestConfig config = 8;
+  }
+}
+
+/////////////////////
+// TRANSCRIBE FILE //
+/////////////////////
+
+message TranscribeFileRequest {
+  bytes audio_file = 1; // wav file to transcribe
+  TranscribeRequestConfig config = 2; // The configuration to override the default configuration
+}
+
+enum CTCDecoding {
+  DEFAULT = 0; // decoding will be defined by the pipeline config
+  GREEDY = 1; // greedy decoding will be used independently on pipeline config
+  BEAM_SEARCH_WITH_LM = 2; // beam search will be used independently on pipeline config
+}
+
+message TranscribeFileResponse {
+  // List of transcriptions with confidence level
+  repeated Transcription transcriptions = 1;
+  // The time the transcription took
+  float time = 2;
+  // List of words with timestamps for their start and end
+  repeated WordTiming word_timing = 3;
+  // id of the transcribed audio file
+  string audio_uuid = 4;
+}
+
+message WordTiming {
+  // Transcribed word
+  string word = 1;
+  // Timestamp for start of word
+  int32 begin = 2;
+  // Timestamp for end of word
+  int32 end = 3;
+}
+
+//////////////////////
+// GET S2T PIPELINE //
+//////////////////////
+
+message S2tPipelineId {
+  string id = 1; // id of the model that will generate audio
+}
+
+////////////////////////
+// LIST S2T PIPELINES //
+////////////////////////
+
+message ListS2tPipelinesRequest {
+  repeated string languages = 1;
+  repeated string pipeline_owners = 2;
+  repeated string domains = 3;
+  // If true, return only registered pipelines.
+  // Default false: return registered and persisted (from config files) configs.
+  bool registered_only = 4;
+}
+
+message ListS2tPipelinesResponse {
+  repeated Speech2TextConfig pipeline_configs = 1;
+}
+
+////////////////////////
+// LIST S2T LANGUAGES //
+////////////////////////
+
+message ListS2tLanguagesRequest {
+  repeated string domains = 1;
+  repeated string pipeline_owners = 2;
+}
+
+message ListS2tLanguagesResponse {
+  repeated string languages = 1;
+}
+
+//////////////////////
+// LIST S2T DOMAINS //
+//////////////////////
+
+message ListS2tDomainsRequest {
+  repeated string languages = 1;
+  repeated string pipeline_owners = 2;
+}
+
+message ListS2tDomainsResponse {
+  repeated string domains = 1;
+}
+
+//////////////////////
+// GET SERVICE INFO //
+//////////////////////
+
+message S2TGetServiceInfoResponse {
+  string version = 1;
+}
+
+///////////////////////////////////
+// SPEECH-2-TEXT PIPELINE CONFIG //
+///////////////////////////////////
+
+message Speech2TextConfig {
+  string id = 1;
+  S2TDescription description = 2;
+  bool active = 3;
+  S2TInference inference = 4;
+  StreamingServer streaming_server = 5;
+  VoiceActivityDetection voice_activity_detection = 6;
+  PostProcessing post_processing = 7;
+  Logging logging = 8;
+}
+
+message S2TDescription {
+  string language = 1;
+  string pipeline_owner = 2;
+  string domain = 3;
+  string comments = 4;
+}
+
+message S2TInference {
+  CtcAcousticModels ctc_acoustic_models = 1;
+  LanguageModels language_models = 2;
+}
+
+message CtcAcousticModels {
+  string type = 1;
+  Quartznet quartznet = 2;
+  QuartznetTriton quartznet_triton = 3;
+  Wav2Vec wav2vec = 4;
+  Wav2VecTriton wav2vec_triton = 5;
+}
+
+message Wav2Vec {
+  string model_path = 1;
+  bool use_gpu = 2;
+}
+
+message Wav2VecTriton {
+  string processor_path = 1;
+  string triton_model_name = 2;
+  string triton_model_version = 3;
+  int64 check_status_timeout = 4;
+}
+
+message Quartznet {
+  string config_path = 1;
+  string load_type = 2;
+  PtFiles pt_files = 3;
+  CkptFile ckpt_file = 4;
+  bool use_gpu = 5;
+}
+
+message PtFiles {
+  string path = 1;
+  string step = 2;
+}
+
+message CkptFile {
+  string path = 1;
+}
+
+message QuartznetTriton {
+  string config_path = 1;
+  string triton_url = 2;
+  string triton_model = 3;
+}
+
+message LanguageModels {
+  string path = 1; // Path to the directory of language models
+  int64 beam_size = 2;
+  string default_lm = 3; // this language model will be selected if none is given
+  float beam_search_scorer_alpha = 4;
+  float beam_search_scorer_beta = 5;
+}
+
+message StreamingServer {
+  string host = 1;
+  int64 port = 2;
+  string output_style = 3;
+  StreamingSpeechRecognition streaming_speech_recognition = 4;
+}
+
+message StreamingSpeechRecognition {
+  bool transcribe_not_final = 1;
+  string ctc_decoding_method = 2;
+  int64 sampling_rate = 3;
+  int64 min_audio_chunk_size = 4;
+  float start_of_utterance_threshold = 5;
+  float end_of_utterance_threshold = 6;
+  float next_chunk_timeout = 7; // if time between audio chunks exceeds next_chunk_timeout, stream will be stopped
+}
+
+message VoiceActivityDetection {
+  string active = 1;
+  int64 sampling_rate = 2;
+  Pyannote pyannote = 3;
+  Matchbox matchbox = 4;
+}
+
+message Pyannote {
+  string model_path = 1;
+  int64 min_audio_size = 2;
+  float offset = 3;
+  float onset = 4;
+  oneof oneof_log_scale {
+    bool log_scale = 5;
+  }
+  float min_duration_off = 6;
+  float min_duration_on = 7;
+}
+
+message Matchbox {
+  string model_config = 1;
+  string encoder_path = 2;
+  string decoder_path = 3;
+}
+
+message PostProcessing {
+  // List of names of active post-processors
+  repeated string pipeline = 1;
+  // Post-processor configurations.
+  PostProcessors post_processors = 2;
+}
+
+message PostProcessors {
+  // Configuration of the sym-spell spelling correction
+  SymSpell sym_spell = 1;
+  // Configuration of the normalization object
+  S2TNormalization normalization = 2;
+}
+
+message SymSpell {
+  // Path to the dictionary used by symspell
+  string dict_path = 1;
+  // The maximal edit-distance to consider for spelling correction (affects performance - bigger number
+  // takes longer to process!)
+  int64 max_dictionary_edit_distance = 2;
+  // The length (number of characters) of the prefix to consider for filtering
+  int64 prefix_length = 3;
+}
+
+message S2TNormalization {
+  // In which language to normalization transcription.
+  string language = 1;
+}
+
+message Logging {
+  string type = 1;
+  string path = 2;
+}
+
+
+///////////////////////////////////////////
+// GET LIST OF AVAILABLE LANGUAGE MODELS //
+///////////////////////////////////////////
+
+message ListS2tLanguageModelsRequest {
+  repeated string ids = 1; // List of pipeline id(s) to see their available language models
+}
+
+message LanguageModelPipelineId {
+  string pipeline_id = 1; // One pipeline id
+  repeated string model_names = 2; // A list of all available language models for above pipeline id
+}
+
+message ListS2tLanguageModelsResponse {
+  repeated LanguageModelPipelineId lm_pipeline_ids = 1;
+  // Response is a dictionary of type Dict[pipeline id, List of available language models]
+}

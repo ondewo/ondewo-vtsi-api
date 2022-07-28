@@ -1,0 +1,92 @@
+// Copyright 2021 ONDEWO GmbH
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package ondewo.sip;
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+service Sip {
+    rpc StartSession (StartSessionRequest) returns (google.protobuf.Empty) {};
+    rpc EndSession (google.protobuf.Empty) returns (google.protobuf.Empty) {};
+    rpc StartCall (StartCallRequest) returns (google.protobuf.Empty) {};
+    rpc EndCall (EndCallRequest) returns (google.protobuf.Empty) {};
+    rpc TransferCall (TransferCallRequest) returns (google.protobuf.Empty) {};
+    rpc RegisterAccount (RegisterAccountRequest) returns (google.protobuf.Empty) {};
+    rpc GetSipStatus (google.protobuf.Empty) returns (SipStatus) {};
+    rpc GetSipStatusHistory (google.protobuf.Empty) returns (SipStatusHistoryResponse) {};
+    rpc PlayWavFiles (PlayWavFilesRequest) returns (google.protobuf.Empty) {};
+    rpc Mute (google.protobuf.Empty) returns (google.protobuf.Empty) {};
+    rpc UnMute (google.protobuf.Empty) returns (google.protobuf.Empty) {};
+}
+
+message EndCallRequest{
+    bool hard_hangup = 1;
+}
+
+message StartCallRequest{
+    string callee_id = 1;
+    map<string,string> headers = 2;
+}
+
+message RegisterAccountRequest{
+    string account_name = 1;
+    string password = 2;
+}
+
+message StartSessionRequest{
+    string account_name = 1;
+    int32 auto_answer_interval = 2;
+}
+
+message TransferCallRequest{
+    string transfer_id = 1;
+    map<string,string> headers = 2;
+}
+
+message SipStatus{
+    string account_name=1;
+    google.protobuf.Timestamp timestamp = 2;
+    enum StatusType{
+        no_session = 0;
+        registered = 1;
+        ready = 2;
+        incoming_call_initiated = 3;
+        outgoing_call_initiated = 4;
+        outgoing_call_connected = 5;
+        incoming_call_connected = 6;
+        transfer_call_initiated = 7;
+        soft_hangup_initiated = 8;
+        hard_hangup_initiated = 9;
+        incoming_call_failed = 10;
+        outgoing_call_failed = 11;
+        incoming_call_finished = 12;
+        outgoing_call_finished = 13;
+    }
+    StatusType status_type = 3;
+    string callee_id = 4;
+    string transfer_call_id = 5;
+    map<string,string> headers = 6;
+
+}
+
+message SipStatusHistoryResponse{
+    repeated SipStatus status_history = 1;
+}
+
+message PlayWavFilesRequest{
+    repeated bytes wav_files = 1;
+}
+
