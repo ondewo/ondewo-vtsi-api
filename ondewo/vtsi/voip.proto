@@ -408,7 +408,7 @@ message StartListenersResponse {
   // ondewo-cai project ID.
   string project_id = 1;
   // The call ids that were assigned to each call
-  repeated string call_id = 2;
+  repeated string call_ids = 2;
 }
 
 // collection of callers to start
@@ -422,7 +422,7 @@ message StartCallersResponse {
   // ondewo-cai project ID.
   string project_id = 1;
   // The call ids that were assigned to each call
-  repeated string call_id = 2;
+  repeated string call_ids = 2;
 }
 
 // collection of scheduled callers to start
@@ -432,17 +432,12 @@ message StartScheduledCallersRequest {
   repeated StartScheduledCallerRequest requests = 2;
 }
 
-// parameters of the call to stop
-message StopCallRequest {
-  // calls can be stopped the call-ID
-  string call_id = 1;
-}
 
 // parameters of the calls to stop
 message StopCallsRequest {
   // ondewo-cai project ID.
   string project_id = 1;
-  repeated StopCallRequest requests = 2;
+  repeated string call_ids = 2;
 }
 
 // parameters of the calls to stop
