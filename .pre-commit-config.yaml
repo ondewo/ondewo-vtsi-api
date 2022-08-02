@@ -49,11 +49,13 @@ repos:
             -   id: check-json  # Attempt to load json files to verify syntax
             -   id: check-xml  # Attempt to load xml files to verify syntax
             -   id: check-yaml  # Attempt to load yaml files to verify syntax
+                exclude: googleapis
             -   id: check-merge-conflict  # Check for files that contain merge conflict strings
             -   id: check-symlinks  # Check for broken symlinks
             -   id: debug-statements  # Check for debugger imports and py37+ breakpoint() calls
             -   id: detect-private-key  # Check for the existence of private keys
             -   id: check-executables-have-shebangs
+                exclude: googleapis
             -   id: trailing-whitespace  # Trim trailing whitespace.
             -   id: end-of-file-fixer # makes sure files end in a newline and only a newline
             -   id: pretty-format-json # autoformat json files (e.g. sorting keys)

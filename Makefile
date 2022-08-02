@@ -18,10 +18,10 @@ export
 # MUST BE THE SAME AS API in Mayor and Minor Version Number
 # example: API 2.9.0 --> Client 2.9.X
 ONDEWO_VTSI_API_VERSION=2.3.0
-ONDEWO_NLU_API_GIT_BRANCH=tags/2.9.0
-ONDEWO_S2T_API_GIT_BRANCH=tags/3.2.0
-ONDEWO_T2S_API_GIT_BRANCH=tags/4.2.0
-ONDEWO_SIP_API_GIT_BRANCH=tags/3.0.0
+ONDEWO_NLU_API_GIT_BRANCH=tags/2.10.0
+ONDEWO_S2T_API_GIT_BRANCH=tags/3.3.0
+ONDEWO_T2S_API_GIT_BRANCH=tags/4.3.0
+ONDEWO_SIP_API_GIT_BRANCH=tags/3.1.0
 ONDEWO_NLU_DIR=ondewo-nlu-api
 ONDEWO_S2T_DIR=ondewo-s2t-api
 ONDEWO_T2S_DIR=ondewo-t2s-api
@@ -52,15 +52,6 @@ install_precommit_hooks: ## Installs pre-commit hooks and sets them up for the o
 
 precommit_hooks_run_all_files: ## Runs all pre-commit hooks on all files and not just the changed ones
 	pre-commit run --all-file
-
-install_dependencies_locally: ## Install dependencies locally
-	pip install -r requirements-dev.txt
-
-flake8:
-	flake8
-
-mypy: ## Run mypy static code checking
-	pre-commit run mypy --all-files
 
 help: ## Print usage info about help targets
 	# (first comment after target starting with double hashes ##)
