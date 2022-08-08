@@ -287,10 +287,8 @@ message CsiConfig{
 }
 
 message AudioObjectStorageConfig{
-  oneof activate_audio_object_storage_oneof{
-    bool activate_audio_object_storage = 1;
-    AudioObjectStorageServicesActivationConfig audio_object_storage_services_activation_config = 2;
-  }
+  bool activate_audio_object_storage = 1;
+  AudioObjectStorageServicesActivationConfig audio_object_storage_services_activation_config = 2;
   oneof audio_storage_config{
     MinioConfig minio_config = 3;
   }
@@ -302,10 +300,8 @@ message AudioObjectStorageServicesActivationConfig{
 }
 
 message MessageBrokerConfig{
-  oneof activate_message_broker_oneof{
-    bool activate_message_broker = 1;
-    MessageBrokerServicesActivationConfig message_broker_services_activation_config = 2;
-  }
+  bool activate_message_broker = 1;
+  MessageBrokerServicesActivationConfig message_broker_services_activation_config = 2;
   oneof message_broker_config{
     RabbitMqConfig rabbit_mq_config = 3;
   }
