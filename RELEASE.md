@@ -1,6 +1,15 @@
 # Release History
 *****************
 
+## Release ONDEWO VTSI APIS 3.0.0
+
+## New features
+* New VTSI API release 3.0.0
+
+*****************
+
+
+
 ## Release ONDEWO VTSI APIS 2.3.0
 
 ## New features
