@@ -1,0 +1,530 @@
+// Copyright 2020 ONDEWO GmbH
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package ondewo.t2s;
+import "google/protobuf/empty.proto";
+
+// endpoints of t2s generate service
+service Text2Speech {
+
+    // Synthesizes an specific text sent in the request with the configuration requirements and retrieves a response
+    // that includes the synthesized text to audio and the configuration wanted.
+    rpc Synthesize (SynthesizeRequest) returns (SynthesizeResponse) {
+    };
+    // will this safe time when doing batch predict on the AI model?
+    rpc BatchSynthesize (BatchSynthesizeRequest) returns (BatchSynthesizeResponse) {
+    };
+    // Normalize a text according to a specific pipeline normalization rules.
+    rpc NormalizeText (NormalizeTextRequest) returns (NormalizeTextResponse) {
+    };
+    // Retrieves the configuration of the specified pipeline.
+    rpc GetT2sPipeline (T2sPipelineId) returns (Text2SpeechConfig) {
+    };
+    // Creates a pipeline with the specified configuration and retrieves its id.
+    rpc CreateT2sPipeline (Text2SpeechConfig) returns (T2sPipelineId) {
+    };
+    // Deletes the specified pipeline.
+    rpc DeleteT2sPipeline (T2sPipelineId) returns (google.protobuf.Empty) {
+    };
+    // Update a specified pipeline with certain configuration.
+    rpc UpdateT2sPipeline (Text2SpeechConfig) returns (google.protobuf.Empty) {
+    };
+    // Retrieve the list of pipelines with an specific requirement.
+    rpc ListT2sPipelines (ListT2sPipelinesRequest) returns (ListT2sPipelinesResponse) {
+    };
+    // Retrieve the list of languages given a specific config request.
+    rpc ListT2sLanguages (ListT2sLanguagesRequest) returns (ListT2sLanguagesResponse) {
+    };
+    // Retrieve the list of domains given a specific config request.
+    rpc ListT2sDomains (ListT2sDomainsRequest) returns (ListT2sDomainsResponse) {
+    };
+    // Returns a message containing the version of the running text to speech server.
+    rpc GetServiceInfo (google.protobuf.Empty) returns (T2SGetServiceInfoResponse) {
+    };
+}
+
+////////////////
+// SYNTHESIZE //
+////////////////
+
+// Represents a Synthesize Request.
+// A Synthesize Request contains the information need to perform a text to speech conversion.
+message SynthesizeRequest {
+
+    // Required. Represents the text that will be transformed to speech.
+    string text = 1;
+
+    // Required. Represents the specifications needed to do the text to speech transformation.
+    RequestConfig config = 2;
+}
+
+message BatchSynthesizeRequest {
+
+    repeated SynthesizeRequest batch_request = 1;
+}
+
+message BatchSynthesizeResponse {
+
+    repeated SynthesizeResponse batch_response = 1;
+}
+
+// Represents a Configuration for the text to speech conversion.
+message RequestConfig {
+
+    // Required. Represents the pipeline id of the model configuration that will be used.
+    string t2s_pipeline_id = 1;
+
+    // Optional. This parameter is used for time stretching which is the process of
+    // changing the speed or duration of an audio.
+    // It should be much more than 1.0. O is not a valid number for this variable.
+    // The default value is 1.
+    oneof oneof_length_scale {
+        float length_scale = 2;
+    }
+
+    // Optional. Defines the noise in the generated audio.
+    // It should be between 0.0 and 1.
+    // The default value is 0.0
+    oneof  oneof_noise_scale {
+        float noise_scale = 3;
+    }
+
+
+    // Optional. Defines the sample rate of the generated wav file.
+    // The default value is 22050.
+    oneof oneof_sample_rate {
+        int32 sample_rate = 4;
+    }
+
+    // Optional. Defines the pulse-code modulation of the wav file.
+    // The default value is PCM_16.
+    oneof oneof_Pcm {
+        Pcm pcm = 5;
+    }
+
+    // Optional. Defines the format of the desired audio.
+    // The default value is wav.
+    oneof oneof_AudioFormat {
+        AudioFormat audio_format = 6;
+    }
+
+    // Optional. Define if cache should be used or not.
+    // The default value is False.
+    oneof oneof_use_cache {
+        bool use_cache = 7;
+    }
+
+    // Optional. Define what normalizer to synthesize the text with.
+    // The default value is the language of the pipeline.
+    oneof oneof_normalizer {
+        string normalizer = 8;
+    }
+}
+
+
+// Represents a pulse-code modulation technique.
+enum Pcm {
+        PCM_16 = 0;
+        PCM_24 = 1;
+        PCM_32 = 2;
+        PCM_S8 = 3;
+        PCM_U8 = 4;
+        FLOAT = 5;
+        DOUBLE = 6;
+    }
+
+// Represents an audio file format, which is a file format for storing
+// digital audio data on a computer system.
+enum AudioFormat {
+        wav = 0;
+        flac = 1;
+        caf = 2;
+        mp3 = 3;
+        aac = 4;
+        ogg = 5;
+        wma = 6;
+    }
+
+// Represents a Synthesize Response.
+// A Synthesize Request contains the converted text to audio and the requested configuration.
+message SynthesizeResponse {
+
+    // Required. Represents the pipeline id of the model configuration that will be used.
+    string audio_uuid = 1;
+
+    // Required. Generated file with the parameters described in request.
+    bytes audio = 2;
+
+    // Required. Time to generate audio.
+    float generation_time = 3;
+
+    // Required. Audio length.
+    float audio_length = 4;
+
+    // Required. Text from which audio was generated.
+    string text = 5;
+
+    // Required. Configuration from which audio was generated.
+    RequestConfig config = 6;
+
+    // Optional. Normalized text.
+    string normalized_text = 7;
+}
+
+///////////////
+// NORMALIZE //
+///////////////
+
+message NormalizeTextRequest {
+    string t2s_pipeline_id = 1;
+    string text = 2;
+}
+
+message NormalizeTextResponse {
+    string normalized_text = 1;
+}
+
+//////////////////////
+// GET SERVICE INFO //
+//////////////////////
+
+message T2SGetServiceInfoResponse {
+  string version = 1;
+}
+
+////////////////////////
+// LIST T2S PIPELINES //
+////////////////////////
+
+// Pipeline Request representation.
+// The request message for ListT2sPipelines.
+// Filter pipelines by attributed in request.
+message ListT2sPipelinesRequest {
+
+    // Optional. Define the language/ languages.
+    repeated string languages = 1;
+
+    // Optional. Define the speaker sex.
+    repeated string speaker_sexes = 2;
+
+    // Optional. Define the pipeline owner/ owners.
+    repeated string pipeline_owners = 3;
+
+    // Optional. Define the speaker name/ names.
+    repeated string speaker_names = 4;
+
+    // Optional. Define the domain/ domains.
+    repeated string domains = 5;
+}
+
+// Pipeline Response representation.
+// The response message for ListT2sPipelines.
+message ListT2sPipelinesResponse {
+
+    // Required. Representation of a list of pipelines configurations.
+    // Retrieved by ListT2sPipelines, containing the configurations of
+    // pipelines with the specifications received in the ListT2sPipelinesRequest.
+    repeated Text2SpeechConfig pipelines = 1;
+}
+
+////////////////////////
+// LIST T2S LANGUAGES //
+////////////////////////
+
+
+// Language Request representation.
+// The request message for ListT2sLanguages.
+// Filter languages of pipelines by attributed in request.
+message ListT2sLanguagesRequest {
+
+    // Optional. Define the speaker sex.
+    repeated string speaker_sexes = 1;
+
+    // Optional. Define the pipeline owner/ owners.
+    repeated string pipeline_owners = 2;
+
+    // Optional. Define the speaker name/ names.
+    repeated string speaker_names = 3;
+
+    // Optional. Define the domain/ domains.
+    repeated string domains = 4;
+}
+
+
+// Language Response representation.
+// The response message for ListT2sLanguages.
+message ListT2sLanguagesResponse {
+
+    // Required. Define the language/ languages that satisfy/ies
+    // the specifications in the ListT2sLanguagesRequest.
+    repeated string languages = 1;
+}
+
+//////////////////////
+// LIST T2S DOMAINS //
+//////////////////////
+
+
+// Domain Request representation.
+// The request message for ListT2sDomains.
+// Filter domains of pipelines by attributed in request.
+message ListT2sDomainsRequest {
+
+    // Optional. Define the speaker sex.
+    repeated string speaker_sexes = 1;
+
+    // Optional. Define the pipeline owner/ owners.
+    repeated string pipeline_owners = 2;
+
+    // Optional. Define the speaker name/ names.
+    repeated string speaker_names = 3;
+
+    // Optional. Define the language/ languages.
+    repeated string languages = 4;
+}
+
+// Domains Response representation.
+// The response message for ListT2sDomains.
+message ListT2sDomainsResponse {
+
+    // Required. Define the domain/ domains that satisfy/ies
+    // the specifications in the ListT2sDomainsRequest.
+    repeated string domains = 1;
+}
+
+/////////////////////////
+// UPDATE T2S PIPELINE //
+/////////////////////////
+
+
+// Pipeline Id representation.
+// Used in the creation, deletion and getter of pipelines.
+message T2sPipelineId {
+
+    // Required. Defines the id of the pipeline.
+    string id = 1;
+}
+
+///////////////////////////
+// Text-to-Speech Config //
+///////////////////////////
+
+// Configuration of text-to-speech models representation.
+message Text2SpeechConfig {
+
+    // Required. Defines the id of the pipeline.
+    string id = 1;
+
+    // Required. Defines the description of the pipeline representation.
+    T2SDescription description = 2;
+
+    // Required. Defines if the pipeline is active or inactive.
+    bool active = 3;
+
+    // Required. Defines he inference of the pipeline representation.
+    T2SInference inference = 4;
+
+    // Required. Defines the normalization process of the pipeline representation.
+    T2SNormalization normalization = 5;
+
+    // Required. Defines the postprocessing process of the pipeline representation.
+    Postprocessing postprocessing = 6;
+}
+
+
+message T2SDescription {
+    string language = 1;
+    string speaker_sex = 2;
+    string pipeline_owner = 3;
+    string comments = 4;
+    string speaker_name = 5;
+    string domain = 6;
+}
+
+message T2SInference {
+    string type = 1;
+    CompositeInference composite_inference = 2;
+    Caching caching = 3;
+}
+
+message CompositeInference {
+    Text2Mel text2mel = 1;
+    Mel2Audio mel2audio = 2;
+}
+
+message Text2Mel {
+    string type = 1;
+    GlowTTS glow_tts = 2;
+    GlowTTSTriton glow_tts_triton = 3;
+}
+
+message GlowTTS {
+    int64 batch_size = 1;
+    bool use_gpu = 2;
+    float length_scale = 3;
+    float noise_scale = 4;
+    string path = 5;
+    repeated string cleaners = 6;
+    string param_config_path = 7;
+}
+
+message GlowTTSTriton {
+    int64 batch_size = 1;
+    float length_scale = 2;
+    float noise_scale = 3;
+    repeated string cleaners = 4;
+    int64 max_text_length = 5;
+    string param_config_path = 6;
+    string triton_model_name = 7;
+}
+
+message Mel2Audio {
+    string type = 1;
+    MbMelganTriton mb_melgan_triton = 2;
+    HiFiGan hifi_gan = 3;
+    HiFiGanTriton hifi_gan_triton = 4;
+}
+
+message HiFiGan {
+    bool use_gpu = 1;
+    int64 batch_size = 2;
+    string config_path = 3;
+    string model_path = 4;
+}
+
+message HiFiGanTriton {
+    string config_path = 1;
+    string triton_model_name = 2;
+}
+
+message MbMelganTriton {
+    string config_path = 1;
+    string stats_path = 2;
+    string triton_model_name = 3;
+    string triton_url = 4;
+}
+
+message Caching {
+    bool active = 1;
+    int64 memory_cache_max_size = 2;
+    int64 sampling_rate = 3;
+    bool load_cache = 4;
+    bool save_cache = 5;
+    string cache_save_dir = 6;
+}
+
+message T2SNormalization {
+    string language = 1;
+    repeated string pipeline = 2;
+    string custom_phonemizer_id = 3;
+    T2SCustomLengthScales custom_length_scales = 4;
+    string arpabet_mapping = 5;
+    string numeric_mapping = 6;
+    string callsigns_mapping = 7;
+}
+
+message Postprocessing {
+    float silence_secs = 1;
+    repeated string pipeline = 2;
+    Logmnse logmmse = 3;
+    Wiener wiener = 4;
+    Apodization apodization = 5;
+}
+
+message Logmnse {
+    int64 initial_noise = 1;
+    int64 window_size = 2;
+    float noise_threshold = 3;
+}
+
+message Wiener {
+    int64 frame_len = 1;
+    int64 lpc_order = 2;
+    int64 iterations = 3;
+    float alpha = 4;
+    float thresh = 5;
+}
+
+message Apodization {
+    float apodization_secs = 1;
+}
+
+message T2SCustomLengthScales {
+    float text = 1;
+    float email = 2;
+    float url = 3;
+    float phone = 4;
+    float spell = 5;
+    float spell_with_names = 6;
+    float callsign_long = 7;
+    float callsign_short = 8;
+}
+
+
+// endpoints of custom phonemizer
+service CustomPhonemizers{
+    rpc GetCustomPhonemizer (PhonemizerId) returns (CustomPhonemizerProto) {
+    };
+    rpc CreateCustomPhonemizer (CreateCustomPhonemizerRequest) returns (PhonemizerId) {
+    };
+    rpc DeleteCustomPhonemizer (PhonemizerId) returns (google.protobuf.Empty) {
+    };
+    rpc UpdateCustomPhonemizer (UpdateCustomPhonemizerRequest) returns (CustomPhonemizerProto) {
+    };
+    rpc ListCustomPhonemizer (ListCustomPhonemizerRequest) returns (ListCustomPhonemizerResponse) {
+    };
+}
+
+message PhonemizerId{
+    string id = 1;
+}
+
+message CustomPhonemizerProto {
+    string id = 1;
+    repeated Map maps = 2;
+}
+
+message Map{
+    string word = 1;
+    string phoneme_groups = 2;
+}
+
+message ListCustomPhonemizerResponse {
+    repeated CustomPhonemizerProto phonemizers = 1;
+}
+
+message ListCustomPhonemizerRequest{
+    repeated string pipeline_ids = 1;
+}
+
+message UpdateCustomPhonemizerRequest{
+    string id = 1;
+    // extend hard will add new words replacing those that are already in phonemizer
+    // extend soft will add new words only if they are not yet in phonemizer
+    // replace will clean all the words in the phonemizer and then add new ones
+    enum UpdateMethod{
+        extend_hard = 0;
+        extend_soft = 1;
+        replace = 2;
+    }
+    UpdateMethod update_method = 2;
+    repeated Map maps = 3;
+}
+
+message CreateCustomPhonemizerRequest {
+    string prefix = 1;
+    repeated Map maps = 2;
+}

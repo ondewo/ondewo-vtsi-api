@@ -1,4 +1,12 @@
 # Release History
+*****************
+
+## Release ONDEWO VTSI APIS 2.3.0
+
+## New features
+ * [[OND211-2039]](https://ondewo.atlassian.net/browse/OND211-2039) - Automated Release Process
+ * [[OND211-2039]](https://ondewo.atlassian.net/browse/OND211-2039) - added pre-commit hooks and adjusted files tot them
+
 
 *****************
 
