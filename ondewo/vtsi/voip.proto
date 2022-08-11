@@ -32,8 +32,8 @@ service VoipSessions {
   // Projects //
   ///////////
 
-  // Register an NLU project with configs.
-  rpc RegisterProjectConfigs (RegisterProjectConfigsRequest) returns (google.protobuf.Empty);
+  // Create an NLU project with configs.
+  rpc CreateProjectConfigs (CreateProjectConfigsRequest) returns (google.protobuf.Empty);
 
   // Get an NLU project with configs.
   rpc GetProjectConfigs (GetProjectConfigsRequest) returns (GetProjectConfigsResponse);
@@ -44,6 +44,14 @@ service VoipSessions {
   // Delete an NLU project with configs.
   rpc DeleteProjectConfigs (DeleteProjectConfigsRequest) returns (google.protobuf.Empty);
 
+
+  ///////////
+  // Asterisk //
+  ///////////
+
+  rpc DeployProject (DeployProjectRequest) returns (google.protobuf.Empty);
+
+  rpc UndeployProject (UndeployProjectRequest) returns (google.protobuf.Empty);
 
   ///////////
   // CALLS //
@@ -147,7 +155,7 @@ message AsteriskConfigs{
   int32 asterisk_port = 4;
 }
 
-message RegisterProjectConfigsRequest{
+message CreateProjectConfigsRequest{
   // Project id of the NLU project.
   string project_id = 1;
   // Project Configs.
@@ -176,6 +184,20 @@ message UpdateProjectConfigsRequest{
 }
 
 message DeleteProjectConfigsRequest{
+  // Project id of the NLU project.
+  string project_id = 1;
+}
+
+
+///////////
+// Asterisk //
+///////////
+
+message DeployProjectRequest{
+  // Project id of the NLU project.
+  string project_id = 1;
+}
+message UndeployProjectRequest{
   // Project id of the NLU project.
   string project_id = 1;
 }
