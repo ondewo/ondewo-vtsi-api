@@ -22,263 +22,279 @@ import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 import "ondewo/s2t/speech-to-text.proto";
 import "ondewo/t2s/text-to-speech.proto";
+import "ondewo/sip/sip.proto";
 
 
-// session manager for phone calls
-// endpoints of voip server that manages instances of ondewo-sip-sim, which handle individual calls
+// session manager for phone calls.
+// endpoints of voip server that manages instances of ondewo-sip, which handle individual calls
 service VoipSessions {
+  ///////////
+  // Projects //
+  ///////////
 
-      //////////////
-     // MANIFEST //
-    //////////////
+  // Create an NLU project with configs.
+  rpc CreateProjectConfigs (CreateProjectConfigsRequest) returns (google.protobuf.Empty);
+
+  // Get an NLU project with configs.
+  rpc GetProjectConfigs (GetProjectConfigsRequest) returns (GetProjectConfigsResponse);
+
+  // Update an NLU project with configs.
+  rpc UpdateProjectConfigs (UpdateProjectConfigsRequest) returns (google.protobuf.Empty);
+
+  // Delete an NLU project with configs.
+  rpc DeleteProjectConfigs (DeleteProjectConfigsRequest) returns (google.protobuf.Empty);
 
 
-    // run a manifest by its ID
-    rpc RunManifest (ManifestRequest) returns (RunManifestResponse) {
-          option (google.api.http) = {
-              post: "/v2/{session=projects/*/agent/sessions/*}:RunManifest"
-              body: "*"
-          };
-    }
+  ///////////
+  // Asterisk //
+  ///////////
 
-    // remove a manifest by its ID
-    rpc RemoveManifest (ManifestRequest) returns (RemoveManifestResponse) {
-          option (google.api.http) = {
-              post: "/v2/{session=projects/*/agent/sessions/*}:RemoveManifest"
-              body: "*"
-          };
-    }
+  rpc DeployProject (DeployProjectRequest) returns (google.protobuf.Empty);
 
-    // get all active manifests
-    rpc GetManifestIDs (GetManifestIDsRequest) returns (GetManifestIDsResponse) {
-          option (google.api.http) = {
-              post: "/v2/{session=projects/*/agent/sessions/*}:GetManifestIDs"
-              body: "*"
-          };
-    }
+  rpc UndeployProject (UndeployProjectRequest) returns (google.protobuf.Empty);
 
-      ///////////
-     // CALLS //
-    ///////////
+  ///////////
+  // CALLS //
+  ///////////
 
-    // start an ondewo-sip-sim instance that listens for calls with the given parameters
-    rpc StartCallInstance (StartCallInstanceRequest) returns (StartCallInstanceResponse) {
-        option (google.api.http) = {
-            post: "/v2/{session=projects/*/agent/sessions/*}:StartCallInstance"
-            body: "*"
-        };
-    }
+  // start multiple ondewo-sip listeners instances for a specific nlu-project.
+  rpc StartListeners (StartListenersRequest) returns (StartListenersResponse);
 
-    // stop/kill an ondewo-sip-sim listener instance
-    rpc StopCallInstance (StopCallInstanceRequest) returns (StopCallInstanceResponse) {
-      option (google.api.http) = {
-        post: "/v2/{session=projects/*/agent/sessions/*}:StopCallInstance"
-        body: "*"
-      };
-    }
+  // start multiple ondewo-sip callers instances for a specific nlu-project.
+  rpc StartCallers (StartCallersRequest) returns (StartCallersResponse);
 
-    // start multiple ondewo-sip-sim instances, callers and/or listeners
-    rpc StartMultipleCallInstances (StartMultipleCallInstancesRequest) returns (StartMultipleCallInstancesResponse) {
-        option (google.api.http) = {
-            post: "/v2/{session=projects/*/agent/sessions/*}:StartMultipleCallInstances"
-            body: "*"
-        };
-    }
+  // start multiple ondewo-sip callers instances with schedules
+  rpc StartScheduledCallers (StartScheduledCallersRequest) returns (google.protobuf.Empty);
 
-      /////////////
-     // GENERAL //
-    /////////////
+  // stop/kill a list of ondewo-sip listener or caller instances for a specific nlu-project.
+  // "stops both Listener and Caller calls"
+  rpc StopCalls (StopCallsRequest) returns (google.protobuf.Empty);
 
-    // get all call IDs
-    rpc GetCallIDs (GetCallIDsRequest) returns (GetCallIDsResponse) {
-          option (google.api.http) = {
-              post: "/v2/{session=projects/*/agent/sessions/*}:GetCallIDs"
-              body: "*"
-          };
-    }
+  // stop/kill all ondewo-sip listener or caller instance for a specific nlu-project.
+  // "stops all Listener and Caller calls"
+  rpc StopAllCalls (StopAllCallsRequest) returns (google.protobuf.Empty);
 
-    // get session ID
-    rpc GetSessionID (GetSessionIDRequest) returns (GetSessionIDResponse) {
-          option (google.api.http) = {
-              post: "/v2/{session=projects/*/agent/sessions/*}:GetSessionID"
-              body: "*"
-          };
-    }
+  // Transfer a call from a listener to another number for a specific nlu-project.
+  rpc TransferCall (TransferCallRequest) returns (google.protobuf.Empty);
 
-    // shutdown any deployed call with unhealthy status
-    rpc ShutdownUnhealthyCalls (ShutdownUnhealthyCallsRequest) returns (ShutdownUnhealthyCallsResponse) {
-          option (google.api.http) = {
-              post: "/v2/{session=projects/*/agent/sessions/*}:ShutdownUnhealthyCalls"
-              body: "*"
-          };
-    }
+  // ConferenceCall .. to be added in the future
+  //rpc ConferenceCall (ConferenceCallRequest) returns (google.protobuf.Empty);
 
-      ////////////
-     // STATUS //
-    ////////////
+  ////////////
+  // STATUS //
+  ////////////
 
-    rpc GetManifestStatus (VoipManifestStatusRequest) returns (VoipManifestStatus) {
-        option (google.api.http) = {
-            post: "/v2/{session=projects/*/agent/sessions/*}:GetManifestStatus"
-            body: "*"
-        };
-    }
+  // get call log for single call instance
+  rpc GetVoipCallInfo (GetVoipCallInfoRequest) returns (GetVoipCallInfoResponse);
+  // get call log for all call instances
+  rpc ListVoipCallInfo (ListVoipCallInfoRequest) returns (ListVoipCallInfoResponse);
 
-    rpc GetInstanceStatus (GetVoipStatusRequest) returns (VoipStatus) {
-        option (google.api.http) = {
-            post: "/v2/{session=projects/*/agent/sessions/*}:GetInstanceStatus"
-            body: "*"
-        };
-    }
+  /////////////////////////
+  // Retrieving Audio files //
+  ////////////////////////////
 
-    rpc UpdateServicesStatus (UpdateServicesStatusRequest) returns (UpdateServicesStatusResponse) {
-        option (google.api.http) = {
-            post: "/v2/{session=projects/*/agent/sessions/*}:UpdateServicesStatus"
-            body: "*"
-        };
-    }
-
-      //////////////////
-     // PRECONDITION //
-    //////////////////
-
-    rpc DeployPreconditionForWorkingSetup (DeployPreconditionRequest) returns (DeployPreconditionResponse) {
-        option (google.api.http) = {
-            post: "/v2/{session=projects/*/agent/sessions/*}:UpdateServicesStatus"
-            body: "*"
-        };
-    }
-
-      /////////////////////////
-     // Retrieving Audio files //
-    ////////////////////////////
-
-    // Get a s2t or t2s audio file for this conversation if it exists in Minio
-    rpc GetAudioFile (GetAudioFileRequest) returns (GetAudioFileResponse) {};
-    // Get The whole conversation in an audio file
-    rpc GetFullConversationAudioFile (GetFullConversationAudioFileRequest) returns (GetFullConversationAudioFileResponse) {};
+  // Get a s2t or t2s audio file for this conversation if it exists in Minio
+  rpc GetAudioFile (GetAudioFileRequest) returns (GetAudioFileResponse) {};
+  // Get The whole conversation in an audio file
+  rpc GetFullConversationAudioFile (GetFullConversationAudioFileRequest) returns (GetFullConversationAudioFileResponse) {};
 }
 
-  //////////////
- // MANIFEST //
-//////////////
 
-// manifest of calls to perform and listener-instances to start
-message VoipManifest {
 
-  // ID of the manifest
-  string manifest_id = 1;
+///////////
+// Projects //
+///////////
 
-  // ondewo-cai context information for all caller instances
-  repeated ondewo.nlu.Context contexts = 2;
+message ProjectConfigs{
+  // The maximum number of callers that this project can have.
+  int32 max_callers = 1;
+  // The maximum number of listeners that this project can have.
+  int32 max_listeners = 2;
+  // Configs to start the asterisk server.
+  AsteriskConfigs asterisk_configs = 3;
 
-  // list of calls to perform
-  repeated StartCallInstanceRequest callers = 9;
 }
 
-// request sent to a manifest-related endpoint with its ID
-message ManifestRequest {
-  // ID of the manifest to remove
-  string manifest_id = 1;
+message AsteriskConfigsVariables{
+  // SIP trunk username.
+  string sip_trunk_username = 1;
+  // SIP trunk password.
+  string sip_trunk_password = 2;
+  // SIP trunk host.
+  string sip_trunk_host = 3;
+  // Transfer number.
+  string transfer_number = 4;
+  // Transfer number host.
+  string transfer_number_host = 5;
+  // SIP trunk phone number.
+  string sip_trunk_phone_number = 6;
 }
 
-// response sent by the voip server when attempting to remove a manifest
-message RunManifestResponse {
-  ManifestRequest request = 1;
-  // whether the run operation started
-  bool started = 2;
+message AsteriskConfigsFiles{
+  // sip.conf file.
+  string sip_conf_file_string = 1;
+  // extensions.conf file.
+  string extensions_conf_file_string = 2;
+  // queues.conf file.
+  string queues_conf_file_string = 3;
+  // modules.conf file.
+  string modules_conf_file_string = 4;
 }
 
-// response sent by the voip server when attempting to remove a complete manifest
-message RemoveManifestResponse {
-  ManifestRequest request = 1;
-  // whether the removal succeeded
-  bool success = 2;
-  // responses
-  repeated StopCallInstanceResponse caller_responses = 9;
+message AsteriskConfigs{
+  oneof asterisk_configs_oneof{
+    // Configs as variables which will fill those variables using a blue print.
+    AsteriskConfigsVariables asterisk_configs_variables = 1;
+    // Configs as files which will set up the configs using those files.
+    AsteriskConfigsFiles asterisk_configs_files = 2;
+    // Configs will be mapped in from a preconfigured asterisk target directory.
+    string asterisk_configs_target_directory_name = 3;
+  }
+
+  // The port where Asterisk should start. {Optional}
+  int32 asterisk_port = 4;
 }
+
+message CreateProjectConfigsRequest{
+  // Project id of the NLU project.
+  string project_id = 1;
+  // Project Configs.
+  ProjectConfigs project_configs = 2;
+}
+
+message GetProjectConfigsRequest{
+  // Project id of the NLU project.
+  string project_id = 1;
+}
+
+message GetProjectConfigsResponse{
+  // Project Configs.
+  ProjectConfigs project_configs = 1;
+  // error messages if there are any.
+  string error_messages = 2;
+  // The request that was sent.
+  GetProjectConfigsRequest request = 3;
+}
+
+message UpdateProjectConfigsRequest{
+  // Project id of the NLU project.
+  string project_id = 1;
+  // Project Configs.
+  ProjectConfigs project_configs = 2;
+}
+
+message DeleteProjectConfigsRequest{
+  // Project id of the NLU project.
+  string project_id = 1;
+}
+
+
+///////////
+// Asterisk //
+///////////
+
+message DeployProjectRequest{
+  // Project id of the NLU project.
+  string project_id = 1;
+}
+message UndeployProjectRequest{
+  // Project id of the NLU project.
+  string project_id = 1;
+}
+
+/////////////
+// CALLERS //
+/////////////
 
 // base configuration of services (ondewo-cai, text-to-speech, speech-to-text, asterisk)
 message BaseServiceConfig{
   // service host IP
   string host = 1;
+
   // service port
   int32 port = 2;
+
   // Optional: GRPC cert for the given service
   string grpc_cert = 3;
 }
+
 message Credentials {
   string account_name = 1;
   string password = 2;
 }
+
 message NLUConfig{
   // Base config
   // Host, Port, and [Optional] GRPC cert
   BaseServiceConfig base_config = 1;
+
   oneof authentication {
-    Credentials credentials =2;
+    Credentials credentials = 2;
     string auth_token = 3;
   }
+
   // language code
   // See [Language Support](https://dialogflow.com/docs/reference/language)
   // for a list of the currently supported language codes.
   string language_code = 4;
-  // ondewo-cai project ID with which to perform the call
-  string project_id = 5;
+
   // name of intent to trigger at the start of a call
-  string initial_intent = 6;
+  string initial_intent = 5;
+
   // ondewo-cai list of contexts
-  repeated ondewo.nlu.Context contexts = 7;
+  repeated ondewo.nlu.Context contexts = 6;
 }
+
 message T2SConfig{
   // Host, Port, and [Optional] GRPC cert
   BaseServiceConfig base_config = 1;
   ondewo.t2s.RequestConfig t2s_config = 2;
 }
+
 message S2TConfig{
   // Host, Port, and [Optional] GRPC cert
   BaseServiceConfig base_config = 1;
   ondewo.s2t.TranscribeRequestConfig s2t_config = 2;
 }
+
 message AsteriskConfig{
   // Host, Port, and [Optional] GRPC cert
   BaseServiceConfig base_config = 1;
 }
-// It is common for both inbound and outbound / listener and caller
+
+// It is common for both listener and caller
 message CommonServicesConfigs{
   // Asterisk service configuration
   AsteriskConfig asterisk_config = 1;
+
   // ondewo-cai configuration
   NLUConfig cai_config = 2;
+
   // speech-to-text service configuration
   S2TConfig stt_config = 3;
+
   // text-to-speech service configuration
   T2SConfig tts_config = 4;
 
-  // csi service configuration
+  // CSI service configuration
   CsiConfig csi_config = 5;
 }
+
 // The base config is for both the listener and caller .. If you only provide it you will get a listener
 // You will need to provide SIPCallerConfig for the caller
-message SIPConfig{
-  // uuid of the call instance [optional] .. It's created if not provided
-  string call_id = 1;
-  // display name (or description) (can be filled with the NLU project name if not provided)
-  string call_display_name = 2;
+message SIPBaseConfig{
   // version of sip to use for call
-  string sip_sim_version = 3;
-  // you either use sip_account for an exact sip instance .. or sip_prefix to get one or instances matched
-  // prefix of sip name and sip container name
-  string sip_prefix = 4;
-  // name of the sip instance which is in Asterisk
-  string sip_account = 5;
-  // password dictionary is passed depending on the account info you have in asterisk's sip.conf
-  // dictionary of sip accounts and passwords that are in Asterisk
-  map<string, string> account_password_dictionary = 6;
+  string sip_sim_version = 1;
+
+}
+
+message SIPCallerConfig{
+  SIPBaseConfig sip_base_config = 1;
   // phone number to call
-  string phone_number = 7;
+  string phone_number = 2;
+
   // dictionary of sip headers that are sent on call
-  map<string, string> headers = 8;
+  map<string, string> headers = 3;
 }
 
 
@@ -288,21 +304,37 @@ message CsiConfig{
   T2sCallbacks t2s_callbacks = 3;
   AudioObjectStorageConfig audio_object_store_config = 4;
   MessageBrokerConfig message_broker_config = 5;
+  bool activate_control_messages = 6;
 
 }
 
 message AudioObjectStorageConfig{
+  bool activate_audio_object_storage = 1;
+  AudioObjectStorageServicesActivationConfig audio_object_storage_services_activation_config = 2;
   oneof audio_storage_config{
-    MinioConfig minio_config = 1;
+    MinioConfig minio_config = 3;
   }
+}
+
+message AudioObjectStorageServicesActivationConfig{
+  bool activate_s2t = 1;
+  bool activate_t2s = 2;
 }
 
 message MessageBrokerConfig{
+  bool activate_message_broker = 1;
+  MessageBrokerServicesActivationConfig message_broker_services_activation_config = 2;
   oneof message_broker_config{
-    RabbitMqConfig rabbit_mq_config = 1;
+    RabbitMqConfig rabbit_mq_config = 3;
   }
 }
 
+message MessageBrokerServicesActivationConfig{
+  bool activate_s2t = 1;
+  bool activate_nlu = 2;
+  bool activate_t2s = 3;
+  bool activate_sip = 4;
+}
 
 message RabbitMqConfig{
   // host where the rabbit mq server runs
@@ -354,187 +386,206 @@ message T2sCallbacks{
 
 }
 
-  /////////////
- // CALLERS //
-/////////////
+// request for starting a listener
+message StartListenerRequest {
 
-// parameters of a call that is to be performed
-// if phone number is attached, a caller instance will be started, otherwise a listener
-message StartCallInstanceRequest {
   // SIP service configuration
-  SIPConfig sip_config = 1;
+  SIPBaseConfig sip_config = 1;
+
   // Service Configs of Asterisk, cai,stt, tts
   CommonServicesConfigs services_configs = 2;
 }
 
-// response from the voip manager concerning the started call
-message StartCallInstanceResponse {
-  // request sent to the voip manager
-  StartCallInstanceRequest request = 1;
-    // success status
-  bool success = 2;
+// request for starting a caller
+message StartCallerRequest {
+
+  // SIP service configuration
+  SIPCallerConfig sip_config = 1;
+
+  // Service Configs of Asterisk, cai,stt, tts
+  CommonServicesConfigs services_configs = 2;
 }
 
-// collection of calls to start
-// if phone number is attached to the given call_id, caller instance will be started, otherwise listener
-message StartMultipleCallInstancesRequest {
-  repeated StartCallInstanceRequest requests = 1;
+// request for starting a scheduled call
+message StartScheduledCallerRequest {
+  // Normal start caller request
+  StartCallerRequest request = 1;
+  // Time you want the call to be scheduled at
+
+  google.protobuf.Timestamp scheduled_time = 2; ///////////////////////////////////////////
 }
 
-// response from the voip manager concerning the multiple started calls
-message StartMultipleCallInstancesResponse {
-  // request sent to the voip manager
-  StartMultipleCallInstancesRequest request = 1;
-    // success status - refers to general success: False if at least one call-deployment fails,
-    // True if all call were successful
-  bool success = 2;
+// collection of listeners to start
+message StartListenersRequest {
+  // ondewo-cai project ID with which to perform the call
+  string project_id = 1;
+  repeated StartListenerRequest requests = 2;
 }
 
-// parameters of the call to stop
-message StopCallInstanceRequest {
-  // calls can be stopped with either the call-ID or the ondewo-sip-sim ID
-  oneof id {
-    // ID of the call
-    string call_id = 1;
-
-    // ID of the ondewo-sip-sim instance
-    string sip_id = 2;
-  }
+message StartListenersResponse {
+  // ondewo-cai project ID.
+  string project_id = 1;
+  // The call ids that were assigned to each call
+  repeated string call_ids = 2;
 }
 
-// response from the voip manager concerning the stop-call request
-message StopCallInstanceResponse {
-  // request sent to the voip manager
-  StopCallInstanceRequest request = 1;
-  // whether listener was successfully stopped
-  bool success = 2;
-  // Optional. log message
-  string log_message = 3;
+// collection of callers to start
+message StartCallersRequest {
+  // ondewo-cai project ID with which to perform the call
+  string project_id = 1;
+  repeated StartCallerRequest requests = 2;
 }
 
-  ////////////
- // STATUS //
+message StartCallersResponse {
+  // ondewo-cai project ID.
+  string project_id = 1;
+  // The call ids that were assigned to each call
+  repeated string call_ids = 2;
+}
+
+// collection of scheduled callers to start
+message StartScheduledCallersRequest {
+  // ondewo-cai project ID with which to perform the call
+  string project_id = 1;
+  repeated StartScheduledCallerRequest requests = 2;
+}
+
+
+// parameters of the calls to stop
+message StopCallsRequest {
+  // ondewo-cai project ID.
+  string project_id = 1;
+  repeated string call_ids = 2;
+}
+
+// parameters of the calls to stop
+message StopAllCallsRequest {
+  // ondewo-cai project ID.
+  string project_id = 1;
+}
+
+message TransferCallRequest{
+  // ondewo-cai project ID.
+  string project_id = 1;
+  // call-ID to transfer
+  string call_id = 2;
+  // Number you want to be transfered too
+  string transfer_id = 3;
+}
+
+
+////////////
+// STATUS //
 ////////////
 
-// get the status of a full manifest of calls to perform and listeners to deploy
-message VoipManifestStatusRequest {
-  // ID of the manifest
-  string manifest_id = 1;
+// request to get a call instance's call logs
+message GetVoipCallInfoRequest {
+  // ondewo-cai project ID.
+  string project_id = 1;
+
+  // ID of the call
+  string call_id = 2;
+
+  /* you can specify the view to be shallow or full .. see above for more info*/
+  VoipCallInfoView voip_call_info_view = 3;
 }
 
-// status of all manifest-associated instances
-message VoipManifestStatus {
-  VoipManifestStatusRequest request = 1;
+enum VoipCallInfoView {
+  // Gives you all basic info like call_id, start_time, end_time, current sip status
+  Info_VIEW_SHALLOW = 0;
 
-  // status of caller instances
-  repeated VoipStatus calls_status = 2;
+  // Gives you the full info with status history and the services statuses
+  Info_VIEW_FULL = 1;
 }
 
-message GetVoipStatusRequest {
-  // monitoring can be done by call-ID or ondewo-sip-sim ID
-  oneof id {
-    // ID of the call
-    string call_id = 1;
-    // ID of the ondewo-sip-sim instance
-    string sip_id = 2;
-  }
+// response with call logs
+message GetVoipCallInfoResponse {
+  VoipCallInfo active_log = 1;
+
+  // logs of calls associated with call instance
+  repeated VoipCallInfo done_logs = 2;
 }
 
-// status of ondewo-sip-sim instance
-message VoipStatus {
-  // health status
-  bool healthy = 1;
+enum CallType {
+  both = 0;
 
-  // last log voip instance
-  string last_log = 2;
+  listener = 1;
+
+  caller = 2;
+}
+
+// call log
+message VoipCallInfo {
+  // id of call instance
+  string call_id = 1;
+
+  // sip account used
+  string sip_account = 2;
+
+  // container name which you get from docker ps
+  string container_name = 3;
+
+  // Listener or caller enum .. if not specified
+  CallType call_type = 4;
+
+  string phone_number = 5;
+
+  // start time of log
+  double start_time = 6;
+
+  // end time of log
+  double end_time = 7;
+
+  // current sip status
+  ondewo.sip.SipStatus sip_status = 8;
+
+  // sip status history
+  ondewo.sip.SipStatusHistoryResponse sip_status_history = 9;
+
+  // All container health statuses
+  AllServicesStatuses services_statuses = 10;
+}
+
+message ListVoipCallInfoRequest{
+  // ondewo-cai project ID.
+  string project_id = 1;
+
+  // you can specify the view to be shallow or full .. see above for more info
+  VoipCallInfoView voip_call_info_view = 2;
+
+  // both by default or listener or caller
+  CallType call_type = 3;
+}
+
+message ListVoipCallInfoResponse{
+  repeated VoipCallInfo voip_info = 1;
+}
+
+// status of ondewo-sip instance
+message AllServicesStatuses {
+  // health status for sip
+  ServiceStatus status_sip = 1;
 
   // status of the associated asterisk server
-  ServiceStatus status_asterisk = 3;
+  ServiceStatus status_asterisk = 2;
 
   // status of the cai instance associated with the call
-  ServiceStatus status_cai = 4;
+  ServiceStatus status_cai = 3;
 
   // status of the associated speech-to-text service
-  ServiceStatus status_stt = 5;
+  ServiceStatus status_stt = 4;
 
   // status of the associated text-to-speech service
-  ServiceStatus status_tts = 6;
-
+  ServiceStatus status_tts = 5;
 }
 
-// status of ondewo-cai
+// status of service
 message ServiceStatus {
   // health status
   bool healthy = 1;
-
-  // last log entry
-  string last_log = 2;
+  // error messages if you have any so if it's unhealthy
+  string error_messsages = 2;
 }
-
-message UpdateServicesStatusRequest {
-  oneof id {
-    // ID of the call
-    string call_id = 1;
-    // ID of the ondewo-sip-sim instance
-    string sip_id = 2;
-    // ID of manifest
-    string manifest_id = 3;
-  }
-}
-
-message UpdateServicesStatusResponse {
-    google.protobuf.Empty empty = 1;
-}
-
-  //////////////////
- // PRECONDITION //
-//////////////////
-
-message DeployPreconditionRequest {
-  // version of sip-sim to use for call
-  string sip_sim_version = 1;
-
-  // asterisk service configuration
-  AsteriskConfig asterisk_config = 2;
-}
-
-message DeployPreconditionResponse {
-  bool success = 1;
-}
-
-message GetManifestIDsRequest {
-  google.protobuf.Empty empty = 1;
-}
-
-message GetManifestIDsResponse {
-  repeated string manifest_ids = 1;
-}
-
-message GetCallIDsRequest {
-  google.protobuf.Empty empty = 1;
-}
-
-message GetCallIDsResponse {
-  repeated string call_ids = 1;
-}
-
-message GetSessionIDRequest {
-  string call_id = 1;
-}
-
-message GetSessionIDResponse {
-  string call_id = 1;
-  string session_id = 2;
-}
-
-message ShutdownUnhealthyCallsRequest {
-  google.protobuf.Empty empty = 1;
-}
-
-message ShutdownUnhealthyCallsResponse {
-  bool success = 1;
-}
-
 
 /////////////////////////
 // Retrieving Audio files //
