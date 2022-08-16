@@ -3,24 +3,16 @@
 
 ## Release ONDEWO VTSI APIS 3.0.0
 
-## New features
-* New VTSI API release 3.0.0
-
-*****************
-## Release ONDEWO VTSI APIS 2.3.0
-
-## New features
+## New features 
+ * New VTSI API release 3.0.0
  * [[OND211-2039]](https://ondewo.atlassian.net/browse/OND211-2039) - Automated Release Process
  * [[OND211-2039]](https://ondewo.atlassian.net/browse/OND211-2039) - added pre-commit hooks and adjusted files tot them
-
 
 *****************
 ## Release ONDEWO VTSI APIS 2.3.0
 
 ## New features
 Added endpoints for minio data retrieval
-
-
 
 *****************
 
