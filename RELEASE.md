@@ -1,12 +1,37 @@
 # Release History
 *****************
 
-## Release ONDEWO VTSI APIS 2.3.0
+## Release ONDEWO VTSI APIS 3.0.0
 
-## New features
+## New features 
+ * New VTSI API release 3.0.0
  * [[OND211-2039]](https://ondewo.atlassian.net/browse/OND211-2039) - Automated Release Process
  * [[OND211-2039]](https://ondewo.atlassian.net/browse/OND211-2039) - added pre-commit hooks and adjusted files tot them
 
+*****************
+## Release ONDEWO VTSI APIS 2.3.0
+
+## New features
+Added endpoints for minio data retrieval
+
+*****************
+
+## Release ONDEWO VTSI APIS 2.2.0
+
+## New features
+CSI configs can be passed like Rabbit mq configs
+
+## Release ONDEWO VTSI APIS 2.1.0
+
+## New features
+CSI configs can be passed like MINIO configs
+
+*****************
+
+## Release ONDEWO VTSI APIS 2.0.0
+
+## New features
+Adaptation to new s2t and t2s configs
 
 *****************
 

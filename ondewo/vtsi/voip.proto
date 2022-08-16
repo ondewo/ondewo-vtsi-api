@@ -32,45 +32,53 @@ service VoipSessions {
   // Projects //
   ///////////
 
-  // Register an NLU project with configs.
-  rpc RegisterProjectConfigs (RegisterProjectConfigsRequest) returns (RegisterProjectConfigsResponse);
+  // Create an NLU project with configs.
+  rpc CreateProjectConfigs (CreateProjectConfigsRequest) returns (google.protobuf.Empty);
 
   // Get an NLU project with configs.
   rpc GetProjectConfigs (GetProjectConfigsRequest) returns (GetProjectConfigsResponse);
 
   // Update an NLU project with configs.
-  rpc UpdateProjectConfigs (UpdateProjectConfigsRequest) returns (UpdateProjectConfigsResponse);
+  rpc UpdateProjectConfigs (UpdateProjectConfigsRequest) returns (google.protobuf.Empty);
 
   // Delete an NLU project with configs.
-  rpc DeleteProjectConfigs (DeleteProjectConfigsRequest) returns (DeleteProjectConfigsResponse);
+  rpc DeleteProjectConfigs (DeleteProjectConfigsRequest) returns (google.protobuf.Empty);
 
+
+  ///////////
+  // Asterisk //
+  ///////////
+
+  rpc DeployProject (DeployProjectRequest) returns (google.protobuf.Empty);
+
+  rpc UndeployProject (UndeployProjectRequest) returns (google.protobuf.Empty);
 
   ///////////
   // CALLS //
   ///////////
 
-  // start multiple ondewo-sip listeners instances
+  // start multiple ondewo-sip listeners instances for a specific nlu-project.
   rpc StartListeners (StartListenersRequest) returns (StartListenersResponse);
 
-  // start multiple ondewo-sip callers instances
+  // start multiple ondewo-sip callers instances for a specific nlu-project.
   rpc StartCallers (StartCallersRequest) returns (StartCallersResponse);
 
   // start multiple ondewo-sip callers instances with schedules
-  rpc StartScheduledCallers (StartScheduledCallersRequest) returns (StartScheduledCallersResponse);
+  rpc StartScheduledCallers (StartScheduledCallersRequest) returns (google.protobuf.Empty);
 
-  // stop/kill a list of ondewo-sip listener or caller instances
-  // "stops both Inbound and Outbound calls"
-  rpc StopCalls (StopCallsRequest) returns (StopCallsResponse);
+  // stop/kill a list of ondewo-sip listener or caller instances for a specific nlu-project.
+  // "stops both Listener and Caller calls"
+  rpc StopCalls (StopCallsRequest) returns (google.protobuf.Empty);
 
-  // stop/kill all ondewo-sip listener or caller instance
-  // "stops all Inbound and Outbound calls"
-  rpc StopAllCalls (google.protobuf.Empty) returns (StopAllCallsResponse);
+  // stop/kill all ondewo-sip listener or caller instance for a specific nlu-project.
+  // "stops all Listener and Caller calls"
+  rpc StopAllCalls (StopAllCallsRequest) returns (google.protobuf.Empty);
 
-  // Transfer a call from a listener to another number
-  rpc TransferCall (TransferCallRequest) returns (TransferCallResponse);
+  // Transfer a call from a listener to another number for a specific nlu-project.
+  rpc TransferCall (TransferCallRequest) returns (google.protobuf.Empty);
 
   // ConferenceCall .. to be added in the future
-  //rpc ConferenceCall (ConferenceCallRequest) returns (ConferenceCallResponse);
+  //rpc ConferenceCall (ConferenceCallRequest) returns (google.protobuf.Empty);
 
   ////////////
   // STATUS //
@@ -80,16 +88,6 @@ service VoipSessions {
   rpc GetVoipCallInfo (GetVoipCallInfoRequest) returns (GetVoipCallInfoResponse);
   // get call log for all call instances
   rpc ListVoipCallInfo (ListVoipCallInfoRequest) returns (ListVoipCallInfoResponse);
-
-  ////////////
-  // Helpers //
-  ////////////
-
-  // Gets all the sip accounts that are active
-  rpc GetSipAccounts (google.protobuf.Empty) returns (GetSipAccountsResponse);
-
-  // get a call id from a sip account
-  rpc GetCallIDsFromSipAccount (GetCallIDsFromSipAccountRequest) returns (GetCallIDsFromSipAccountResponse);
 
   /////////////////////////
   // Retrieving Audio files //
@@ -157,19 +155,11 @@ message AsteriskConfigs{
   int32 asterisk_port = 4;
 }
 
-message RegisterProjectConfigsRequest{
+message CreateProjectConfigsRequest{
   // Project id of the NLU project.
   string project_id = 1;
   // Project Configs.
   ProjectConfigs project_configs = 2;
-}
-message RegisterProjectConfigsResponse{
-  // The request that was sent.
-  RegisterProjectConfigsRequest request = 1;
-  // success status.
-  bool success = 2;
-  // error messages if there are any.
-  string error_messages = 3;
 }
 
 message GetProjectConfigsRequest{
@@ -193,30 +183,24 @@ message UpdateProjectConfigsRequest{
   ProjectConfigs project_configs = 2;
 }
 
-message UpdateProjectConfigsResponse{
-  // The request that was sent.
-  UpdateProjectConfigsRequest request = 1;
-  // success status.
-  bool success = 2;
-  // error messages if there are any.
-  string error_messages = 3;
-}
-
 message DeleteProjectConfigsRequest{
   // Project id of the NLU project.
   string project_id = 1;
 }
 
-message DeleteProjectConfigsResponse{
-  // The request that was sent.
-  DeleteProjectConfigsRequest request = 1;
-  // success status.
-  bool success = 2;
-  // error messages if there are any.
-  string error_messages = 3;
+
+///////////
+// Asterisk //
+///////////
+
+message DeployProjectRequest{
+  // Project id of the NLU project.
+  string project_id = 1;
 }
-
-
+message UndeployProjectRequest{
+  // Project id of the NLU project.
+  string project_id = 1;
+}
 
 /////////////
 // CALLERS //
@@ -254,14 +238,11 @@ message NLUConfig{
   // for a list of the currently supported language codes.
   string language_code = 4;
 
-  // ondewo-cai project ID with which to perform the call
-  string project_id = 5;
-
   // name of intent to trigger at the start of a call
-  string initial_intent = 6;
+  string initial_intent = 5;
 
   // ondewo-cai list of contexts
-  repeated ondewo.nlu.Context contexts = 7;
+  repeated ondewo.nlu.Context contexts = 6;
 }
 
 message T2SConfig{
@@ -281,7 +262,7 @@ message AsteriskConfig{
   BaseServiceConfig base_config = 1;
 }
 
-// It is common for both inbound and outbound / listener and caller
+// It is common for both listener and caller
 message CommonServicesConfigs{
   // Asterisk service configuration
   AsteriskConfig asterisk_config = 1;
@@ -302,25 +283,9 @@ message CommonServicesConfigs{
 // The base config is for both the listener and caller .. If you only provide it you will get a listener
 // You will need to provide SIPCallerConfig for the caller
 message SIPBaseConfig{
-  // uuid of the call instance [optional] .. It's created if not provided
-  string call_id = 1;
-
-  // display name (or description) (can be filled with the NLU project name if not provided)
-  string call_display_name = 2;
-
   // version of sip to use for call
-  string sip_sim_version = 3;
+  string sip_sim_version = 1;
 
-  // you either use sip_account for an exact sip instance .. or sip_prefix to get one or instances matched
-  // prefix of sip name and sip container name
-  string sip_prefix = 4;
-
-  // name of the sip instance which is in Asterisk
-  string sip_account = 5;
-
-  // password dictionary is passed depending on the account info you have in asterisk's sip.conf
-  // dictionary of sip accounts and passwords that are in Asterisk
-  map<string, string> account_password_dictionary = 6;
 }
 
 message SIPCallerConfig{
@@ -344,10 +309,8 @@ message CsiConfig{
 }
 
 message AudioObjectStorageConfig{
-  oneof activate_audio_object_storage_oneof{
-    bool activate_audio_object_storage = 1;
-    AudioObjectStorageServicesActivationConfig audio_object_storage_services_activation_config = 2;
-  }
+  bool activate_audio_object_storage = 1;
+  AudioObjectStorageServicesActivationConfig audio_object_storage_services_activation_config = 2;
   oneof audio_storage_config{
     MinioConfig minio_config = 3;
   }
@@ -359,10 +322,8 @@ message AudioObjectStorageServicesActivationConfig{
 }
 
 message MessageBrokerConfig{
-  oneof activate_message_broker_oneof{
-    bool activate_message_broker = 1;
-    MessageBrokerServicesActivationConfig message_broker_services_activation_config = 2;
-  }
+  bool activate_message_broker = 1;
+  MessageBrokerServicesActivationConfig message_broker_services_activation_config = 2;
   oneof message_broker_config{
     RabbitMqConfig rabbit_mq_config = 3;
   }
@@ -435,18 +396,6 @@ message StartListenerRequest {
   CommonServicesConfigs services_configs = 2;
 }
 
-// response from the voip manager concerning the started listener
-message StartListenerResponse {
-  // request sent to the voip manager
-  StartListenerRequest request = 1;
-
-  // success status
-  bool success = 2;
-
-  // error messages if there are any
-  string error_messages = 3;
-}
-
 // request for starting a caller
 message StartCallerRequest {
 
@@ -457,19 +406,6 @@ message StartCallerRequest {
   CommonServicesConfigs services_configs = 2;
 }
 
-// response from the voip manager concerning the started caller
-message StartCallerResponse {
-  // request sent to the voip manager
-  StartCallerRequest request = 1;
-
-  // success status
-  bool success = 2;
-
-  // error messages if there are any
-  string error_messages = 3;
-}
-
-
 // request for starting a scheduled call
 message StartScheduledCallerRequest {
   // Normal start caller request
@@ -479,134 +415,64 @@ message StartScheduledCallerRequest {
   google.protobuf.Timestamp scheduled_time = 2; ///////////////////////////////////////////
 }
 
-// response from the voip manager concerning the scheduled call
-message StartScheduledCallerResponse {
-  // request sent to the voip manager
-  StartScheduledCallerRequest request = 1;
-
-  // success status
-  bool success = 2;
-
-  // error messages if there are any
-  string error_messages = 3;
-}
-
 // collection of listeners to start
 message StartListenersRequest {
-  repeated StartListenerRequest requests = 1;
+  // ondewo-cai project ID with which to perform the call
+  string project_id = 1;
+  repeated StartListenerRequest requests = 2;
 }
 
-// response from the voip manager concerning the multiple started listeners
 message StartListenersResponse {
-  // request sent to the voip manager
-  StartListenersRequest request = 1;
-  // success status - refers to general success: False if at least one call-deployment fails,
-
-  // True if all call were successful
-  bool success = 2;
-
-  // error messages if there are any
-  string error_messages = 3;
+  // ondewo-cai project ID.
+  string project_id = 1;
+  // The call ids that were assigned to each call
+  repeated string call_ids = 2;
 }
 
 // collection of callers to start
 message StartCallersRequest {
-  repeated StartCallerRequest requests = 1;
+  // ondewo-cai project ID with which to perform the call
+  string project_id = 1;
+  repeated StartCallerRequest requests = 2;
 }
 
-// response from the voip manager concerning the multiple started callers
 message StartCallersResponse {
-  // request sent to the voip manager
-  StartCallersRequest request = 1;
-  // success status - refers to general success: False if at least one call-deployment fails,
-
-  // True if all call were successful
-  bool success = 2;
-
-  // error messages if there are any
-  string error_messages = 3;
+  // ondewo-cai project ID.
+  string project_id = 1;
+  // The call ids that were assigned to each call
+  repeated string call_ids = 2;
 }
 
 // collection of scheduled callers to start
 message StartScheduledCallersRequest {
-  repeated StartScheduledCallerRequest requests = 1;
+  // ondewo-cai project ID with which to perform the call
+  string project_id = 1;
+  repeated StartScheduledCallerRequest requests = 2;
 }
 
-// response from the voip manager concerning the multiple scheduled callers
-message StartScheduledCallersResponse {
-  // request sent to the voip manager
-  StartScheduledCallersRequest request = 1;
-  // success status - refers to general success: False if at least one call-deployment fails,
-
-  // True if all call were successful
-  bool success = 2;
-
-  // error messages if there are any
-  string error_messages = 3;
-}
-
-// parameters of the call to stop
-message StopCallRequest {
-  // calls can be stopped with either the call-ID or the ondewo-sip ID
-  // The last field you set is the value that is set
-  oneof id {
-    // ID of the call
-    string call_id = 1;
-
-    // Account of the ondewo-sip instance
-    string sip_account = 2;
-  }
-}
-
-// response from the voip manager concerning the stop-call request
-message StopCallResponse {
-  // request sent to the voip manager
-  StopCallRequest request = 1;
-
-  // whether listener was successfully stopped
-  bool success = 2;
-
-  // error messages if there are any
-  string error_messages = 3;
-  // Optional. log message
-  string log_message = 4;
-}
 
 // parameters of the calls to stop
 message StopCallsRequest {
-  repeated StopCallRequest requests = 1;
+  // ondewo-cai project ID.
+  string project_id = 1;
+  repeated string call_ids = 2;
 }
 
-// response from the voip manager concerning the stop-calls request
-message StopCallsResponse {
-  repeated StopCallResponse responses = 1;
-}
-
-message StopAllCallsResponse{
-  repeated StopCallResponse stop_call_responses = 1;
+// parameters of the calls to stop
+message StopAllCallsRequest {
+  // ondewo-cai project ID.
+  string project_id = 1;
 }
 
 message TransferCallRequest{
-  oneof id {
-    // ID of the call
-    string call_id = 1;
-    // Account of the ondewo-sip instance
-    string sip_account = 2;
-  }
+  // ondewo-cai project ID.
+  string project_id = 1;
+  // call-ID to transfer
+  string call_id = 2;
   // Number you want to be transfered too
   string transfer_id = 3;
 }
 
-message TransferCallResponse{
-  // request sent to the voip manager
-  TransferCallRequest request = 1;
-
-  // whether transfer request was successfully sent
-  bool success = 2;
-
-  // error messages if there are any
-  string error_messages = 3;
-}
 
 ////////////
 // STATUS //
@@ -614,19 +480,14 @@ message TransferCallResponse{
 
 // request to get a call instance's call logs
 message GetVoipCallInfoRequest {
-  // monitoring can be done by call-ID or ondewo-sip ID
-  // The last field you set is the value that is set
-  oneof id {
-    // ID of the call
-    string call_id = 1;
-    // Account of the ondewo-sip instance
-    string sip_account = 2;
-  }
+  // ondewo-cai project ID.
+  string project_id = 1;
 
-  /* you can specify the view to be shallow or full .. see above for more info*/ VoipCallInfoView voip_call_info_view = 3;
+  // ID of the call
+  string call_id = 2;
 
-  // both by default or inbound or outbound
-  CallType call_type = 4;
+  /* you can specify the view to be shallow or full .. see above for more info*/
+  VoipCallInfoView voip_call_info_view = 3;
 }
 
 enum VoipCallInfoView {
@@ -648,9 +509,9 @@ message GetVoipCallInfoResponse {
 enum CallType {
   both = 0;
 
-  inbound = 1;
+  listener = 1;
 
-  outbound = 2;
+  caller = 2;
 }
 
 // call log
@@ -661,39 +522,39 @@ message VoipCallInfo {
   // sip account used
   string sip_account = 2;
 
-  // display name (or description) (can be filled with the NLU project name if not provided)
-  string display_name = 3;
-
   // container name which you get from docker ps
-  string container_name = 4;
+  string container_name = 3;
 
-  // Inbound or outbound enum .. if not specified
-  CallType call_type = 5;
+  // Listener or caller enum .. if not specified
+  CallType call_type = 4;
 
-  string phone_number = 6;
+  string phone_number = 5;
 
   // start time of log
-  double start_time = 7;
+  double start_time = 6;
 
   // end time of log
-  double end_time = 8;
+  double end_time = 7;
 
   // current sip status
-  ondewo.sip.SipStatus sip_status = 9;
+  ondewo.sip.SipStatus sip_status = 8;
 
   // sip status history
-  ondewo.sip.SipStatusHistoryResponse sip_status_history = 10;
+  ondewo.sip.SipStatusHistoryResponse sip_status_history = 9;
 
   // All container health statuses
-  AllServicesStatuses services_statuses = 11;
+  AllServicesStatuses services_statuses = 10;
 }
 
 message ListVoipCallInfoRequest{
-  // you can specify the view to be shallow or full .. see above for more info
-  VoipCallInfoView voip_call_info_view = 1;
+  // ondewo-cai project ID.
+  string project_id = 1;
 
-  // both by default or inbound or outbound
-  CallType call_type = 2;
+  // you can specify the view to be shallow or full .. see above for more info
+  VoipCallInfoView voip_call_info_view = 2;
+
+  // both by default or listener or caller
+  CallType call_type = 3;
 }
 
 message ListVoipCallInfoResponse{
@@ -724,25 +585,6 @@ message ServiceStatus {
   bool healthy = 1;
   // error messages if you have any so if it's unhealthy
   string error_messsages = 2;
-}
-
-
-////////////
-// Helpers //
-////////////
-
-
-message GetSipAccountsResponse{
-  repeated string asterisk_accounts = 1;
-}
-
-
-message GetCallIDsFromSipAccountRequest{
-  repeated string asterisk_account = 1;
-}
-
-message GetCallIDsFromSipAccountResponse{
-  repeated string call_ids = 1;
 }
 
 /////////////////////////
