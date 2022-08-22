@@ -21,6 +21,9 @@
     - [ExportBenchmarkAgentResponse.TrainingPhrasesEntry](#ondewo.nlu.ExportBenchmarkAgentResponse.TrainingPhrasesEntry)
     - [ExportResourcesRequest](#ondewo.nlu.ExportResourcesRequest)
     - [ExportResourcesResponse](#ondewo.nlu.ExportResourcesResponse)
+    - [FullTextSearchRequest](#ondewo.nlu.FullTextSearchRequest)
+    - [FullTextSearchResponse](#ondewo.nlu.FullTextSearchResponse)
+    - [FullTextSearchResponse.ResponseEntry](#ondewo.nlu.FullTextSearchResponse.ResponseEntry)
     - [GetAgentRequest](#ondewo.nlu.GetAgentRequest)
     - [GetAgentStatisticsRequest](#ondewo.nlu.GetAgentStatisticsRequest)
     - [GetAgentStatisticsResponse](#ondewo.nlu.GetAgentStatisticsResponse)
@@ -52,6 +55,7 @@
     - [AgentSorting.AgentSortingField](#ondewo.nlu.AgentSorting.AgentSortingField)
     - [AgentStatus](#ondewo.nlu.AgentStatus)
     - [AgentView](#ondewo.nlu.AgentView)
+    - [FullTextSearchRequest.QueryType](#ondewo.nlu.FullTextSearchRequest.QueryType)
     - [InitiationProtocol](#ondewo.nlu.InitiationProtocol)
     - [ModelStatus.StatusName](#ondewo.nlu.ModelStatus.StatusName)
     - [ReportFormat](#ondewo.nlu.ReportFormat)
@@ -901,6 +905,56 @@ curl \ 'https://dialogflow.googleapis.com/v2/projects/<project_name>/agent:expor
 
 
 
+<a name="ondewo.nlu.FullTextSearchRequest"></a>
+
+### FullTextSearchRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Required. The project that the agent is associated with. Format: `projects/<Project ID>/agent`. |
+| language_code | [string](#string) |  | In which language to search for |
+| query_type | [FullTextSearchRequest.QueryType](#ondewo.nlu.FullTextSearchRequest.QueryType) |  | What is the type of the query that needs to be sent to elasticsearch |
+| term | [string](#string) |  | What to search for in the elastic server |
+| page_token | [string](#string) |  | Composite string: current_index-0--page_size-10 |
+
+
+
+
+
+
+<a name="ondewo.nlu.FullTextSearchResponse"></a>
+
+### FullTextSearchResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| response | [FullTextSearchResponse.ResponseEntry](#ondewo.nlu.FullTextSearchResponse.ResponseEntry) | repeated |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.FullTextSearchResponse.ResponseEntry"></a>
+
+### FullTextSearchResponse.ResponseEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [google.protobuf.Any](#google.protobuf.Any) |  |  |
+
+
+
+
+
+
 <a name="ondewo.nlu.GetAgentRequest"></a>
 
 ### GetAgentRequest
@@ -1403,6 +1457,27 @@ The request message for [Agents.TrainAgent][google.cloud.dialogflow.v2.Agents.Tr
 
 
 
+<a name="ondewo.nlu.FullTextSearchRequest.QueryType"></a>
+
+### FullTextSearchRequest.QueryType
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| ALL | 0 |  |
+| OndewoEntityQuery | 1 |  |
+| OndewoEntityTypeQuery | 2 |  |
+| OndewoEntitySynonymQuery | 3 |  |
+| OndewoIntentQuery | 4 |  |
+| OndewoIntentContextInQuery | 5 |  |
+| OndewoIntentContextOutQuery | 6 |  |
+| OndewoIntentUsersaysQuery | 7 |  |
+| OndewoIntentTagsQuery | 8 |  |
+| OndewoIntentParametersQuery | 9 |  |
+| OndewoIntentResponseQuery | 10 |  |
+
+
+
 <a name="ondewo.nlu.InitiationProtocol"></a>
 
 ### InitiationProtocol
@@ -1560,6 +1635,7 @@ Operation <response: [google.protobuf.Empty][google.protobuf.Empty], metadata: [
 | GetModelStatuses | [GetModelStatusesRequest](#ondewo.nlu.GetModelStatusesRequest) | [GetModelStatusesResponse](#ondewo.nlu.GetModelStatusesResponse) | Get statuses of models related to project |
 | GetPlatformMapping | [GetPlatformMappingRequest](#ondewo.nlu.GetPlatformMappingRequest) | [PlatformMapping](#ondewo.nlu.PlatformMapping) | Get all set platform name mappings for an Agent |
 | SetPlatformMapping | [PlatformMapping](#ondewo.nlu.PlatformMapping) | [PlatformMapping](#ondewo.nlu.PlatformMapping) | Set platform name mappings for an Agent |
+| GetFullTextSearch | [FullTextSearchRequest](#ondewo.nlu.FullTextSearchRequest) | [FullTextSearchResponse](#ondewo.nlu.FullTextSearchResponse) | Full text search endpoint |
 
  <!-- end services -->
 
@@ -4726,7 +4802,7 @@ network API call.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should have the format of `operations/some/unique/name`. |
-| metadata | [google.protobuf.Any](#google.protobuf.Any) |  | Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any. |
+| metadata | [OperationMetadata](#ondewo.nlu.OperationMetadata) |  | Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any. |
 | done | [bool](#bool) |  | If the value is `false`, it means the operation is still in progress. If true, the operation is completed, and either `error` or `response` is available. |
 | error | [google.rpc.Status](#google.rpc.Status) |  | The error result of the operation in case of failure or cancellation. |
 | response | [google.protobuf.Any](#google.protobuf.Any) |  | The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`. |
