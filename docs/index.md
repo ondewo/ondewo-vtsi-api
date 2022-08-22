@@ -580,7 +580,7 @@
     - [StopCallsRequest](#ondewo.vtsi.StopCallsRequest)
     - [T2SConfig](#ondewo.vtsi.T2SConfig)
     - [T2sCallbacks](#ondewo.vtsi.T2sCallbacks)
-    - [TransferCallRequest](#ondewo.vtsi.TransferCallRequest)
+    - [TransferCallsRequest](#ondewo.vtsi.TransferCallsRequest)
     - [UndeployProjectRequest](#ondewo.vtsi.UndeployProjectRequest)
     - [UpdateProjectConfigsRequest](#ondewo.vtsi.UpdateProjectConfigsRequest)
     - [VoipCallInfo](#ondewo.vtsi.VoipCallInfo)
@@ -9839,17 +9839,17 @@ parameters of the calls to stop
 
 
 
-<a name="ondewo.vtsi.TransferCallRequest"></a>
+<a name="ondewo.vtsi.TransferCallsRequest"></a>
 
-### TransferCallRequest
+### TransferCallsRequest
 
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | project_id | [string](#string) |  | ondewo-cai project ID. |
-| call_id | [string](#string) |  | call-ID to transfer |
-| transfer_id | [string](#string) |  | Number you want to be transfered too |
+| call_id | [string](#string) | repeated | call-ID to transfer |
+| transfer_id | [string](#string) | repeated | Number you want to be transfered too |
 
 
 
@@ -9965,7 +9965,7 @@ Projects //
 | StartScheduledCallers | [StartScheduledCallersRequest](#ondewo.vtsi.StartScheduledCallersRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | start multiple ondewo-sip callers instances with schedules |
 | StopCalls | [StopCallsRequest](#ondewo.vtsi.StopCallsRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | stop/kill a list of ondewo-sip listener or caller instances for a specific nlu-project. "stops both Listener and Caller calls" |
 | StopAllCalls | [StopAllCallsRequest](#ondewo.vtsi.StopAllCallsRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | stop/kill all ondewo-sip listener or caller instance for a specific nlu-project. "stops all Listener and Caller calls" |
-| TransferCall | [TransferCallRequest](#ondewo.vtsi.TransferCallRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Transfer a call from a listener to another number for a specific nlu-project. |
+| TransferCalls | [TransferCallsRequest](#ondewo.vtsi.TransferCallsRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Transfer a call from a listener to another number for a specific nlu-project. |
 | GetVoipCallInfo | [GetVoipCallInfoRequest](#ondewo.vtsi.GetVoipCallInfoRequest) | [GetVoipCallInfoResponse](#ondewo.vtsi.GetVoipCallInfoResponse) | get call log for single call instance |
 | ListVoipCallInfo | [ListVoipCallInfoRequest](#ondewo.vtsi.ListVoipCallInfoRequest) | [ListVoipCallInfoResponse](#ondewo.vtsi.ListVoipCallInfoResponse) | get call log for all call instances |
 | GetAudioFile | [GetAudioFileRequest](#ondewo.vtsi.GetAudioFileRequest) | [GetAudioFileResponse](#ondewo.vtsi.GetAudioFileResponse) | Get a s2t or t2s audio file for this conversation if it exists in Minio |

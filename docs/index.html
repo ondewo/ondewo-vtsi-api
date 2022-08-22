@@ -2838,7 +2838,7 @@
                       
                         <li><a href="#ondewo.vtsi.VoipSessions.StopAllCalls" class="title-badge method">StopAllCalls</a></li>
                       
-                        <li><a href="#ondewo.vtsi.VoipSessions.TransferCall" class="title-badge method">TransferCall</a></li>
+                        <li><a href="#ondewo.vtsi.VoipSessions.TransferCalls" class="title-badge method">TransferCalls</a></li>
                       
                         <li><a href="#ondewo.vtsi.VoipSessions.GetVoipCallInfo" class="title-badge method">GetVoipCallInfo</a></li>
                       
@@ -3059,7 +3059,7 @@
                       </li>
                     
                       <li>
-                        <a href="#ondewo.vtsi.TransferCallRequest" class="title-badge message">TransferCallRequest</a>
+                        <a href="#ondewo.vtsi.TransferCallsRequest" class="title-badge message">TransferCallsRequest</a>
                       </li>
                     
                       <li>
@@ -24187,9 +24187,9 @@ pipelines with the specifications received in the ListT2sPipelinesRequest. </p><
           stop/kill all ondewo-sip listener or caller instance for a specific nlu-project.
 "stops all Listener and Caller calls"
         
-          <h4 id="ondewo.vtsi.VoipSessions.TransferCall" class="title-badge method">TransferCall</h4>
+          <h4 id="ondewo.vtsi.VoipSessions.TransferCalls" class="title-badge method">TransferCalls</h4>
 
-          <pre>rpc TransferCall (<a href="#ondewo.vtsi.TransferCallRequest">TransferCallRequest</a>) returns (<a href="#google.protobuf.Empty">.google.protobuf.Empty)</a></pre>
+          <pre>rpc TransferCalls (<a href="#ondewo.vtsi.TransferCallsRequest">TransferCallsRequest</a>) returns (<a href="#google.protobuf.Empty">.google.protobuf.Empty)</a></pre>
 
           Transfer a call from a listener to another number for a specific nlu-project.
         
@@ -25998,7 +25998,7 @@ Time you want the call to be scheduled at </p></td>
 
         
       
-        <h3 id="ondewo.vtsi.TransferCallRequest" class="title-badge message">TransferCallRequest</h3>
+        <h3 id="ondewo.vtsi.TransferCallsRequest" class="title-badge message">TransferCallsRequest</h3>
         <p></p>
 
         
@@ -26018,14 +26018,14 @@ Time you want the call to be scheduled at </p></td>
                 <tr>
                   <td>call_id</td>
                   <td><a href="#string">string</a></td>
-                  <td></td>
+                  <td>repeated</td>
                   <td><p>call-ID to transfer </p></td>
                 </tr>
               
                 <tr>
                   <td>transfer_id</td>
                   <td><a href="#string">string</a></td>
-                  <td></td>
+                  <td>repeated</td>
                   <td><p>Number you want to be transfered too </p></td>
                 </tr>
               
