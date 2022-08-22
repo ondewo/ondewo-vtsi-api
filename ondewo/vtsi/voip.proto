@@ -75,7 +75,7 @@ service VoipSessions {
   rpc StopAllCalls (StopAllCallsRequest) returns (google.protobuf.Empty);
 
   // Transfer a call from a listener to another number for a specific nlu-project.
-  rpc TransferCalls (TransferCallRequest) returns (google.protobuf.Empty);
+  rpc TransferCalls (TransferCallsRequest) returns (google.protobuf.Empty);
 
   // ConferenceCall .. to be added in the future
   //rpc ConferenceCall (ConferenceCallRequest) returns (google.protobuf.Empty);
@@ -464,13 +464,13 @@ message StopAllCallsRequest {
   string project_id = 1;
 }
 
-message TransferCallRequest{
+message TransferCallsRequest{
   // ondewo-cai project ID.
   string project_id = 1;
   // call-ID to transfer
-  string repeated call_id = 2;
+  repeated string call_id = 2;
   // Number you want to be transfered too
-  string repeated transfer_id = 3;
+  repeated string transfer_id = 3;
 }
 
 
