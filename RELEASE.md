@@ -1,10 +1,18 @@
 # Release History
+
+*****************
+## Release ONDEWO VTSI APIS 5.0.0
+
+## Improvements
+ * Synchronize API Client Versions
+
 *****************
 ## Release ONDEWO VTSI APIS 4.0.0
 
 ## Improvements
  * Adjusted TransferCalls and TransferCallsRequest
  * Upgraded to NLU API 2.13.0
+
 *****************
 ## Release ONDEWO VTSI APIS 3.0.0
 
