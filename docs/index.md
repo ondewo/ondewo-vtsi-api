@@ -22,8 +22,26 @@
     - [ExportResourcesRequest](#ondewo.nlu.ExportResourcesRequest)
     - [ExportResourcesResponse](#ondewo.nlu.ExportResourcesResponse)
     - [FullTextSearchRequest](#ondewo.nlu.FullTextSearchRequest)
-    - [FullTextSearchResponse](#ondewo.nlu.FullTextSearchResponse)
-    - [FullTextSearchResponse.ResponseEntry](#ondewo.nlu.FullTextSearchResponse.ResponseEntry)
+    - [FullTextSearchResponseEntity](#ondewo.nlu.FullTextSearchResponseEntity)
+    - [FullTextSearchResponseEntity.EntitySearchResult](#ondewo.nlu.FullTextSearchResponseEntity.EntitySearchResult)
+    - [FullTextSearchResponseEntitySynonym](#ondewo.nlu.FullTextSearchResponseEntitySynonym)
+    - [FullTextSearchResponseEntitySynonym.EntitySynonymSearchResult](#ondewo.nlu.FullTextSearchResponseEntitySynonym.EntitySynonymSearchResult)
+    - [FullTextSearchResponseEntityType](#ondewo.nlu.FullTextSearchResponseEntityType)
+    - [FullTextSearchResponseEntityType.EntityTypeSearchResult](#ondewo.nlu.FullTextSearchResponseEntityType.EntityTypeSearchResult)
+    - [FullTextSearchResponseIntent](#ondewo.nlu.FullTextSearchResponseIntent)
+    - [FullTextSearchResponseIntent.IntentSearchResult](#ondewo.nlu.FullTextSearchResponseIntent.IntentSearchResult)
+    - [FullTextSearchResponseIntentContextIn](#ondewo.nlu.FullTextSearchResponseIntentContextIn)
+    - [FullTextSearchResponseIntentContextIn.IntentContextInSearchResult](#ondewo.nlu.FullTextSearchResponseIntentContextIn.IntentContextInSearchResult)
+    - [FullTextSearchResponseIntentContextOut](#ondewo.nlu.FullTextSearchResponseIntentContextOut)
+    - [FullTextSearchResponseIntentContextOut.IntentContextOutSearchResult](#ondewo.nlu.FullTextSearchResponseIntentContextOut.IntentContextOutSearchResult)
+    - [FullTextSearchResponseIntentParameters](#ondewo.nlu.FullTextSearchResponseIntentParameters)
+    - [FullTextSearchResponseIntentParameters.IntentParametersSearchResult](#ondewo.nlu.FullTextSearchResponseIntentParameters.IntentParametersSearchResult)
+    - [FullTextSearchResponseIntentResponse](#ondewo.nlu.FullTextSearchResponseIntentResponse)
+    - [FullTextSearchResponseIntentResponse.IntentResponseSearchResult](#ondewo.nlu.FullTextSearchResponseIntentResponse.IntentResponseSearchResult)
+    - [FullTextSearchResponseIntentTags](#ondewo.nlu.FullTextSearchResponseIntentTags)
+    - [FullTextSearchResponseIntentTags.IntentTagsSearchResult](#ondewo.nlu.FullTextSearchResponseIntentTags.IntentTagsSearchResult)
+    - [FullTextSearchResponseIntentUsersays](#ondewo.nlu.FullTextSearchResponseIntentUsersays)
+    - [FullTextSearchResponseIntentUsersays.IntentUsersaysSearchResult](#ondewo.nlu.FullTextSearchResponseIntentUsersays.IntentUsersaysSearchResult)
     - [GetAgentRequest](#ondewo.nlu.GetAgentRequest)
     - [GetAgentStatisticsRequest](#ondewo.nlu.GetAgentStatisticsRequest)
     - [GetAgentStatisticsResponse](#ondewo.nlu.GetAgentStatisticsResponse)
@@ -44,6 +62,7 @@
     - [OptimizeRankingMatchResponse](#ondewo.nlu.OptimizeRankingMatchResponse)
     - [PlatformMapping](#ondewo.nlu.PlatformMapping)
     - [RankingMatchOptimizationConfig](#ondewo.nlu.RankingMatchOptimizationConfig)
+    - [ReindexAgentRequest](#ondewo.nlu.ReindexAgentRequest)
     - [RemoveUserFromProjectRequest](#ondewo.nlu.RemoveUserFromProjectRequest)
     - [RestoreAgentRequest](#ondewo.nlu.RestoreAgentRequest)
     - [SetAgentStatusRequest](#ondewo.nlu.SetAgentStatusRequest)
@@ -915,7 +934,6 @@ curl \ 'https://dialogflow.googleapis.com/v2/projects/<project_name>/agent:expor
 | ----- | ---- | ----- | ----------- |
 | parent | [string](#string) |  | Required. The project that the agent is associated with. Format: `projects/<Project ID>/agent`. |
 | language_code | [string](#string) |  | In which language to search for |
-| query_type | [FullTextSearchRequest.QueryType](#ondewo.nlu.FullTextSearchRequest.QueryType) |  | What is the type of the query that needs to be sent to elasticsearch |
 | term | [string](#string) |  | What to search for in the elastic server |
 | page_token | [string](#string) |  | Composite string: current_index-0--page_size-10 |
 
@@ -924,31 +942,392 @@ curl \ 'https://dialogflow.googleapis.com/v2/projects/<project_name>/agent:expor
 
 
 
-<a name="ondewo.nlu.FullTextSearchResponse"></a>
+<a name="ondewo.nlu.FullTextSearchResponseEntity"></a>
 
-### FullTextSearchResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| response | [FullTextSearchResponse.ResponseEntry](#ondewo.nlu.FullTextSearchResponse.ResponseEntry) | repeated |  |
-
-
-
-
-
-
-<a name="ondewo.nlu.FullTextSearchResponse.ResponseEntry"></a>
-
-### FullTextSearchResponse.ResponseEntry
+### FullTextSearchResponseEntity
 
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| key | [string](#string) |  |  |
-| value | [google.protobuf.Any](#google.protobuf.Any) |  |  |
+| parent | [string](#string) |  |  |
+| language_code | [string](#string) |  |  |
+| entity_results | [FullTextSearchResponseEntity.EntitySearchResult](#ondewo.nlu.FullTextSearchResponseEntity.EntitySearchResult) | repeated |  |
+| term | [string](#string) |  |  |
+| elastic_query | [string](#string) |  |  |
+| time | [float](#float) |  |  |
+| next_page_token | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.FullTextSearchResponseEntity.EntitySearchResult"></a>
+
+### FullTextSearchResponseEntity.EntitySearchResult
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  |  |
+| display_name | [string](#string) |  |  |
+| entity_type_name | [string](#string) |  |  |
+| language | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.FullTextSearchResponseEntitySynonym"></a>
+
+### FullTextSearchResponseEntitySynonym
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  |  |
+| language_code | [string](#string) |  |  |
+| entity_synonym_results | [FullTextSearchResponseEntitySynonym.EntitySynonymSearchResult](#ondewo.nlu.FullTextSearchResponseEntitySynonym.EntitySynonymSearchResult) | repeated |  |
+| term | [string](#string) |  |  |
+| elastic_query | [string](#string) |  |  |
+| time | [float](#float) |  |  |
+| next_page_token | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.FullTextSearchResponseEntitySynonym.EntitySynonymSearchResult"></a>
+
+### FullTextSearchResponseEntitySynonym.EntitySynonymSearchResult
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  |  |
+| display_name | [string](#string) |  |  |
+| entity_type_name | [string](#string) |  |  |
+| entity_name | [string](#string) |  |  |
+| language | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.FullTextSearchResponseEntityType"></a>
+
+### FullTextSearchResponseEntityType
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  |  |
+| language_code | [string](#string) |  |  |
+| entity_type_results | [FullTextSearchResponseEntityType.EntityTypeSearchResult](#ondewo.nlu.FullTextSearchResponseEntityType.EntityTypeSearchResult) | repeated |  |
+| term | [string](#string) |  |  |
+| elastic_query | [string](#string) |  |  |
+| time | [float](#float) |  |  |
+| next_page_token | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.FullTextSearchResponseEntityType.EntityTypeSearchResult"></a>
+
+### FullTextSearchResponseEntityType.EntityTypeSearchResult
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  |  |
+| display_name | [string](#string) |  |  |
+| language | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.FullTextSearchResponseIntent"></a>
+
+### FullTextSearchResponseIntent
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  |  |
+| language_code | [string](#string) |  |  |
+| intent_results | [FullTextSearchResponseIntent.IntentSearchResult](#ondewo.nlu.FullTextSearchResponseIntent.IntentSearchResult) | repeated |  |
+| term | [string](#string) |  |  |
+| elastic_query | [string](#string) |  |  |
+| time | [float](#float) |  |  |
+| next_page_token | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.FullTextSearchResponseIntent.IntentSearchResult"></a>
+
+### FullTextSearchResponseIntent.IntentSearchResult
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  |  |
+| display_name | [string](#string) |  |  |
+| domain_name | [string](#string) |  |  |
+| language | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.FullTextSearchResponseIntentContextIn"></a>
+
+### FullTextSearchResponseIntentContextIn
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  |  |
+| language_code | [string](#string) |  |  |
+| intent_context_in_results | [FullTextSearchResponseIntentContextIn.IntentContextInSearchResult](#ondewo.nlu.FullTextSearchResponseIntentContextIn.IntentContextInSearchResult) | repeated |  |
+| term | [string](#string) |  |  |
+| elastic_query | [string](#string) |  |  |
+| time | [float](#float) |  |  |
+| next_page_token | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.FullTextSearchResponseIntentContextIn.IntentContextInSearchResult"></a>
+
+### FullTextSearchResponseIntentContextIn.IntentContextInSearchResult
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  |  |
+| intent_name | [string](#string) |  |  |
+| language | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.FullTextSearchResponseIntentContextOut"></a>
+
+### FullTextSearchResponseIntentContextOut
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  |  |
+| language_code | [string](#string) |  |  |
+| intent_context_out_results | [FullTextSearchResponseIntentContextOut.IntentContextOutSearchResult](#ondewo.nlu.FullTextSearchResponseIntentContextOut.IntentContextOutSearchResult) | repeated |  |
+| term | [string](#string) |  |  |
+| elastic_query | [string](#string) |  |  |
+| time | [float](#float) |  |  |
+| next_page_token | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.FullTextSearchResponseIntentContextOut.IntentContextOutSearchResult"></a>
+
+### FullTextSearchResponseIntentContextOut.IntentContextOutSearchResult
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  |  |
+| intent_name | [string](#string) |  |  |
+| language | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.FullTextSearchResponseIntentParameters"></a>
+
+### FullTextSearchResponseIntentParameters
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  |  |
+| language_code | [string](#string) |  |  |
+| intent_parameters_results | [FullTextSearchResponseIntentParameters.IntentParametersSearchResult](#ondewo.nlu.FullTextSearchResponseIntentParameters.IntentParametersSearchResult) | repeated |  |
+| term | [string](#string) |  |  |
+| elastic_query | [string](#string) |  |  |
+| time | [float](#float) |  |  |
+| next_page_token | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.FullTextSearchResponseIntentParameters.IntentParametersSearchResult"></a>
+
+### FullTextSearchResponseIntentParameters.IntentParametersSearchResult
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parameter_name | [string](#string) |  |  |
+| parameter_display_name | [string](#string) |  |  |
+| intent_name | [string](#string) |  |  |
+| language | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.FullTextSearchResponseIntentResponse"></a>
+
+### FullTextSearchResponseIntentResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  |  |
+| language_code | [string](#string) |  |  |
+| intent_response_results | [FullTextSearchResponseIntentResponse.IntentResponseSearchResult](#ondewo.nlu.FullTextSearchResponseIntentResponse.IntentResponseSearchResult) | repeated |  |
+| term | [string](#string) |  |  |
+| elastic_query | [string](#string) |  |  |
+| time | [float](#float) |  |  |
+| next_page_token | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.FullTextSearchResponseIntentResponse.IntentResponseSearchResult"></a>
+
+### FullTextSearchResponseIntentResponse.IntentResponseSearchResult
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| text | [string](#string) |  |  |
+| platform | [string](#string) |  |  |
+| response_type | [string](#string) |  |  |
+| intent_name | [string](#string) |  |  |
+| language | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.FullTextSearchResponseIntentTags"></a>
+
+### FullTextSearchResponseIntentTags
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  |  |
+| language_code | [string](#string) |  |  |
+| intent_tags_results | [FullTextSearchResponseIntentTags.IntentTagsSearchResult](#ondewo.nlu.FullTextSearchResponseIntentTags.IntentTagsSearchResult) | repeated |  |
+| term | [string](#string) |  |  |
+| elastic_query | [string](#string) |  |  |
+| time | [float](#float) |  |  |
+| next_page_token | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.FullTextSearchResponseIntentTags.IntentTagsSearchResult"></a>
+
+### FullTextSearchResponseIntentTags.IntentTagsSearchResult
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  |  |
+| text | [string](#string) |  |  |
+| intent_name | [string](#string) |  |  |
+| language | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.FullTextSearchResponseIntentUsersays"></a>
+
+### FullTextSearchResponseIntentUsersays
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  |  |
+| language_code | [string](#string) |  |  |
+| intent_usersays_results | [FullTextSearchResponseIntentUsersays.IntentUsersaysSearchResult](#ondewo.nlu.FullTextSearchResponseIntentUsersays.IntentUsersaysSearchResult) | repeated |  |
+| term | [string](#string) |  |  |
+| elastic_query | [string](#string) |  |  |
+| time | [float](#float) |  |  |
+| next_page_token | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.FullTextSearchResponseIntentUsersays.IntentUsersaysSearchResult"></a>
+
+### FullTextSearchResponseIntentUsersays.IntentUsersaysSearchResult
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  |  |
+| text | [string](#string) |  |  |
+| text_as_entity_types | [string](#string) |  |  |
+| text_as_entity_values | [string](#string) |  |  |
+| type | [string](#string) |  |  |
+| intent_name | [string](#string) |  |  |
+| language | [string](#string) |  |  |
 
 
 
@@ -1291,6 +1670,23 @@ Project permissions
 
 
 
+<a name="ondewo.nlu.ReindexAgentRequest"></a>
+
+### ReindexAgentRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | projects/<project_id>/agent |
+| branch_name | [string](#string) |  | Optional, useful for versioning reasons in the future |
+| index_types | [FullTextSearchRequest.QueryType](#ondewo.nlu.FullTextSearchRequest.QueryType) | repeated | Optional, useful for reindexing specific indices in the future |
+
+
+
+
+
+
 <a name="ondewo.nlu.RemoveUserFromProjectRequest"></a>
 
 ### RemoveUserFromProjectRequest
@@ -1464,7 +1860,7 @@ The request message for [Agents.TrainAgent][google.cloud.dialogflow.v2.Agents.Tr
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
-| ALL | 0 |  |
+| ALL | 0 | just a placeholder, has to start with zero |
 | OndewoEntityQuery | 1 |  |
 | OndewoEntityTypeQuery | 2 |  |
 | OndewoEntitySynonymQuery | 3 |  |
@@ -1635,7 +2031,17 @@ Operation <response: [google.protobuf.Empty][google.protobuf.Empty], metadata: [
 | GetModelStatuses | [GetModelStatusesRequest](#ondewo.nlu.GetModelStatusesRequest) | [GetModelStatusesResponse](#ondewo.nlu.GetModelStatusesResponse) | Get statuses of models related to project |
 | GetPlatformMapping | [GetPlatformMappingRequest](#ondewo.nlu.GetPlatformMappingRequest) | [PlatformMapping](#ondewo.nlu.PlatformMapping) | Get all set platform name mappings for an Agent |
 | SetPlatformMapping | [PlatformMapping](#ondewo.nlu.PlatformMapping) | [PlatformMapping](#ondewo.nlu.PlatformMapping) | Set platform name mappings for an Agent |
-| GetFullTextSearch | [FullTextSearchRequest](#ondewo.nlu.FullTextSearchRequest) | [FullTextSearchResponse](#ondewo.nlu.FullTextSearchResponse) | Full text search endpoint |
+| GetFullTextSearchEntityType | [FullTextSearchRequest](#ondewo.nlu.FullTextSearchRequest) | [FullTextSearchResponseEntityType](#ondewo.nlu.FullTextSearchResponseEntityType) | Full text search endpoint |
+| GetFullTextSearchEntity | [FullTextSearchRequest](#ondewo.nlu.FullTextSearchRequest) | [FullTextSearchResponseEntity](#ondewo.nlu.FullTextSearchResponseEntity) |  |
+| GetFullTextSearchEntitySynonym | [FullTextSearchRequest](#ondewo.nlu.FullTextSearchRequest) | [FullTextSearchResponseEntitySynonym](#ondewo.nlu.FullTextSearchResponseEntitySynonym) |  |
+| GetFullTextSearchIntent | [FullTextSearchRequest](#ondewo.nlu.FullTextSearchRequest) | [FullTextSearchResponseIntent](#ondewo.nlu.FullTextSearchResponseIntent) |  |
+| GetFullTextSearchIntentContextIn | [FullTextSearchRequest](#ondewo.nlu.FullTextSearchRequest) | [FullTextSearchResponseIntentContextIn](#ondewo.nlu.FullTextSearchResponseIntentContextIn) |  |
+| GetFullTextSearchIntentContextOut | [FullTextSearchRequest](#ondewo.nlu.FullTextSearchRequest) | [FullTextSearchResponseIntentContextOut](#ondewo.nlu.FullTextSearchResponseIntentContextOut) |  |
+| GetFullTextSearchIntentUsersays | [FullTextSearchRequest](#ondewo.nlu.FullTextSearchRequest) | [FullTextSearchResponseIntentUsersays](#ondewo.nlu.FullTextSearchResponseIntentUsersays) |  |
+| GetFullTextSearchIntentTags | [FullTextSearchRequest](#ondewo.nlu.FullTextSearchRequest) | [FullTextSearchResponseIntentTags](#ondewo.nlu.FullTextSearchResponseIntentTags) |  |
+| GetFullTextSearchIntentResponse | [FullTextSearchRequest](#ondewo.nlu.FullTextSearchRequest) | [FullTextSearchResponseIntentResponse](#ondewo.nlu.FullTextSearchResponseIntentResponse) |  |
+| GetFullTextSearchIntentParameters | [FullTextSearchRequest](#ondewo.nlu.FullTextSearchRequest) | [FullTextSearchResponseIntentParameters](#ondewo.nlu.FullTextSearchResponseIntentParameters) |  |
+| ReindexAgent | [ReindexAgentRequest](#ondewo.nlu.ReindexAgentRequest) | [Operation](#ondewo.nlu.Operation) | Force reindexing Intent and Entity data of Agent |
 
  <!-- end services -->
 
@@ -8039,12 +8445,12 @@ endpoints of speech-to-text service
 <a name="ondewo.sip.EndCallRequest"></a>
 
 ### EndCallRequest
-
+Ends an ongoing call of the active SIP session of the active SIP account
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hard_hangup | [bool](#bool) |  |  |
+| hard_hangup | [bool](#bool) |  | Set to <code>True</code> to forcefully hang up the call |
 
 
 
@@ -8054,12 +8460,12 @@ endpoints of speech-to-text service
 <a name="ondewo.sip.PlayWavFilesRequest"></a>
 
 ### PlayWavFilesRequest
-
+Plays a list of wav files
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| wav_files | [bytes](#bytes) | repeated |  |
+| wav_files | [bytes](#bytes) | repeated | Wav files as bytes in a list that will be played |
 
 
 
@@ -8074,8 +8480,10 @@ endpoints of speech-to-text service
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| account_name | [string](#string) |  |  |
-| password | [string](#string) |  |  |
+| account_name | [string](#string) |  | Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or <code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>. Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect to a SIP server running on port <code>5099</code> |
+| password | [string](#string) |  | Password of the account |
+| auth_username | [string](#string) |  | Optional: authentication user name |
+| outbound_proxy | [string](#string) |  | Optional: outbound proxy address, e.g. <code>my.outbound.proxy.com</code> |
 
 
 
@@ -8090,12 +8498,15 @@ endpoints of speech-to-text service
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| account_name | [string](#string) |  |  |
-| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  |  |
-| status_type | [SipStatus.StatusType](#ondewo.sip.SipStatus.StatusType) |  |  |
-| callee_id | [string](#string) |  |  |
-| transfer_call_id | [string](#string) |  |  |
-| headers | [SipStatus.HeadersEntry](#ondewo.sip.SipStatus.HeadersEntry) | repeated |  |
+| account_name | [string](#string) |  | Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or <code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>. Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect to a SIP server running on port <code>5099</code> |
+| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Timestamp of the status |
+| status_type | [SipStatus.StatusType](#ondewo.sip.SipStatus.StatusType) |  | Status type |
+| callee_id | [string](#string) |  | SIP account name |
+| transfer_call_id | [string](#string) |  | SIP account of the transfer |
+| headers | [SipStatus.HeadersEntry](#ondewo.sip.SipStatus.HeadersEntry) | repeated | Headers to include when calling outbound or transfer |
+| description | [string](#string) |  | More detailed description of the status |
+| exception_name | [string](#string) |  | Name of the exception |
+| exception_traceback | [string](#string) |  | Traceback of the exception |
 
 
 
@@ -8121,12 +8532,12 @@ endpoints of speech-to-text service
 <a name="ondewo.sip.SipStatusHistoryResponse"></a>
 
 ### SipStatusHistoryResponse
-
+History of SIP status
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| status_history | [SipStatus](#ondewo.sip.SipStatus) | repeated |  |
+| status_history | [SipStatus](#ondewo.sip.SipStatus) | repeated | History of SIP status |
 
 
 
@@ -8136,13 +8547,13 @@ endpoints of speech-to-text service
 <a name="ondewo.sip.StartCallRequest"></a>
 
 ### StartCallRequest
-
+Request to start the call with the active SIP session of the active SIP account
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| callee_id | [string](#string) |  |  |
-| headers | [StartCallRequest.HeadersEntry](#ondewo.sip.StartCallRequest.HeadersEntry) | repeated |  |
+| callee_id | [string](#string) |  | SIP account name |
+| headers | [StartCallRequest.HeadersEntry](#ondewo.sip.StartCallRequest.HeadersEntry) | repeated | Headers to include when starting the call |
 
 
 
@@ -8168,13 +8579,13 @@ endpoints of speech-to-text service
 <a name="ondewo.sip.StartSessionRequest"></a>
 
 ### StartSessionRequest
-
+Request for starting a new SIP session for a specified account
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| account_name | [string](#string) |  |  |
-| auto_answer_interval | [int32](#int32) |  |  |
+| account_name | [string](#string) |  | Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or <code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>. Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect to a SIP server running on port <code>5099</code> |
+| auto_answer_interval | [int32](#int32) |  | answer interval |
 
 
 
@@ -8184,13 +8595,13 @@ endpoints of speech-to-text service
 <a name="ondewo.sip.TransferCallRequest"></a>
 
 ### TransferCallRequest
-
+Request for transferring a call with or without headers
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| transfer_id | [string](#string) |  |  |
-| headers | [TransferCallRequest.HeadersEntry](#ondewo.sip.TransferCallRequest.HeadersEntry) | repeated |  |
+| transfer_id | [string](#string) |  | The account name or phone number to transfer the call to |
+| headers | [TransferCallRequest.HeadersEntry](#ondewo.sip.TransferCallRequest.HeadersEntry) | repeated | The headers to include when transferring the call |
 
 
 
@@ -8218,24 +8629,32 @@ endpoints of speech-to-text service
 <a name="ondewo.sip.SipStatus.StatusType"></a>
 
 ### SipStatus.StatusType
-
+Types of status
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
-| no_session | 0 |  |
-| registered | 1 |  |
-| ready | 2 |  |
-| incoming_call_initiated | 3 |  |
-| outgoing_call_initiated | 4 |  |
-| outgoing_call_connected | 5 |  |
-| incoming_call_connected | 6 |  |
-| transfer_call_initiated | 7 |  |
-| soft_hangup_initiated | 8 |  |
-| hard_hangup_initiated | 9 |  |
-| incoming_call_failed | 10 |  |
-| outgoing_call_failed | 11 |  |
-| incoming_call_finished | 12 |  |
-| outgoing_call_finished | 13 |  |
+| NO_SESSION | 0 | No session is currently active |
+| REGISTERED | 1 | SIP account is registered at a SIP server |
+| READY | 2 | SIP account is ready to call |
+| INCOMING_CALL_INITIATED | 3 | SIP account is being called, i.e. inbound/incoming call |
+| OUTGOING_CALL_INITIATED | 4 | SIP account starts calling, i.e. outbound/outgoing call |
+| OUTGOING_CALL_CONNECTED | 5 | SIP account outbound call is connected |
+| INCOMING_CALL_CONNECTED | 6 | SIP account incoming call is connected |
+| TRANSFER_CALL_INITIATED | 7 | SIP account starts transferring the call |
+| SOFT_HANGUP_INITIATED | 8 | SIP account hangs up the ongoing call |
+| HARD_HANGUP_INITIATED | 9 | SIP account forcefully hangs up by terminating the SIP program |
+| INCOMING_CALL_FAILED | 10 | SIP account cannot accept the incoming call |
+| OUTGOING_CALL_FAILED | 11 | SIP account cannot do an outbound call |
+| INCOMING_CALL_FINISHED | 12 | SIP account finished the ongoing incoming call |
+| OUTGOING_CALL_FINISHED | 13 | SIP account finished the ongoing outgoing call |
+| SESSION_REGISTRATION_FAILED | 14 | Registration of SIP account to SIP server failed |
+| SESSION_STARTED | 15 | SIP account started a new SIP session via a SIP server |
+| SESSION_ENDED | 16 | SIP account ended active sip session with SIP server |
+| TRANSFER_CALL_FAILED | 17 | SIP account cannot transfer the call |
+| MICROPHONE_MUTED | 18 | Microphone is muted |
+| MICROPHONE_UNMUTED | 19 | Microphone is unmuted |
+| MICROPHONE_WAV_FILES_PLAYED | 20 | Microphone has played wav files |
+| NO_ONGOING_CALL | 21 | No ongoing call |
 
 
  <!-- end enums -->
@@ -8246,21 +8665,23 @@ endpoints of speech-to-text service
 <a name="ondewo.sip.Sip"></a>
 
 ### Sip
+ONDEWO-SIP API available at <a href="https://github.com/ondewo/ondewo-sip-api>">GitHub</a>
 
+SIP LifeCycle is explained at <a href="https://thanhloi2603.wordpress.com/2017/06/10/sip-lifecycle-overview/">here</a>
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| StartSession | [StartSessionRequest](#ondewo.sip.StartSessionRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
-| EndSession | [.google.protobuf.Empty](#google.protobuf.Empty) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
-| StartCall | [StartCallRequest](#ondewo.sip.StartCallRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
-| EndCall | [EndCallRequest](#ondewo.sip.EndCallRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
-| TransferCall | [TransferCallRequest](#ondewo.sip.TransferCallRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
-| RegisterAccount | [RegisterAccountRequest](#ondewo.sip.RegisterAccountRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
-| GetSipStatus | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatus](#ondewo.sip.SipStatus) |  |
-| GetSipStatusHistory | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatusHistoryResponse](#ondewo.sip.SipStatusHistoryResponse) |  |
-| PlayWavFiles | [PlayWavFilesRequest](#ondewo.sip.PlayWavFilesRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
-| Mute | [.google.protobuf.Empty](#google.protobuf.Empty) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
-| UnMute | [.google.protobuf.Empty](#google.protobuf.Empty) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
+| StartSession | [StartSessionRequest](#ondewo.sip.StartSessionRequest) | [SipStatus](#ondewo.sip.SipStatus) | Starts a new SIP session for an account registered at a SIP server. <code>RegisterAccount</code> need to be called before. |
+| EndSession | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatus](#ondewo.sip.SipStatus) | Ends a SIP session for an account registered at a SIP server |
+| StartCall | [StartCallRequest](#ondewo.sip.StartCallRequest) | [SipStatus](#ondewo.sip.SipStatus) | Starts a call in an active SIP session for an account registered at a SIP server |
+| EndCall | [EndCallRequest](#ondewo.sip.EndCallRequest) | [SipStatus](#ondewo.sip.SipStatus) | Ends a call in an active SIP session for an account registered at a SIP server |
+| TransferCall | [TransferCallRequest](#ondewo.sip.TransferCallRequest) | [SipStatus](#ondewo.sip.SipStatus) | Transfers a call in an active SIP session for an account registered at a SIP server to another SIP account or phone number specified by <code>transfer_id</code> |
+| RegisterAccount | [RegisterAccountRequest](#ondewo.sip.RegisterAccountRequest) | [SipStatus](#ondewo.sip.SipStatus) | Registers s SIP account at a SIP server |
+| GetSipStatus | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatus](#ondewo.sip.SipStatus) | Gets the current SIP status |
+| GetSipStatusHistory | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatusHistoryResponse](#ondewo.sip.SipStatusHistoryResponse) | Gets the history of SIP status |
+| PlayWavFiles | [PlayWavFilesRequest](#ondewo.sip.PlayWavFilesRequest) | [SipStatus](#ondewo.sip.SipStatus) | Plays wav files during an ongoing call of an active SIP session |
+| Mute | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatus](#ondewo.sip.SipStatus) | Mutes the microphone in an ongoing call of an active SIP session |
+| UnMute | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatus](#ondewo.sip.SipStatus) | Unmutes the microphone in an ongoing call of an active SIP session |
 
  <!-- end services -->
 
