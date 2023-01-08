@@ -1,20 +1,20 @@
 # Release History
 
 *****************
-## Release ONDEWO VTSI APIS 5.0.0
+## Release ONDEWO VTSI API 5.0.0
 
 ## Improvements
  * Synchronize API Client Versions
 
 *****************
-## Release ONDEWO VTSI APIS 4.0.0
+## Release ONDEWO VTSI API 4.0.0
 
 ## Improvements
  * Adjusted TransferCalls and TransferCallsRequest
  * Upgraded to NLU API 2.13.0
 
 *****************
-## Release ONDEWO VTSI APIS 3.0.0
+## Release ONDEWO VTSI API 3.0.0
 
 ## New features
  * New VTSI API release 3.0.0
@@ -22,40 +22,40 @@
  * [[OND211-2039]](https://ondewo.atlassian.net/browse/OND211-2039) - added pre-commit hooks and adjusted files tot them
 
 *****************
-## Release ONDEWO VTSI APIS 2.3.0
+## Release ONDEWO VTSI API 2.3.0
 
 ## New features
 Added endpoints for minio data retrieval
 
 *****************
 
-## Release ONDEWO VTSI APIS 2.2.0
+## Release ONDEWO VTSI API 2.2.0
 
 ## New features
 CSI configs can be passed like Rabbit mq configs
 
-## Release ONDEWO VTSI APIS 2.1.0
+## Release ONDEWO VTSI API 2.1.0
 
 ## New features
 CSI configs can be passed like MINIO configs
 
 *****************
 
-## Release ONDEWO VTSI APIS 2.0.0
+## Release ONDEWO VTSI API 2.0.0
 
 ## New features
 Adaptation to new s2t and t2s configs
 
 *****************
 
-## Release ONDEWO VTSI APIS 1.1.0
+## Release ONDEWO VTSI API 1.1.0
 
 ## New features
 * ServiceConfig extended with grpc_cert field
 
 *****************
 
-## Release ONDEWO VTSI APIS 1.0.0
+## Release ONDEWO VTSI API 1.0.0
 
 ## New features
 * First stable version
@@ -74,7 +74,7 @@ Adaptation to new s2t and t2s configs
 
 *****************
 
-## Release ONDEWO VTSI APIS 0.4.0
+## Release ONDEWO VTSI API 0.4.0
 
 ### New Features
 
@@ -95,7 +95,7 @@ Adaptation to new s2t and t2s configs
 
 *****************
 
-## Release ONDEWO VTSI APIS 0.3.1
+## Release ONDEWO VTSI API 0.3.1
 
 ### New Features
 
@@ -116,7 +116,7 @@ Adaptation to new s2t and t2s configs
 
 *****************
 
-## Release ONDEWO VTSI APIS 0.3.0
+## Release ONDEWO VTSI API 0.3.0
 
 ### New Features
 
@@ -136,7 +136,7 @@ Adaptation to new s2t and t2s configs
 
 *****************
 
-## Release ONDEWO VTSI APIS 0.2.3
+## Release ONDEWO VTSI API 0.2.3
 
 ### New Features
 
@@ -155,7 +155,7 @@ Adaptation to new s2t and t2s configs
 
 *****************
 
-## Release ONDEWO VTSI APIS 0.2.2
+## Release ONDEWO VTSI API 0.2.2
 
 ### New Features
 
@@ -174,7 +174,7 @@ Adaptation to new s2t and t2s configs
 
 *****************
 
-## Release ONDEWO VTSI APIS 0.2.1
+## Release ONDEWO VTSI API 0.2.1
 
 ### New Features
 
@@ -194,7 +194,7 @@ Adaptation to new s2t and t2s configs
 
 *****************
 
-## Release ONDEWO VTSI APIS 0.2.0
+## Release ONDEWO VTSI API 0.2.0
 
 ### New Features
 
@@ -216,7 +216,7 @@ Adaptation to new s2t and t2s configs
 
 *****************
 
-## Release ONDEWO VTSI APIS 0.1.0
+## Release ONDEWO VTSI API 0.1.0
 
 ### New Features
 

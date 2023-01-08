@@ -4,7 +4,7 @@
     </a>
 </p>
 
-# ONDEWO VTSI APIs
+# ONDEWO VTSI API
 
 This repository contains the original interface definitions of public ONDEWO APIs that support gRPC protocols. Reading the original interface definitions can provide a better understanding of ONDEWO APIs and help you to utilize them more efficiently. You can also use these definitions with open source tools to generate client libraries, documentation, and other artifacts.
 
@@ -55,7 +55,7 @@ Please use the issue tracker in this repo for discussions about this API, or the
 ├── install_nvm.sh
 ├── LICENSE
 ├── Makefile
-├── googleapis
+├── google
 ├── ondewo
 │   ├── nlu
 │   │   ├── agent.proto
@@ -109,7 +109,7 @@ TODOs after Pull Request was merged in:
  - Update the `ONDEWO_VTSI_API_VERSION` in the `Makefile`
  - Add the new Release Notes in `RELEASE.md` in the format:
    ```
-   ## Release ONDEWO VTSI APIS X.X.X       <---- Beginning of Notes
+   ## Release ONDEWO VTSI API X.X.X       <---- Beginning of Notes
 
       ...<NOTES>...
 

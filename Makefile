@@ -31,7 +31,7 @@ ONDEWO_SIP_DIR=ondewo-sip-api
 GITHUB_GH_TOKEN?=ENTER_YOUR_TOKEN_HERE
 
 CURRENT_RELEASE_NOTES=`cat RELEASE.md \
-	| sed -n '/Release ONDEWO VTSI APIS ${ONDEWO_VTSI_API_VERSION}/,/\*\*/p'`
+	| sed -n '/Release ONDEWO VTSI API ${ONDEWO_VTSI_API_VERSION}/,/\*\*/p'`
 
 GH_REPO="https://github.com/ondewo/ondewo-vtsi-api"
 DEVOPS_ACCOUNT_GIT="ondewo-devops-accounts"
@@ -43,7 +43,7 @@ IMAGE_UTILS_NAME=ondewo-vtsi-api-utils:${ONDEWO_VTSI_API_VERSION}
 #       ONDEWO Standard Make Targets
 ########################################################
 
-setup_developer_environment_locally: install_precommit_hooks install_nvm ## Sets up local development enviorenment !! Forcefully closes current terminal
+setup_developer_environment_locally: install_python_requirements install_precommit_hooks install_nvm ## Sets up local development environment !! Forcefully closes current terminal
 
 install_nvm: ## Install NVM, node and npm !! Forcefully closes current terminal
 	@curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
@@ -51,6 +51,13 @@ install_nvm: ## Install NVM, node and npm !! Forcefully closes current terminal
 	$(eval PID:=$(shell ps -ft $(ps | tail -1 | cut -c 8-13) | head -2 | tail -1 | cut -c 1-8))
 	@node --version & npm --version || (kill -KILL ${PID})
 
+install_python_requirements: ## Installs python requirements flak8 and mypy
+	wget -q https://raw.githubusercontent.com/ondewo/ondewo-vtsi-client-python/master/requirements-dev.txt -O requirements-dev.txt
+	pip install -r requirements-dev.txt
+	wget -q https://raw.githubusercontent.com/ondewo/ondewo-vtsi-client-python/master/requirements.txt -O requirements.txt
+	pip install -r requirements.txt
+	wget -q https://raw.githubusercontent.com/ondewo/ondewo-vtsi-client-python/master/mypy.ini -O mypy.ini
+	wget -q https://raw.githubusercontent.com/ondewo/ondewo-vtsi-client-python/master/.flake8 -O .flake8
 
 install_precommit_hooks: ## Installs pre-commit hooks and sets them up for the ondewo-vtsi-api repo
 	pip install pre-commit
@@ -131,13 +138,13 @@ checkout_defined_submodule_versions:  ## Update submodule versions
 	git -C ${ONDEWO_S2T_DIR} checkout ${ONDEWO_S2T_API_GIT_BRANCH}
 	git -C ${ONDEWO_SIP_DIR} fetch --all
 	git -C ${ONDEWO_SIP_DIR} checkout ${ONDEWO_SIP_API_GIT_BRANCH}
-	if [ -d googleapis ]; then rm -Rf googleapis; fi
+	if [ -d google ]; then rm -Rf google; fi
 	if [ -d ondewo/nlu ]; then rm -Rf ondewo/nlu; fi
 	if [ -d ondewo/s2t ]; then rm -Rf ondewo/s2t; fi
 	if [ -d ondewo/t2s ]; then rm -Rf ondewo/t2s; fi
 	if [ -d ondewo/sip ]; then rm -Rf ondewo/sip; fi
 	if [ -d ondewo/qa ]; then rm -Rf ondewo/sip; fi
-	cp -r "${ONDEWO_NLU_DIR}/googleapis" .
+	cp -r "${ONDEWO_NLU_DIR}/google" google
 	cp -r "${ONDEWO_NLU_DIR}/ondewo/nlu" ondewo
 	cp -r "${ONDEWO_NLU_DIR}/ondewo/qa" ondewo
 	cp -r "${ONDEWO_T2S_DIR}/ondewo/t2s" ondewo
