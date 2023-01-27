@@ -28,586 +28,1027 @@ import "ondewo/sip/sip.proto";
 // session manager for phone calls.
 // endpoints of voip server that manages instances of ondewo-sip, which handle individual calls
 service VoipSessions {
-  ///////////
-  // Projects //
-  ///////////
 
-  // Create an NLU project with configs.
-  rpc CreateProjectConfigs (CreateProjectConfigsRequest) returns (google.protobuf.Empty);
+    //////////////////////////////////////////////////////////////////////////////
+    // Project endpoints
+    //////////////////////////////////////////////////////////////////////////////
 
-  // Get an NLU project with configs.
-  rpc GetProjectConfigs (GetProjectConfigsRequest) returns (GetProjectConfigsResponse);
+    // Create an NLU project with configs.
+    rpc CreateVtsiProject (CreateVtsiProjectRequest) returns (CreateVtsiProjectResponse);
 
-  // Update an NLU project with configs.
-  rpc UpdateProjectConfigs (UpdateProjectConfigsRequest) returns (google.protobuf.Empty);
+    // Get an NLU project with configs.
+    rpc GetVtsiProject (GetVtsiProjectRequest) returns (VtsiProject);
 
-  // Delete an NLU project with configs.
-  rpc DeleteProjectConfigs (DeleteProjectConfigsRequest) returns (google.protobuf.Empty);
+    // Update an NLU project with configs.
+    rpc UpdateVtsiProject (UpdateVtsiProjectRequest) returns (UpdateVtsiProjectResponse);
 
+    // Delete an NLU project with configs.
+    rpc DeleteVtsiProject (DeleteVtsiProjectRequest) returns (DeleteVtsiProjectResponse);
 
-  ///////////
-  // Asterisk //
-  ///////////
+    // Deploys a vtsi project
+    rpc DeployVtsiProject (DeployVtsiProjectRequest) returns (DeployVtsiProjectResponse);
 
-  rpc DeployProject (DeployProjectRequest) returns (google.protobuf.Empty);
+    // Undeploy a vtsi project
+    rpc UndeployVtsiProject (UndeployVtsiProjectRequest) returns (UndeployVtsiProjectResponse);
 
-  rpc UndeployProject (UndeployProjectRequest) returns (google.protobuf.Empty);
+    //////////////////////////////////////////////////////////////////////////////
+    // Caller and Listener endpoints
+    //////////////////////////////////////////////////////////////////////////////
 
-  ///////////
-  // CALLS //
-  ///////////
+    // start single caller instance for a specific nlu-project.
+    rpc StartCaller (StartCallerRequest) returns (StartCallerResponse);
 
-  // start multiple ondewo-sip listeners instances for a specific nlu-project.
-  rpc StartListeners (StartListenersRequest) returns (StartListenersResponse);
+    // start multiple ondewo-sip callers instances for a specific nlu-project.
+    rpc StartCallers (StartCallersRequest) returns (StartCallersResponse);
 
-  // start multiple ondewo-sip callers instances for a specific nlu-project.
-  rpc StartCallers (StartCallersRequest) returns (StartCallersResponse);
+    // start single listener instance for a specific nlu-project.
+    rpc StartListener (StartListenerRequest) returns (StartListenerResponse);
 
-  // start multiple ondewo-sip callers instances with schedules
-  rpc StartScheduledCallers (StartScheduledCallersRequest) returns (google.protobuf.Empty);
+    // start multiple ondewo-sip listeners instances for a specific nlu-project.
+    rpc StartListeners (StartListenersRequest) returns (StartListenersResponse);
 
-  // stop/kill a list of ondewo-sip listener or caller instances for a specific nlu-project.
-  // "stops both Listener and Caller calls"
-  rpc StopCalls (StopCallsRequest) returns (google.protobuf.Empty);
+    // start multiple ondewo-sip callers instances with schedules
+    rpc StartScheduledCallers (StartScheduledCallersRequest) returns (StartScheduledCallersResponse);
 
-  // stop/kill all ondewo-sip listener or caller instance for a specific nlu-project.
-  // "stops all Listener and Caller calls"
-  rpc StopAllCalls (StopAllCallsRequest) returns (google.protobuf.Empty);
+    // stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.
+    rpc StopCall (StopCallRequest) returns (StopCallResponse);
 
-  // Transfer a call from a listener to another number for a specific nlu-project.
-  rpc TransferCalls (TransferCallsRequest) returns (google.protobuf.Empty);
+    // stop/kill a list of ondewo-sip listener or caller instances for a specific vtsi-project.
+    // "stops both Listener and Caller calls"
+    rpc StopCalls (StopCallsRequest) returns (google.protobuf.Empty);
 
-  // ConferenceCall .. to be added in the future
-  //rpc ConferenceCall (ConferenceCallRequest) returns (google.protobuf.Empty);
+    // stop/kill all ondewo-sip listener or caller instance for a specific nlu-project.
+    // "stops all Listener and Caller calls"
+    rpc StopAllCalls (StopAllCallsRequest) returns (StopCallsResponse);
 
-  ////////////
-  // STATUS //
-  ////////////
+    // Transfer a call from a listener to another
+    rpc TransferCall (TransferCallRequest) returns (TransferCallResponse);
 
-  // get call log for single call instance
-  rpc GetVoipCallInfo (GetVoipCallInfoRequest) returns (GetVoipCallInfoResponse);
-  // get call log for all call instances
-  rpc ListVoipCallInfo (ListVoipCallInfoRequest) returns (ListVoipCallInfoResponse);
+    // Transfer a call from a listener to another
+    rpc TransferCalls (TransferCallsRequest) returns (TransferCallsResponse);
 
-  /////////////////////////
-  // Retrieving Audio files //
-  ////////////////////////////
+    // get call log for single call instance
+    rpc GetVoipCallInfo (GetVoipCallInfoRequest) returns (GetVoipCallInfoResponse);
 
-  // Get a s2t or t2s audio file for this conversation if it exists in Minio
-  rpc GetAudioFile (GetAudioFileRequest) returns (GetAudioFileResponse) {};
-  // Get The whole conversation in an audio file
-  rpc GetFullConversationAudioFile (GetFullConversationAudioFileRequest) returns (GetFullConversationAudioFileResponse) {};
+    // get call log for all call instances
+    rpc ListVoipCallInfo (ListVoipCallInfoRequest) returns (ListVoipCallInfoResponse);
+
+    // Get a s2t or t2s audio file for this conversation if it exists in Minio
+    rpc GetAudioFile (GetAudioFileRequest) returns (GetAudioFileResponse);
+
+    // Get The whole conversation in an audio file
+    rpc GetFullConversationAudioFile (GetFullConversationAudioFileRequest) returns (GetFullConversationAudioFileResponse) {};
 }
 
 
+// The VTSI project with its configuration setting
+message VtsiProject{
 
-///////////
-// Projects //
-///////////
+    // Required. The project name. Format: `projects/<project_uuid>/project`
+    // Only when a new VtsiProject is created the name can be undefined/empty
+    string name = 1;
 
-message ProjectConfigs{
-  // The maximum number of callers that this project can have.
-  int32 max_callers = 1;
-  // The maximum number of listeners that this project can have.
-  int32 max_listeners = 2;
-  // Configs to start the asterisk server.
-  AsteriskConfigs asterisk_configs = 3;
+    // OPTIONAL: The display name of the project
+    string display_name = 2;
+
+    // The maximum number of callers that this project can have.
+    int32 max_callers = 3;
+
+    // The maximum number of listeners that this project can have.
+    int32 max_listeners = 4;
+
+    // Configs to start the asterisk server.
+    AsteriskConfigs asterisk_configs = 5;
 
 }
 
+// Configuration variables for the Asterisk server
 message AsteriskConfigsVariables{
-  // SIP trunk username.
-  string sip_trunk_username = 1;
-  // SIP trunk password.
-  string sip_trunk_password = 2;
-  // SIP trunk host.
-  string sip_trunk_host = 3;
-  // Transfer number.
-  string transfer_number = 4;
-  // Transfer number host.
-  string transfer_number_host = 5;
-  // SIP trunk phone number.
-  string sip_trunk_phone_number = 6;
+
+    // SIP trunk username.
+    string sip_trunk_username = 1;
+
+    // SIP trunk password.
+    string sip_trunk_password = 2;
+
+    // SIP trunk host.
+    string sip_trunk_host = 3;
+
+    // Transfer number.
+    string transfer_number = 4;
+
+    // Transfer number host.
+    string transfer_number_host = 5;
+
+    // SIP trunk phone number.
+    string sip_trunk_phone_number = 6;
+
 }
 
+// Configuration files for the Asterisk server
 message AsteriskConfigsFiles{
-  // sip.conf file.
-  string sip_conf_file_string = 1;
-  // extensions.conf file.
-  string extensions_conf_file_string = 2;
-  // queues.conf file.
-  string queues_conf_file_string = 3;
-  // modules.conf file.
-  string modules_conf_file_string = 4;
+
+    // sip.conf file as string
+    string sip_conf_file_string = 1;
+
+    // extensions.conf file as string
+    string extensions_conf_file_string = 2;
+
+    // queues.conf file as string
+    string queues_conf_file_string = 3;
+
+    // modules.conf file as string
+    string modules_conf_file_string = 4;
+
 }
 
+// Configurations object for the Asterisk server
 message AsteriskConfigs{
-  oneof asterisk_configs_oneof{
-    // Configs as variables which will fill those variables using a blue print.
-    AsteriskConfigsVariables asterisk_configs_variables = 1;
-    // Configs as files which will set up the configs using those files.
-    AsteriskConfigsFiles asterisk_configs_files = 2;
-    // Configs will be mapped in from a preconfigured asterisk target directory.
-    string asterisk_configs_target_directory_name = 3;
-  }
 
-  // The port where Asterisk should start. {Optional}
-  int32 asterisk_port = 4;
+    oneof asterisk_configs_oneof{
+
+        // Configs as variables which will fill those variables using a blue print.
+        AsteriskConfigsVariables asterisk_configs_variables = 1;
+
+        // Configs as files which will set up the configs using those files.
+        AsteriskConfigsFiles asterisk_configs_files = 2;
+
+        // Configs will be mapped in from a preconfigured asterisk target directory.
+        string asterisk_configs_target_directory_name = 3;
+    }
+
+    // OPTIONAL: The port where Asterisk should start.
+    int32 asterisk_port = 4;
 }
 
-message CreateProjectConfigsRequest{
-  // Project id of the NLU project.
-  string project_id = 1;
-  // Project Configs.
-  ProjectConfigs project_configs = 2;
+// Request for creating a VTSI project
+message CreateVtsiProjectRequest{
+
+    // VTSI project
+    // Recommended is to leave "name" empty. The project name here is optional.
+    // If no name is given a new parent name is created. The parent has the format: `projects/<project_uuid>/project`.
+    VtsiProject project = 1;
+
+    // error message if there are any.
+    string error_message = 2;
 }
 
-message GetProjectConfigsRequest{
-  // Project id of the NLU project.
-  string project_id = 1;
+// Response of the create project
+message CreateVtsiProjectResponse{
+
+    // Vtsi project
+    VtsiProject project = 1;
+
+    // error message if there are any.
+    string error_message = 2;
 }
 
-message GetProjectConfigsResponse{
-  // Project Configs.
-  ProjectConfigs project_configs = 1;
-  // error messages if there are any.
-  string error_messages = 2;
-  // The request that was sent.
-  GetProjectConfigsRequest request = 3;
-}
+// Request to retrieve a VTSI project
+message GetVtsiProjectRequest{
 
-message UpdateProjectConfigsRequest{
-  // Project id of the NLU project.
-  string project_id = 1;
-  // Project Configs.
-  ProjectConfigs project_configs = 2;
-}
-
-message DeleteProjectConfigsRequest{
-  // Project id of the NLU project.
-  string project_id = 1;
+    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
 }
 
 
-///////////
-// Asterisk //
-///////////
+// Request to updated VTSI project
+message UpdateVtsiProjectRequest{
 
-message DeployProjectRequest{
-  // Project id of the NLU project.
-  string project_id = 1;
-}
-message UndeployProjectRequest{
-  // Project id of the NLU project.
-  string project_id = 1;
+    // Project Configs.
+    VtsiProject project = 1;
 }
 
-/////////////
-// CALLERS //
-/////////////
+// Request to updated VTSI project
+message UpdateVtsiProjectResponse{
 
-// base configuration of services (ondewo-cai, text-to-speech, speech-to-text, asterisk)
+    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
+
+    // error message if there are any.
+    string error_message = 2;
+}
+
+// Request to delete a VTSI project
+// If a deployed VTSI project was deleted then it was undeployed beforehand automatically
+message DeleteVtsiProjectRequest{
+
+    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
+}
+
+// Response to delete a VTSI project
+// If a deployed VTSI project was deleted then it was undeployed beforehand automatically
+message DeleteVtsiProjectResponse{
+
+    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
+
+    // error message if there are any.
+    string error_message = 2;
+}
+
+// Request to deploy a vtsi project
+message DeployVtsiProjectRequest{
+
+    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
+}
+
+// Response to deploy a vtsi project
+message DeployVtsiProjectResponse{
+
+    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
+
+    // error message if there are any.
+    string error_message = 2;
+
+}
+
+//  Request to undeploy a vtsi project
+message UndeployVtsiProjectRequest{
+
+    // Project name of the VTSI project.
+    string name = 1;
+}
+
+// Response to undeploy a vtsi project
+message UndeployVtsiProjectResponse{
+
+    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
+
+    // error message if there are any.
+    string error_message = 2;
+
+}
+
+// base configuration of services (ondewo-nlu, text-to-speech, speech-to-text, asterisk)
 message BaseServiceConfig{
-  // service host IP
-  string host = 1;
 
-  // service port
-  int32 port = 2;
+    // service host IP
+    string host = 1;
 
-  // Optional: GRPC cert for the given service
-  string grpc_cert = 3;
+    // service port
+    int32 port = 2;
+
+    // Optional: GRPC cert for the given service
+    string grpc_cert = 3;
 }
 
+// Credentials
 message Credentials {
-  string account_name = 1;
-  string password = 2;
+
+    // Account name - usually email address
+    string account_name = 1;
+
+    // password of the account
+    string password = 2;
 }
 
-message NLUConfig{
-  // Base config
-  // Host, Port, and [Optional] GRPC cert
-  BaseServiceConfig base_config = 1;
+// NLU Configuration
+message NluVtsiConfig{
 
-  oneof authentication {
-    Credentials credentials = 2;
-    string auth_token = 3;
-  }
+    // Base config
+    // Host, Port, and [Optional] GRPC cert
+    BaseServiceConfig nlu_base_config = 1;
 
-  // language code
-  // See [Language Support](https://dialogflow.com/docs/reference/language)
-  // for a list of the currently supported language codes.
-  string language_code = 4;
+    // authentication information (login information)
+    oneof authentication {
 
-  // name of intent to trigger at the start of a call
-  string initial_intent = 5;
+        // Credentials with classical username and password
+        Credentials credentials = 2;
 
-  // ondewo-cai list of contexts
-  repeated ondewo.nlu.Context contexts = 6;
+        // Authentication token
+        string auth_token = 3;
+    }
+
+    // language code in a two letter iso code, e.g. de, en, etc.
+    string language_code = 4;
+
+    // name of intent to trigger at the start of a call
+    string initial_intent = 5;
+
+    // ondewo-nlu list of contexts
+    repeated ondewo.nlu.Context contexts = 6;
 }
 
-message T2SConfig{
-  // Host, Port, and [Optional] GRPC cert
-  BaseServiceConfig base_config = 1;
-  ondewo.t2s.RequestConfig t2s_config = 2;
+// Text-2-Speech Configuration
+message T2sVtsiConfig{
+
+    // Host, Port, and [Optional] GRPC cert
+    BaseServiceConfig t2s_base_config = 1;
+
+    // Configuration of Text-2-Speech
+    ondewo.t2s.RequestConfig t2s_request_config = 2;
 }
 
-message S2TConfig{
-  // Host, Port, and [Optional] GRPC cert
-  BaseServiceConfig base_config = 1;
-  ondewo.s2t.TranscribeRequestConfig s2t_config = 2;
+// Speech-2-Text Configuration
+message S2tVtsiConfig{
+
+    // Host, Port, and [Optional] GRPC cert
+    BaseServiceConfig s2t_base_config = 1;
+
+    // Configuration of Speech-2-Text
+    ondewo.s2t.TranscribeRequestConfig s2t_transcribe_request_config = 2;
 }
 
+// Asterisk configuration
 message AsteriskConfig{
-  // Host, Port, and [Optional] GRPC cert
-  BaseServiceConfig base_config = 1;
+
+    // Host, Port, and [Optional] GRPC cert
+    BaseServiceConfig asterisk_base_config = 1;
 }
 
 // It is common for both listener and caller
 message CommonServicesConfigs{
-  // Asterisk service configuration
-  AsteriskConfig asterisk_config = 1;
 
-  // ondewo-cai configuration
-  NLUConfig cai_config = 2;
+    // Asterisk service configuration
+    AsteriskConfig asterisk_vtsi_config = 1;
 
-  // speech-to-text service configuration
-  S2TConfig stt_config = 3;
+    // speech-to-text service configuration
+    S2tVtsiConfig s2t_vtsi_config = 2;
 
-  // text-to-speech service configuration
-  T2SConfig tts_config = 4;
+    // ondewo-nlu configuration
+    NluVtsiConfig nlu_vtsi_config = 3;
 
-  // CSI service configuration
-  CsiConfig csi_config = 5;
+    // text-to-speech service configuration
+    T2sVtsiConfig t2s_vtsi_config = 4;
+
+    // CSI service configuration
+    CsiVtsiConfig csi_vtsi_config = 5;
+
 }
 
 // The base config is for both the listener and caller .. If you only provide it you will get a listener
 // You will need to provide SIPCallerConfig for the caller
 message SIPBaseConfig{
-  // version of sip to use for call
-  string sip_sim_version = 1;
+
+    // version of sip to use for call, semantic versioning e.g., 1.0.0, 1.1.0-pre-release, etc.
+    string sip_sim_base_config_version = 1;
 
 }
 
+// Configuration of the SIP caller
 message SIPCallerConfig{
-  SIPBaseConfig sip_base_config = 1;
-  // phone number to call
-  string phone_number = 2;
 
-  // dictionary of sip headers that are sent on call
-  map<string, string> headers = 3;
-}
+    // SIP configuration
+    SIPBaseConfig sip_base_config = 1;
 
+    // callee id e.g. phone number to call, +4365012345678 or VOIP phone ondewo0001@ondewo.com, etc.
+    string callee_id = 2;
 
-message CsiConfig{
-  S2tCallbacks s2t_callbacks = 1;
-  NluCallbacks nlu_callbacks = 2;
-  T2sCallbacks t2s_callbacks = 3;
-  AudioObjectStorageConfig audio_object_store_config = 4;
-  MessageBrokerConfig message_broker_config = 5;
-  bool activate_control_messages = 6;
+    // dictionary of sip headers that are sent on call
+    map<string, string> sip_headers = 3;
 
 }
 
+
+// CSI configuration
+message CsiVtsiConfig{
+
+    // Callback for the Speech-2-Text platform
+    S2tVtsiCallbacks s2t_vtsi_callbacks = 1;
+
+    // Callback for the NLU platform
+    NluVtsiCallbacks nlu_vtsi_callbacks = 2;
+
+    // Callback for the Text-2-Speech platform
+    T2sVtsiCallbacks t2s_vtsi_callbacks = 3;
+
+    // Configuration of the Minio Audio Object Store
+    AudioObjectStorageConfig audio_object_store_config = 4;
+
+    // Configuration of the RabbitMQ Message Broker
+    MessageBrokerConfig message_broker_config = 5;
+
+    // Setting to activate if it is possible to send control messages
+    // a.) via RabbitMQ to remote control the system
+    // b.) via embeddings in NLU text responses
+    bool activate_control_messages = 6;
+
+}
+
+// Minio Audio Object Store
 message AudioObjectStorageConfig{
-  bool activate_audio_object_storage = 1;
-  AudioObjectStorageServicesActivationConfig audio_object_storage_services_activation_config = 2;
-  oneof audio_storage_config{
-    MinioConfig minio_config = 3;
-  }
+
+    // Audio storage should be activated or not
+    bool activate_audio_object_storage = 1;
+
+    // Configuration of the Minio Audio Object Store
+    AudioObjectStorageServicesActivationConfig audio_object_storage_services_activation_config = 2;
+
+    // Configuration of the Minio Audio Object Store
+    oneof audio_storage_config{
+        MinioConfig minio_config = 3;
+    }
 }
 
+// Configuration of the Minio Audio Object Store
 message AudioObjectStorageServicesActivationConfig{
-  bool activate_s2t = 1;
-  bool activate_t2s = 2;
+
+    // Should audio object store save audio sent to the Speech-2-Text platform
+    bool activate_s2t = 1;
+
+    // Should audio object store save audio generated from the Text-2-Speech platform
+    bool activate_t2s = 2;
 }
 
+// Configuration of the RabbitMQ Message Broker
 message MessageBrokerConfig{
-  bool activate_message_broker = 1;
-  MessageBrokerServicesActivationConfig message_broker_services_activation_config = 2;
-  oneof message_broker_config{
-    RabbitMqConfig rabbit_mq_config = 3;
-  }
+
+    // Should the broker be activated or not
+    bool activate_message_broker = 1;
+
+    // Configuration of the RabbitMQ Message Broker
+    MessageBrokerServicesActivationConfig message_broker_services_activation_config = 2;
+
+    // Configuration of the RabbitMQ Message Broker
+    oneof message_broker_config{
+        RabbitMqConfig rabbit_mq_config = 3;
+    }
 }
 
+// Configuration of the RabbitMQ Message Broker
 message MessageBrokerServicesActivationConfig{
-  bool activate_s2t = 1;
-  bool activate_nlu = 2;
-  bool activate_t2s = 3;
-  bool activate_sip = 4;
+
+    // should RabbitMQ Message Broker be activated for Speech-2-Text platform
+    bool activate_s2t = 1;
+
+    // should RabbitMQ Message Broker be activated for NLU platform
+    bool activate_nlu = 2;
+
+    // should RabbitMQ Message Broker be activated for Text-2-Speech platform
+    bool activate_t2s = 3;
+
+    // should RabbitMQ Message Broker be activated for SIP platform
+    bool activate_sip = 4;
 }
 
+// Configuration of the RabbitMQ Message Broker
 message RabbitMqConfig{
-  // host where the rabbit mq server runs
-  string host = 1;
-  // port where the rabbit mq server runs
-  string port = 2;
-  // port where the rabbit mq server runs
-  string port_2 = 3;
-  // user of server
-  string user = 4;
-  // password of server
-  string password = 5;
+
+    // host where the rabbit mq server runs
+    string host = 1;
+
+    // port where the rabbit mq server runs
+    int32 port = 2;
+
+    // port where the rabbit mq server runs
+    int32 port_2 = 3;
+
+    // user of server
+    string user = 4;
+
+    // password of server
+    string password = 5;
+
 }
 
-message Endpoint{
-  string host = 1;
-  string port = 2;
-}
-
+// Configuration of the Minio Audio Object Store
 message MinioConfig{
-  // where the minio server runs (host_ip:port)
-  Endpoint endpoint = 1;
 
-  // access key of server
-  string access_key = 2;
-  // secret key of server
-  string secret_key = 3;
+    // host
+    string host = 1;
 
-  // if you need to do a secure connection "ssl"
-  bool secure = 4;
-  // session_token in case you need secure connection
-  string session_token = 5;
-}
+    // port
+    int32 port = 2;
 
-message S2tCallbacks{
-  repeated string pre_s2t_callbacks = 1;
-  repeated string post_s2t_callbacks = 2;
-}
+    // access key of server
+    string access_key = 3;
 
-message NluCallbacks{
-  repeated string pre_nlu_callbacks = 1;
-  repeated string post_nlu_callbacks = 2;
+    // secret key of server
+    string secret_key = 4;
+
+    // if you need to do a secure connection "ssl"
+    bool secure = 5;
+
+    // session_token in case you need secure connection
+    string session_token = 6;
 
 }
 
-message T2sCallbacks{
-  repeated string pre_t2s_callbacks = 1;
-  repeated string post_t2s_callbacks = 2;
+// Callback for the Speech-2-Text platform
+message S2tVtsiCallbacks{
+
+    // Callback executed before the Speech-2-Text will be called
+    repeated string pre_s2t_callbacks = 1;
+
+    // Callback executed after the Speech-2-Text has been called
+    repeated string post_s2t_callbacks = 2;
 
 }
+
+// Callback for the NLU platform
+message NluVtsiCallbacks{
+
+    // Callback executed before the NLU will be called
+    repeated string pre_nlu_callbacks = 1;
+
+    // Callback executed after the NLU has been called
+    repeated string post_nlu_callbacks = 2;
+
+}
+// Callback for the Text-2-Speech platform
+message T2sVtsiCallbacks{
+
+    // Callback executed before the Text-2-Speech will be called
+    repeated string pre_t2s_callbacks = 1;
+
+    // Callback executed after the Text-2-Speech has been called
+    repeated string post_t2s_callbacks = 2;
+
+}
+
+message Listener {
+
+    // VTSI project name with which to perform the call of the form
+    // <code>projects/<project_uuid>/listeners/<listener_uuid></code>
+    string name = 1;
+
+    // The call name that was assigned to the call
+    // <code>projects/<project_uuid>/listeners/<listener_uuid>/calls/<call_uuid></code>
+    string call_name = 2;
+
+    // SIP service configuration
+    SIPBaseConfig sip_config = 3;
+
+    // Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI
+    CommonServicesConfigs services_configs = 4;
+
+}
+
+message Caller {
+
+    // Caller name with which to perform the call of the form
+    // <code>projects/<project_uuid>/callers/<caller_uuid></code>
+    string name = 1;
+
+    // <code>projects/<project_uuid>/callers/<call_uuid>/calls/<call_uuid></code>
+    string call_name = 2;
+
+    // SIP service configuration
+    SIPBaseConfig sip_config = 3;
+
+    // Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI
+    CommonServicesConfigs services_configs = 4;
+}
+
 
 // request for starting a listener
 message StartListenerRequest {
 
-  // SIP service configuration
-  SIPBaseConfig sip_config = 1;
+    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
 
-  // Service Configs of Asterisk, cai,stt, tts
-  CommonServicesConfigs services_configs = 2;
+    // SIP service configuration
+    SIPBaseConfig sip_config = 2;
+
+    // Service Configs of Asterisk, nlu,stt, tts
+    CommonServicesConfigs services_configs = 3;
+
+}
+
+// Response to start multiple listeners
+message StartListenerResponse {
+
+    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
+
+    Listener listener = 2;
+
+    // error message if you have any so if it's unhealthy
+    string error_message = 3;
+
+}
+
+// Request to start multiple listeners
+message StartListenersRequest {
+
+    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
+
+    // Listeners that should be started
+    repeated StartListenerRequest listener_requests = 2;
+}
+
+// Response to start multiple listeners
+message StartListenersResponse {
+
+    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
+
+    // The call ids that were assigned to each listener
+    repeated StartListenerResponse listener_responses = 2;
+
+    // overall error message if you have any so if it's unhealthy
+    string error_message = 3;
+
 }
 
 // request for starting a caller
 message StartCallerRequest {
 
-  // SIP service configuration
-  SIPCallerConfig sip_config = 1;
+    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
 
-  // Service Configs of Asterisk, cai,stt, tts
-  CommonServicesConfigs services_configs = 2;
+    // SIP service configuration
+    SIPCallerConfig sip_config = 2;
+
+    // Service Configs of Asterisk, nlu,stt, tts
+    CommonServicesConfigs services_configs = 3;
+
+}
+
+// Response to start multiple listeners
+message StartCallerResponse {
+
+    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
+
+    Caller caller = 2;
+
+    // error message if you have any so if it's unhealthy
+    string error_message = 3;
+
+}
+
+// Request to start multiple callers
+message StartCallersRequest {
+
+    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
+
+    // Callers that should be started
+    repeated StartCallerRequest caller_requests = 2;
+
+}
+
+// Response to the start caller request
+message StartCallersResponse {
+
+    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
+
+    // The call ids that were assigned to each listener
+    repeated StartCallerResponse caller_responses = 2;
+
+    // overall error message if you have any so if it's unhealthy
+    string error_message = 3;
+
 }
 
 // request for starting a scheduled call
 message StartScheduledCallerRequest {
-  // Normal start caller request
-  StartCallerRequest request = 1;
-  // Time you want the call to be scheduled at
 
-  google.protobuf.Timestamp scheduled_time = 2; ///////////////////////////////////////////
+    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
+
+    // Normal start caller request
+    StartCallerRequest request = 2;
+
+    // Time the call is scheduled
+    // TODO to be refactored with a more complex scheduling object
+    google.protobuf.Timestamp scheduled_time = 3;
 }
 
-// collection of listeners to start
-message StartListenersRequest {
-  // ondewo-cai project ID with which to perform the call
-  string project_id = 1;
-  repeated StartListenerRequest requests = 2;
-}
 
-message StartListenersResponse {
-  // ondewo-cai project ID.
-  string project_id = 1;
-  // The call ids that were assigned to each call
-  repeated string call_ids = 2;
-}
-
-// collection of callers to start
-message StartCallersRequest {
-  // ondewo-cai project ID with which to perform the call
-  string project_id = 1;
-  repeated StartCallerRequest requests = 2;
-}
-
-message StartCallersResponse {
-  // ondewo-cai project ID.
-  string project_id = 1;
-  // The call ids that were assigned to each call
-  repeated string call_ids = 2;
-}
-
-// collection of scheduled callers to start
+// Request to start scheduled callers
 message StartScheduledCallersRequest {
-  // ondewo-cai project ID with which to perform the call
-  string project_id = 1;
-  repeated StartScheduledCallerRequest requests = 2;
+
+    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
+
+    // requests to start scheduled callers
+    repeated StartScheduledCallerRequest scheduled_caller_requests = 2;
+}
+
+// Response to start multiple listeners
+message StartScheduledCallersResponse {
+
+    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
+
+    // The call ids that were assigned to each listener
+    repeated StartScheduledCallerResponse scheduled_caller_responses = 2;
+
 }
 
 
-// parameters of the calls to stop
+// Response to start multiple listeners
+message StartScheduledCallerResponse {
+
+    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
+
+    ScheduledCaller scheduled_caller = 2;
+
+    // error message if you have any so if it's unhealthy
+    string error_message = 3;
+
+}
+
+// ScheduledCaller message - a Caller with a schedule when to start calling
+message ScheduledCaller {
+
+    // Resource name of the scheduled caller
+    // <code>projects/<project_uuid>/scheduled_callers/<scheduled_caller_uuid></code>
+    string name = 1;
+
+    // The asterisk sip call id that was assigned to the call, e.g., ondewo0001
+    string call_id = 2;
+
+    // SIP service configuration
+    SIPBaseConfig sip_config = 3;
+
+    // Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI
+    CommonServicesConfigs services_configs = 4;
+
+    // Time the call is scheduled
+    // TODO to be refactored with a more complex scheduling object
+    google.protobuf.Timestamp scheduled_time = 5;
+}
+
+// Request to stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.
+message StopCallRequest {
+
+    // VTSI project parent with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
+
+    // call name to stop
+    // For listener this is <code>projects/<project_uuid>/listeners/<listener_uuid>/calls/<call_uuid></code>
+    // For callers this is <code>projects/<project_uuid>/callers/<call_uuid>/calls/<call_uuid></code>
+    string call_name = 2;
+}
+
+// Response to stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.
+message StopCallResponse {
+
+    // VTSI project name with which to stop the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
+
+    // call id that has been stopped
+    string call_id = 2;
+
+    // error messages if you have any so if it's unhealthy
+    string error_message = 3;
+}
+
+// Request to stop/kill specific ondewo-sip listeners or callers instance for a specific vtsi-project.
 message StopCallsRequest {
-  // ondewo-cai project ID.
-  string project_id = 1;
-  repeated string call_ids = 2;
+
+    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
+
+    // call names to stop
+    // For listener this is <code>projects/<project_uuid>/listeners/<listener_uuid>/calls/<call_uuid></code>
+    // For callers this is <code>projects/<project_uuid>/callers/<call_uuid>/calls/<call_uuid></code>
+    repeated string call_ids = 2;
 }
 
-// parameters of the calls to stop
+// Response to stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.
+message StopCallsResponse {
+
+    repeated StopCallResponse stop_call_responses = 1;
+
+    // overall error message if you have any so if it's unhealthy
+    string error_message = 2;
+}
+
+// Request to stop all calls of a VTSI project, so all listeners and callers
 message StopAllCallsRequest {
-  // ondewo-cai project ID.
-  string project_id = 1;
+
+    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
 }
 
+// Request to transfer calls
+message TransferCallRequest{
+
+    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string parent = 1;
+
+    // call name to transfer
+    // For listener this is <code>projects/<project_uuid>/listeners/<listener_uuid>/calls/<call_uuid></code>
+    // For callers this is <code>projects/<project_uuid>/callers/<call_uuid>/calls/<call_uuid></code>
+    string call_name = 2;
+
+    // call_id to transfer the call to, so the number or voip number you want to be transferred too
+    repeated string transfer_id = 3;
+
+}
+
+// Response to transfer a call to a phone number or voip number
+message TransferCallResponse {
+
+    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
+
+    // call name to transfer
+    // For listener this is <code>projects/<project_uuid>/listeners/<listener_uuid>/calls/<call_uuid></code>
+    // For callers this is <code>projects/<project_uuid>/callers/<call_uuid>/calls/<call_uuid></code>
+    string call_name = 2;
+
+    // call_id to transfer the call to, so the phone number or voip number you want to be transferred too
+    repeated string transfer_id = 3;
+
+    // error message if you have any so if it's unhealthy
+    string error_message = 4;
+
+}
+
+// Request to transfer multiple calls
 message TransferCallsRequest{
-  // ondewo-cai project ID.
-  string project_id = 1;
-  // call-ID to transfer
-  repeated string call_id = 2;
-  // Number you want to be transfered too
-  repeated string transfer_id = 3;
+
+    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
+
+    // Responses to transfer multiple calls to a phone number or voip number
+    repeated TransferCallRequest transfer_call_requests = 2;
+
 }
 
+// Response to transfer a call to a phone number or voip number
+message TransferCallsResponse {
 
-////////////
-// STATUS //
-////////////
+    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
+
+    repeated TransferCallResponse transfer_call_responses = 2;
+
+    // overall error message if you have any so if it's unhealthy
+    string error_message = 3;
+
+}
 
 // request to get a call instance's call logs
 message GetVoipCallInfoRequest {
-  // ondewo-cai project ID.
-  string project_id = 1;
 
-  // ID of the call
-  string call_id = 2;
+    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
 
-  /* you can specify the view to be shallow or full .. see above for more info*/
-  VoipCallInfoView voip_call_info_view = 3;
+    // call name
+    // For listener this is <code>projects/<project_uuid>/listeners/<listener_uuid>/calls/<call_uuid></code>
+    // For callers this is <code>projects/<project_uuid>/callers/<call_uuid>/calls/<call_uuid></code>
+    string call_name = 2;
+
+    /* you can specify the view to be shallow or full .. see above for more info*/
+    VoipCallInfoView voip_call_info_view = 3;
 }
 
+// VoipCallInfo view options
 enum VoipCallInfoView {
-  // Gives you all basic info like call_id, start_time, end_time, current sip status
-  Info_VIEW_SHALLOW = 0;
 
-  // Gives you the full info with status history and the services statuses
-  Info_VIEW_FULL = 1;
+    // Gives you all basic info like call_id, start_time, end_time, current sip status
+    SHALLOW = 0;
+
+    // Gives you the full info with status history and the services statuses
+    FULL = 1;
 }
 
 // response with call logs
 message GetVoipCallInfoResponse {
-  VoipCallInfo active_log = 1;
 
-  // logs of calls associated with call instance
-  repeated VoipCallInfo done_logs = 2;
+    // VoipCallInfo to view active logs of calls
+    VoipCallInfo active_log = 1;
+
+    // logs of calls associated with call instance
+    repeated VoipCallInfo done_logs = 2;
 }
 
+// CallType
 enum CallType {
-  both = 0;
 
-  listener = 1;
+    // both listeners and callers
+    both = 0;
 
-  caller = 2;
+    // voip call listeners
+    listener = 1;
+
+    // voip call callers
+    caller = 2;
 }
 
-// call log
+// VoipCall log
 message VoipCallInfo {
-  // id of call instance
-  string call_id = 1;
 
-  // sip account used
-  string sip_account = 2;
+    // call name
+    // For listener this is <code>projects/<project_uuid>/listeners/<listener_uuid>/calls/<call_uuid></code>
+    // For callers this is <code>projects/<project_uuid>/callers/<call_uuid>/calls/<call_uuid></code>
+    string call_name = 1;
 
-  // container name which you get from docker ps
-  string container_name = 3;
+    // sip account used
+    string sip_account = 2;
 
-  // Listener or caller enum .. if not specified
-  CallType call_type = 4;
+    // container name which you get from docker ps
+    string container_name = 3;
 
-  string phone_number = 5;
+    // Listener or caller enum .. if not specified
+    CallType call_type = 4;
 
-  // start time of log
-  double start_time = 6;
+    string phone_number = 5;
 
-  // end time of log
-  double end_time = 7;
+    // start time of log
+    double start_time = 6;
 
-  // current sip status
-  ondewo.sip.SipStatus sip_status = 8;
+    // end time of log
+    double end_time = 7;
 
-  // sip status history
-  ondewo.sip.SipStatusHistoryResponse sip_status_history = 9;
+    // current sip status
+    ondewo.sip.SipStatus sip_status = 8;
 
-  // All container health statuses
-  AllServicesStatuses services_statuses = 10;
+    // sip status history
+    ondewo.sip.SipStatusHistoryResponse sip_status_history = 9;
+
+    // All container health statuses
+    AllServicesStatuses services_statuses = 10;
 }
 
 message ListVoipCallInfoRequest{
-  // ondewo-cai project ID.
-  string project_id = 1;
 
-  // you can specify the view to be shallow or full .. see above for more info
-  VoipCallInfoView voip_call_info_view = 2;
+    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    string name = 1;
 
-  // both by default or listener or caller
-  CallType call_type = 3;
+    // you can specify the view to be shallow or full .. see above for more info
+    VoipCallInfoView voip_call_info_view = 2;
+
+    // both by default, or only listeners, or only callers
+    CallType call_type = 3;
 }
 
+// Response to list all VoipInfos
 message ListVoipCallInfoResponse{
-  repeated VoipCallInfo voip_info = 1;
+
+    // VoipInfos
+    repeated VoipCallInfo voip_call_infos = 1;
 }
 
 // status of ondewo-sip instance
 message AllServicesStatuses {
-  // health status for sip
-  ServiceStatus status_sip = 1;
 
-  // status of the associated asterisk server
-  ServiceStatus status_asterisk = 2;
+    // health status for sip
+    ServiceStatus status_sip = 1;
 
-  // status of the cai instance associated with the call
-  ServiceStatus status_cai = 3;
+    // status of the associated asterisk server
+    ServiceStatus status_asterisk = 2;
 
-  // status of the associated speech-to-text service
-  ServiceStatus status_stt = 4;
+    // status of the nlu instance associated with the call
+    ServiceStatus status_nlu = 3;
 
-  // status of the associated text-to-speech service
-  ServiceStatus status_tts = 5;
+    // status of the associated speech-to-text service
+    ServiceStatus status_stt = 4;
+
+    // status of the associated text-to-speech service
+    ServiceStatus status_tts = 5;
 }
 
 // status of service
 message ServiceStatus {
-  // health status
-  bool healthy = 1;
-  // error messages if you have any so if it's unhealthy
-  string error_messsages = 2;
+
+    // health status
+    bool healthy = 1;
+
+    // error messages if you have any so if it's unhealthy
+    string error_message = 2;
 }
 
-/////////////////////////
-// Retrieving Audio files //
-////////////////////////////
+// Request to retrieve audio files
 message GetAudioFileRequest{
-  string bucket_name = 1;
-  string object_name = 2;
-  // Optional to add if you want to retrieve it from a specific minio server
-  MinioConfig minio_config = 3;
+
+    // name of the bucket in Minio Audio Object Store
+    string bucket_name = 1;
+
+    // name of the object in Minio Audio Object Store, format is UUID
+    string object_name = 2;
+
+    // Optional to add if you want to retrieve it from a specific minio server
+    MinioConfig minio_config = 3;
+
 }
 
+// Response to retrieve the bytes of the audio file requested from Minio
 message GetAudioFileResponse{
-  bytes audio = 1;
+
+    // audio bytes from Minio Audio Object Store
+    bytes audio = 1;
 }
 
+// Request to retrieve one audio file with all audio files combined into one
 message GetFullConversationAudioFileRequest{
-  string bucket_name = 1;
-  repeated string object_names = 2;
-  // Optional to add if you want to retrieve it from a specific minio server
-  MinioConfig minio_config = 3;
+
+    // name of the bucket in Minio Audio Object Store
+    string bucket_name = 1;
+
+    // names of the objects in Minio Audio Object Store belonging to a whole NLU "conversation" session
+    repeated string object_names = 2;
+
+    // Optional to add if you want to retrieve it from a specific minio server
+    MinioConfig minio_config = 3;
 }
 
+// Retrieve one audio file with all audio files combined into one
 message GetFullConversationAudioFileResponse{
-  bytes audio = 1;
+
+    // audio bytes from Minio Audio Object Store
+    bytes audio = 1;
 }
