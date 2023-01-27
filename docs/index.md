@@ -9666,7 +9666,7 @@ base configuration of services (ondewo-nlu, text-to-speech, speech-to-text, aste
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | Caller name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> |
-| call_name | [string](#string) |  | <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
+| call_name | [string](#string) |  | The call name that was assigned to the call <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
 | sip_config | [SIPBaseConfig](#ondewo.vtsi.SIPBaseConfig) |  | SIP service configuration |
 | services_configs | [CommonServicesConfigs](#ondewo.vtsi.CommonServicesConfigs) |  | Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI |
 
@@ -10188,7 +10188,7 @@ ScheduledCaller message - a Caller with a schedule when to start calling
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | Resource name of the scheduled caller <pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre> |
-| call_id | [string](#string) |  | The asterisk sip call id that was assigned to the call, e.g., ondewo0001 |
+| call_name | [string](#string) |  | The asterisk sip call name that was assigned to the call For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
 | sip_config | [SIPBaseConfig](#ondewo.vtsi.SIPBaseConfig) |  | SIP service configuration |
 | services_configs | [CommonServicesConfigs](#ondewo.vtsi.CommonServicesConfigs) |  | Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI |
 | scheduled_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Time the call is scheduled TODO to be refactored with a more complex scheduling object |
@@ -10454,7 +10454,7 @@ Response to stop/kill a ondewo-sip listener or caller instance for a specific vt
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | VTSI project name with which to stop the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
-| call_id | [string](#string) |  | call id that has been stopped |
+| call_name | [string](#string) |  | call name to stop For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
 | error_message | [string](#string) |  | error messages if you have any so if it's unhealthy |
 
 
@@ -10471,7 +10471,7 @@ Request to stop/kill specific ondewo-sip listeners or callers instance for a spe
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
-| call_ids | [string](#string) | repeated | call names to stop For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
+| call_names | [string](#string) | repeated | call names to stop For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
 
 
 
@@ -10534,9 +10534,9 @@ Request to transfer calls
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| parent | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | call_name | [string](#string) |  | call name to transfer For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
-| transfer_id | [string](#string) | repeated | call_id to transfer the call to, so the number or voip number you want to be transferred too |
+| transfer_id | [string](#string) | repeated | transfer_id to transfer the call to, so the number or voip number you want to be transferred too |
 
 
 
@@ -10553,7 +10553,7 @@ Response to transfer a call to a phone number or voip number
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | call_name | [string](#string) |  | call name to transfer For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
-| transfer_id | [string](#string) | repeated | call_id to transfer the call to, so the phone number or voip number you want to be transferred too |
+| transfer_id | [string](#string) |  | transfer id to transfer the calls to, so the phone number or voip number you want to be transferred too |
 | error_message | [string](#string) |  | error message if you have any so if it's unhealthy |
 
 
@@ -10721,7 +10721,7 @@ VoipCallInfo view options
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
-| SHALLOW | 0 | Gives you all basic info like call_id, start_time, end_time, current sip status |
+| SHALLOW | 0 | Gives you all basic info like call name, start_time, end_time, current sip status |
 | FULL | 1 | Gives you the full info with status history and the services statuses |
 
 

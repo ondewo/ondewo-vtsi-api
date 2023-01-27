@@ -26234,7 +26234,8 @@ pipelines with the specifications received in the ListT2sPipelinesRequest. </p><
                   <td>call_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p><pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> </p></td>
+                  <td><p>The call name that was assigned to the call
+<pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -27364,10 +27365,12 @@ Host, Port, and [Optional] GRPC cert </p></td>
                 </tr>
               
                 <tr>
-                  <td>call_id</td>
+                  <td>call_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>The asterisk sip call id that was assigned to the call, e.g., ondewo0001 </p></td>
+                  <td><p>The asterisk sip call name that was assigned to the call
+For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
+For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -27934,10 +27937,12 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
                 </tr>
               
                 <tr>
-                  <td>call_id</td>
+                  <td>call_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>call id that has been stopped </p></td>
+                  <td><p>call name to stop
+For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
+For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -27972,7 +27977,7 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
                 </tr>
               
                 <tr>
-                  <td>call_ids</td>
+                  <td>call_names</td>
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
                   <td><p>call names to stop
@@ -28091,7 +28096,7 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
             <tbody>
               
                 <tr>
-                  <td>parent</td>
+                  <td>name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
@@ -28110,7 +28115,7 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
                   <td>transfer_id</td>
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
-                  <td><p>call_id to transfer the call to, so the number or voip number you want to be transferred too </p></td>
+                  <td><p>transfer_id to transfer the call to, so the number or voip number you want to be transferred too </p></td>
                 </tr>
               
             </tbody>
@@ -28149,8 +28154,8 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
                 <tr>
                   <td>transfer_id</td>
                   <td><a href="#string">string</a></td>
-                  <td>repeated</td>
-                  <td><p>call_id to transfer the call to, so the phone number or voip number you want to be transferred too </p></td>
+                  <td></td>
+                  <td><p>transfer id to transfer the calls to, so the phone number or voip number you want to be transferred too </p></td>
                 </tr>
               
                 <tr>
@@ -28533,7 +28538,7 @@ Only when a new VtsiProject is created the name can be undefined/empty </p></td>
               <tr>
                 <td>SHALLOW</td>
                 <td>0</td>
-                <td><p>Gives you all basic info like call_id, start_time, end_time, current sip status</p></td>
+                <td><p>Gives you all basic info like call name, start_time, end_time, current sip status</p></td>
               </tr>
             
               <tr>
