@@ -585,6 +585,7 @@ message Caller {
     // <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
     string name = 1;
 
+    // The call name that was assigned to the call
     // <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     string call_name = 2;
 
@@ -756,8 +757,10 @@ message ScheduledCaller {
     // <pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre>
     string name = 1;
 
-    // The asterisk sip call id that was assigned to the call, e.g., ondewo0001
-    string call_id = 2;
+    // The asterisk sip call name that was assigned to the call
+    // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
+    // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
+    string call_name = 2;
 
     // SIP service configuration
     SIPBaseConfig sip_config = 3;
@@ -788,8 +791,10 @@ message StopCallResponse {
     // VTSI project name with which to stop the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
-    // call id that has been stopped
-    string call_id = 2;
+    // call name to stop
+    // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
+    // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
+    string call_name = 2;
 
     // error messages if you have any so if it's unhealthy
     string error_message = 3;
@@ -804,7 +809,7 @@ message StopCallsRequest {
     // call names to stop
     // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
-    repeated string call_ids = 2;
+    repeated string call_names = 2;
 }
 
 // Response to stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.
@@ -827,14 +832,14 @@ message StopAllCallsRequest {
 message TransferCallRequest{
 
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string parent = 1;
+    string name = 1;
 
     // call name to transfer
     // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     string call_name = 2;
 
-    // call_id to transfer the call to, so the number or voip number you want to be transferred too
+    // transfer_id to transfer the call to, so the number or voip number you want to be transferred too
     repeated string transfer_id = 3;
 
 }
@@ -850,8 +855,8 @@ message TransferCallResponse {
     // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     string call_name = 2;
 
-    // call_id to transfer the call to, so the phone number or voip number you want to be transferred too
-    repeated string transfer_id = 3;
+    // transfer id to transfer the calls to, so the phone number or voip number you want to be transferred too
+    string transfer_id = 3;
 
     // error message if you have any so if it's unhealthy
     string error_message = 4;
@@ -900,7 +905,7 @@ message GetVoipCallInfoRequest {
 // VoipCallInfo view options
 enum VoipCallInfoView {
 
-    // Gives you all basic info like call_id, start_time, end_time, current sip status
+    // Gives you all basic info like call name, start_time, end_time, current sip status
     SHALLOW = 0;
 
     // Gives you the full info with status history and the services statuses
