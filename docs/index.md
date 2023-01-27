@@ -561,52 +561,68 @@
     - [AudioObjectStorageConfig](#ondewo.vtsi.AudioObjectStorageConfig)
     - [AudioObjectStorageServicesActivationConfig](#ondewo.vtsi.AudioObjectStorageServicesActivationConfig)
     - [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig)
+    - [Caller](#ondewo.vtsi.Caller)
     - [CommonServicesConfigs](#ondewo.vtsi.CommonServicesConfigs)
-    - [CreateProjectConfigsRequest](#ondewo.vtsi.CreateProjectConfigsRequest)
+    - [CreateVtsiProjectRequest](#ondewo.vtsi.CreateVtsiProjectRequest)
+    - [CreateVtsiProjectResponse](#ondewo.vtsi.CreateVtsiProjectResponse)
     - [Credentials](#ondewo.vtsi.Credentials)
-    - [CsiConfig](#ondewo.vtsi.CsiConfig)
-    - [DeleteProjectConfigsRequest](#ondewo.vtsi.DeleteProjectConfigsRequest)
-    - [DeployProjectRequest](#ondewo.vtsi.DeployProjectRequest)
-    - [Endpoint](#ondewo.vtsi.Endpoint)
+    - [CsiVtsiConfig](#ondewo.vtsi.CsiVtsiConfig)
+    - [DeleteVtsiProjectRequest](#ondewo.vtsi.DeleteVtsiProjectRequest)
+    - [DeleteVtsiProjectResponse](#ondewo.vtsi.DeleteVtsiProjectResponse)
+    - [DeployVtsiProjectRequest](#ondewo.vtsi.DeployVtsiProjectRequest)
+    - [DeployVtsiProjectResponse](#ondewo.vtsi.DeployVtsiProjectResponse)
     - [GetAudioFileRequest](#ondewo.vtsi.GetAudioFileRequest)
     - [GetAudioFileResponse](#ondewo.vtsi.GetAudioFileResponse)
     - [GetFullConversationAudioFileRequest](#ondewo.vtsi.GetFullConversationAudioFileRequest)
     - [GetFullConversationAudioFileResponse](#ondewo.vtsi.GetFullConversationAudioFileResponse)
-    - [GetProjectConfigsRequest](#ondewo.vtsi.GetProjectConfigsRequest)
-    - [GetProjectConfigsResponse](#ondewo.vtsi.GetProjectConfigsResponse)
     - [GetVoipCallInfoRequest](#ondewo.vtsi.GetVoipCallInfoRequest)
     - [GetVoipCallInfoResponse](#ondewo.vtsi.GetVoipCallInfoResponse)
+    - [GetVtsiProjectRequest](#ondewo.vtsi.GetVtsiProjectRequest)
     - [ListVoipCallInfoRequest](#ondewo.vtsi.ListVoipCallInfoRequest)
     - [ListVoipCallInfoResponse](#ondewo.vtsi.ListVoipCallInfoResponse)
+    - [Listener](#ondewo.vtsi.Listener)
     - [MessageBrokerConfig](#ondewo.vtsi.MessageBrokerConfig)
     - [MessageBrokerServicesActivationConfig](#ondewo.vtsi.MessageBrokerServicesActivationConfig)
     - [MinioConfig](#ondewo.vtsi.MinioConfig)
-    - [NLUConfig](#ondewo.vtsi.NLUConfig)
-    - [NluCallbacks](#ondewo.vtsi.NluCallbacks)
-    - [ProjectConfigs](#ondewo.vtsi.ProjectConfigs)
+    - [NluVtsiCallbacks](#ondewo.vtsi.NluVtsiCallbacks)
+    - [NluVtsiConfig](#ondewo.vtsi.NluVtsiConfig)
     - [RabbitMqConfig](#ondewo.vtsi.RabbitMqConfig)
-    - [S2TConfig](#ondewo.vtsi.S2TConfig)
-    - [S2tCallbacks](#ondewo.vtsi.S2tCallbacks)
+    - [S2tVtsiCallbacks](#ondewo.vtsi.S2tVtsiCallbacks)
+    - [S2tVtsiConfig](#ondewo.vtsi.S2tVtsiConfig)
     - [SIPBaseConfig](#ondewo.vtsi.SIPBaseConfig)
     - [SIPCallerConfig](#ondewo.vtsi.SIPCallerConfig)
-    - [SIPCallerConfig.HeadersEntry](#ondewo.vtsi.SIPCallerConfig.HeadersEntry)
+    - [SIPCallerConfig.SipHeadersEntry](#ondewo.vtsi.SIPCallerConfig.SipHeadersEntry)
+    - [ScheduledCaller](#ondewo.vtsi.ScheduledCaller)
     - [ServiceStatus](#ondewo.vtsi.ServiceStatus)
     - [StartCallerRequest](#ondewo.vtsi.StartCallerRequest)
+    - [StartCallerResponse](#ondewo.vtsi.StartCallerResponse)
     - [StartCallersRequest](#ondewo.vtsi.StartCallersRequest)
     - [StartCallersResponse](#ondewo.vtsi.StartCallersResponse)
     - [StartListenerRequest](#ondewo.vtsi.StartListenerRequest)
+    - [StartListenerResponse](#ondewo.vtsi.StartListenerResponse)
     - [StartListenersRequest](#ondewo.vtsi.StartListenersRequest)
     - [StartListenersResponse](#ondewo.vtsi.StartListenersResponse)
     - [StartScheduledCallerRequest](#ondewo.vtsi.StartScheduledCallerRequest)
+    - [StartScheduledCallerResponse](#ondewo.vtsi.StartScheduledCallerResponse)
     - [StartScheduledCallersRequest](#ondewo.vtsi.StartScheduledCallersRequest)
+    - [StartScheduledCallersResponse](#ondewo.vtsi.StartScheduledCallersResponse)
     - [StopAllCallsRequest](#ondewo.vtsi.StopAllCallsRequest)
+    - [StopCallRequest](#ondewo.vtsi.StopCallRequest)
+    - [StopCallResponse](#ondewo.vtsi.StopCallResponse)
     - [StopCallsRequest](#ondewo.vtsi.StopCallsRequest)
-    - [T2SConfig](#ondewo.vtsi.T2SConfig)
-    - [T2sCallbacks](#ondewo.vtsi.T2sCallbacks)
+    - [StopCallsResponse](#ondewo.vtsi.StopCallsResponse)
+    - [T2sVtsiCallbacks](#ondewo.vtsi.T2sVtsiCallbacks)
+    - [T2sVtsiConfig](#ondewo.vtsi.T2sVtsiConfig)
+    - [TransferCallRequest](#ondewo.vtsi.TransferCallRequest)
+    - [TransferCallResponse](#ondewo.vtsi.TransferCallResponse)
     - [TransferCallsRequest](#ondewo.vtsi.TransferCallsRequest)
-    - [UndeployProjectRequest](#ondewo.vtsi.UndeployProjectRequest)
-    - [UpdateProjectConfigsRequest](#ondewo.vtsi.UpdateProjectConfigsRequest)
+    - [TransferCallsResponse](#ondewo.vtsi.TransferCallsResponse)
+    - [UndeployVtsiProjectRequest](#ondewo.vtsi.UndeployVtsiProjectRequest)
+    - [UndeployVtsiProjectResponse](#ondewo.vtsi.UndeployVtsiProjectResponse)
+    - [UpdateVtsiProjectRequest](#ondewo.vtsi.UpdateVtsiProjectRequest)
+    - [UpdateVtsiProjectResponse](#ondewo.vtsi.UpdateVtsiProjectResponse)
     - [VoipCallInfo](#ondewo.vtsi.VoipCallInfo)
+    - [VtsiProject](#ondewo.vtsi.VtsiProject)
   
     - [CallType](#ondewo.vtsi.CallType)
     - [VoipCallInfoView](#ondewo.vtsi.VoipCallInfoView)
@@ -9511,7 +9527,7 @@ status of ondewo-sip instance
 | ----- | ---- | ----- | ----------- |
 | status_sip | [ServiceStatus](#ondewo.vtsi.ServiceStatus) |  | health status for sip |
 | status_asterisk | [ServiceStatus](#ondewo.vtsi.ServiceStatus) |  | status of the associated asterisk server |
-| status_cai | [ServiceStatus](#ondewo.vtsi.ServiceStatus) |  | status of the cai instance associated with the call |
+| status_nlu | [ServiceStatus](#ondewo.vtsi.ServiceStatus) |  | status of the nlu instance associated with the call |
 | status_stt | [ServiceStatus](#ondewo.vtsi.ServiceStatus) |  | status of the associated speech-to-text service |
 | status_tts | [ServiceStatus](#ondewo.vtsi.ServiceStatus) |  | status of the associated text-to-speech service |
 
@@ -9523,12 +9539,12 @@ status of ondewo-sip instance
 <a name="ondewo.vtsi.AsteriskConfig"></a>
 
 ### AsteriskConfig
-
+Asterisk configuration
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| base_config | [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig) |  | Host, Port, and [Optional] GRPC cert |
+| asterisk_base_config | [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig) |  | Host, Port, and [Optional] GRPC cert |
 
 
 
@@ -9538,7 +9554,7 @@ status of ondewo-sip instance
 <a name="ondewo.vtsi.AsteriskConfigs"></a>
 
 ### AsteriskConfigs
-
+Configurations object for the Asterisk server
 
 
 | Field | Type | Label | Description |
@@ -9546,7 +9562,7 @@ status of ondewo-sip instance
 | asterisk_configs_variables | [AsteriskConfigsVariables](#ondewo.vtsi.AsteriskConfigsVariables) |  | Configs as variables which will fill those variables using a blue print. |
 | asterisk_configs_files | [AsteriskConfigsFiles](#ondewo.vtsi.AsteriskConfigsFiles) |  | Configs as files which will set up the configs using those files. |
 | asterisk_configs_target_directory_name | [string](#string) |  | Configs will be mapped in from a preconfigured asterisk target directory. |
-| asterisk_port | [int32](#int32) |  | The port where Asterisk should start. {Optional} |
+| asterisk_port | [int32](#int32) |  | OPTIONAL: The port where Asterisk should start. |
 
 
 
@@ -9556,15 +9572,15 @@ status of ondewo-sip instance
 <a name="ondewo.vtsi.AsteriskConfigsFiles"></a>
 
 ### AsteriskConfigsFiles
-
+Configuration files for the Asterisk server
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| sip_conf_file_string | [string](#string) |  | sip.conf file. |
-| extensions_conf_file_string | [string](#string) |  | extensions.conf file. |
-| queues_conf_file_string | [string](#string) |  | queues.conf file. |
-| modules_conf_file_string | [string](#string) |  | modules.conf file. |
+| sip_conf_file_string | [string](#string) |  | sip.conf file as string |
+| extensions_conf_file_string | [string](#string) |  | extensions.conf file as string |
+| queues_conf_file_string | [string](#string) |  | queues.conf file as string |
+| modules_conf_file_string | [string](#string) |  | modules.conf file as string |
 
 
 
@@ -9574,7 +9590,7 @@ status of ondewo-sip instance
 <a name="ondewo.vtsi.AsteriskConfigsVariables"></a>
 
 ### AsteriskConfigsVariables
-
+Configuration variables for the Asterisk server
 
 
 | Field | Type | Label | Description |
@@ -9594,13 +9610,13 @@ status of ondewo-sip instance
 <a name="ondewo.vtsi.AudioObjectStorageConfig"></a>
 
 ### AudioObjectStorageConfig
-
+Minio Audio Object Store
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| activate_audio_object_storage | [bool](#bool) |  |  |
-| audio_object_storage_services_activation_config | [AudioObjectStorageServicesActivationConfig](#ondewo.vtsi.AudioObjectStorageServicesActivationConfig) |  |  |
+| activate_audio_object_storage | [bool](#bool) |  | Audio storage should be activated or not |
+| audio_object_storage_services_activation_config | [AudioObjectStorageServicesActivationConfig](#ondewo.vtsi.AudioObjectStorageServicesActivationConfig) |  | Configuration of the Minio Audio Object Store |
 | minio_config | [MinioConfig](#ondewo.vtsi.MinioConfig) |  |  |
 
 
@@ -9611,13 +9627,13 @@ status of ondewo-sip instance
 <a name="ondewo.vtsi.AudioObjectStorageServicesActivationConfig"></a>
 
 ### AudioObjectStorageServicesActivationConfig
-
+Configuration of the Minio Audio Object Store
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| activate_s2t | [bool](#bool) |  |  |
-| activate_t2s | [bool](#bool) |  |  |
+| activate_s2t | [bool](#bool) |  | Should audio object store save audio sent to the Speech-2-Text platform |
+| activate_t2s | [bool](#bool) |  | Should audio object store save audio generated from the Text-2-Speech platform |
 
 
 
@@ -9627,7 +9643,7 @@ status of ondewo-sip instance
 <a name="ondewo.vtsi.BaseServiceConfig"></a>
 
 ### BaseServiceConfig
-base configuration of services (ondewo-cai, text-to-speech, speech-to-text, asterisk)
+base configuration of services (ondewo-nlu, text-to-speech, speech-to-text, asterisk)
 
 
 | Field | Type | Label | Description |
@@ -9635,6 +9651,24 @@ base configuration of services (ondewo-cai, text-to-speech, speech-to-text, aste
 | host | [string](#string) |  | service host IP |
 | port | [int32](#int32) |  | service port |
 | grpc_cert | [string](#string) |  | Optional: GRPC cert for the given service |
+
+
+
+
+
+
+<a name="ondewo.vtsi.Caller"></a>
+
+### Caller
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Caller name with which to perform the call of the form <code>projects/<project_uuid>/callers/<caller_uuid></code> |
+| call_name | [string](#string) |  | <code>projects/<project_uuid>/callers/<call_uuid>/calls/<call_uuid></code> |
+| sip_config | [SIPBaseConfig](#ondewo.vtsi.SIPBaseConfig) |  | SIP service configuration |
+| services_configs | [CommonServicesConfigs](#ondewo.vtsi.CommonServicesConfigs) |  | Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI |
 
 
 
@@ -9649,27 +9683,43 @@ It is common for both listener and caller
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| asterisk_config | [AsteriskConfig](#ondewo.vtsi.AsteriskConfig) |  | Asterisk service configuration |
-| cai_config | [NLUConfig](#ondewo.vtsi.NLUConfig) |  | ondewo-cai configuration |
-| stt_config | [S2TConfig](#ondewo.vtsi.S2TConfig) |  | speech-to-text service configuration |
-| tts_config | [T2SConfig](#ondewo.vtsi.T2SConfig) |  | text-to-speech service configuration |
-| csi_config | [CsiConfig](#ondewo.vtsi.CsiConfig) |  | CSI service configuration |
+| asterisk_vtsi_config | [AsteriskConfig](#ondewo.vtsi.AsteriskConfig) |  | Asterisk service configuration |
+| s2t_vtsi_config | [S2tVtsiConfig](#ondewo.vtsi.S2tVtsiConfig) |  | speech-to-text service configuration |
+| nlu_vtsi_config | [NluVtsiConfig](#ondewo.vtsi.NluVtsiConfig) |  | ondewo-nlu configuration |
+| t2s_vtsi_config | [T2sVtsiConfig](#ondewo.vtsi.T2sVtsiConfig) |  | text-to-speech service configuration |
+| csi_vtsi_config | [CsiVtsiConfig](#ondewo.vtsi.CsiVtsiConfig) |  | CSI service configuration |
 
 
 
 
 
 
-<a name="ondewo.vtsi.CreateProjectConfigsRequest"></a>
+<a name="ondewo.vtsi.CreateVtsiProjectRequest"></a>
 
-### CreateProjectConfigsRequest
-
+### CreateVtsiProjectRequest
+Request for creating a VTSI project
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| project_id | [string](#string) |  | Project id of the NLU project. |
-| project_configs | [ProjectConfigs](#ondewo.vtsi.ProjectConfigs) |  | Project Configs. |
+| project | [VtsiProject](#ondewo.vtsi.VtsiProject) |  | VTSI project Recommended is to leave "name" empty. The project name here is optional. If no name is given a new parent name is created. The parent has the format: `projects/<project_uuid>/project`. |
+| error_message | [string](#string) |  | error message if there are any. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CreateVtsiProjectResponse"></a>
+
+### CreateVtsiProjectResponse
+Response of the create project
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| project | [VtsiProject](#ondewo.vtsi.VtsiProject) |  | Vtsi project |
+| error_message | [string](#string) |  | error message if there are any. |
 
 
 
@@ -9679,79 +9729,97 @@ It is common for both listener and caller
 <a name="ondewo.vtsi.Credentials"></a>
 
 ### Credentials
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| account_name | [string](#string) |  |  |
-| password | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="ondewo.vtsi.CsiConfig"></a>
-
-### CsiConfig
-
+Credentials
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| s2t_callbacks | [S2tCallbacks](#ondewo.vtsi.S2tCallbacks) |  |  |
-| nlu_callbacks | [NluCallbacks](#ondewo.vtsi.NluCallbacks) |  |  |
-| t2s_callbacks | [T2sCallbacks](#ondewo.vtsi.T2sCallbacks) |  |  |
-| audio_object_store_config | [AudioObjectStorageConfig](#ondewo.vtsi.AudioObjectStorageConfig) |  |  |
-| message_broker_config | [MessageBrokerConfig](#ondewo.vtsi.MessageBrokerConfig) |  |  |
-| activate_control_messages | [bool](#bool) |  |  |
+| account_name | [string](#string) |  | Account name - usually email address |
+| password | [string](#string) |  | password of the account |
 
 
 
 
 
 
-<a name="ondewo.vtsi.DeleteProjectConfigsRequest"></a>
+<a name="ondewo.vtsi.CsiVtsiConfig"></a>
 
-### DeleteProjectConfigsRequest
-
+### CsiVtsiConfig
+CSI configuration
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| project_id | [string](#string) |  | Project id of the NLU project. |
+| s2t_vtsi_callbacks | [S2tVtsiCallbacks](#ondewo.vtsi.S2tVtsiCallbacks) |  | Callback for the Speech-2-Text platform |
+| nlu_vtsi_callbacks | [NluVtsiCallbacks](#ondewo.vtsi.NluVtsiCallbacks) |  | Callback for the NLU platform |
+| t2s_vtsi_callbacks | [T2sVtsiCallbacks](#ondewo.vtsi.T2sVtsiCallbacks) |  | Callback for the Text-2-Speech platform |
+| audio_object_store_config | [AudioObjectStorageConfig](#ondewo.vtsi.AudioObjectStorageConfig) |  | Configuration of the Minio Audio Object Store |
+| message_broker_config | [MessageBrokerConfig](#ondewo.vtsi.MessageBrokerConfig) |  | Configuration of the RabbitMQ Message Broker |
+| activate_control_messages | [bool](#bool) |  | Setting to activate if it is possible to send control messages a.) via RabbitMQ to remote control the system b.) via embeddings in NLU text responses |
 
 
 
 
 
 
-<a name="ondewo.vtsi.DeployProjectRequest"></a>
+<a name="ondewo.vtsi.DeleteVtsiProjectRequest"></a>
 
-### DeployProjectRequest
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| project_id | [string](#string) |  | Project id of the NLU project. |
-
-
-
-
-
-
-<a name="ondewo.vtsi.Endpoint"></a>
-
-### Endpoint
-
+### DeleteVtsiProjectRequest
+Request to delete a VTSI project
+If a deployed VTSI project was deleted then it was undeployed beforehand automatically
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| host | [string](#string) |  |  |
-| port | [string](#string) |  |  |
+| name | [string](#string) |  | VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DeleteVtsiProjectResponse"></a>
+
+### DeleteVtsiProjectResponse
+Response to delete a VTSI project
+If a deployed VTSI project was deleted then it was undeployed beforehand automatically
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+| error_message | [string](#string) |  | error message if there are any. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DeployVtsiProjectRequest"></a>
+
+### DeployVtsiProjectRequest
+Request to deploy a vtsi project
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DeployVtsiProjectResponse"></a>
+
+### DeployVtsiProjectResponse
+Response to deploy a vtsi project
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+| error_message | [string](#string) |  | error message if there are any. |
 
 
 
@@ -9761,14 +9829,13 @@ It is common for both listener and caller
 <a name="ondewo.vtsi.GetAudioFileRequest"></a>
 
 ### GetAudioFileRequest
-Retrieving Audio files //
-//////////////////////////
+Request to retrieve audio files
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| bucket_name | [string](#string) |  |  |
-| object_name | [string](#string) |  |  |
+| bucket_name | [string](#string) |  | name of the bucket in Minio Audio Object Store |
+| object_name | [string](#string) |  | name of the object in Minio Audio Object Store, format is UUID |
 | minio_config | [MinioConfig](#ondewo.vtsi.MinioConfig) |  | Optional to add if you want to retrieve it from a specific minio server |
 
 
@@ -9779,12 +9846,12 @@ Retrieving Audio files //
 <a name="ondewo.vtsi.GetAudioFileResponse"></a>
 
 ### GetAudioFileResponse
-
+Response to retrieve the bytes of the audio file requested from Minio
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| audio | [bytes](#bytes) |  |  |
+| audio | [bytes](#bytes) |  | audio bytes from Minio Audio Object Store |
 
 
 
@@ -9794,13 +9861,13 @@ Retrieving Audio files //
 <a name="ondewo.vtsi.GetFullConversationAudioFileRequest"></a>
 
 ### GetFullConversationAudioFileRequest
-
+Request to retrieve one audio file with all audio files combined into one
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| bucket_name | [string](#string) |  |  |
-| object_names | [string](#string) | repeated |  |
+| bucket_name | [string](#string) |  | name of the bucket in Minio Audio Object Store |
+| object_names | [string](#string) | repeated | names of the objects in Minio Audio Object Store belonging to a whole NLU "conversation" session |
 | minio_config | [MinioConfig](#ondewo.vtsi.MinioConfig) |  | Optional to add if you want to retrieve it from a specific minio server |
 
 
@@ -9811,44 +9878,12 @@ Retrieving Audio files //
 <a name="ondewo.vtsi.GetFullConversationAudioFileResponse"></a>
 
 ### GetFullConversationAudioFileResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| audio | [bytes](#bytes) |  |  |
-
-
-
-
-
-
-<a name="ondewo.vtsi.GetProjectConfigsRequest"></a>
-
-### GetProjectConfigsRequest
-
+Retrieve one audio file with all audio files combined into one
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| project_id | [string](#string) |  | Project id of the NLU project. |
-
-
-
-
-
-
-<a name="ondewo.vtsi.GetProjectConfigsResponse"></a>
-
-### GetProjectConfigsResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| project_configs | [ProjectConfigs](#ondewo.vtsi.ProjectConfigs) |  | Project Configs. |
-| error_messages | [string](#string) |  | error messages if there are any. |
-| request | [GetProjectConfigsRequest](#ondewo.vtsi.GetProjectConfigsRequest) |  | The request that was sent. |
+| audio | [bytes](#bytes) |  | audio bytes from Minio Audio Object Store |
 
 
 
@@ -9863,8 +9898,8 @@ request to get a call instance's call logs
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| project_id | [string](#string) |  | ondewo-cai project ID. |
-| call_id | [string](#string) |  | ID of the call |
+| name | [string](#string) |  | VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+| call_name | [string](#string) |  | call name For listener this is <code>projects/<project_uuid>/listeners/<listener_uuid>/calls/<call_uuid></code> For callers this is <code>projects/<project_uuid>/callers/<call_uuid>/calls/<call_uuid></code> |
 | voip_call_info_view | [VoipCallInfoView](#ondewo.vtsi.VoipCallInfoView) |  | you can specify the view to be shallow or full .. see above for more info |
 
 
@@ -9880,8 +9915,23 @@ response with call logs
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| active_log | [VoipCallInfo](#ondewo.vtsi.VoipCallInfo) |  |  |
+| active_log | [VoipCallInfo](#ondewo.vtsi.VoipCallInfo) |  | VoipCallInfo to view active logs of calls |
 | done_logs | [VoipCallInfo](#ondewo.vtsi.VoipCallInfo) | repeated | logs of calls associated with call instance |
+
+
+
+
+
+
+<a name="ondewo.vtsi.GetVtsiProjectRequest"></a>
+
+### GetVtsiProjectRequest
+Request to retrieve a VTSI project
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code> |
 
 
 
@@ -9896,9 +9946,9 @@ response with call logs
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| project_id | [string](#string) |  | ondewo-cai project ID. |
+| name | [string](#string) |  | VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code> |
 | voip_call_info_view | [VoipCallInfoView](#ondewo.vtsi.VoipCallInfoView) |  | you can specify the view to be shallow or full .. see above for more info |
-| call_type | [CallType](#ondewo.vtsi.CallType) |  | both by default or listener or caller |
+| call_type | [CallType](#ondewo.vtsi.CallType) |  | both by default, or only listeners, or only callers |
 
 
 
@@ -9908,12 +9958,30 @@ response with call logs
 <a name="ondewo.vtsi.ListVoipCallInfoResponse"></a>
 
 ### ListVoipCallInfoResponse
+Response to list all VoipInfos
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| voip_call_infos | [VoipCallInfo](#ondewo.vtsi.VoipCallInfo) | repeated | VoipInfos |
+
+
+
+
+
+
+<a name="ondewo.vtsi.Listener"></a>
+
+### Listener
 
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| voip_info | [VoipCallInfo](#ondewo.vtsi.VoipCallInfo) | repeated |  |
+| name | [string](#string) |  | VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/listeners/<listener_uuid></code> |
+| call_name | [string](#string) |  | The call name that was assigned to the call <code>projects/<project_uuid>/listeners/<listener_uuid>/calls/<call_uuid></code> |
+| sip_config | [SIPBaseConfig](#ondewo.vtsi.SIPBaseConfig) |  | SIP service configuration |
+| services_configs | [CommonServicesConfigs](#ondewo.vtsi.CommonServicesConfigs) |  | Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI |
 
 
 
@@ -9923,13 +9991,13 @@ response with call logs
 <a name="ondewo.vtsi.MessageBrokerConfig"></a>
 
 ### MessageBrokerConfig
-
+Configuration of the RabbitMQ Message Broker
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| activate_message_broker | [bool](#bool) |  |  |
-| message_broker_services_activation_config | [MessageBrokerServicesActivationConfig](#ondewo.vtsi.MessageBrokerServicesActivationConfig) |  |  |
+| activate_message_broker | [bool](#bool) |  | Should the broker be activated or not |
+| message_broker_services_activation_config | [MessageBrokerServicesActivationConfig](#ondewo.vtsi.MessageBrokerServicesActivationConfig) |  | Configuration of the RabbitMQ Message Broker |
 | rabbit_mq_config | [RabbitMqConfig](#ondewo.vtsi.RabbitMqConfig) |  |  |
 
 
@@ -9940,15 +10008,15 @@ response with call logs
 <a name="ondewo.vtsi.MessageBrokerServicesActivationConfig"></a>
 
 ### MessageBrokerServicesActivationConfig
-
+Configuration of the RabbitMQ Message Broker
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| activate_s2t | [bool](#bool) |  |  |
-| activate_nlu | [bool](#bool) |  |  |
-| activate_t2s | [bool](#bool) |  |  |
-| activate_sip | [bool](#bool) |  |  |
+| activate_s2t | [bool](#bool) |  | should RabbitMQ Message Broker be activated for Speech-2-Text platform |
+| activate_nlu | [bool](#bool) |  | should RabbitMQ Message Broker be activated for NLU platform |
+| activate_t2s | [bool](#bool) |  | should RabbitMQ Message Broker be activated for Text-2-Speech platform |
+| activate_sip | [bool](#bool) |  | should RabbitMQ Message Broker be activated for SIP platform |
 
 
 
@@ -9958,12 +10026,13 @@ response with call logs
 <a name="ondewo.vtsi.MinioConfig"></a>
 
 ### MinioConfig
-
+Configuration of the Minio Audio Object Store
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| endpoint | [Endpoint](#ondewo.vtsi.Endpoint) |  | where the minio server runs (host_ip:port) |
+| host | [string](#string) |  | host |
+| port | [int32](#int32) |  | port |
 | access_key | [string](#string) |  | access key of server |
 | secret_key | [string](#string) |  | secret key of server |
 | secure | [bool](#bool) |  | if you need to do a secure connection "ssl" |
@@ -9974,53 +10043,36 @@ response with call logs
 
 
 
-<a name="ondewo.vtsi.NLUConfig"></a>
+<a name="ondewo.vtsi.NluVtsiCallbacks"></a>
 
-### NLUConfig
-
+### NluVtsiCallbacks
+Callback for the NLU platform
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| base_config | [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig) |  | Base config Host, Port, and [Optional] GRPC cert |
-| credentials | [Credentials](#ondewo.vtsi.Credentials) |  |  |
-| auth_token | [string](#string) |  |  |
-| language_code | [string](#string) |  | language code See [Language Support](https://dialogflow.com/docs/reference/language) for a list of the currently supported language codes. |
+| pre_nlu_callbacks | [string](#string) | repeated | Callback executed before the NLU will be called |
+| post_nlu_callbacks | [string](#string) | repeated | Callback executed after the NLU has been called |
+
+
+
+
+
+
+<a name="ondewo.vtsi.NluVtsiConfig"></a>
+
+### NluVtsiConfig
+NLU Configuration
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| nlu_base_config | [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig) |  | Base config Host, Port, and [Optional] GRPC cert |
+| credentials | [Credentials](#ondewo.vtsi.Credentials) |  | Credentials with classical username and password |
+| auth_token | [string](#string) |  | Authentication token |
+| language_code | [string](#string) |  | language code in a two letter iso code, e.g. de, en, etc. |
 | initial_intent | [string](#string) |  | name of intent to trigger at the start of a call |
-| contexts | [ondewo.nlu.Context](#ondewo.nlu.Context) | repeated | ondewo-cai list of contexts |
-
-
-
-
-
-
-<a name="ondewo.vtsi.NluCallbacks"></a>
-
-### NluCallbacks
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| pre_nlu_callbacks | [string](#string) | repeated |  |
-| post_nlu_callbacks | [string](#string) | repeated |  |
-
-
-
-
-
-
-<a name="ondewo.vtsi.ProjectConfigs"></a>
-
-### ProjectConfigs
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| max_callers | [int32](#int32) |  | The maximum number of callers that this project can have. |
-| max_listeners | [int32](#int32) |  | The maximum number of listeners that this project can have. |
-| asterisk_configs | [AsteriskConfigs](#ondewo.vtsi.AsteriskConfigs) |  | Configs to start the asterisk server. |
+| contexts | [ondewo.nlu.Context](#ondewo.nlu.Context) | repeated | ondewo-nlu list of contexts |
 
 
 
@@ -10030,14 +10082,14 @@ response with call logs
 <a name="ondewo.vtsi.RabbitMqConfig"></a>
 
 ### RabbitMqConfig
-
+Configuration of the RabbitMQ Message Broker
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | host | [string](#string) |  | host where the rabbit mq server runs |
-| port | [string](#string) |  | port where the rabbit mq server runs |
-| port_2 | [string](#string) |  | port where the rabbit mq server runs |
+| port | [int32](#int32) |  | port where the rabbit mq server runs |
+| port_2 | [int32](#int32) |  | port where the rabbit mq server runs |
 | user | [string](#string) |  | user of server |
 | password | [string](#string) |  | password of server |
 
@@ -10046,32 +10098,32 @@ response with call logs
 
 
 
-<a name="ondewo.vtsi.S2TConfig"></a>
+<a name="ondewo.vtsi.S2tVtsiCallbacks"></a>
 
-### S2TConfig
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| base_config | [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig) |  | Host, Port, and [Optional] GRPC cert |
-| s2t_config | [ondewo.s2t.TranscribeRequestConfig](#ondewo.s2t.TranscribeRequestConfig) |  |  |
-
-
-
-
-
-
-<a name="ondewo.vtsi.S2tCallbacks"></a>
-
-### S2tCallbacks
-
+### S2tVtsiCallbacks
+Callback for the Speech-2-Text platform
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| pre_s2t_callbacks | [string](#string) | repeated |  |
-| post_s2t_callbacks | [string](#string) | repeated |  |
+| pre_s2t_callbacks | [string](#string) | repeated | Callback executed before the Speech-2-Text will be called |
+| post_s2t_callbacks | [string](#string) | repeated | Callback executed after the Speech-2-Text has been called |
+
+
+
+
+
+
+<a name="ondewo.vtsi.S2tVtsiConfig"></a>
+
+### S2tVtsiConfig
+Speech-2-Text Configuration
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| s2t_base_config | [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig) |  | Host, Port, and [Optional] GRPC cert |
+| s2t_transcribe_request_config | [ondewo.s2t.TranscribeRequestConfig](#ondewo.s2t.TranscribeRequestConfig) |  | Configuration of Speech-2-Text |
 
 
 
@@ -10087,7 +10139,7 @@ You will need to provide SIPCallerConfig for the caller
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| sip_sim_version | [string](#string) |  | version of sip to use for call |
+| sip_sim_base_config_version | [string](#string) |  | version of sip to use for call, semantic versioning e.g., 1.0.0, 1.1.0-pre-release, etc. |
 
 
 
@@ -10097,23 +10149,23 @@ You will need to provide SIPCallerConfig for the caller
 <a name="ondewo.vtsi.SIPCallerConfig"></a>
 
 ### SIPCallerConfig
-
+Configuration of the SIP caller
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| sip_base_config | [SIPBaseConfig](#ondewo.vtsi.SIPBaseConfig) |  |  |
-| phone_number | [string](#string) |  | phone number to call |
-| headers | [SIPCallerConfig.HeadersEntry](#ondewo.vtsi.SIPCallerConfig.HeadersEntry) | repeated | dictionary of sip headers that are sent on call |
+| sip_base_config | [SIPBaseConfig](#ondewo.vtsi.SIPBaseConfig) |  | SIP configuration |
+| callee_id | [string](#string) |  | callee id e.g. phone number to call, +4365012345678 or VOIP phone ondewo0001@ondewo.com, etc. |
+| sip_headers | [SIPCallerConfig.SipHeadersEntry](#ondewo.vtsi.SIPCallerConfig.SipHeadersEntry) | repeated | dictionary of sip headers that are sent on call |
 
 
 
 
 
 
-<a name="ondewo.vtsi.SIPCallerConfig.HeadersEntry"></a>
+<a name="ondewo.vtsi.SIPCallerConfig.SipHeadersEntry"></a>
 
-### SIPCallerConfig.HeadersEntry
+### SIPCallerConfig.SipHeadersEntry
 
 
 
@@ -10121,6 +10173,25 @@ You will need to provide SIPCallerConfig for the caller
 | ----- | ---- | ----- | ----------- |
 | key | [string](#string) |  |  |
 | value | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ScheduledCaller"></a>
+
+### ScheduledCaller
+ScheduledCaller message - a Caller with a schedule when to start calling
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the scheduled caller <code>projects/<project_uuid>/scheduled_callers/<scheduled_caller_uuid></code> |
+| call_id | [string](#string) |  | The asterisk sip call id that was assigned to the call, e.g., ondewo0001 |
+| sip_config | [SIPBaseConfig](#ondewo.vtsi.SIPBaseConfig) |  | SIP service configuration |
+| services_configs | [CommonServicesConfigs](#ondewo.vtsi.CommonServicesConfigs) |  | Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI |
+| scheduled_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Time the call is scheduled TODO to be refactored with a more complex scheduling object |
 
 
 
@@ -10136,7 +10207,7 @@ status of service
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | healthy | [bool](#bool) |  | health status |
-| error_messsages | [string](#string) |  | error messages if you have any so if it's unhealthy |
+| error_message | [string](#string) |  | error messages if you have any so if it's unhealthy |
 
 
 
@@ -10151,8 +10222,26 @@ request for starting a caller
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code> |
 | sip_config | [SIPCallerConfig](#ondewo.vtsi.SIPCallerConfig) |  | SIP service configuration |
-| services_configs | [CommonServicesConfigs](#ondewo.vtsi.CommonServicesConfigs) |  | Service Configs of Asterisk, cai,stt, tts |
+| services_configs | [CommonServicesConfigs](#ondewo.vtsi.CommonServicesConfigs) |  | Service Configs of Asterisk, nlu,stt, tts |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StartCallerResponse"></a>
+
+### StartCallerResponse
+Response to start multiple listeners
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+| caller | [Caller](#ondewo.vtsi.Caller) |  |  |
+| error_message | [string](#string) |  | error message if you have any so if it's unhealthy |
 
 
 
@@ -10162,13 +10251,13 @@ request for starting a caller
 <a name="ondewo.vtsi.StartCallersRequest"></a>
 
 ### StartCallersRequest
-collection of callers to start
+Request to start multiple callers
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| project_id | [string](#string) |  | ondewo-cai project ID with which to perform the call |
-| requests | [StartCallerRequest](#ondewo.vtsi.StartCallerRequest) | repeated |  |
+| name | [string](#string) |  | VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+| caller_requests | [StartCallerRequest](#ondewo.vtsi.StartCallerRequest) | repeated | Callers that should be started |
 
 
 
@@ -10178,13 +10267,14 @@ collection of callers to start
 <a name="ondewo.vtsi.StartCallersResponse"></a>
 
 ### StartCallersResponse
-
+Response to the start caller request
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| project_id | [string](#string) |  | ondewo-cai project ID. |
-| call_ids | [string](#string) | repeated | The call ids that were assigned to each call |
+| name | [string](#string) |  | VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+| caller_responses | [StartCallerResponse](#ondewo.vtsi.StartCallerResponse) | repeated | The call ids that were assigned to each listener |
+| error_message | [string](#string) |  | overall error message if you have any so if it's unhealthy |
 
 
 
@@ -10199,8 +10289,26 @@ request for starting a listener
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code> |
 | sip_config | [SIPBaseConfig](#ondewo.vtsi.SIPBaseConfig) |  | SIP service configuration |
-| services_configs | [CommonServicesConfigs](#ondewo.vtsi.CommonServicesConfigs) |  | Service Configs of Asterisk, cai,stt, tts |
+| services_configs | [CommonServicesConfigs](#ondewo.vtsi.CommonServicesConfigs) |  | Service Configs of Asterisk, nlu,stt, tts |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StartListenerResponse"></a>
+
+### StartListenerResponse
+Response to start multiple listeners
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+| listener | [Listener](#ondewo.vtsi.Listener) |  |  |
+| error_message | [string](#string) |  | error message if you have any so if it's unhealthy |
 
 
 
@@ -10210,13 +10318,13 @@ request for starting a listener
 <a name="ondewo.vtsi.StartListenersRequest"></a>
 
 ### StartListenersRequest
-collection of listeners to start
+Request to start multiple listeners
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| project_id | [string](#string) |  | ondewo-cai project ID with which to perform the call |
-| requests | [StartListenerRequest](#ondewo.vtsi.StartListenerRequest) | repeated |  |
+| name | [string](#string) |  | VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+| listener_requests | [StartListenerRequest](#ondewo.vtsi.StartListenerRequest) | repeated | Listeners that should be started |
 
 
 
@@ -10226,13 +10334,14 @@ collection of listeners to start
 <a name="ondewo.vtsi.StartListenersResponse"></a>
 
 ### StartListenersResponse
-
+Response to start multiple listeners
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| project_id | [string](#string) |  | ondewo-cai project ID. |
-| call_ids | [string](#string) | repeated | The call ids that were assigned to each call |
+| name | [string](#string) |  | VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+| listener_responses | [StartListenerResponse](#ondewo.vtsi.StartListenerResponse) | repeated | The call ids that were assigned to each listener |
+| error_message | [string](#string) |  | overall error message if you have any so if it's unhealthy |
 
 
 
@@ -10247,10 +10356,26 @@ request for starting a scheduled call
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| request | [StartCallerRequest](#ondewo.vtsi.StartCallerRequest) |  | Normal start caller request
+| name | [string](#string) |  | VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+| request | [StartCallerRequest](#ondewo.vtsi.StartCallerRequest) |  | Normal start caller request |
+| scheduled_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Time the call is scheduled TODO to be refactored with a more complex scheduling object |
 
-Time you want the call to be scheduled at |
-| scheduled_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  |  |
+
+
+
+
+
+<a name="ondewo.vtsi.StartScheduledCallerResponse"></a>
+
+### StartScheduledCallerResponse
+Response to start multiple listeners
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+| scheduled_caller | [ScheduledCaller](#ondewo.vtsi.ScheduledCaller) |  |  |
+| error_message | [string](#string) |  | error message if you have any so if it's unhealthy |
 
 
 
@@ -10260,13 +10385,29 @@ Time you want the call to be scheduled at |
 <a name="ondewo.vtsi.StartScheduledCallersRequest"></a>
 
 ### StartScheduledCallersRequest
-collection of scheduled callers to start
+Request to start scheduled callers
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| project_id | [string](#string) |  | ondewo-cai project ID with which to perform the call |
-| requests | [StartScheduledCallerRequest](#ondewo.vtsi.StartScheduledCallerRequest) | repeated |  |
+| name | [string](#string) |  | VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+| scheduled_caller_requests | [StartScheduledCallerRequest](#ondewo.vtsi.StartScheduledCallerRequest) | repeated | requests to start scheduled callers |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StartScheduledCallersResponse"></a>
+
+### StartScheduledCallersResponse
+Response to start multiple listeners
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+| scheduled_caller_responses | [StartScheduledCallerResponse](#ondewo.vtsi.StartScheduledCallerResponse) | repeated | The call ids that were assigned to each listener |
 
 
 
@@ -10276,12 +10417,45 @@ collection of scheduled callers to start
 <a name="ondewo.vtsi.StopAllCallsRequest"></a>
 
 ### StopAllCallsRequest
-parameters of the calls to stop
+Request to stop all calls of a VTSI project, so all listeners and callers
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| project_id | [string](#string) |  | ondewo-cai project ID. |
+| name | [string](#string) |  | VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StopCallRequest"></a>
+
+### StopCallRequest
+Request to stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | VTSI project parent with which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+| call_name | [string](#string) |  | call name to stop For listener this is <code>projects/<project_uuid>/listeners/<listener_uuid>/calls/<call_uuid></code> For callers this is <code>projects/<project_uuid>/callers/<call_uuid>/calls/<call_uuid></code> |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StopCallResponse"></a>
+
+### StopCallResponse
+Response to stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | VTSI project name with which to stop the call of the form <code>projects/<project_uuid>/project</code> |
+| call_id | [string](#string) |  | call id that has been stopped |
+| error_message | [string](#string) |  | error messages if you have any so if it's unhealthy |
 
 
 
@@ -10291,45 +10465,96 @@ parameters of the calls to stop
 <a name="ondewo.vtsi.StopCallsRequest"></a>
 
 ### StopCallsRequest
-parameters of the calls to stop
+Request to stop/kill specific ondewo-sip listeners or callers instance for a specific vtsi-project.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| project_id | [string](#string) |  | ondewo-cai project ID. |
-| call_ids | [string](#string) | repeated |  |
+| name | [string](#string) |  | VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+| call_ids | [string](#string) | repeated | call names to stop For listener this is <code>projects/<project_uuid>/listeners/<listener_uuid>/calls/<call_uuid></code> For callers this is <code>projects/<project_uuid>/callers/<call_uuid>/calls/<call_uuid></code> |
 
 
 
 
 
 
-<a name="ondewo.vtsi.T2SConfig"></a>
+<a name="ondewo.vtsi.StopCallsResponse"></a>
 
-### T2SConfig
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| base_config | [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig) |  | Host, Port, and [Optional] GRPC cert |
-| t2s_config | [ondewo.t2s.RequestConfig](#ondewo.t2s.RequestConfig) |  |  |
-
-
-
-
-
-
-<a name="ondewo.vtsi.T2sCallbacks"></a>
-
-### T2sCallbacks
-
+### StopCallsResponse
+Response to stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| pre_t2s_callbacks | [string](#string) | repeated |  |
-| post_t2s_callbacks | [string](#string) | repeated |  |
+| stop_call_responses | [StopCallResponse](#ondewo.vtsi.StopCallResponse) | repeated |  |
+| error_message | [string](#string) |  | overall error message if you have any so if it's unhealthy |
+
+
+
+
+
+
+<a name="ondewo.vtsi.T2sVtsiCallbacks"></a>
+
+### T2sVtsiCallbacks
+Callback for the Text-2-Speech platform
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| pre_t2s_callbacks | [string](#string) | repeated | Callback executed before the Text-2-Speech will be called |
+| post_t2s_callbacks | [string](#string) | repeated | Callback executed after the Text-2-Speech has been called |
+
+
+
+
+
+
+<a name="ondewo.vtsi.T2sVtsiConfig"></a>
+
+### T2sVtsiConfig
+Text-2-Speech Configuration
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| t2s_base_config | [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig) |  | Host, Port, and [Optional] GRPC cert |
+| t2s_request_config | [ondewo.t2s.RequestConfig](#ondewo.t2s.RequestConfig) |  | Configuration of Text-2-Speech |
+
+
+
+
+
+
+<a name="ondewo.vtsi.TransferCallRequest"></a>
+
+### TransferCallRequest
+Request to transfer calls
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+| call_name | [string](#string) |  | call name to transfer For listener this is <code>projects/<project_uuid>/listeners/<listener_uuid>/calls/<call_uuid></code> For callers this is <code>projects/<project_uuid>/callers/<call_uuid>/calls/<call_uuid></code> |
+| transfer_id | [string](#string) | repeated | call_id to transfer the call to, so the number or voip number you want to be transferred too |
+
+
+
+
+
+
+<a name="ondewo.vtsi.TransferCallResponse"></a>
+
+### TransferCallResponse
+Response to transfer a call to a phone number or voip number
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+| call_name | [string](#string) |  | call name to transfer For listener this is <code>projects/<project_uuid>/listeners/<listener_uuid>/calls/<call_uuid></code> For callers this is <code>projects/<project_uuid>/callers/<call_uuid>/calls/<call_uuid></code> |
+| transfer_id | [string](#string) | repeated | call_id to transfer the call to, so the phone number or voip number you want to be transferred too |
+| error_message | [string](#string) |  | error message if you have any so if it's unhealthy |
 
 
 
@@ -10339,45 +10564,92 @@ parameters of the calls to stop
 <a name="ondewo.vtsi.TransferCallsRequest"></a>
 
 ### TransferCallsRequest
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| project_id | [string](#string) |  | ondewo-cai project ID. |
-| call_id | [string](#string) | repeated | call-ID to transfer |
-| transfer_id | [string](#string) | repeated | Number you want to be transfered too |
-
-
-
-
-
-
-<a name="ondewo.vtsi.UndeployProjectRequest"></a>
-
-### UndeployProjectRequest
-
+Request to transfer multiple calls
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| project_id | [string](#string) |  | Project id of the NLU project. |
+| name | [string](#string) |  | VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+| transfer_call_requests | [TransferCallRequest](#ondewo.vtsi.TransferCallRequest) | repeated | Responses to transfer multiple calls to a phone number or voip number |
 
 
 
 
 
 
-<a name="ondewo.vtsi.UpdateProjectConfigsRequest"></a>
+<a name="ondewo.vtsi.TransferCallsResponse"></a>
 
-### UpdateProjectConfigsRequest
-
+### TransferCallsResponse
+Response to transfer a call to a phone number or voip number
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| project_id | [string](#string) |  | Project id of the NLU project. |
-| project_configs | [ProjectConfigs](#ondewo.vtsi.ProjectConfigs) |  | Project Configs. |
+| name | [string](#string) |  | VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+| transfer_call_responses | [TransferCallResponse](#ondewo.vtsi.TransferCallResponse) | repeated |  |
+| error_message | [string](#string) |  | overall error message if you have any so if it's unhealthy |
+
+
+
+
+
+
+<a name="ondewo.vtsi.UndeployVtsiProjectRequest"></a>
+
+### UndeployVtsiProjectRequest
+Request to undeploy a vtsi project
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Project name of the VTSI project. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.UndeployVtsiProjectResponse"></a>
+
+### UndeployVtsiProjectResponse
+Response to undeploy a vtsi project
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+| error_message | [string](#string) |  | error message if there are any. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.UpdateVtsiProjectRequest"></a>
+
+### UpdateVtsiProjectRequest
+Request to updated VTSI project
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| project | [VtsiProject](#ondewo.vtsi.VtsiProject) |  | Project Configs. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.UpdateVtsiProjectResponse"></a>
+
+### UpdateVtsiProjectResponse
+Request to updated VTSI project
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code> |
+| error_message | [string](#string) |  | error message if there are any. |
 
 
 
@@ -10387,12 +10659,12 @@ parameters of the calls to stop
 <a name="ondewo.vtsi.VoipCallInfo"></a>
 
 ### VoipCallInfo
-call log
+VoipCall log
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| call_id | [string](#string) |  | id of call instance |
+| call_name | [string](#string) |  | call name For listener this is <code>projects/<project_uuid>/listeners/<listener_uuid>/calls/<call_uuid></code> For callers this is <code>projects/<project_uuid>/callers/<call_uuid>/calls/<call_uuid></code> |
 | sip_account | [string](#string) |  | sip account used |
 | container_name | [string](#string) |  | container name which you get from docker ps |
 | call_type | [CallType](#ondewo.vtsi.CallType) |  | Listener or caller enum .. if not specified |
@@ -10407,31 +10679,50 @@ call log
 
 
 
+
+<a name="ondewo.vtsi.VtsiProject"></a>
+
+### VtsiProject
+The VTSI project with its configuration setting
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Required. The project name. Format: `projects/<project_uuid>/project` Only when a new VtsiProject is created the name can be undefined/empty |
+| display_name | [string](#string) |  | OPTIONAL: The display name of the project |
+| max_callers | [int32](#int32) |  | The maximum number of callers that this project can have. |
+| max_listeners | [int32](#int32) |  | The maximum number of listeners that this project can have. |
+| asterisk_configs | [AsteriskConfigs](#ondewo.vtsi.AsteriskConfigs) |  | Configs to start the asterisk server. |
+
+
+
+
+
  <!-- end messages -->
 
 
 <a name="ondewo.vtsi.CallType"></a>
 
 ### CallType
-
+CallType
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
-| both | 0 |  |
-| listener | 1 |  |
-| caller | 2 |  |
+| both | 0 | both listeners and callers |
+| listener | 1 | voip call listeners |
+| caller | 2 | voip call callers |
 
 
 
 <a name="ondewo.vtsi.VoipCallInfoView"></a>
 
 ### VoipCallInfoView
-
+VoipCallInfo view options
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
-| Info_VIEW_SHALLOW | 0 | Gives you all basic info like call_id, start_time, end_time, current sip status |
-| Info_VIEW_FULL | 1 | Gives you the full info with status history and the services statuses |
+| SHALLOW | 0 | Gives you all basic info like call_id, start_time, end_time, current sip status |
+| FULL | 1 | Gives you the full info with status history and the services statuses |
 
 
  <!-- end enums -->
@@ -10445,24 +10736,24 @@ call log
 session manager for phone calls.
 endpoints of voip server that manages instances of ondewo-sip, which handle individual calls
 
-/////////
-Projects //
-/////////
-
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| CreateProjectConfigs | [CreateProjectConfigsRequest](#ondewo.vtsi.CreateProjectConfigsRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Create an NLU project with configs. |
-| GetProjectConfigs | [GetProjectConfigsRequest](#ondewo.vtsi.GetProjectConfigsRequest) | [GetProjectConfigsResponse](#ondewo.vtsi.GetProjectConfigsResponse) | Get an NLU project with configs. |
-| UpdateProjectConfigs | [UpdateProjectConfigsRequest](#ondewo.vtsi.UpdateProjectConfigsRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Update an NLU project with configs. |
-| DeleteProjectConfigs | [DeleteProjectConfigsRequest](#ondewo.vtsi.DeleteProjectConfigsRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Delete an NLU project with configs. |
-| DeployProject | [DeployProjectRequest](#ondewo.vtsi.DeployProjectRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
-| UndeployProject | [UndeployProjectRequest](#ondewo.vtsi.UndeployProjectRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
-| StartListeners | [StartListenersRequest](#ondewo.vtsi.StartListenersRequest) | [StartListenersResponse](#ondewo.vtsi.StartListenersResponse) | start multiple ondewo-sip listeners instances for a specific nlu-project. |
+| CreateVtsiProject | [CreateVtsiProjectRequest](#ondewo.vtsi.CreateVtsiProjectRequest) | [CreateVtsiProjectResponse](#ondewo.vtsi.CreateVtsiProjectResponse) | Create an NLU project with configs. |
+| GetVtsiProject | [GetVtsiProjectRequest](#ondewo.vtsi.GetVtsiProjectRequest) | [VtsiProject](#ondewo.vtsi.VtsiProject) | Get an NLU project with configs. |
+| UpdateVtsiProject | [UpdateVtsiProjectRequest](#ondewo.vtsi.UpdateVtsiProjectRequest) | [UpdateVtsiProjectResponse](#ondewo.vtsi.UpdateVtsiProjectResponse) | Update an NLU project with configs. |
+| DeleteVtsiProject | [DeleteVtsiProjectRequest](#ondewo.vtsi.DeleteVtsiProjectRequest) | [DeleteVtsiProjectResponse](#ondewo.vtsi.DeleteVtsiProjectResponse) | Delete an NLU project with configs. |
+| DeployVtsiProject | [DeployVtsiProjectRequest](#ondewo.vtsi.DeployVtsiProjectRequest) | [DeployVtsiProjectResponse](#ondewo.vtsi.DeployVtsiProjectResponse) | Deploys a vtsi project |
+| UndeployVtsiProject | [UndeployVtsiProjectRequest](#ondewo.vtsi.UndeployVtsiProjectRequest) | [UndeployVtsiProjectResponse](#ondewo.vtsi.UndeployVtsiProjectResponse) | Undeploy a vtsi project |
+| StartCaller | [StartCallerRequest](#ondewo.vtsi.StartCallerRequest) | [StartCallerResponse](#ondewo.vtsi.StartCallerResponse) | start single caller instance for a specific nlu-project. |
 | StartCallers | [StartCallersRequest](#ondewo.vtsi.StartCallersRequest) | [StartCallersResponse](#ondewo.vtsi.StartCallersResponse) | start multiple ondewo-sip callers instances for a specific nlu-project. |
-| StartScheduledCallers | [StartScheduledCallersRequest](#ondewo.vtsi.StartScheduledCallersRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | start multiple ondewo-sip callers instances with schedules |
-| StopCalls | [StopCallsRequest](#ondewo.vtsi.StopCallsRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | stop/kill a list of ondewo-sip listener or caller instances for a specific nlu-project. "stops both Listener and Caller calls" |
-| StopAllCalls | [StopAllCallsRequest](#ondewo.vtsi.StopAllCallsRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | stop/kill all ondewo-sip listener or caller instance for a specific nlu-project. "stops all Listener and Caller calls" |
-| TransferCalls | [TransferCallsRequest](#ondewo.vtsi.TransferCallsRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Transfer a call from a listener to another number for a specific nlu-project. |
+| StartListener | [StartListenerRequest](#ondewo.vtsi.StartListenerRequest) | [StartListenerResponse](#ondewo.vtsi.StartListenerResponse) | start single listener instance for a specific nlu-project. |
+| StartListeners | [StartListenersRequest](#ondewo.vtsi.StartListenersRequest) | [StartListenersResponse](#ondewo.vtsi.StartListenersResponse) | start multiple ondewo-sip listeners instances for a specific nlu-project. |
+| StartScheduledCallers | [StartScheduledCallersRequest](#ondewo.vtsi.StartScheduledCallersRequest) | [StartScheduledCallersResponse](#ondewo.vtsi.StartScheduledCallersResponse) | start multiple ondewo-sip callers instances with schedules |
+| StopCall | [StopCallRequest](#ondewo.vtsi.StopCallRequest) | [StopCallResponse](#ondewo.vtsi.StopCallResponse) | stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project. |
+| StopCalls | [StopCallsRequest](#ondewo.vtsi.StopCallsRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | stop/kill a list of ondewo-sip listener or caller instances for a specific vtsi-project. "stops both Listener and Caller calls" |
+| StopAllCalls | [StopAllCallsRequest](#ondewo.vtsi.StopAllCallsRequest) | [StopCallsResponse](#ondewo.vtsi.StopCallsResponse) | stop/kill all ondewo-sip listener or caller instance for a specific nlu-project. "stops all Listener and Caller calls" |
+| TransferCall | [TransferCallRequest](#ondewo.vtsi.TransferCallRequest) | [TransferCallResponse](#ondewo.vtsi.TransferCallResponse) | Transfer a call from a listener to another |
+| TransferCalls | [TransferCallsRequest](#ondewo.vtsi.TransferCallsRequest) | [TransferCallsResponse](#ondewo.vtsi.TransferCallsResponse) | Transfer a call from a listener to another |
 | GetVoipCallInfo | [GetVoipCallInfoRequest](#ondewo.vtsi.GetVoipCallInfoRequest) | [GetVoipCallInfoResponse](#ondewo.vtsi.GetVoipCallInfoResponse) | get call log for single call instance |
 | ListVoipCallInfo | [ListVoipCallInfoRequest](#ondewo.vtsi.ListVoipCallInfoRequest) | [ListVoipCallInfoResponse](#ondewo.vtsi.ListVoipCallInfoResponse) | get call log for all call instances |
 | GetAudioFile | [GetAudioFileRequest](#ondewo.vtsi.GetAudioFileRequest) | [GetAudioFileResponse](#ondewo.vtsi.GetAudioFileResponse) | Get a s2t or t2s audio file for this conversation if it exists in Minio |
