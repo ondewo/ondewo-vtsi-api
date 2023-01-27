@@ -104,7 +104,7 @@ service VoipSessions {
 // The VTSI project with its configuration setting
 message VtsiProject{
 
-    // Required. The project name. Format: `projects/<project_uuid>/project`
+    // Required. The project name. Format: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     // Only when a new VtsiProject is created the name can be undefined/empty
     string name = 1;
 
@@ -186,7 +186,8 @@ message CreateVtsiProjectRequest{
 
     // VTSI project
     // Recommended is to leave "name" empty. The project name here is optional.
-    // If no name is given a new parent name is created. The parent has the format: `projects/<project_uuid>/project`.
+    // If no name is given a new parent name is created. The parent has the format:
+    // <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>.
     VtsiProject project = 1;
 
     // error message if there are any.
@@ -206,7 +207,7 @@ message CreateVtsiProjectResponse{
 // Request to retrieve a VTSI project
 message GetVtsiProjectRequest{
 
-    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 }
 
@@ -221,7 +222,7 @@ message UpdateVtsiProjectRequest{
 // Request to updated VTSI project
 message UpdateVtsiProjectResponse{
 
-    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     // error message if there are any.
@@ -232,7 +233,7 @@ message UpdateVtsiProjectResponse{
 // If a deployed VTSI project was deleted then it was undeployed beforehand automatically
 message DeleteVtsiProjectRequest{
 
-    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 }
 
@@ -240,7 +241,7 @@ message DeleteVtsiProjectRequest{
 // If a deployed VTSI project was deleted then it was undeployed beforehand automatically
 message DeleteVtsiProjectResponse{
 
-    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     // error message if there are any.
@@ -250,14 +251,14 @@ message DeleteVtsiProjectResponse{
 // Request to deploy a vtsi project
 message DeployVtsiProjectRequest{
 
-    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 }
 
 // Response to deploy a vtsi project
 message DeployVtsiProjectResponse{
 
-    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     // error message if there are any.
@@ -275,7 +276,7 @@ message UndeployVtsiProjectRequest{
 // Response to undeploy a vtsi project
 message UndeployVtsiProjectResponse{
 
-    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     // error message if there are any.
@@ -567,7 +568,7 @@ message Listener {
     string name = 1;
 
     // The call name that was assigned to the call
-    // <code>projects/<project_uuid>/listeners/<listener_uuid>/calls/<call_uuid></code>
+    // <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     string call_name = 2;
 
     // SIP service configuration
@@ -581,10 +582,10 @@ message Listener {
 message Caller {
 
     // Caller name with which to perform the call of the form
-    // <code>projects/<project_uuid>/callers/<caller_uuid></code>
+    // <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
     string name = 1;
 
-    // <code>projects/<project_uuid>/callers/<call_uuid>/calls/<call_uuid></code>
+    // <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     string call_name = 2;
 
     // SIP service configuration
@@ -598,7 +599,7 @@ message Caller {
 // request for starting a listener
 message StartListenerRequest {
 
-    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     // SIP service configuration
@@ -612,7 +613,7 @@ message StartListenerRequest {
 // Response to start multiple listeners
 message StartListenerResponse {
 
-    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     Listener listener = 2;
@@ -625,7 +626,7 @@ message StartListenerResponse {
 // Request to start multiple listeners
 message StartListenersRequest {
 
-    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     // Listeners that should be started
@@ -635,7 +636,7 @@ message StartListenersRequest {
 // Response to start multiple listeners
 message StartListenersResponse {
 
-    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     // The call ids that were assigned to each listener
@@ -649,7 +650,7 @@ message StartListenersResponse {
 // request for starting a caller
 message StartCallerRequest {
 
-    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     // SIP service configuration
@@ -663,7 +664,7 @@ message StartCallerRequest {
 // Response to start multiple listeners
 message StartCallerResponse {
 
-    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     Caller caller = 2;
@@ -676,7 +677,7 @@ message StartCallerResponse {
 // Request to start multiple callers
 message StartCallersRequest {
 
-    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     // Callers that should be started
@@ -687,7 +688,7 @@ message StartCallersRequest {
 // Response to the start caller request
 message StartCallersResponse {
 
-    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     // The call ids that were assigned to each listener
@@ -701,7 +702,7 @@ message StartCallersResponse {
 // request for starting a scheduled call
 message StartScheduledCallerRequest {
 
-    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     // Normal start caller request
@@ -716,7 +717,7 @@ message StartScheduledCallerRequest {
 // Request to start scheduled callers
 message StartScheduledCallersRequest {
 
-    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     // requests to start scheduled callers
@@ -726,7 +727,7 @@ message StartScheduledCallersRequest {
 // Response to start multiple listeners
 message StartScheduledCallersResponse {
 
-    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     // The call ids that were assigned to each listener
@@ -738,7 +739,7 @@ message StartScheduledCallersResponse {
 // Response to start multiple listeners
 message StartScheduledCallerResponse {
 
-    // VTSI project name which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     ScheduledCaller scheduled_caller = 2;
@@ -752,7 +753,7 @@ message StartScheduledCallerResponse {
 message ScheduledCaller {
 
     // Resource name of the scheduled caller
-    // <code>projects/<project_uuid>/scheduled_callers/<scheduled_caller_uuid></code>
+    // <pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre>
     string name = 1;
 
     // The asterisk sip call id that was assigned to the call, e.g., ondewo0001
@@ -772,19 +773,19 @@ message ScheduledCaller {
 // Request to stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.
 message StopCallRequest {
 
-    // VTSI project parent with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project parent with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     // call name to stop
-    // For listener this is <code>projects/<project_uuid>/listeners/<listener_uuid>/calls/<call_uuid></code>
-    // For callers this is <code>projects/<project_uuid>/callers/<call_uuid>/calls/<call_uuid></code>
+    // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
+    // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     string call_name = 2;
 }
 
 // Response to stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.
 message StopCallResponse {
 
-    // VTSI project name with which to stop the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name with which to stop the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     // call id that has been stopped
@@ -797,12 +798,12 @@ message StopCallResponse {
 // Request to stop/kill specific ondewo-sip listeners or callers instance for a specific vtsi-project.
 message StopCallsRequest {
 
-    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     // call names to stop
-    // For listener this is <code>projects/<project_uuid>/listeners/<listener_uuid>/calls/<call_uuid></code>
-    // For callers this is <code>projects/<project_uuid>/callers/<call_uuid>/calls/<call_uuid></code>
+    // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
+    // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     repeated string call_ids = 2;
 }
 
@@ -818,19 +819,19 @@ message StopCallsResponse {
 // Request to stop all calls of a VTSI project, so all listeners and callers
 message StopAllCallsRequest {
 
-    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 }
 
 // Request to transfer calls
 message TransferCallRequest{
 
-    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string parent = 1;
 
     // call name to transfer
-    // For listener this is <code>projects/<project_uuid>/listeners/<listener_uuid>/calls/<call_uuid></code>
-    // For callers this is <code>projects/<project_uuid>/callers/<call_uuid>/calls/<call_uuid></code>
+    // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
+    // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     string call_name = 2;
 
     // call_id to transfer the call to, so the number or voip number you want to be transferred too
@@ -841,12 +842,12 @@ message TransferCallRequest{
 // Response to transfer a call to a phone number or voip number
 message TransferCallResponse {
 
-    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     // call name to transfer
-    // For listener this is <code>projects/<project_uuid>/listeners/<listener_uuid>/calls/<call_uuid></code>
-    // For callers this is <code>projects/<project_uuid>/callers/<call_uuid>/calls/<call_uuid></code>
+    // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
+    // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     string call_name = 2;
 
     // call_id to transfer the call to, so the phone number or voip number you want to be transferred too
@@ -860,7 +861,7 @@ message TransferCallResponse {
 // Request to transfer multiple calls
 message TransferCallsRequest{
 
-    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     // Responses to transfer multiple calls to a phone number or voip number
@@ -871,7 +872,7 @@ message TransferCallsRequest{
 // Response to transfer a call to a phone number or voip number
 message TransferCallsResponse {
 
-    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     repeated TransferCallResponse transfer_call_responses = 2;
@@ -884,12 +885,12 @@ message TransferCallsResponse {
 // request to get a call instance's call logs
 message GetVoipCallInfoRequest {
 
-    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     // call name
-    // For listener this is <code>projects/<project_uuid>/listeners/<listener_uuid>/calls/<call_uuid></code>
-    // For callers this is <code>projects/<project_uuid>/callers/<call_uuid>/calls/<call_uuid></code>
+    // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
+    // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     string call_name = 2;
 
     /* you can specify the view to be shallow or full .. see above for more info*/
@@ -933,8 +934,8 @@ enum CallType {
 message VoipCallInfo {
 
     // call name
-    // For listener this is <code>projects/<project_uuid>/listeners/<listener_uuid>/calls/<call_uuid></code>
-    // For callers this is <code>projects/<project_uuid>/callers/<call_uuid>/calls/<call_uuid></code>
+    // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
+    // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     string call_name = 1;
 
     // sip account used
@@ -966,7 +967,7 @@ message VoipCallInfo {
 
 message ListVoipCallInfoRequest{
 
-    // VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/project</code>
+    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     // you can specify the view to be shallow or full .. see above for more info
