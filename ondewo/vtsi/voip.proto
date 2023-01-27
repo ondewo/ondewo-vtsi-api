@@ -25,7 +25,7 @@ import "ondewo/t2s/text-to-speech.proto";
 import "ondewo/sip/sip.proto";
 
 
-// session manager for phone calls.
+// ONDEWO VTSI API
 // endpoints of voip server that manages instances of ondewo-sip, which handle individual calls
 service VoipSessions {
 
@@ -33,22 +33,22 @@ service VoipSessions {
     // Project endpoints
     //////////////////////////////////////////////////////////////////////////////
 
-    // Create an NLU project with configs.
+    // Create a VTSI project with configs
     rpc CreateVtsiProject (CreateVtsiProjectRequest) returns (CreateVtsiProjectResponse);
 
-    // Get an NLU project with configs.
+    // Get a VTSI project with configs
     rpc GetVtsiProject (GetVtsiProjectRequest) returns (VtsiProject);
 
-    // Update an NLU project with configs.
+    // Update a VTSI project with configs
     rpc UpdateVtsiProject (UpdateVtsiProjectRequest) returns (UpdateVtsiProjectResponse);
 
-    // Delete an NLU project with configs.
+    // Delete a VTSI project with configs
     rpc DeleteVtsiProject (DeleteVtsiProjectRequest) returns (DeleteVtsiProjectResponse);
 
-    // Deploys a vtsi project
+    // Deploy a VTSI project
     rpc DeployVtsiProject (DeployVtsiProjectRequest) returns (DeployVtsiProjectResponse);
 
-    // Undeploy a vtsi project
+    // Undeploy a VTSI project
     rpc UndeployVtsiProject (UndeployVtsiProjectRequest) returns (UndeployVtsiProjectResponse);
 
     //////////////////////////////////////////////////////////////////////////////
@@ -68,6 +68,9 @@ service VoipSessions {
     rpc StartListeners (StartListenersRequest) returns (StartListenersResponse);
 
     // start multiple ondewo-sip callers instances with schedules
+    rpc StartScheduledCaller (StartScheduledCallerRequest) returns (StartScheduledCallerResponse);
+
+    // start multiple ondewo-sip callers instances with schedules
     rpc StartScheduledCallers (StartScheduledCallersRequest) returns (StartScheduledCallersResponse);
 
     // stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.
@@ -75,7 +78,7 @@ service VoipSessions {
 
     // stop/kill a list of ondewo-sip listener or caller instances for a specific vtsi-project.
     // "stops both Listener and Caller calls"
-    rpc StopCalls (StopCallsRequest) returns (google.protobuf.Empty);
+    rpc StopCalls (StopCallsRequest) returns (StopCallsResponse);
 
     // stop/kill all ondewo-sip listener or caller instance for a specific nlu-project.
     // "stops all Listener and Caller calls"
