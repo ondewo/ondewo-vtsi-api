@@ -78,8 +78,8 @@ message TranscribeRequestConfig {
   // Required. id of the pipeline (model setup) that will generate audio
   string s2t_pipeline_id = 1;
 
-  // Optional. CTC decoding type
-  CTCDecoding ctc_decoding = 2;
+  // Optional. decoding type
+  Decoding decoding = 2;
 
   // Optional. Language model name for decoding (in none, default will be taken from config file)
   oneof oneof_language_model_name {
@@ -187,10 +187,11 @@ message TranscribeFileRequest {
   TranscribeRequestConfig config = 2; // The configuration to override the default configuration
 }
 
-enum CTCDecoding {
+enum Decoding {
   DEFAULT = 0; // decoding will be defined by the pipeline config
   GREEDY = 1; // greedy decoding will be used independently on pipeline config
   BEAM_SEARCH_WITH_LM = 2; // beam search will be used independently on pipeline config
+  BEAM_SEARCH = 3; // beam search whitout LM head, to configure decoding mode for seq2seq models.
 }
 
 message TranscribeFileResponse {
@@ -295,16 +296,31 @@ message S2TDescription {
 }
 
 message S2TInference {
-  CtcAcousticModels ctc_acoustic_models = 1;
+  AcousticModels acoustic_models = 1;
   LanguageModels language_models = 2;
 }
 
-message CtcAcousticModels {
+message AcousticModels {
   string type = 1;
   Quartznet quartznet = 2;
   QuartznetTriton quartznet_triton = 3;
   Wav2Vec wav2vec = 4;
   Wav2VecTriton wav2vec_triton = 5;
+  Whisper whisper = 6;
+  WhisperTriton whisper_triton = 7;
+}
+
+message Whisper {
+  string model_path = 1;
+  bool use_gpu = 2;
+  string language = 3;
+}
+
+message WhisperTriton {
+  string processor_path = 1;
+  string triton_model_name = 2;
+  string triton_model_version = 3;
+  int64 check_status_timeout = 4;
 }
 
 message Wav2Vec {
@@ -359,7 +375,7 @@ message StreamingServer {
 
 message StreamingSpeechRecognition {
   bool transcribe_not_final = 1;
-  string ctc_decoding_method = 2;
+  string decoding_method = 2;
   int64 sampling_rate = 3;
   int64 min_audio_chunk_size = 4;
   float start_of_utterance_threshold = 5;
