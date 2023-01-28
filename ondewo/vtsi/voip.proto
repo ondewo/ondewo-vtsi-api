@@ -385,8 +385,8 @@ message CommonServicesConfigs{
 }
 
 // The base config is for both the listener and caller .. If you only provide it you will get a listener
-// You will need to provide SIPCallerConfig for the caller
-message SIPBaseConfig{
+// You will need to provide <code>SipCallerConfig</code> for the caller
+message SipBaseConfig{
 
     // version of sip to use for call, semantic versioning e.g., 1.0.0, 1.1.0-pre-release, etc.
     string sip_sim_base_config_version = 1;
@@ -394,10 +394,10 @@ message SIPBaseConfig{
 }
 
 // Configuration of the SIP caller
-message SIPCallerConfig{
+message SipCallerConfig{
 
     // SIP configuration
-    SIPBaseConfig sip_base_config = 1;
+    SipBaseConfig sip_base_config = 1;
 
     // callee id e.g. phone number to call, +4365012345678 or VOIP phone ondewo0001@ondewo.com, etc.
     string callee_id = 2;
@@ -575,7 +575,7 @@ message Listener {
     string call_name = 2;
 
     // SIP service configuration
-    SIPBaseConfig sip_config = 3;
+    SipBaseConfig sip_config = 3;
 
     // Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI
     CommonServicesConfigs services_configs = 4;
@@ -593,7 +593,7 @@ message Caller {
     string call_name = 2;
 
     // SIP service configuration
-    SIPBaseConfig sip_config = 3;
+    SipBaseConfig sip_config = 3;
 
     // Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI
     CommonServicesConfigs services_configs = 4;
@@ -607,7 +607,7 @@ message StartListenerRequest {
     string name = 1;
 
     // SIP service configuration
-    SIPBaseConfig sip_config = 2;
+    SipBaseConfig sip_config = 2;
 
     // Service Configs of Asterisk, nlu,stt, tts
     CommonServicesConfigs services_configs = 3;
@@ -658,7 +658,7 @@ message StartCallerRequest {
     string name = 1;
 
     // SIP service configuration
-    SIPCallerConfig sip_config = 2;
+    SipCallerConfig sip_config = 2;
 
     // Service Configs of Asterisk, nlu,stt, tts
     CommonServicesConfigs services_configs = 3;
@@ -766,7 +766,7 @@ message ScheduledCaller {
     string call_name = 2;
 
     // SIP service configuration
-    SIPBaseConfig sip_config = 3;
+    SipBaseConfig sip_config = 3;
 
     // Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI
     CommonServicesConfigs services_configs = 4;
