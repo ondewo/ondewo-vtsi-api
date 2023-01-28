@@ -3116,6 +3116,8 @@
                       
                         <li><a href="#ondewo.vtsi.VoipSessions.StartListeners" class="title-badge method">StartListeners</a></li>
                       
+                        <li><a href="#ondewo.vtsi.VoipSessions.StartScheduledCaller" class="title-badge method">StartScheduledCaller</a></li>
+                      
                         <li><a href="#ondewo.vtsi.VoipSessions.StartScheduledCallers" class="title-badge method">StartScheduledCallers</a></li>
                       
                         <li><a href="#ondewo.vtsi.VoipSessions.StopCall" class="title-badge method">StopCall</a></li>
@@ -27983,7 +27985,7 @@ pipelines with the specifications received in the ListT2sPipelinesRequest. </p><
       
         
         <h3 id="ondewo.vtsi.VoipSessions" class="title-badge service">VoipSessions</h3>
-        <p>session manager for phone calls.</p><p>endpoints of voip server that manages instances of ondewo-sip, which handle individual calls</p>
+        <p>ONDEWO VTSI API</p><p>endpoints of voip server that manages instances of ondewo-sip, which handle individual calls</p>
 
         
         <div id="ondewo.vtsi.VoipSessions-methods" class="service-methods">Service Methods</div>
@@ -27992,37 +27994,37 @@ pipelines with the specifications received in the ListT2sPipelinesRequest. </p><
 
           <pre>rpc CreateVtsiProject (<a href="#ondewo.vtsi.CreateVtsiProjectRequest">CreateVtsiProjectRequest</a>) returns (<a href="#ondewo.vtsi.CreateVtsiProjectResponse">CreateVtsiProjectResponse)</a></pre>
 
-          Create an NLU project with configs.
+          Create a VTSI project with configs
         
           <h4 id="ondewo.vtsi.VoipSessions.GetVtsiProject" class="title-badge method">GetVtsiProject</h4>
 
           <pre>rpc GetVtsiProject (<a href="#ondewo.vtsi.GetVtsiProjectRequest">GetVtsiProjectRequest</a>) returns (<a href="#ondewo.vtsi.VtsiProject">VtsiProject)</a></pre>
 
-          Get an NLU project with configs.
+          Get a VTSI project with configs
         
           <h4 id="ondewo.vtsi.VoipSessions.UpdateVtsiProject" class="title-badge method">UpdateVtsiProject</h4>
 
           <pre>rpc UpdateVtsiProject (<a href="#ondewo.vtsi.UpdateVtsiProjectRequest">UpdateVtsiProjectRequest</a>) returns (<a href="#ondewo.vtsi.UpdateVtsiProjectResponse">UpdateVtsiProjectResponse)</a></pre>
 
-          Update an NLU project with configs.
+          Update a VTSI project with configs
         
           <h4 id="ondewo.vtsi.VoipSessions.DeleteVtsiProject" class="title-badge method">DeleteVtsiProject</h4>
 
           <pre>rpc DeleteVtsiProject (<a href="#ondewo.vtsi.DeleteVtsiProjectRequest">DeleteVtsiProjectRequest</a>) returns (<a href="#ondewo.vtsi.DeleteVtsiProjectResponse">DeleteVtsiProjectResponse)</a></pre>
 
-          Delete an NLU project with configs.
+          Delete a VTSI project with configs
         
           <h4 id="ondewo.vtsi.VoipSessions.DeployVtsiProject" class="title-badge method">DeployVtsiProject</h4>
 
           <pre>rpc DeployVtsiProject (<a href="#ondewo.vtsi.DeployVtsiProjectRequest">DeployVtsiProjectRequest</a>) returns (<a href="#ondewo.vtsi.DeployVtsiProjectResponse">DeployVtsiProjectResponse)</a></pre>
 
-          Deploys a vtsi project
+          Deploy a VTSI project
         
           <h4 id="ondewo.vtsi.VoipSessions.UndeployVtsiProject" class="title-badge method">UndeployVtsiProject</h4>
 
           <pre>rpc UndeployVtsiProject (<a href="#ondewo.vtsi.UndeployVtsiProjectRequest">UndeployVtsiProjectRequest</a>) returns (<a href="#ondewo.vtsi.UndeployVtsiProjectResponse">UndeployVtsiProjectResponse)</a></pre>
 
-          Undeploy a vtsi project
+          Undeploy a VTSI project
         
           <h4 id="ondewo.vtsi.VoipSessions.StartCaller" class="title-badge method">StartCaller</h4>
 
@@ -28048,6 +28050,12 @@ pipelines with the specifications received in the ListT2sPipelinesRequest. </p><
 
           start multiple ondewo-sip listeners instances for a specific nlu-project.
         
+          <h4 id="ondewo.vtsi.VoipSessions.StartScheduledCaller" class="title-badge method">StartScheduledCaller</h4>
+
+          <pre>rpc StartScheduledCaller (<a href="#ondewo.vtsi.StartScheduledCallerRequest">StartScheduledCallerRequest</a>) returns (<a href="#ondewo.vtsi.StartScheduledCallerResponse">StartScheduledCallerResponse)</a></pre>
+
+          start multiple ondewo-sip callers instances with schedules
+        
           <h4 id="ondewo.vtsi.VoipSessions.StartScheduledCallers" class="title-badge method">StartScheduledCallers</h4>
 
           <pre>rpc StartScheduledCallers (<a href="#ondewo.vtsi.StartScheduledCallersRequest">StartScheduledCallersRequest</a>) returns (<a href="#ondewo.vtsi.StartScheduledCallersResponse">StartScheduledCallersResponse)</a></pre>
@@ -28062,7 +28070,7 @@ pipelines with the specifications received in the ListT2sPipelinesRequest. </p><
         
           <h4 id="ondewo.vtsi.VoipSessions.StopCalls" class="title-badge method">StopCalls</h4>
 
-          <pre>rpc StopCalls (<a href="#ondewo.vtsi.StopCallsRequest">StopCallsRequest</a>) returns (<a href="#google.protobuf.Empty">.google.protobuf.Empty)</a></pre>
+          <pre>rpc StopCalls (<a href="#ondewo.vtsi.StopCallsRequest">StopCallsRequest</a>) returns (<a href="#ondewo.vtsi.StopCallsResponse">StopCallsResponse)</a></pre>
 
           stop/kill a list of ondewo-sip listener or caller instances for a specific vtsi-project.
 "stops both Listener and Caller calls"
