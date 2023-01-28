@@ -623,11 +623,11 @@
     - [RabbitMqConfig](#ondewo.vtsi.RabbitMqConfig)
     - [S2tVtsiCallbacks](#ondewo.vtsi.S2tVtsiCallbacks)
     - [S2tVtsiConfig](#ondewo.vtsi.S2tVtsiConfig)
-    - [SIPBaseConfig](#ondewo.vtsi.SIPBaseConfig)
-    - [SIPCallerConfig](#ondewo.vtsi.SIPCallerConfig)
-    - [SIPCallerConfig.SipHeadersEntry](#ondewo.vtsi.SIPCallerConfig.SipHeadersEntry)
     - [ScheduledCaller](#ondewo.vtsi.ScheduledCaller)
     - [ServiceStatus](#ondewo.vtsi.ServiceStatus)
+    - [SipBaseConfig](#ondewo.vtsi.SipBaseConfig)
+    - [SipCallerConfig](#ondewo.vtsi.SipCallerConfig)
+    - [SipCallerConfig.SipHeadersEntry](#ondewo.vtsi.SipCallerConfig.SipHeadersEntry)
     - [StartCallerRequest](#ondewo.vtsi.StartCallerRequest)
     - [StartCallerResponse](#ondewo.vtsi.StartCallerResponse)
     - [StartCallersRequest](#ondewo.vtsi.StartCallersRequest)
@@ -10357,7 +10357,7 @@ base configuration of services (ondewo-nlu, text-to-speech, speech-to-text, aste
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | Caller name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> |
 | call_name | [string](#string) |  | The call name that was assigned to the call <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
-| sip_config | [SIPBaseConfig](#ondewo.vtsi.SIPBaseConfig) |  | SIP service configuration |
+| sip_config | [SipBaseConfig](#ondewo.vtsi.SipBaseConfig) |  | SIP service configuration |
 | services_configs | [CommonServicesConfigs](#ondewo.vtsi.CommonServicesConfigs) |  | Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI |
 
 
@@ -10670,7 +10670,7 @@ Response to list all VoipInfos
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/listeners/<listener_uuid></code> |
 | call_name | [string](#string) |  | The call name that was assigned to the call <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
-| sip_config | [SIPBaseConfig](#ondewo.vtsi.SIPBaseConfig) |  | SIP service configuration |
+| sip_config | [SipBaseConfig](#ondewo.vtsi.SipBaseConfig) |  | SIP service configuration |
 | services_configs | [CommonServicesConfigs](#ondewo.vtsi.CommonServicesConfigs) |  | Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI |
 
 
@@ -10820,55 +10820,6 @@ Speech-2-Text Configuration
 
 
 
-<a name="ondewo.vtsi.SIPBaseConfig"></a>
-
-### SIPBaseConfig
-The base config is for both the listener and caller .. If you only provide it you will get a listener
-You will need to provide SIPCallerConfig for the caller
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| sip_sim_base_config_version | [string](#string) |  | version of sip to use for call, semantic versioning e.g., 1.0.0, 1.1.0-pre-release, etc. |
-
-
-
-
-
-
-<a name="ondewo.vtsi.SIPCallerConfig"></a>
-
-### SIPCallerConfig
-Configuration of the SIP caller
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| sip_base_config | [SIPBaseConfig](#ondewo.vtsi.SIPBaseConfig) |  | SIP configuration |
-| callee_id | [string](#string) |  | callee id e.g. phone number to call, +4365012345678 or VOIP phone ondewo0001@ondewo.com, etc. |
-| sip_headers | [SIPCallerConfig.SipHeadersEntry](#ondewo.vtsi.SIPCallerConfig.SipHeadersEntry) | repeated | dictionary of sip headers that are sent on call |
-
-
-
-
-
-
-<a name="ondewo.vtsi.SIPCallerConfig.SipHeadersEntry"></a>
-
-### SIPCallerConfig.SipHeadersEntry
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| key | [string](#string) |  |  |
-| value | [string](#string) |  |  |
-
-
-
-
-
-
 <a name="ondewo.vtsi.ScheduledCaller"></a>
 
 ### ScheduledCaller
@@ -10879,7 +10830,7 @@ ScheduledCaller message - a Caller with a schedule when to start calling
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | Resource name of the scheduled caller <pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre> |
 | call_name | [string](#string) |  | The asterisk sip call name that was assigned to the call For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
-| sip_config | [SIPBaseConfig](#ondewo.vtsi.SIPBaseConfig) |  | SIP service configuration |
+| sip_config | [SipBaseConfig](#ondewo.vtsi.SipBaseConfig) |  | SIP service configuration |
 | services_configs | [CommonServicesConfigs](#ondewo.vtsi.CommonServicesConfigs) |  | Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI |
 | scheduled_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Time the call is scheduled TODO to be refactored with a more complex scheduling object |
 
@@ -10904,6 +10855,55 @@ status of service
 
 
 
+<a name="ondewo.vtsi.SipBaseConfig"></a>
+
+### SipBaseConfig
+The base config is for both the listener and caller .. If you only provide it you will get a listener
+You will need to provide <code>SipCallerConfig</code> for the caller
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sip_sim_base_config_version | [string](#string) |  | version of sip to use for call, semantic versioning e.g., 1.0.0, 1.1.0-pre-release, etc. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.SipCallerConfig"></a>
+
+### SipCallerConfig
+Configuration of the SIP caller
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sip_base_config | [SipBaseConfig](#ondewo.vtsi.SipBaseConfig) |  | SIP configuration |
+| callee_id | [string](#string) |  | callee id e.g. phone number to call, +4365012345678 or VOIP phone ondewo0001@ondewo.com, etc. |
+| sip_headers | [SipCallerConfig.SipHeadersEntry](#ondewo.vtsi.SipCallerConfig.SipHeadersEntry) | repeated | dictionary of sip headers that are sent on call |
+
+
+
+
+
+
+<a name="ondewo.vtsi.SipCallerConfig.SipHeadersEntry"></a>
+
+### SipCallerConfig.SipHeadersEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [string](#string) |  |  |
+
+
+
+
+
+
 <a name="ondewo.vtsi.StartCallerRequest"></a>
 
 ### StartCallerRequest
@@ -10913,7 +10913,7 @@ request for starting a caller
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
-| sip_config | [SIPCallerConfig](#ondewo.vtsi.SIPCallerConfig) |  | SIP service configuration |
+| sip_config | [SipCallerConfig](#ondewo.vtsi.SipCallerConfig) |  | SIP service configuration |
 | services_configs | [CommonServicesConfigs](#ondewo.vtsi.CommonServicesConfigs) |  | Service Configs of Asterisk, nlu,stt, tts |
 
 
@@ -10980,7 +10980,7 @@ request for starting a listener
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
-| sip_config | [SIPBaseConfig](#ondewo.vtsi.SIPBaseConfig) |  | SIP service configuration |
+| sip_config | [SipBaseConfig](#ondewo.vtsi.SipBaseConfig) |  | SIP service configuration |
 | services_configs | [CommonServicesConfigs](#ondewo.vtsi.CommonServicesConfigs) |  | Service Configs of Asterisk, nlu,stt, tts |
 
 

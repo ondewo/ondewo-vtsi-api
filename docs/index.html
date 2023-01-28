@@ -3293,23 +3293,23 @@
                       </li>
                     
                       <li>
-                        <a href="#ondewo.vtsi.SIPBaseConfig" class="title-badge message">SIPBaseConfig</a>
-                      </li>
-                    
-                      <li>
-                        <a href="#ondewo.vtsi.SIPCallerConfig" class="title-badge message">SIPCallerConfig</a>
-                      </li>
-                    
-                      <li>
-                        <a href="#ondewo.vtsi.SIPCallerConfig.SipHeadersEntry" class="title-badge message">SIPCallerConfig.SipHeadersEntry</a>
-                      </li>
-                    
-                      <li>
                         <a href="#ondewo.vtsi.ScheduledCaller" class="title-badge message">ScheduledCaller</a>
                       </li>
                     
                       <li>
                         <a href="#ondewo.vtsi.ServiceStatus" class="title-badge message">ServiceStatus</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.SipBaseConfig" class="title-badge message">SipBaseConfig</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.SipCallerConfig" class="title-badge message">SipCallerConfig</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.SipCallerConfig.SipHeadersEntry" class="title-badge message">SipCallerConfig.SipHeadersEntry</a>
                       </li>
                     
                       <li>
@@ -28487,7 +28487,7 @@ pipelines with the specifications received in the ListT2sPipelinesRequest. </p><
               
                 <tr>
                   <td>sip_config</td>
-                  <td><a href="#ondewo.vtsi.SIPBaseConfig">SIPBaseConfig</a></td>
+                  <td><a href="#ondewo.vtsi.SipBaseConfig">SipBaseConfig</a></td>
                   <td></td>
                   <td><p>SIP service configuration </p></td>
                 </tr>
@@ -29134,7 +29134,7 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
               
                 <tr>
                   <td>sip_config</td>
-                  <td><a href="#ondewo.vtsi.SIPBaseConfig">SIPBaseConfig</a></td>
+                  <td><a href="#ondewo.vtsi.SipBaseConfig">SipBaseConfig</a></td>
                   <td></td>
                   <td><p>SIP service configuration </p></td>
                 </tr>
@@ -29500,99 +29500,6 @@ Host, Port, and [Optional] GRPC cert </p></td>
 
         
       
-        <h3 id="ondewo.vtsi.SIPBaseConfig" class="title-badge message">SIPBaseConfig</h3>
-        <p>The base config is for both the listener and caller .. If you only provide it you will get a listener</p><p>You will need to provide SIPCallerConfig for the caller</p>
-
-        
-          <table class="field-table">
-            <thead>
-              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>sip_sim_base_config_version</td>
-                  <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p>version of sip to use for call, semantic versioning e.g., 1.0.0, 1.1.0-pre-release, etc. </p></td>
-                </tr>
-              
-            </tbody>
-          </table>
-
-          
-
-        
-      
-        <h3 id="ondewo.vtsi.SIPCallerConfig" class="title-badge message">SIPCallerConfig</h3>
-        <p>Configuration of the SIP caller</p>
-
-        
-          <table class="field-table">
-            <thead>
-              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>sip_base_config</td>
-                  <td><a href="#ondewo.vtsi.SIPBaseConfig">SIPBaseConfig</a></td>
-                  <td></td>
-                  <td><p>SIP configuration </p></td>
-                </tr>
-              
-                <tr>
-                  <td>callee_id</td>
-                  <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p>callee id e.g. phone number to call, +4365012345678 or VOIP phone ondewo0001@ondewo.com, etc. </p></td>
-                </tr>
-              
-                <tr>
-                  <td>sip_headers</td>
-                  <td><a href="#ondewo.vtsi.SIPCallerConfig.SipHeadersEntry">SIPCallerConfig.SipHeadersEntry</a></td>
-                  <td>repeated</td>
-                  <td><p>dictionary of sip headers that are sent on call </p></td>
-                </tr>
-              
-            </tbody>
-          </table>
-
-          
-
-        
-      
-        <h3 id="ondewo.vtsi.SIPCallerConfig.SipHeadersEntry" class="title-badge message">SIPCallerConfig.SipHeadersEntry</h3>
-        <p></p>
-
-        
-          <table class="field-table">
-            <thead>
-              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>key</td>
-                  <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-                <tr>
-                  <td>value</td>
-                  <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-            </tbody>
-          </table>
-
-          
-
-        
-      
         <h3 id="ondewo.vtsi.ScheduledCaller" class="title-badge message">ScheduledCaller</h3>
         <p>ScheduledCaller message - a Caller with a schedule when to start calling</p>
 
@@ -29622,7 +29529,7 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
               
                 <tr>
                   <td>sip_config</td>
-                  <td><a href="#ondewo.vtsi.SIPBaseConfig">SIPBaseConfig</a></td>
+                  <td><a href="#ondewo.vtsi.SipBaseConfig">SipBaseConfig</a></td>
                   <td></td>
                   <td><p>SIP service configuration </p></td>
                 </tr>
@@ -29680,6 +29587,99 @@ TODO to be refactored with a more complex scheduling object </p></td>
 
         
       
+        <h3 id="ondewo.vtsi.SipBaseConfig" class="title-badge message">SipBaseConfig</h3>
+        <p>The base config is for both the listener and caller .. If you only provide it you will get a listener</p><p>You will need to provide <code>SipCallerConfig</code> for the caller</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>sip_sim_base_config_version</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>version of sip to use for call, semantic versioning e.g., 1.0.0, 1.1.0-pre-release, etc. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.SipCallerConfig" class="title-badge message">SipCallerConfig</h3>
+        <p>Configuration of the SIP caller</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>sip_base_config</td>
+                  <td><a href="#ondewo.vtsi.SipBaseConfig">SipBaseConfig</a></td>
+                  <td></td>
+                  <td><p>SIP configuration </p></td>
+                </tr>
+              
+                <tr>
+                  <td>callee_id</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>callee id e.g. phone number to call, +4365012345678 or VOIP phone ondewo0001@ondewo.com, etc. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>sip_headers</td>
+                  <td><a href="#ondewo.vtsi.SipCallerConfig.SipHeadersEntry">SipCallerConfig.SipHeadersEntry</a></td>
+                  <td>repeated</td>
+                  <td><p>dictionary of sip headers that are sent on call </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.SipCallerConfig.SipHeadersEntry" class="title-badge message">SipCallerConfig.SipHeadersEntry</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>key</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>value</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
         <h3 id="ondewo.vtsi.StartCallerRequest" class="title-badge message">StartCallerRequest</h3>
         <p>request for starting a caller</p>
 
@@ -29699,7 +29699,7 @@ TODO to be refactored with a more complex scheduling object </p></td>
               
                 <tr>
                   <td>sip_config</td>
-                  <td><a href="#ondewo.vtsi.SIPCallerConfig">SIPCallerConfig</a></td>
+                  <td><a href="#ondewo.vtsi.SipCallerConfig">SipCallerConfig</a></td>
                   <td></td>
                   <td><p>SIP service configuration </p></td>
                 </tr>
@@ -29844,7 +29844,7 @@ TODO to be refactored with a more complex scheduling object </p></td>
               
                 <tr>
                   <td>sip_config</td>
-                  <td><a href="#ondewo.vtsi.SIPBaseConfig">SIPBaseConfig</a></td>
+                  <td><a href="#ondewo.vtsi.SipBaseConfig">SipBaseConfig</a></td>
                   <td></td>
                   <td><p>SIP service configuration </p></td>
                 </tr>
