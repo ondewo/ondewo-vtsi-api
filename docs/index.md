@@ -595,6 +595,7 @@
     - [AudioObjectStorageConfig](#ondewo.vtsi.AudioObjectStorageConfig)
     - [AudioObjectStorageServicesActivationConfig](#ondewo.vtsi.AudioObjectStorageServicesActivationConfig)
     - [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig)
+    - [CallInfo](#ondewo.vtsi.CallInfo)
     - [Caller](#ondewo.vtsi.Caller)
     - [CommonServicesConfigs](#ondewo.vtsi.CommonServicesConfigs)
     - [CreateVtsiProjectRequest](#ondewo.vtsi.CreateVtsiProjectRequest)
@@ -607,13 +608,13 @@
     - [DeployVtsiProjectResponse](#ondewo.vtsi.DeployVtsiProjectResponse)
     - [GetAudioFileRequest](#ondewo.vtsi.GetAudioFileRequest)
     - [GetAudioFileResponse](#ondewo.vtsi.GetAudioFileResponse)
+    - [GetCallInfoRequest](#ondewo.vtsi.GetCallInfoRequest)
+    - [GetCallInfoResponse](#ondewo.vtsi.GetCallInfoResponse)
     - [GetFullConversationAudioFileRequest](#ondewo.vtsi.GetFullConversationAudioFileRequest)
     - [GetFullConversationAudioFileResponse](#ondewo.vtsi.GetFullConversationAudioFileResponse)
-    - [GetVoipCallInfoRequest](#ondewo.vtsi.GetVoipCallInfoRequest)
-    - [GetVoipCallInfoResponse](#ondewo.vtsi.GetVoipCallInfoResponse)
     - [GetVtsiProjectRequest](#ondewo.vtsi.GetVtsiProjectRequest)
-    - [ListVoipCallInfoRequest](#ondewo.vtsi.ListVoipCallInfoRequest)
-    - [ListVoipCallInfoResponse](#ondewo.vtsi.ListVoipCallInfoResponse)
+    - [ListCallInfoRequest](#ondewo.vtsi.ListCallInfoRequest)
+    - [ListCallInfoResponse](#ondewo.vtsi.ListCallInfoResponse)
     - [Listener](#ondewo.vtsi.Listener)
     - [MessageBrokerConfig](#ondewo.vtsi.MessageBrokerConfig)
     - [MessageBrokerServicesActivationConfig](#ondewo.vtsi.MessageBrokerServicesActivationConfig)
@@ -655,11 +656,10 @@
     - [UndeployVtsiProjectResponse](#ondewo.vtsi.UndeployVtsiProjectResponse)
     - [UpdateVtsiProjectRequest](#ondewo.vtsi.UpdateVtsiProjectRequest)
     - [UpdateVtsiProjectResponse](#ondewo.vtsi.UpdateVtsiProjectResponse)
-    - [VoipCallInfo](#ondewo.vtsi.VoipCallInfo)
     - [VtsiProject](#ondewo.vtsi.VtsiProject)
   
+    - [CallInfoView](#ondewo.vtsi.CallInfoView)
     - [CallType](#ondewo.vtsi.CallType)
-    - [VoipCallInfoView](#ondewo.vtsi.VoipCallInfoView)
   
     - [Vtsi](#ondewo.vtsi.Vtsi)
   
@@ -10347,6 +10347,30 @@ base configuration of services (ondewo-nlu, text-to-speech, speech-to-text, aste
 
 
 
+<a name="ondewo.vtsi.CallInfo"></a>
+
+### CallInfo
+Call log
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| call_name | [string](#string) |  | call name For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
+| sip_account | [string](#string) |  | sip account used |
+| container_name | [string](#string) |  | container name which you get from docker ps |
+| call_type | [CallType](#ondewo.vtsi.CallType) |  | Listener or caller enum .. if not specified |
+| phone_number | [string](#string) |  |  |
+| start_time | [double](#double) |  | start time of log |
+| end_time | [double](#double) |  | end time of log |
+| sip_status | [ondewo.sip.SipStatus](#ondewo.sip.SipStatus) |  | current sip status |
+| sip_status_history | [ondewo.sip.SipStatusHistoryResponse](#ondewo.sip.SipStatusHistoryResponse) |  | sip status history |
+| services_statuses | [AllServicesStatuses](#ondewo.vtsi.AllServicesStatuses) |  | All container health statuses |
+
+
+
+
+
+
 <a name="ondewo.vtsi.Caller"></a>
 
 ### Caller
@@ -10548,6 +10572,39 @@ Response to retrieve the bytes of the audio file requested from Minio
 
 
 
+<a name="ondewo.vtsi.GetCallInfoRequest"></a>
+
+### GetCallInfoRequest
+request to get a call instance's call logs
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| call_name | [string](#string) |  | call name For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
+| call_info_view | [CallInfoView](#ondewo.vtsi.CallInfoView) |  | you can specify the view to be shallow or full .. see above for more info |
+
+
+
+
+
+
+<a name="ondewo.vtsi.GetCallInfoResponse"></a>
+
+### GetCallInfoResponse
+response with call logs
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| active_log | [CallInfo](#ondewo.vtsi.CallInfo) |  | CallInfo to view active logs of calls |
+| done_logs | [CallInfo](#ondewo.vtsi.CallInfo) | repeated | logs of calls associated with call instance |
+
+
+
+
+
+
 <a name="ondewo.vtsi.GetFullConversationAudioFileRequest"></a>
 
 ### GetFullConversationAudioFileRequest
@@ -10580,39 +10637,6 @@ Retrieve one audio file with all audio files combined into one
 
 
 
-<a name="ondewo.vtsi.GetVoipCallInfoRequest"></a>
-
-### GetVoipCallInfoRequest
-request to get a call instance's call logs
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
-| call_name | [string](#string) |  | call name For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
-| voip_call_info_view | [VoipCallInfoView](#ondewo.vtsi.VoipCallInfoView) |  | you can specify the view to be shallow or full .. see above for more info |
-
-
-
-
-
-
-<a name="ondewo.vtsi.GetVoipCallInfoResponse"></a>
-
-### GetVoipCallInfoResponse
-response with call logs
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| active_log | [VoipCallInfo](#ondewo.vtsi.VoipCallInfo) |  | VoipCallInfo to view active logs of calls |
-| done_logs | [VoipCallInfo](#ondewo.vtsi.VoipCallInfo) | repeated | logs of calls associated with call instance |
-
-
-
-
-
-
 <a name="ondewo.vtsi.GetVtsiProjectRequest"></a>
 
 ### GetVtsiProjectRequest
@@ -10628,16 +10652,16 @@ Request to retrieve a VTSI project
 
 
 
-<a name="ondewo.vtsi.ListVoipCallInfoRequest"></a>
+<a name="ondewo.vtsi.ListCallInfoRequest"></a>
 
-### ListVoipCallInfoRequest
+### ListCallInfoRequest
 
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
-| voip_call_info_view | [VoipCallInfoView](#ondewo.vtsi.VoipCallInfoView) |  | you can specify the view to be shallow or full .. see above for more info |
+| call_info_view | [CallInfoView](#ondewo.vtsi.CallInfoView) |  | you can specify the view to be shallow or full .. see above for more info |
 | call_type | [CallType](#ondewo.vtsi.CallType) |  | both by default, or only listeners, or only callers |
 
 
@@ -10645,15 +10669,15 @@ Request to retrieve a VTSI project
 
 
 
-<a name="ondewo.vtsi.ListVoipCallInfoResponse"></a>
+<a name="ondewo.vtsi.ListCallInfoResponse"></a>
 
-### ListVoipCallInfoResponse
+### ListCallInfoResponse
 Response to list all VoipInfos
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| voip_call_infos | [VoipCallInfo](#ondewo.vtsi.VoipCallInfo) | repeated | VoipInfos |
+| call_infos | [CallInfo](#ondewo.vtsi.CallInfo) | repeated | VoipInfos |
 
 
 
@@ -11346,30 +11370,6 @@ Request to updated VTSI project
 
 
 
-<a name="ondewo.vtsi.VoipCallInfo"></a>
-
-### VoipCallInfo
-VoipCall log
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| call_name | [string](#string) |  | call name For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
-| sip_account | [string](#string) |  | sip account used |
-| container_name | [string](#string) |  | container name which you get from docker ps |
-| call_type | [CallType](#ondewo.vtsi.CallType) |  | Listener or caller enum .. if not specified |
-| phone_number | [string](#string) |  |  |
-| start_time | [double](#double) |  | start time of log |
-| end_time | [double](#double) |  | end time of log |
-| sip_status | [ondewo.sip.SipStatus](#ondewo.sip.SipStatus) |  | current sip status |
-| sip_status_history | [ondewo.sip.SipStatusHistoryResponse](#ondewo.sip.SipStatusHistoryResponse) |  | sip status history |
-| services_statuses | [AllServicesStatuses](#ondewo.vtsi.AllServicesStatuses) |  | All container health statuses |
-
-
-
-
-
-
 <a name="ondewo.vtsi.VtsiProject"></a>
 
 ### VtsiProject
@@ -11391,6 +11391,18 @@ The VTSI project with its configuration setting
  <!-- end messages -->
 
 
+<a name="ondewo.vtsi.CallInfoView"></a>
+
+### CallInfoView
+CallInfo view options
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| SHALLOW | 0 | Gives you all basic info like call name, start_time, end_time, current sip status |
+| FULL | 1 | Gives you the full info with status history and the services statuses |
+
+
+
 <a name="ondewo.vtsi.CallType"></a>
 
 ### CallType
@@ -11403,18 +11415,6 @@ CallType
 | caller | 2 | voip call callers |
 
 
-
-<a name="ondewo.vtsi.VoipCallInfoView"></a>
-
-### VoipCallInfoView
-VoipCallInfo view options
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| SHALLOW | 0 | Gives you all basic info like call name, start_time, end_time, current sip status |
-| FULL | 1 | Gives you the full info with status history and the services statuses |
-
-
  <!-- end enums -->
 
  <!-- end HasExtensions -->
@@ -11424,7 +11424,6 @@ VoipCallInfo view options
 
 ### Vtsi
 ONDEWO VTSI API
-endpoints of voip server that manages instances of ondewo-sip, which handle individual calls
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
@@ -11445,8 +11444,8 @@ endpoints of voip server that manages instances of ondewo-sip, which handle indi
 | StopAllCalls | [StopAllCallsRequest](#ondewo.vtsi.StopAllCallsRequest) | [StopCallsResponse](#ondewo.vtsi.StopCallsResponse) | stop/kill all ondewo-sip listener or caller instance for a specific nlu-project. "stops all Listener and Caller calls" |
 | TransferCall | [TransferCallRequest](#ondewo.vtsi.TransferCallRequest) | [TransferCallResponse](#ondewo.vtsi.TransferCallResponse) | Transfer a call from a listener to another |
 | TransferCalls | [TransferCallsRequest](#ondewo.vtsi.TransferCallsRequest) | [TransferCallsResponse](#ondewo.vtsi.TransferCallsResponse) | Transfer a call from a listener to another |
-| GetVoipCallInfo | [GetVoipCallInfoRequest](#ondewo.vtsi.GetVoipCallInfoRequest) | [GetVoipCallInfoResponse](#ondewo.vtsi.GetVoipCallInfoResponse) | get call log for single call instance |
-| ListVoipCallInfo | [ListVoipCallInfoRequest](#ondewo.vtsi.ListVoipCallInfoRequest) | [ListVoipCallInfoResponse](#ondewo.vtsi.ListVoipCallInfoResponse) | get call log for all call instances |
+| GetCallInfo | [GetCallInfoRequest](#ondewo.vtsi.GetCallInfoRequest) | [GetCallInfoResponse](#ondewo.vtsi.GetCallInfoResponse) | get call log for single call instance |
+| ListCallInfo | [ListCallInfoRequest](#ondewo.vtsi.ListCallInfoRequest) | [ListCallInfoResponse](#ondewo.vtsi.ListCallInfoResponse) | get call log for all call instances |
 | GetAudioFile | [GetAudioFileRequest](#ondewo.vtsi.GetAudioFileRequest) | [GetAudioFileResponse](#ondewo.vtsi.GetAudioFileResponse) | Get a s2t or t2s audio file for this conversation if it exists in Minio |
 | GetFullConversationAudioFile | [GetFullConversationAudioFileRequest](#ondewo.vtsi.GetFullConversationAudioFileRequest) | [GetFullConversationAudioFileResponse](#ondewo.vtsi.GetFullConversationAudioFileResponse) | Get The whole conversation in an audio file |
 

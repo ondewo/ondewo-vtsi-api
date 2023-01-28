@@ -3130,9 +3130,9 @@
                       
                         <li><a href="#ondewo.vtsi.Vtsi.TransferCalls" class="title-badge method">TransferCalls</a></li>
                       
-                        <li><a href="#ondewo.vtsi.Vtsi.GetVoipCallInfo" class="title-badge method">GetVoipCallInfo</a></li>
+                        <li><a href="#ondewo.vtsi.Vtsi.GetCallInfo" class="title-badge method">GetCallInfo</a></li>
                       
-                        <li><a href="#ondewo.vtsi.Vtsi.ListVoipCallInfo" class="title-badge method">ListVoipCallInfo</a></li>
+                        <li><a href="#ondewo.vtsi.Vtsi.ListCallInfo" class="title-badge method">ListCallInfo</a></li>
                       
                         <li><a href="#ondewo.vtsi.Vtsi.GetAudioFile" class="title-badge method">GetAudioFile</a></li>
                       
@@ -3178,6 +3178,10 @@
                     
                       <li>
                         <a href="#ondewo.vtsi.BaseServiceConfig" class="title-badge message">BaseServiceConfig</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.CallInfo" class="title-badge message">CallInfo</a>
                       </li>
                     
                       <li>
@@ -3229,6 +3233,14 @@
                       </li>
                     
                       <li>
+                        <a href="#ondewo.vtsi.GetCallInfoRequest" class="title-badge message">GetCallInfoRequest</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.GetCallInfoResponse" class="title-badge message">GetCallInfoResponse</a>
+                      </li>
+                    
+                      <li>
                         <a href="#ondewo.vtsi.GetFullConversationAudioFileRequest" class="title-badge message">GetFullConversationAudioFileRequest</a>
                       </li>
                     
@@ -3237,23 +3249,15 @@
                       </li>
                     
                       <li>
-                        <a href="#ondewo.vtsi.GetVoipCallInfoRequest" class="title-badge message">GetVoipCallInfoRequest</a>
-                      </li>
-                    
-                      <li>
-                        <a href="#ondewo.vtsi.GetVoipCallInfoResponse" class="title-badge message">GetVoipCallInfoResponse</a>
-                      </li>
-                    
-                      <li>
                         <a href="#ondewo.vtsi.GetVtsiProjectRequest" class="title-badge message">GetVtsiProjectRequest</a>
                       </li>
                     
                       <li>
-                        <a href="#ondewo.vtsi.ListVoipCallInfoRequest" class="title-badge message">ListVoipCallInfoRequest</a>
+                        <a href="#ondewo.vtsi.ListCallInfoRequest" class="title-badge message">ListCallInfoRequest</a>
                       </li>
                     
                       <li>
-                        <a href="#ondewo.vtsi.ListVoipCallInfoResponse" class="title-badge message">ListVoipCallInfoResponse</a>
+                        <a href="#ondewo.vtsi.ListCallInfoResponse" class="title-badge message">ListCallInfoResponse</a>
                       </li>
                     
                       <li>
@@ -3421,10 +3425,6 @@
                       </li>
                     
                       <li>
-                        <a href="#ondewo.vtsi.VoipCallInfo" class="title-badge message">VoipCallInfo</a>
-                      </li>
-                    
-                      <li>
                         <a href="#ondewo.vtsi.VtsiProject" class="title-badge message">VtsiProject</a>
                       </li>
                     
@@ -3435,11 +3435,11 @@
                   <ul>
                     
                       <li>
-                        <a href="#ondewo.vtsi.CallType" class="title-badge enum">CallType</a>
+                        <a href="#ondewo.vtsi.CallInfoView" class="title-badge enum">CallInfoView</a>
                       </li>
                     
                       <li>
-                        <a href="#ondewo.vtsi.VoipCallInfoView" class="title-badge enum">VoipCallInfoView</a>
+                        <a href="#ondewo.vtsi.CallType" class="title-badge enum">CallType</a>
                       </li>
                     
                   </ul>
@@ -27985,7 +27985,7 @@ pipelines with the specifications received in the ListT2sPipelinesRequest. </p><
       
         
         <h3 id="ondewo.vtsi.Vtsi" class="title-badge service">Vtsi</h3>
-        <p>ONDEWO VTSI API</p><p>endpoints of voip server that manages instances of ondewo-sip, which handle individual calls</p>
+        <p>ONDEWO VTSI API</p>
 
         
         <div id="ondewo.vtsi.Vtsi-methods" class="service-methods">Service Methods</div>
@@ -28094,15 +28094,15 @@ pipelines with the specifications received in the ListT2sPipelinesRequest. </p><
 
           Transfer a call from a listener to another
         
-          <h4 id="ondewo.vtsi.Vtsi.GetVoipCallInfo" class="title-badge method">GetVoipCallInfo</h4>
+          <h4 id="ondewo.vtsi.Vtsi.GetCallInfo" class="title-badge method">GetCallInfo</h4>
 
-          <pre>rpc GetVoipCallInfo (<a href="#ondewo.vtsi.GetVoipCallInfoRequest">GetVoipCallInfoRequest</a>) returns (<a href="#ondewo.vtsi.GetVoipCallInfoResponse">GetVoipCallInfoResponse)</a></pre>
+          <pre>rpc GetCallInfo (<a href="#ondewo.vtsi.GetCallInfoRequest">GetCallInfoRequest</a>) returns (<a href="#ondewo.vtsi.GetCallInfoResponse">GetCallInfoResponse)</a></pre>
 
           get call log for single call instance
         
-          <h4 id="ondewo.vtsi.Vtsi.ListVoipCallInfo" class="title-badge method">ListVoipCallInfo</h4>
+          <h4 id="ondewo.vtsi.Vtsi.ListCallInfo" class="title-badge method">ListCallInfo</h4>
 
-          <pre>rpc ListVoipCallInfo (<a href="#ondewo.vtsi.ListVoipCallInfoRequest">ListVoipCallInfoRequest</a>) returns (<a href="#ondewo.vtsi.ListVoipCallInfoResponse">ListVoipCallInfoResponse)</a></pre>
+          <pre>rpc ListCallInfo (<a href="#ondewo.vtsi.ListCallInfoRequest">ListCallInfoRequest</a>) returns (<a href="#ondewo.vtsi.ListCallInfoResponse">ListCallInfoResponse)</a></pre>
 
           get call log for all call instances
         
@@ -28450,6 +28450,95 @@ pipelines with the specifications received in the ListT2sPipelinesRequest. </p><
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Optional: GRPC cert for the given service </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.CallInfo" class="title-badge message">CallInfo</h3>
+        <p>Call log</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>call_name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>call name
+For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
+For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>sip_account</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>sip account used </p></td>
+                </tr>
+              
+                <tr>
+                  <td>container_name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>container name which you get from docker ps </p></td>
+                </tr>
+              
+                <tr>
+                  <td>call_type</td>
+                  <td><a href="#ondewo.vtsi.CallType">CallType</a></td>
+                  <td></td>
+                  <td><p>Listener or caller enum .. if not specified </p></td>
+                </tr>
+              
+                <tr>
+                  <td>phone_number</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>start_time</td>
+                  <td><a href="#double">double</a></td>
+                  <td></td>
+                  <td><p>start time of log </p></td>
+                </tr>
+              
+                <tr>
+                  <td>end_time</td>
+                  <td><a href="#double">double</a></td>
+                  <td></td>
+                  <td><p>end time of log </p></td>
+                </tr>
+              
+                <tr>
+                  <td>sip_status</td>
+                  <td><a href="#ondewo.sip.SipStatus">ondewo.sip.SipStatus</a></td>
+                  <td></td>
+                  <td><p>current sip status </p></td>
+                </tr>
+              
+                <tr>
+                  <td>sip_status_history</td>
+                  <td><a href="#ondewo.sip.SipStatusHistoryResponse">ondewo.sip.SipStatusHistoryResponse</a></td>
+                  <td></td>
+                  <td><p>sip status history </p></td>
+                </tr>
+              
+                <tr>
+                  <td>services_statuses</td>
+                  <td><a href="#ondewo.vtsi.AllServicesStatuses">AllServicesStatuses</a></td>
+                  <td></td>
+                  <td><p>All container health statuses </p></td>
                 </tr>
               
             </tbody>
@@ -28887,6 +28976,77 @@ b.) via embeddings in NLU text responses </p></td>
 
         
       
+        <h3 id="ondewo.vtsi.GetCallInfoRequest" class="title-badge message">GetCallInfoRequest</h3>
+        <p>request to get a call instance's call logs</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>call_name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>call name
+For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
+For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>call_info_view</td>
+                  <td><a href="#ondewo.vtsi.CallInfoView">CallInfoView</a></td>
+                  <td></td>
+                  <td><p>you can specify the view to be shallow or full .. see above for more info </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.GetCallInfoResponse" class="title-badge message">GetCallInfoResponse</h3>
+        <p>response with call logs</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>active_log</td>
+                  <td><a href="#ondewo.vtsi.CallInfo">CallInfo</a></td>
+                  <td></td>
+                  <td><p>CallInfo to view active logs of calls </p></td>
+                </tr>
+              
+                <tr>
+                  <td>done_logs</td>
+                  <td><a href="#ondewo.vtsi.CallInfo">CallInfo</a></td>
+                  <td>repeated</td>
+                  <td><p>logs of calls associated with call instance </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
         <h3 id="ondewo.vtsi.GetFullConversationAudioFileRequest" class="title-badge message">GetFullConversationAudioFileRequest</h3>
         <p>Request to retrieve one audio file with all audio files combined into one</p>
 
@@ -28949,77 +29109,6 @@ b.) via embeddings in NLU text responses </p></td>
 
         
       
-        <h3 id="ondewo.vtsi.GetVoipCallInfoRequest" class="title-badge message">GetVoipCallInfoRequest</h3>
-        <p>request to get a call instance's call logs</p>
-
-        
-          <table class="field-table">
-            <thead>
-              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>name</td>
-                  <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p>VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
-                </tr>
-              
-                <tr>
-                  <td>call_name</td>
-                  <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p>call name
-For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
-For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> </p></td>
-                </tr>
-              
-                <tr>
-                  <td>voip_call_info_view</td>
-                  <td><a href="#ondewo.vtsi.VoipCallInfoView">VoipCallInfoView</a></td>
-                  <td></td>
-                  <td><p>you can specify the view to be shallow or full .. see above for more info </p></td>
-                </tr>
-              
-            </tbody>
-          </table>
-
-          
-
-        
-      
-        <h3 id="ondewo.vtsi.GetVoipCallInfoResponse" class="title-badge message">GetVoipCallInfoResponse</h3>
-        <p>response with call logs</p>
-
-        
-          <table class="field-table">
-            <thead>
-              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>active_log</td>
-                  <td><a href="#ondewo.vtsi.VoipCallInfo">VoipCallInfo</a></td>
-                  <td></td>
-                  <td><p>VoipCallInfo to view active logs of calls </p></td>
-                </tr>
-              
-                <tr>
-                  <td>done_logs</td>
-                  <td><a href="#ondewo.vtsi.VoipCallInfo">VoipCallInfo</a></td>
-                  <td>repeated</td>
-                  <td><p>logs of calls associated with call instance </p></td>
-                </tr>
-              
-            </tbody>
-          </table>
-
-          
-
-        
-      
         <h3 id="ondewo.vtsi.GetVtsiProjectRequest" class="title-badge message">GetVtsiProjectRequest</h3>
         <p>Request to retrieve a VTSI project</p>
 
@@ -29044,7 +29133,7 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
 
         
       
-        <h3 id="ondewo.vtsi.ListVoipCallInfoRequest" class="title-badge message">ListVoipCallInfoRequest</h3>
+        <h3 id="ondewo.vtsi.ListCallInfoRequest" class="title-badge message">ListCallInfoRequest</h3>
         <p></p>
 
         
@@ -29062,8 +29151,8 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
                 </tr>
               
                 <tr>
-                  <td>voip_call_info_view</td>
-                  <td><a href="#ondewo.vtsi.VoipCallInfoView">VoipCallInfoView</a></td>
+                  <td>call_info_view</td>
+                  <td><a href="#ondewo.vtsi.CallInfoView">CallInfoView</a></td>
                   <td></td>
                   <td><p>you can specify the view to be shallow or full .. see above for more info </p></td>
                 </tr>
@@ -29082,7 +29171,7 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
 
         
       
-        <h3 id="ondewo.vtsi.ListVoipCallInfoResponse" class="title-badge message">ListVoipCallInfoResponse</h3>
+        <h3 id="ondewo.vtsi.ListCallInfoResponse" class="title-badge message">ListCallInfoResponse</h3>
         <p>Response to list all VoipInfos</p>
 
         
@@ -29093,8 +29182,8 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
             <tbody>
               
                 <tr>
-                  <td>voip_call_infos</td>
-                  <td><a href="#ondewo.vtsi.VoipCallInfo">VoipCallInfo</a></td>
+                  <td>call_infos</td>
+                  <td><a href="#ondewo.vtsi.CallInfo">CallInfo</a></td>
                   <td>repeated</td>
                   <td><p>VoipInfos </p></td>
                 </tr>
@@ -30598,95 +30687,6 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
 
         
       
-        <h3 id="ondewo.vtsi.VoipCallInfo" class="title-badge message">VoipCallInfo</h3>
-        <p>VoipCall log</p>
-
-        
-          <table class="field-table">
-            <thead>
-              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>call_name</td>
-                  <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p>call name
-For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
-For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> </p></td>
-                </tr>
-              
-                <tr>
-                  <td>sip_account</td>
-                  <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p>sip account used </p></td>
-                </tr>
-              
-                <tr>
-                  <td>container_name</td>
-                  <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p>container name which you get from docker ps </p></td>
-                </tr>
-              
-                <tr>
-                  <td>call_type</td>
-                  <td><a href="#ondewo.vtsi.CallType">CallType</a></td>
-                  <td></td>
-                  <td><p>Listener or caller enum .. if not specified </p></td>
-                </tr>
-              
-                <tr>
-                  <td>phone_number</td>
-                  <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-                <tr>
-                  <td>start_time</td>
-                  <td><a href="#double">double</a></td>
-                  <td></td>
-                  <td><p>start time of log </p></td>
-                </tr>
-              
-                <tr>
-                  <td>end_time</td>
-                  <td><a href="#double">double</a></td>
-                  <td></td>
-                  <td><p>end time of log </p></td>
-                </tr>
-              
-                <tr>
-                  <td>sip_status</td>
-                  <td><a href="#ondewo.sip.SipStatus">ondewo.sip.SipStatus</a></td>
-                  <td></td>
-                  <td><p>current sip status </p></td>
-                </tr>
-              
-                <tr>
-                  <td>sip_status_history</td>
-                  <td><a href="#ondewo.sip.SipStatusHistoryResponse">ondewo.sip.SipStatusHistoryResponse</a></td>
-                  <td></td>
-                  <td><p>sip status history </p></td>
-                </tr>
-              
-                <tr>
-                  <td>services_statuses</td>
-                  <td><a href="#ondewo.vtsi.AllServicesStatuses">AllServicesStatuses</a></td>
-                  <td></td>
-                  <td><p>All container health statuses </p></td>
-                </tr>
-              
-            </tbody>
-          </table>
-
-          
-
-        
-      
         <h3 id="ondewo.vtsi.VtsiProject" class="title-badge message">VtsiProject</h3>
         <p>The VTSI project with its configuration setting</p>
 
@@ -30745,6 +30745,29 @@ Only when a new VtsiProject is created the name can be undefined/empty </p></td>
       
       <div id="ondewo/vtsi/vtsi.proto-enums" class="object-category">Enums</div>
       
+        <h3 id="ondewo.vtsi.CallInfoView" class="title-badge enum">CallInfoView</h3>
+        <p>CallInfo view options</p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>SHALLOW</td>
+                <td>0</td>
+                <td><p>Gives you all basic info like call name, start_time, end_time, current sip status</p></td>
+              </tr>
+            
+              <tr>
+                <td>FULL</td>
+                <td>1</td>
+                <td><p>Gives you the full info with status history and the services statuses</p></td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
         <h3 id="ondewo.vtsi.CallType" class="title-badge enum">CallType</h3>
         <p>CallType</p>
         <table class="enum-table">
@@ -30769,29 +30792,6 @@ Only when a new VtsiProject is created the name can be undefined/empty </p></td>
                 <td>caller</td>
                 <td>2</td>
                 <td><p>voip call callers</p></td>
-              </tr>
-            
-          </tbody>
-        </table>
-      
-        <h3 id="ondewo.vtsi.VoipCallInfoView" class="title-badge enum">VoipCallInfoView</h3>
-        <p>VoipCallInfo view options</p>
-        <table class="enum-table">
-          <thead>
-            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
-          </thead>
-          <tbody>
-            
-              <tr>
-                <td>SHALLOW</td>
-                <td>0</td>
-                <td><p>Gives you all basic info like call name, start_time, end_time, current sip status</p></td>
-              </tr>
-            
-              <tr>
-                <td>FULL</td>
-                <td>1</td>
-                <td><p>Gives you the full info with status history and the services statuses</p></td>
               </tr>
             
           </tbody>
