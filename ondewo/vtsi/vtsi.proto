@@ -27,7 +27,7 @@ import "ondewo/sip/sip.proto";
 
 // ONDEWO VTSI API
 // endpoints of voip server that manages instances of ondewo-sip, which handle individual calls
-service VoipSessions {
+service Vtsi {
 
     //////////////////////////////////////////////////////////////////////////////
     // Project endpoints
@@ -191,7 +191,7 @@ message CreateVtsiProjectRequest{
     // Recommended is to leave "name" empty. The project name here is optional.
     // If no name is given a new parent name is created. The parent has the format:
     // <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>.
-    VtsiProject project = 1;
+    VtsiProject vtsi_project = 1;
 
     // error message if there are any.
     string error_message = 2;
@@ -201,7 +201,7 @@ message CreateVtsiProjectRequest{
 message CreateVtsiProjectResponse{
 
     // Vtsi project
-    VtsiProject project = 1;
+    VtsiProject vtsi_project = 1;
 
     // error message if there are any.
     string error_message = 2;
@@ -219,7 +219,7 @@ message GetVtsiProjectRequest{
 message UpdateVtsiProjectRequest{
 
     // Project Configs.
-    VtsiProject project = 1;
+    VtsiProject vtsi_project = 1;
 }
 
 // Request to updated VTSI project
