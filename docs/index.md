@@ -586,7 +586,7 @@
     - [CustomPhonemizers](#ondewo.t2s.CustomPhonemizers)
     - [Text2Speech](#ondewo.t2s.Text2Speech)
   
-- [ondewo/vtsi/voip.proto](#ondewo/vtsi/voip.proto)
+- [ondewo/vtsi/vtsi.proto](#ondewo/vtsi/vtsi.proto)
     - [AllServicesStatuses](#ondewo.vtsi.AllServicesStatuses)
     - [AsteriskConfig](#ondewo.vtsi.AsteriskConfig)
     - [AsteriskConfigs](#ondewo.vtsi.AsteriskConfigs)
@@ -661,7 +661,7 @@
     - [CallType](#ondewo.vtsi.CallType)
     - [VoipCallInfoView](#ondewo.vtsi.VoipCallInfoView)
   
-    - [VoipSessions](#ondewo.vtsi.VoipSessions)
+    - [Vtsi](#ondewo.vtsi.Vtsi)
   
 - [Scalar Value Types](#scalar-value-types)
 
@@ -10200,10 +10200,10 @@ endpoints of t2s generate service
 
 
 
-<a name="ondewo/vtsi/voip.proto"></a>
+<a name="ondewo/vtsi/vtsi.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
-## ondewo/vtsi/voip.proto
+## ondewo/vtsi/vtsi.proto
 
 
 
@@ -10392,7 +10392,7 @@ Request for creating a VTSI project
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| project | [VtsiProject](#ondewo.vtsi.VtsiProject) |  | VTSI project Recommended is to leave "name" empty. The project name here is optional. If no name is given a new parent name is created. The parent has the format: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>. |
+| vtsi_project | [VtsiProject](#ondewo.vtsi.VtsiProject) |  | VTSI project Recommended is to leave "name" empty. The project name here is optional. If no name is given a new parent name is created. The parent has the format: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>. |
 | error_message | [string](#string) |  | error message if there are any. |
 
 
@@ -10408,7 +10408,7 @@ Response of the create project
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| project | [VtsiProject](#ondewo.vtsi.VtsiProject) |  | Vtsi project |
+| vtsi_project | [VtsiProject](#ondewo.vtsi.VtsiProject) |  | Vtsi project |
 | error_message | [string](#string) |  | error message if there are any. |
 
 
@@ -11323,7 +11323,7 @@ Request to updated VTSI project
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| project | [VtsiProject](#ondewo.vtsi.VtsiProject) |  | Project Configs. |
+| vtsi_project | [VtsiProject](#ondewo.vtsi.VtsiProject) |  | Project Configs. |
 
 
 
@@ -11420,9 +11420,9 @@ VoipCallInfo view options
  <!-- end HasExtensions -->
 
 
-<a name="ondewo.vtsi.VoipSessions"></a>
+<a name="ondewo.vtsi.Vtsi"></a>
 
-### VoipSessions
+### Vtsi
 ONDEWO VTSI API
 endpoints of voip server that manages instances of ondewo-sip, which handle individual calls
 
