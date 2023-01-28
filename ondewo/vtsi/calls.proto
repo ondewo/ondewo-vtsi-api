@@ -17,38 +17,17 @@ syntax = "proto3";
 package ondewo.vtsi;
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
+//import "google/protobuf/struct.proto";
+//import "google/protobuf/timestamp.proto";
+//import "google/rpc/status.proto";
 import "ondewo/nlu/context.proto";
-import "google/protobuf/struct.proto";
-import "google/protobuf/timestamp.proto";
 import "ondewo/s2t/speech-to-text.proto";
 import "ondewo/t2s/text-to-speech.proto";
 import "ondewo/sip/sip.proto";
 
 
 // ONDEWO VTSI API
-service Vtsi {
-
-    //////////////////////////////////////////////////////////////////////////////
-    // Project endpoints
-    //////////////////////////////////////////////////////////////////////////////
-
-    // Create a VTSI project with configs
-    rpc CreateVtsiProject (CreateVtsiProjectRequest) returns (CreateVtsiProjectResponse);
-
-    // Get a VTSI project with configs
-    rpc GetVtsiProject (GetVtsiProjectRequest) returns (VtsiProject);
-
-    // Update a VTSI project with configs
-    rpc UpdateVtsiProject (UpdateVtsiProjectRequest) returns (UpdateVtsiProjectResponse);
-
-    // Delete a VTSI project with configs
-    rpc DeleteVtsiProject (DeleteVtsiProjectRequest) returns (DeleteVtsiProjectResponse);
-
-    // Deploy a VTSI project
-    rpc DeployVtsiProject (DeployVtsiProjectRequest) returns (DeployVtsiProjectResponse);
-
-    // Undeploy a VTSI project
-    rpc UndeployVtsiProject (UndeployVtsiProjectRequest) returns (UndeployVtsiProjectResponse);
+service Calls {
 
     //////////////////////////////////////////////////////////////////////////////
     // Caller and Listener endpoints
@@ -100,190 +79,6 @@ service Vtsi {
 
     // Get The whole conversation in an audio file
     rpc GetFullConversationAudioFile (GetFullConversationAudioFileRequest) returns (GetFullConversationAudioFileResponse) {};
-}
-
-
-// The VTSI project with its configuration setting
-message VtsiProject{
-
-    // Required. The project name. Format: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    // Only when a new VtsiProject is created the name can be undefined/empty
-    string name = 1;
-
-    // OPTIONAL: The display name of the project
-    string display_name = 2;
-
-    // The maximum number of callers that this project can have.
-    int32 max_callers = 3;
-
-    // The maximum number of listeners that this project can have.
-    int32 max_listeners = 4;
-
-    // Configs to start the asterisk server.
-    AsteriskConfigs asterisk_configs = 5;
-
-}
-
-// Configuration variables for the Asterisk server
-message AsteriskConfigsVariables{
-
-    // SIP trunk username.
-    string sip_trunk_username = 1;
-
-    // SIP trunk password.
-    string sip_trunk_password = 2;
-
-    // SIP trunk host.
-    string sip_trunk_host = 3;
-
-    // Transfer number.
-    string transfer_number = 4;
-
-    // Transfer number host.
-    string transfer_number_host = 5;
-
-    // SIP trunk phone number.
-    string sip_trunk_phone_number = 6;
-
-}
-
-// Configuration files for the Asterisk server
-message AsteriskConfigsFiles{
-
-    // sip.conf file as string
-    string sip_conf_file_string = 1;
-
-    // extensions.conf file as string
-    string extensions_conf_file_string = 2;
-
-    // queues.conf file as string
-    string queues_conf_file_string = 3;
-
-    // modules.conf file as string
-    string modules_conf_file_string = 4;
-
-}
-
-// Configurations object for the Asterisk server
-message AsteriskConfigs{
-
-    oneof asterisk_configs_oneof{
-
-        // Configs as variables which will fill those variables using a blue print.
-        AsteriskConfigsVariables asterisk_configs_variables = 1;
-
-        // Configs as files which will set up the configs using those files.
-        AsteriskConfigsFiles asterisk_configs_files = 2;
-
-        // Configs will be mapped in from a preconfigured asterisk target directory.
-        string asterisk_configs_target_directory_name = 3;
-    }
-
-    // OPTIONAL: The port where Asterisk should start.
-    int32 asterisk_port = 4;
-}
-
-// Request for creating a VTSI project
-message CreateVtsiProjectRequest{
-
-    // VTSI project
-    // Recommended is to leave "name" empty. The project name here is optional.
-    // If no name is given a new parent name is created. The parent has the format:
-    // <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>.
-    VtsiProject vtsi_project = 1;
-
-    // error message if there are any.
-    string error_message = 2;
-}
-
-// Response of the create project
-message CreateVtsiProjectResponse{
-
-    // Vtsi project
-    VtsiProject vtsi_project = 1;
-
-    // error message if there are any.
-    string error_message = 2;
-}
-
-// Request to retrieve a VTSI project
-message GetVtsiProjectRequest{
-
-    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
-}
-
-
-// Request to updated VTSI project
-message UpdateVtsiProjectRequest{
-
-    // Project Configs.
-    VtsiProject vtsi_project = 1;
-}
-
-// Request to updated VTSI project
-message UpdateVtsiProjectResponse{
-
-    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
-
-    // error message if there are any.
-    string error_message = 2;
-}
-
-// Request to delete a VTSI project
-// If a deployed VTSI project was deleted then it was undeployed beforehand automatically
-message DeleteVtsiProjectRequest{
-
-    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
-}
-
-// Response to delete a VTSI project
-// If a deployed VTSI project was deleted then it was undeployed beforehand automatically
-message DeleteVtsiProjectResponse{
-
-    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
-
-    // error message if there are any.
-    string error_message = 2;
-}
-
-// Request to deploy a vtsi project
-message DeployVtsiProjectRequest{
-
-    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
-}
-
-// Response to deploy a vtsi project
-message DeployVtsiProjectResponse{
-
-    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
-
-    // error message if there are any.
-    string error_message = 2;
-
-}
-
-//  Request to undeploy a vtsi project
-message UndeployVtsiProjectRequest{
-
-    // Project name of the VTSI project.
-    string name = 1;
-}
-
-// Response to undeploy a vtsi project
-message UndeployVtsiProjectResponse{
-
-    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
-
-    // error message if there are any.
-    string error_message = 2;
-
 }
 
 // base configuration of services (ondewo-nlu, text-to-speech, speech-to-text, asterisk)

@@ -82,7 +82,8 @@ Please use the issue tracker in this repo for discussions about this API, or the
 │   ├── t2s
 │   │   └── text-to-speech.proto
 │   └── vtsi
-│       └── vtsi.proto
+│       └── projects.proto
+│       └── calls.proto
 ├── ondewo-nlu-api         <----- NLU API @ https://github.com/ondewo/ondewo-nlu-api
 ├── ondewo-s2t-api         <----- S2T API @ https://github.com/ondewo/ondewo-s2t-api
 ├── ondewo-sip-api         <----- SIP API @ https://github.com/ondewo/ondewo-sip-api
