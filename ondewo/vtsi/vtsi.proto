@@ -26,7 +26,6 @@ import "ondewo/sip/sip.proto";
 
 
 // ONDEWO VTSI API
-// endpoints of voip server that manages instances of ondewo-sip, which handle individual calls
 service Vtsi {
 
     //////////////////////////////////////////////////////////////////////////////
@@ -91,10 +90,10 @@ service Vtsi {
     rpc TransferCalls (TransferCallsRequest) returns (TransferCallsResponse);
 
     // get call log for single call instance
-    rpc GetVoipCallInfo (GetVoipCallInfoRequest) returns (GetVoipCallInfoResponse);
+    rpc GetCallInfo (GetCallInfoRequest) returns (GetCallInfoResponse);
 
     // get call log for all call instances
-    rpc ListVoipCallInfo (ListVoipCallInfoRequest) returns (ListVoipCallInfoResponse);
+    rpc ListCallInfo (ListCallInfoRequest) returns (ListCallInfoResponse);
 
     // Get a s2t or t2s audio file for this conversation if it exists in Minio
     rpc GetAudioFile (GetAudioFileRequest) returns (GetAudioFileResponse);
@@ -891,7 +890,7 @@ message TransferCallsResponse {
 }
 
 // request to get a call instance's call logs
-message GetVoipCallInfoRequest {
+message GetCallInfoRequest {
 
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
@@ -902,11 +901,11 @@ message GetVoipCallInfoRequest {
     string call_name = 2;
 
     /* you can specify the view to be shallow or full .. see above for more info*/
-    VoipCallInfoView voip_call_info_view = 3;
+    CallInfoView call_info_view = 3;
 }
 
-// VoipCallInfo view options
-enum VoipCallInfoView {
+// CallInfo view options
+enum CallInfoView {
 
     // Gives you all basic info like call name, start_time, end_time, current sip status
     SHALLOW = 0;
@@ -916,13 +915,13 @@ enum VoipCallInfoView {
 }
 
 // response with call logs
-message GetVoipCallInfoResponse {
+message GetCallInfoResponse {
 
-    // VoipCallInfo to view active logs of calls
-    VoipCallInfo active_log = 1;
+    // CallInfo to view active logs of calls
+    CallInfo active_log = 1;
 
     // logs of calls associated with call instance
-    repeated VoipCallInfo done_logs = 2;
+    repeated CallInfo done_logs = 2;
 }
 
 // CallType
@@ -938,8 +937,8 @@ enum CallType {
     caller = 2;
 }
 
-// VoipCall log
-message VoipCallInfo {
+// Call log
+message CallInfo {
 
     // call name
     // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
@@ -973,23 +972,23 @@ message VoipCallInfo {
     AllServicesStatuses services_statuses = 10;
 }
 
-message ListVoipCallInfoRequest{
+message ListCallInfoRequest{
 
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
     // you can specify the view to be shallow or full .. see above for more info
-    VoipCallInfoView voip_call_info_view = 2;
+    CallInfoView call_info_view = 2;
 
     // both by default, or only listeners, or only callers
     CallType call_type = 3;
 }
 
 // Response to list all VoipInfos
-message ListVoipCallInfoResponse{
+message ListCallInfoResponse{
 
     // VoipInfos
-    repeated VoipCallInfo voip_call_infos = 1;
+    repeated CallInfo call_infos = 1;
 }
 
 // status of ondewo-sip instance
