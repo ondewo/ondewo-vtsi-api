@@ -1,12 +1,12 @@
 [submodule "ondewo-s2t-api"]
 	path = ondewo-s2t-api
-	url = git@github.com:ondewo/ondewo-s2t-api.git
+	url = https://github.com/ondewo/ondewo-s2t-api
 [submodule "ondewo-t2s-api"]
 	path = ondewo-t2s-api
-	url = git@github.com:ondewo/ondewo-t2s-api.git
+	url = https://github.com/ondewo/ondewo-t2s-api
 [submodule "ondewo-sip-api"]
 	path = ondewo-sip-api
-	url = git@github.com:ondewo/ondewo-sip-api.git
+	url = https://github.com/ondewo/ondewo-sip-api
 [submodule "ondewo-nlu-api"]
 	path = ondewo-nlu-api
-	url = git@github.com:ondewo/ondewo-nlu-api.git
+    url = https://github.com/ondewo/ondewo-nlu-api
