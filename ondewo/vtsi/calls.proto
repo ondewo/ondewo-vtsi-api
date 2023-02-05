@@ -159,7 +159,7 @@ message AsteriskConfig{
 }
 
 // It is common for both listener and caller
-message CommonServicesConfigs{
+message CommonServicesConfig{
 
     // Asterisk service configuration
     AsteriskConfig asterisk_vtsi_config = 1;
@@ -183,7 +183,7 @@ message CommonServicesConfigs{
 message SipBaseConfig{
 
     // version of sip to use for call, semantic versioning e.g., 1.0.0, 1.1.0-pre-release, etc.
-    string sip_sim_base_config_version = 1;
+    string sip_sim_version = 1;
 
 }
 
@@ -372,7 +372,7 @@ message Listener {
     SipBaseConfig sip_config = 3;
 
     // Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI
-    CommonServicesConfigs services_configs = 4;
+    CommonServicesConfig common_services_config = 4;
 
 }
 
@@ -390,7 +390,7 @@ message Caller {
     SipBaseConfig sip_config = 3;
 
     // Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI
-    CommonServicesConfigs services_configs = 4;
+    CommonServicesConfig common_services_config = 4;
 }
 
 
@@ -404,7 +404,7 @@ message StartListenerRequest {
     SipBaseConfig sip_config = 2;
 
     // Service Configs of Asterisk, nlu,stt, tts
-    CommonServicesConfigs services_configs = 3;
+    CommonServicesConfig common_services_config = 3;
 
 }
 
@@ -449,13 +449,13 @@ message StartListenersResponse {
 message StartCallerRequest {
 
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
+    string vtsi_project_name = 1;
 
     // SIP service configuration
-    SipCallerConfig sip_config = 2;
+    SipCallerConfig sip_caller_config = 2;
 
     // Service Configs of Asterisk, nlu,stt, tts
-    CommonServicesConfigs services_configs = 3;
+    CommonServicesConfig common_services_config = 3;
 
 }
 
@@ -463,7 +463,7 @@ message StartCallerRequest {
 message StartCallerResponse {
 
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
+    string vtsi_project_name = 1;
 
     Caller caller = 2;
 
@@ -476,7 +476,7 @@ message StartCallerResponse {
 message StartCallersRequest {
 
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
+    string vtsi_project_name = 1;
 
     // Callers that should be started
     repeated StartCallerRequest caller_requests = 2;
@@ -487,7 +487,7 @@ message StartCallersRequest {
 message StartCallersResponse {
 
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
+    string vtsi_project_name = 1;
 
     // The call ids that were assigned to each listener
     repeated StartCallerResponse caller_responses = 2;
@@ -501,7 +501,7 @@ message StartCallersResponse {
 message StartScheduledCallerRequest {
 
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
+    string vtsi_project_name = 1;
 
     // Normal start caller request
     StartCallerRequest request = 2;
@@ -516,7 +516,7 @@ message StartScheduledCallerRequest {
 message StartScheduledCallersRequest {
 
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
+    string vtsi_project_name = 1;
 
     // requests to start scheduled callers
     repeated StartScheduledCallerRequest scheduled_caller_requests = 2;
@@ -526,7 +526,7 @@ message StartScheduledCallersRequest {
 message StartScheduledCallersResponse {
 
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
+    string vtsi_project_name = 1;
 
     // The call ids that were assigned to each listener
     repeated StartScheduledCallerResponse scheduled_caller_responses = 2;
@@ -538,7 +538,7 @@ message StartScheduledCallersResponse {
 message StartScheduledCallerResponse {
 
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
+    string vtsi_project_name = 1;
 
     ScheduledCaller scheduled_caller = 2;
 
@@ -563,7 +563,7 @@ message ScheduledCaller {
     SipBaseConfig sip_config = 3;
 
     // Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI
-    CommonServicesConfigs services_configs = 4;
+    CommonServicesConfig common_services_config = 4;
 
     // Time the call is scheduled
     // TODO to be refactored with a more complex scheduling object
@@ -574,7 +574,7 @@ message ScheduledCaller {
 message StopCallRequest {
 
     // VTSI project parent with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
+    string vtsi_project_name = 1;
 
     // call name to stop
     // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
@@ -586,7 +586,7 @@ message StopCallRequest {
 message StopCallResponse {
 
     // VTSI project name with which to stop the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
+    string vtsi_project_name = 1;
 
     // call name to stop
     // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
@@ -601,7 +601,7 @@ message StopCallResponse {
 message StopCallsRequest {
 
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
+    string vtsi_project_name = 1;
 
     // call names to stop
     // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
@@ -622,14 +622,14 @@ message StopCallsResponse {
 message StopAllCallsRequest {
 
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
+    string vtsi_project_name = 1;
 }
 
 // Request to transfer calls
 message TransferCallRequest{
 
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
+    string vtsi_project_name = 1;
 
     // call name to transfer
     // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
@@ -645,7 +645,7 @@ message TransferCallRequest{
 message TransferCallResponse {
 
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
+    string vtsi_project_name = 1;
 
     // call name to transfer
     // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
@@ -664,7 +664,7 @@ message TransferCallResponse {
 message TransferCallsRequest{
 
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
+    string vtsi_project_name = 1;
 
     // Responses to transfer multiple calls to a phone number or voip number
     repeated TransferCallRequest transfer_call_requests = 2;
@@ -675,7 +675,7 @@ message TransferCallsRequest{
 message TransferCallsResponse {
 
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
+    string vtsi_project_name = 1;
 
     repeated TransferCallResponse transfer_call_responses = 2;
 
@@ -688,7 +688,7 @@ message TransferCallsResponse {
 message GetCallInfoRequest {
 
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
+    string vtsi_project_name = 1;
 
     // call name
     // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
@@ -770,7 +770,7 @@ message CallInfo {
 message ListCallInfoRequest{
 
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string name = 1;
+    string vtsi_project_name = 1;
 
     // you can specify the view to be shallow or full .. see above for more info
     CallInfoView call_info_view = 2;
