@@ -594,7 +594,7 @@
     - [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig)
     - [CallInfo](#ondewo.vtsi.CallInfo)
     - [Caller](#ondewo.vtsi.Caller)
-    - [CommonServicesConfigs](#ondewo.vtsi.CommonServicesConfigs)
+    - [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig)
     - [Credentials](#ondewo.vtsi.Credentials)
     - [CsiVtsiConfig](#ondewo.vtsi.CsiVtsiConfig)
     - [GetAudioFileRequest](#ondewo.vtsi.GetAudioFileRequest)
@@ -10330,16 +10330,16 @@ Call log
 | name | [string](#string) |  | Caller name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> |
 | call_name | [string](#string) |  | The call name that was assigned to the call <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
 | sip_config | [SipBaseConfig](#ondewo.vtsi.SipBaseConfig) |  | SIP service configuration |
-| services_configs | [CommonServicesConfigs](#ondewo.vtsi.CommonServicesConfigs) |  | Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI |
+| common_services_config | [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig) |  | Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI |
 
 
 
 
 
 
-<a name="ondewo.vtsi.CommonServicesConfigs"></a>
+<a name="ondewo.vtsi.CommonServicesConfig"></a>
 
-### CommonServicesConfigs
+### CommonServicesConfig
 It is common for both listener and caller
 
 
@@ -10432,7 +10432,7 @@ request to get a call instance's call logs
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| vtsi_project_name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | call_name | [string](#string) |  | call name For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
 | call_info_view | [CallInfoView](#ondewo.vtsi.CallInfoView) |  | you can specify the view to be shallow or full .. see above for more info |
 
@@ -10497,7 +10497,7 @@ Retrieve one audio file with all audio files combined into one
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| vtsi_project_name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | call_info_view | [CallInfoView](#ondewo.vtsi.CallInfoView) |  | you can specify the view to be shallow or full .. see above for more info |
 | call_type | [CallType](#ondewo.vtsi.CallType) |  | both by default, or only listeners, or only callers |
 
@@ -10532,7 +10532,7 @@ Response to list all VoipInfos
 | name | [string](#string) |  | VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/listeners/<listener_uuid></code> |
 | call_name | [string](#string) |  | The call name that was assigned to the call <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
 | sip_config | [SipBaseConfig](#ondewo.vtsi.SipBaseConfig) |  | SIP service configuration |
-| services_configs | [CommonServicesConfigs](#ondewo.vtsi.CommonServicesConfigs) |  | Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI |
+| common_services_config | [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig) |  | Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI |
 
 
 
@@ -10692,7 +10692,7 @@ ScheduledCaller message - a Caller with a schedule when to start calling
 | name | [string](#string) |  | Resource name of the scheduled caller <pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre> |
 | call_name | [string](#string) |  | The asterisk sip call name that was assigned to the call For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
 | sip_config | [SipBaseConfig](#ondewo.vtsi.SipBaseConfig) |  | SIP service configuration |
-| services_configs | [CommonServicesConfigs](#ondewo.vtsi.CommonServicesConfigs) |  | Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI |
+| common_services_config | [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig) |  | Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI |
 | scheduled_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Time the call is scheduled TODO to be refactored with a more complex scheduling object |
 
 
@@ -10725,7 +10725,7 @@ You will need to provide <code>SipCallerConfig</code> for the caller
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| sip_sim_base_config_version | [string](#string) |  | version of sip to use for call, semantic versioning e.g., 1.0.0, 1.1.0-pre-release, etc. |
+| sip_sim_version | [string](#string) |  | version of sip to use for call, semantic versioning e.g., 1.0.0, 1.1.0-pre-release, etc. |
 
 
 
@@ -10773,9 +10773,9 @@ request for starting a caller
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
-| sip_config | [SipCallerConfig](#ondewo.vtsi.SipCallerConfig) |  | SIP service configuration |
-| services_configs | [CommonServicesConfigs](#ondewo.vtsi.CommonServicesConfigs) |  | Service Configs of Asterisk, nlu,stt, tts |
+| vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| sip_caller_config | [SipCallerConfig](#ondewo.vtsi.SipCallerConfig) |  | SIP service configuration |
+| common_services_config | [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig) |  | Service Configs of Asterisk, nlu,stt, tts |
 
 
 
@@ -10790,7 +10790,7 @@ Response to start multiple listeners
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | caller | [Caller](#ondewo.vtsi.Caller) |  |  |
 | error_message | [string](#string) |  | error message if you have any so if it's unhealthy |
 
@@ -10807,7 +10807,7 @@ Request to start multiple callers
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | caller_requests | [StartCallerRequest](#ondewo.vtsi.StartCallerRequest) | repeated | Callers that should be started |
 
 
@@ -10823,7 +10823,7 @@ Response to the start caller request
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | caller_responses | [StartCallerResponse](#ondewo.vtsi.StartCallerResponse) | repeated | The call ids that were assigned to each listener |
 | error_message | [string](#string) |  | overall error message if you have any so if it's unhealthy |
 
@@ -10842,7 +10842,7 @@ request for starting a listener
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | sip_config | [SipBaseConfig](#ondewo.vtsi.SipBaseConfig) |  | SIP service configuration |
-| services_configs | [CommonServicesConfigs](#ondewo.vtsi.CommonServicesConfigs) |  | Service Configs of Asterisk, nlu,stt, tts |
+| common_services_config | [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig) |  | Service Configs of Asterisk, nlu,stt, tts |
 
 
 
@@ -10907,7 +10907,7 @@ request for starting a scheduled call
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | request | [StartCallerRequest](#ondewo.vtsi.StartCallerRequest) |  | Normal start caller request |
 | scheduled_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Time the call is scheduled TODO to be refactored with a more complex scheduling object |
 
@@ -10924,7 +10924,7 @@ Response to start multiple listeners
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | scheduled_caller | [ScheduledCaller](#ondewo.vtsi.ScheduledCaller) |  |  |
 | error_message | [string](#string) |  | error message if you have any so if it's unhealthy |
 
@@ -10941,7 +10941,7 @@ Request to start scheduled callers
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | scheduled_caller_requests | [StartScheduledCallerRequest](#ondewo.vtsi.StartScheduledCallerRequest) | repeated | requests to start scheduled callers |
 
 
@@ -10957,7 +10957,7 @@ Response to start multiple listeners
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | scheduled_caller_responses | [StartScheduledCallerResponse](#ondewo.vtsi.StartScheduledCallerResponse) | repeated | The call ids that were assigned to each listener |
 
 
@@ -10973,7 +10973,7 @@ Request to stop all calls of a VTSI project, so all listeners and callers
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| vtsi_project_name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 
 
 
@@ -10988,7 +10988,7 @@ Request to stop/kill a ondewo-sip listener or caller instance for a specific vts
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | VTSI project parent with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| vtsi_project_name | [string](#string) |  | VTSI project parent with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | call_name | [string](#string) |  | call name to stop For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
 
 
@@ -11004,7 +11004,7 @@ Response to stop/kill a ondewo-sip listener or caller instance for a specific vt
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | VTSI project name with which to stop the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| vtsi_project_name | [string](#string) |  | VTSI project name with which to stop the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | call_name | [string](#string) |  | call name to stop For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
 | error_message | [string](#string) |  | error messages if you have any so if it's unhealthy |
 
@@ -11021,7 +11021,7 @@ Request to stop/kill specific ondewo-sip listeners or callers instance for a spe
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| vtsi_project_name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | call_names | [string](#string) | repeated | call names to stop For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
 
 
@@ -11085,7 +11085,7 @@ Request to transfer calls
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| vtsi_project_name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | call_name | [string](#string) |  | call name to transfer For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
 | transfer_id | [string](#string) | repeated | transfer_id to transfer the call to, so the number or voip number you want to be transferred too |
 
@@ -11102,7 +11102,7 @@ Response to transfer a call to a phone number or voip number
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| vtsi_project_name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | call_name | [string](#string) |  | call name to transfer For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
 | transfer_id | [string](#string) |  | transfer id to transfer the calls to, so the phone number or voip number you want to be transferred too |
 | error_message | [string](#string) |  | error message if you have any so if it's unhealthy |
@@ -11120,7 +11120,7 @@ Request to transfer multiple calls
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| vtsi_project_name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | transfer_call_requests | [TransferCallRequest](#ondewo.vtsi.TransferCallRequest) | repeated | Responses to transfer multiple calls to a phone number or voip number |
 
 
@@ -11136,7 +11136,7 @@ Response to transfer a call to a phone number or voip number
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| vtsi_project_name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | transfer_call_responses | [TransferCallResponse](#ondewo.vtsi.TransferCallResponse) | repeated |  |
 | error_message | [string](#string) |  | overall error message if you have any so if it's unhealthy |
 
