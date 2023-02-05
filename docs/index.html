@@ -3165,7 +3165,7 @@
                       </li>
                     
                       <li>
-                        <a href="#ondewo.vtsi.CommonServicesConfigs" class="title-badge message">CommonServicesConfigs</a>
+                        <a href="#ondewo.vtsi.CommonServicesConfig" class="title-badge message">CommonServicesConfig</a>
                       </li>
                     
                       <li>
@@ -28428,8 +28428,8 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
                 </tr>
               
                 <tr>
-                  <td>services_configs</td>
-                  <td><a href="#ondewo.vtsi.CommonServicesConfigs">CommonServicesConfigs</a></td>
+                  <td>common_services_config</td>
+                  <td><a href="#ondewo.vtsi.CommonServicesConfig">CommonServicesConfig</a></td>
                   <td></td>
                   <td><p>Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI </p></td>
                 </tr>
@@ -28441,7 +28441,7 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
 
         
       
-        <h3 id="ondewo.vtsi.CommonServicesConfigs" class="title-badge message">CommonServicesConfigs</h3>
+        <h3 id="ondewo.vtsi.CommonServicesConfig" class="title-badge message">CommonServicesConfig</h3>
         <p>It is common for both listener and caller</p>
 
         
@@ -28658,7 +28658,7 @@ b.) via embeddings in NLU text responses </p></td>
             <tbody>
               
                 <tr>
-                  <td>name</td>
+                  <td>vtsi_project_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
@@ -28791,7 +28791,7 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
             <tbody>
               
                 <tr>
-                  <td>name</td>
+                  <td>vtsi_project_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
@@ -28876,8 +28876,8 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
                 </tr>
               
                 <tr>
-                  <td>services_configs</td>
-                  <td><a href="#ondewo.vtsi.CommonServicesConfigs">CommonServicesConfigs</a></td>
+                  <td>common_services_config</td>
+                  <td><a href="#ondewo.vtsi.CommonServicesConfig">CommonServicesConfig</a></td>
                   <td></td>
                   <td><p>Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI </p></td>
                 </tr>
@@ -29271,8 +29271,8 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
                 </tr>
               
                 <tr>
-                  <td>services_configs</td>
-                  <td><a href="#ondewo.vtsi.CommonServicesConfigs">CommonServicesConfigs</a></td>
+                  <td>common_services_config</td>
+                  <td><a href="#ondewo.vtsi.CommonServicesConfig">CommonServicesConfig</a></td>
                   <td></td>
                   <td><p>Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI </p></td>
                 </tr>
@@ -29334,7 +29334,7 @@ TODO to be refactored with a more complex scheduling object </p></td>
             <tbody>
               
                 <tr>
-                  <td>sip_sim_base_config_version</td>
+                  <td>sip_sim_version</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>version of sip to use for call, semantic versioning e.g., 1.0.0, 1.1.0-pre-release, etc. </p></td>
@@ -29427,22 +29427,22 @@ TODO to be refactored with a more complex scheduling object </p></td>
             <tbody>
               
                 <tr>
-                  <td>name</td>
+                  <td>vtsi_project_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
                 </tr>
               
                 <tr>
-                  <td>sip_config</td>
+                  <td>sip_caller_config</td>
                   <td><a href="#ondewo.vtsi.SipCallerConfig">SipCallerConfig</a></td>
                   <td></td>
                   <td><p>SIP service configuration </p></td>
                 </tr>
               
                 <tr>
-                  <td>services_configs</td>
-                  <td><a href="#ondewo.vtsi.CommonServicesConfigs">CommonServicesConfigs</a></td>
+                  <td>common_services_config</td>
+                  <td><a href="#ondewo.vtsi.CommonServicesConfig">CommonServicesConfig</a></td>
                   <td></td>
                   <td><p>Service Configs of Asterisk, nlu,stt, tts </p></td>
                 </tr>
@@ -29465,7 +29465,7 @@ TODO to be refactored with a more complex scheduling object </p></td>
             <tbody>
               
                 <tr>
-                  <td>name</td>
+                  <td>vtsi_project_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
@@ -29503,7 +29503,7 @@ TODO to be refactored with a more complex scheduling object </p></td>
             <tbody>
               
                 <tr>
-                  <td>name</td>
+                  <td>vtsi_project_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
@@ -29534,7 +29534,7 @@ TODO to be refactored with a more complex scheduling object </p></td>
             <tbody>
               
                 <tr>
-                  <td>name</td>
+                  <td>vtsi_project_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
@@ -29586,8 +29586,8 @@ TODO to be refactored with a more complex scheduling object </p></td>
                 </tr>
               
                 <tr>
-                  <td>services_configs</td>
-                  <td><a href="#ondewo.vtsi.CommonServicesConfigs">CommonServicesConfigs</a></td>
+                  <td>common_services_config</td>
+                  <td><a href="#ondewo.vtsi.CommonServicesConfig">CommonServicesConfig</a></td>
                   <td></td>
                   <td><p>Service Configs of Asterisk, nlu,stt, tts </p></td>
                 </tr>
@@ -29717,7 +29717,7 @@ TODO to be refactored with a more complex scheduling object </p></td>
             <tbody>
               
                 <tr>
-                  <td>name</td>
+                  <td>vtsi_project_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
@@ -29756,7 +29756,7 @@ TODO to be refactored with a more complex scheduling object </p></td>
             <tbody>
               
                 <tr>
-                  <td>name</td>
+                  <td>vtsi_project_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
@@ -29794,7 +29794,7 @@ TODO to be refactored with a more complex scheduling object </p></td>
             <tbody>
               
                 <tr>
-                  <td>name</td>
+                  <td>vtsi_project_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
@@ -29825,7 +29825,7 @@ TODO to be refactored with a more complex scheduling object </p></td>
             <tbody>
               
                 <tr>
-                  <td>name</td>
+                  <td>vtsi_project_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
@@ -29856,7 +29856,7 @@ TODO to be refactored with a more complex scheduling object </p></td>
             <tbody>
               
                 <tr>
-                  <td>name</td>
+                  <td>vtsi_project_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
@@ -29880,7 +29880,7 @@ TODO to be refactored with a more complex scheduling object </p></td>
             <tbody>
               
                 <tr>
-                  <td>name</td>
+                  <td>vtsi_project_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>VTSI project parent with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
@@ -29913,7 +29913,7 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
             <tbody>
               
                 <tr>
-                  <td>name</td>
+                  <td>vtsi_project_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>VTSI project name with which to stop the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
@@ -29953,7 +29953,7 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
             <tbody>
               
                 <tr>
-                  <td>name</td>
+                  <td>vtsi_project_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
@@ -30079,7 +30079,7 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
             <tbody>
               
                 <tr>
-                  <td>name</td>
+                  <td>vtsi_project_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
@@ -30119,7 +30119,7 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
             <tbody>
               
                 <tr>
-                  <td>name</td>
+                  <td>vtsi_project_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
@@ -30166,7 +30166,7 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
             <tbody>
               
                 <tr>
-                  <td>name</td>
+                  <td>vtsi_project_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
@@ -30197,7 +30197,7 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
             <tbody>
               
                 <tr>
-                  <td>name</td>
+                  <td>vtsi_project_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
