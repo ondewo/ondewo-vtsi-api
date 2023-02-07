@@ -13,7 +13,6 @@
 // limitations under the License.
 
 syntax = "proto3";
-import "calls.proto";
 
 package ondewo.vtsi;
 //import "google/rpc/status.proto";
