@@ -13,6 +13,7 @@
 // limitations under the License.
 
 syntax = "proto3";
+import "calls.proto";
 
 package ondewo.vtsi;
 //import "google/rpc/status.proto";
@@ -66,6 +67,13 @@ message VtsiProject{
     // Configs to start the asterisk server.
     AsteriskConfigs asterisk_configs = 5;
 
+}
+
+// Asterisk configuration
+message AsteriskConfig{
+
+    // Host, Port, and [Optional] GRPC cert
+    BaseServiceConfig asterisk_base_config = 1;
 }
 
 // Configuration variables for the Asterisk server

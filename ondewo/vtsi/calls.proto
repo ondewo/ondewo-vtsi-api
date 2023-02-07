@@ -151,30 +151,22 @@ message S2tVtsiConfig{
     ondewo.s2t.TranscribeRequestConfig s2t_transcribe_request_config = 2;
 }
 
-// Asterisk configuration
-message AsteriskConfig{
 
-    // Host, Port, and [Optional] GRPC cert
-    BaseServiceConfig asterisk_base_config = 1;
-}
-
-// It is common for both listener and caller
+// Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI
+// which are common for both listener and caller
 message CommonServicesConfig{
 
-    // Asterisk service configuration
-    AsteriskConfig asterisk_vtsi_config = 1;
-
     // speech-to-text service configuration
-    S2tVtsiConfig s2t_vtsi_config = 2;
+    S2tVtsiConfig s2t_vtsi_config = 1;
 
     // ondewo-nlu configuration
-    NluVtsiConfig nlu_vtsi_config = 3;
+    NluVtsiConfig nlu_vtsi_config = 2;
 
     // text-to-speech service configuration
-    T2sVtsiConfig t2s_vtsi_config = 4;
+    T2sVtsiConfig t2s_vtsi_config = 3;
 
     // CSI service configuration
-    CsiVtsiConfig csi_vtsi_config = 5;
+    CsiVtsiConfig csi_vtsi_config = 4;
 
 }
 
@@ -371,7 +363,7 @@ message Listener {
     // SIP service configuration
     SipBaseConfig sip_config = 3;
 
-    // Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI
+    // Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI
     CommonServicesConfig common_services_config = 4;
 
 }
@@ -389,7 +381,7 @@ message Caller {
     // SIP service configuration
     SipBaseConfig sip_config = 3;
 
-    // Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI
+    // Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI
     CommonServicesConfig common_services_config = 4;
 }
 
@@ -403,7 +395,7 @@ message StartListenerRequest {
     // SIP service configuration
     SipBaseConfig sip_config = 2;
 
-    // Service Configs of Asterisk, nlu,stt, tts
+    // Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI
     CommonServicesConfig common_services_config = 3;
 
 }
@@ -454,7 +446,7 @@ message StartCallerRequest {
     // SIP service configuration
     SipCallerConfig sip_caller_config = 2;
 
-    // Service Configs of Asterisk, nlu,stt, tts
+    // Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI
     CommonServicesConfig common_services_config = 3;
 
 }
@@ -562,7 +554,7 @@ message ScheduledCaller {
     // SIP service configuration
     SipBaseConfig sip_config = 3;
 
-    // Service Configs of Asterisk, Speech-2-Text, NLU, Text-2-Speech and CSI
+    // Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI
     CommonServicesConfig common_services_config = 4;
 
     // Time the call is scheduled
