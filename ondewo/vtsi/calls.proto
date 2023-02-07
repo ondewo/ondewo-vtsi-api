@@ -151,6 +151,12 @@ message S2tVtsiConfig{
     ondewo.s2t.TranscribeRequestConfig s2t_transcribe_request_config = 2;
 }
 
+// Asterisk configuration
+message AsteriskConfig{
+
+    // Host, Port, and [Optional] GRPC cert
+    BaseServiceConfig asterisk_base_config = 1;
+}
 
 // Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI
 // which are common for both listener and caller

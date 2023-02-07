@@ -69,13 +69,6 @@ message VtsiProject{
 
 }
 
-// Asterisk configuration
-message AsteriskConfig{
-
-    // Host, Port, and [Optional] GRPC cert
-    BaseServiceConfig asterisk_base_config = 1;
-}
-
 // Configuration variables for the Asterisk server
 message AsteriskConfigsVariables{
 
