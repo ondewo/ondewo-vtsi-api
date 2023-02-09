@@ -399,7 +399,7 @@ message StartListenerRequest {
     string vtsi_project_name = 1;
 
     // SIP service configuration
-    SipBaseConfig sip_config = 2;
+    SipBaseConfig sip_base_config = 2;
 
     // Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI
     CommonServicesConfig common_services_config = 3;
