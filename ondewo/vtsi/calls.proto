@@ -367,7 +367,7 @@ message Listener {
     string call_name = 2;
 
     // SIP service configuration
-    SipBaseConfig sip_config = 3;
+    SipBaseConfig sip_base_config = 3;
 
     // Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI
     CommonServicesConfig common_services_config = 4;
