@@ -121,14 +121,17 @@ message NluVtsiConfig{
         string auth_token = 3;
     }
 
+    // the resource name of the agent. Format: `projects/<uuid>/agent`
+    string agent_name = 4;
+
     // language code in a two letter iso code, e.g. de, en, etc.
-    string language_code = 4;
+    string language_code = 5;
 
     // name of intent to trigger at the start of a call
-    string initial_intent = 5;
+    string initial_intent = 6;
 
     // ondewo-nlu list of contexts
-    repeated ondewo.nlu.Context contexts = 6;
+    repeated ondewo.nlu.Context contexts = 7;
 }
 
 // Text-2-Speech Configuration
