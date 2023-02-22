@@ -10621,6 +10621,7 @@ NLU Configuration
 | nlu_base_config | [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig) |  | Base config Host, Port, and [Optional] GRPC cert |
 | credentials | [Credentials](#ondewo.vtsi.Credentials) |  | Credentials with classical username and password |
 | auth_token | [string](#string) |  | Authentication token |
+| agent_name | [string](#string) |  | the resource name of the agent. Format: `projects/<uuid>/agent` |
 | language_code | [string](#string) |  | language code in a two letter iso code, e.g. de, en, etc. |
 | initial_intent | [string](#string) |  | name of intent to trigger at the start of a call |
 | contexts | [ondewo.nlu.Context](#ondewo.nlu.Context) | repeated | ondewo-nlu list of contexts |
