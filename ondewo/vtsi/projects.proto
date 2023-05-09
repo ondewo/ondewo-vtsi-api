@@ -15,9 +15,8 @@
 syntax = "proto3";
 
 package ondewo.vtsi;
-//import "google/rpc/status.proto";
-//import "google/protobuf/struct.proto";
-//import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
 
 // ONDEWO VTSI API
 service Projects {
@@ -65,6 +64,49 @@ message VtsiProject{
 
     // Configs to start the asterisk server.
     AsteriskConfigs asterisk_configs = 5;
+
+    VtsiProjectStatus vtsi_project_status = 6;
+
+    // The user who created the vtsi project. Readonly.
+    string created_by = 7;
+
+    // Creation time of the vtsi project. Readonly.
+    google.protobuf.Timestamp created_at = 8;
+
+    // The user who modified the vtsi project. Readonly.
+    string modified_by = 9;
+
+    // Modification time of the vtsi project. Readonly.
+    google.protobuf.Timestamp modified_at = 10;
+
+}
+
+// Status of a VtsiProject.
+enum VtsiProjectStatus {
+
+    // No status specified
+    UNSPECIFIED = 0;
+
+    // Project successfully created and undeployed
+    UNDEPLOYED = 1;
+
+    // Project configuration is updating
+    UPDATING = 2;
+
+    // Project is deploying
+    DEPLOYING = 3;
+
+    // Project is deployed
+    DEPLOYED = 4;
+
+    // Project is un-deploying
+    UNDEPLOYING = 5;
+
+    // Project is currently deleting
+    DELETING = 6;
+
+    // Project is deleted
+    DELETED = 7;
 
 }
 
