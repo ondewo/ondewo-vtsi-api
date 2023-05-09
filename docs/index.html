@@ -3475,6 +3475,15 @@
                   </ul>
                   
                   
+                  <a href="#ondewo/vtsi/projects.proto-enums">Enums</a>
+                  <ul>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.VtsiProjectStatus" class="title-badge enum">VtsiProjectStatus</a>
+                      </li>
+                    
+                  </ul>
+                  
                   
                 </div>
               </li>
@@ -28354,14 +28363,14 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
               
                 <tr>
                   <td>start_time</td>
-                  <td><a href="#double">double</a></td>
+                  <td><a href="#google.protobuf.Timestamp">google.protobuf.Timestamp</a></td>
                   <td></td>
                   <td><p>start time of log </p></td>
                 </tr>
               
                 <tr>
                   <td>end_time</td>
-                  <td><a href="#double">double</a></td>
+                  <td><a href="#google.protobuf.Timestamp">google.protobuf.Timestamp</a></td>
                   <td></td>
                   <td><p>end time of log </p></td>
                 </tr>
@@ -30851,6 +30860,41 @@ Only when a new VtsiProject is created the name can be undefined/empty </p></td>
                   <td><p>Configs to start the asterisk server. </p></td>
                 </tr>
               
+                <tr>
+                  <td>vtsi_project_status</td>
+                  <td><a href="#ondewo.vtsi.VtsiProjectStatus">VtsiProjectStatus</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>created_by</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The user who created the vtsi project. Readonly. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>created_at</td>
+                  <td><a href="#google.protobuf.Timestamp">google.protobuf.Timestamp</a></td>
+                  <td></td>
+                  <td><p>Creation time of the vtsi project. Readonly. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>modified_by</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The user who modified the vtsi project. Readonly. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>modified_at</td>
+                  <td><a href="#google.protobuf.Timestamp">google.protobuf.Timestamp</a></td>
+                  <td></td>
+                  <td><p>Modification time of the vtsi project. Readonly. </p></td>
+                </tr>
+              
             </tbody>
           </table>
 
@@ -30860,6 +30904,68 @@ Only when a new VtsiProject is created the name can be undefined/empty </p></td>
       
       
 
+      
+      <div id="ondewo/vtsi/projects.proto-enums" class="object-category">Enums</div>
+      
+        <h3 id="ondewo.vtsi.VtsiProjectStatus" class="title-badge enum">VtsiProjectStatus</h3>
+        <p>Status of a VtsiProject.</p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>UNSPECIFIED</td>
+                <td>0</td>
+                <td><p>No status specified</p></td>
+              </tr>
+            
+              <tr>
+                <td>UNDEPLOYED</td>
+                <td>1</td>
+                <td><p>Project successfully created and undeployed</p></td>
+              </tr>
+            
+              <tr>
+                <td>UPDATING</td>
+                <td>2</td>
+                <td><p>Project configuration is updating</p></td>
+              </tr>
+            
+              <tr>
+                <td>DEPLOYING</td>
+                <td>3</td>
+                <td><p>Project is deploying</p></td>
+              </tr>
+            
+              <tr>
+                <td>DEPLOYED</td>
+                <td>4</td>
+                <td><p>Project is deployed</p></td>
+              </tr>
+            
+              <tr>
+                <td>UNDEPLOYING</td>
+                <td>5</td>
+                <td><p>Project is un-deploying</p></td>
+              </tr>
+            
+              <tr>
+                <td>DELETING</td>
+                <td>6</td>
+                <td><p>Project is currently deleting</p></td>
+              </tr>
+            
+              <tr>
+                <td>DELETED</td>
+                <td>7</td>
+                <td><p>Project is deleted</p></td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
       
 
       

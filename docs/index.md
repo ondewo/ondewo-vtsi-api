@@ -665,6 +665,8 @@
     - [UpdateVtsiProjectResponse](#ondewo.vtsi.UpdateVtsiProjectResponse)
     - [VtsiProject](#ondewo.vtsi.VtsiProject)
   
+    - [VtsiProjectStatus](#ondewo.vtsi.VtsiProjectStatus)
+  
     - [Projects](#ondewo.vtsi.Projects)
   
 - [Scalar Value Types](#scalar-value-types)
@@ -10308,8 +10310,8 @@ Call log
 | container_name | [string](#string) |  | container name which you get from docker ps |
 | call_type | [CallType](#ondewo.vtsi.CallType) |  | Listener or caller enum .. if not specified |
 | phone_number | [string](#string) |  |  |
-| start_time | [double](#double) |  | start time of log |
-| end_time | [double](#double) |  | end time of log |
+| start_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | start time of log |
+| end_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | end time of log |
 | sip_status | [ondewo.sip.SipStatus](#ondewo.sip.SipStatus) |  | current sip status |
 | sip_status_history | [ondewo.sip.SipStatusHistoryResponse](#ondewo.sip.SipStatusHistoryResponse) |  | sip status history |
 | services_statuses | [AllServicesStatuses](#ondewo.vtsi.AllServicesStatuses) |  | All container health statuses |
@@ -11453,12 +11455,35 @@ The VTSI project with its configuration setting
 | max_callers | [int32](#int32) |  | The maximum number of callers that this project can have. |
 | max_listeners | [int32](#int32) |  | The maximum number of listeners that this project can have. |
 | asterisk_configs | [AsteriskConfigs](#ondewo.vtsi.AsteriskConfigs) |  | Configs to start the asterisk server. |
+| vtsi_project_status | [VtsiProjectStatus](#ondewo.vtsi.VtsiProjectStatus) |  |  |
+| created_by | [string](#string) |  | The user who created the vtsi project. Readonly. |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Creation time of the vtsi project. Readonly. |
+| modified_by | [string](#string) |  | The user who modified the vtsi project. Readonly. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification time of the vtsi project. Readonly. |
 
 
 
 
 
  <!-- end messages -->
+
+
+<a name="ondewo.vtsi.VtsiProjectStatus"></a>
+
+### VtsiProjectStatus
+Status of a VtsiProject.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| UNSPECIFIED | 0 | No status specified |
+| UNDEPLOYED | 1 | Project successfully created and undeployed |
+| UPDATING | 2 | Project configuration is updating |
+| DEPLOYING | 3 | Project is deploying |
+| DEPLOYED | 4 | Project is deployed |
+| UNDEPLOYING | 5 | Project is un-deploying |
+| DELETING | 6 | Project is currently deleting |
+| DELETED | 7 | Project is deleted |
+
 
  <!-- end enums -->
 
