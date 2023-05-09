@@ -1,30 +1,47 @@
 # Release History
 
 *****************
+
+## Release ONDEWO VTSI API 6.0.0
+
+## Improvements
+
+* [[OND233-323]](https://ondewo.atlassian.net/browse/OND233-323) - Added VtsiProjectStatus
+* [[OND233-323]](https://ondewo.atlassian.net/browse/OND233-323) - Use Timestamp instead of double
+
+*****************
+
 ## Release ONDEWO VTSI API 5.0.0
 
 ## Improvements
- * Synchronize API Client Versions
+
+* Synchronize API Client Versions
 
 *****************
+
 ## Release ONDEWO VTSI API 4.0.0
 
 ## Improvements
- * Adjusted TransferCalls and TransferCallsRequest
- * Upgraded to NLU API 2.13.0
+
+* Adjusted TransferCalls and TransferCallsRequest
+* Upgraded to NLU API 2.13.0
 
 *****************
+
 ## Release ONDEWO VTSI API 3.0.0
 
 ## New features
- * New VTSI API release 3.0.0
- * [[OND211-2039]](https://ondewo.atlassian.net/browse/OND211-2039) - Automated Release Process
- * [[OND211-2039]](https://ondewo.atlassian.net/browse/OND211-2039) - added pre-commit hooks and adjusted files tot them
+
+* New VTSI API release 3.0.0
+* [[OND211-2039]](https://ondewo.atlassian.net/browse/OND211-2039) - Automated Release Process
+* [[OND211-2039]](https://ondewo.atlassian.net/browse/OND211-2039) - added pre-commit hooks and adjusted files tot them
 
 *****************
+
 ## Release ONDEWO VTSI API 2.3.0
 
 ## New features
+
 Added endpoints for minio data retrieval
 
 *****************
@@ -32,11 +49,13 @@ Added endpoints for minio data retrieval
 ## Release ONDEWO VTSI API 2.2.0
 
 ## New features
+
 CSI configs can be passed like Rabbit mq configs
 
 ## Release ONDEWO VTSI API 2.1.0
 
 ## New features
+
 CSI configs can be passed like MINIO configs
 
 *****************
@@ -44,6 +63,7 @@ CSI configs can be passed like MINIO configs
 ## Release ONDEWO VTSI API 2.0.0
 
 ## New features
+
 Adaptation to new s2t and t2s configs
 
 *****************
@@ -51,6 +71,7 @@ Adaptation to new s2t and t2s configs
 ## Release ONDEWO VTSI API 1.1.0
 
 ## New features
+
 * ServiceConfig extended with grpc_cert field
 
 *****************
@@ -58,6 +79,7 @@ Adaptation to new s2t and t2s configs
 ## Release ONDEWO VTSI API 1.0.0
 
 ## New features
+
 * First stable version
 
 ### Improvements
@@ -141,6 +163,7 @@ Adaptation to new s2t and t2s configs
 ### New Features
 
 ### Improvements
+
 * Updated license
 
 ### Bug fixes
@@ -160,6 +183,7 @@ Adaptation to new s2t and t2s configs
 ### New Features
 
 ### Improvements
+
 * Updated README.
 
 ### Bug fixes
