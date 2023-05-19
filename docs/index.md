@@ -10627,6 +10627,7 @@ NLU Configuration
 | language_code | [string](#string) |  | language code in a two letter iso code, e.g. de, en, etc. |
 | initial_intent | [string](#string) |  | name of intent to trigger at the start of a call |
 | contexts | [ondewo.nlu.Context](#ondewo.nlu.Context) | repeated | ondewo-nlu list of contexts |
+| http_basic_auth_token | [string](#string) |  | http basic auth token |
 
 
 
