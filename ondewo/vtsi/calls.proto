@@ -132,6 +132,9 @@ message NluVtsiConfig{
 
     // ondewo-nlu list of contexts
     repeated ondewo.nlu.Context contexts = 7;
+
+    // http basic auth token
+    string http_basic_auth_token = 8;
 }
 
 // Text-2-Speech Configuration
