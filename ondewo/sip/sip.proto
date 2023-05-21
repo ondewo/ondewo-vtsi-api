@@ -23,58 +23,58 @@ service Sip {
     // SIP LifeCycle is explained at <a href="https://thanhloi2603.wordpress.com/2017/06/10/sip-lifecycle-overview/">here</a>
 
     // Starts a new SIP session for an account registered at a SIP server. <code>RegisterAccount</code> need to be called before.
-    rpc StartSession (StartSessionRequest) returns (SipStatus) {};
+    rpc SipStartSession (SipStartSessionRequest) returns (SipStatus) {};
 
     // Ends a SIP session for an account registered at a SIP server
-    rpc EndSession (google.protobuf.Empty) returns (SipStatus) {};
+    rpc SipEndSession (google.protobuf.Empty) returns (SipStatus) {};
 
     // Starts a call in an active SIP session for an account registered at a SIP server
-    rpc StartCall (StartCallRequest) returns (SipStatus) {};
+    rpc SipStartCall (SipStartCallRequest) returns (SipStatus) {};
 
     // Ends a call in an active SIP session for an account registered at a SIP server
-    rpc EndCall (EndCallRequest) returns (SipStatus) {};
+    rpc SipEndCall (SipEndCallRequest) returns (SipStatus) {};
 
     // Transfers a call in an active SIP session for an account registered at a SIP server to
     // another SIP account or phone number specified by <code>transfer_id</code>
-    rpc TransferCall (TransferCallRequest) returns (SipStatus) {};
+    rpc SipTransferCall (SipTransferCallRequest) returns (SipStatus) {};
 
     // Registers s SIP account at a SIP server
-    rpc RegisterAccount (RegisterAccountRequest) returns (SipStatus) {};
+    rpc SipRegisterAccount (SipRegisterAccountRequest) returns (SipStatus) {};
 
     // Gets the current SIP status
-    rpc GetSipStatus (google.protobuf.Empty) returns (SipStatus) {};
+    rpc SipGetSipStatus (google.protobuf.Empty) returns (SipStatus) {};
 
     // Gets the history of SIP status
-    rpc GetSipStatusHistory (google.protobuf.Empty) returns (SipStatusHistoryResponse) {};
+    rpc SipGetSipStatusHistory (google.protobuf.Empty) returns (SipStatusHistoryResponse) {};
 
     // Plays wav files during an ongoing call of an active SIP session
-    rpc PlayWavFiles (PlayWavFilesRequest) returns (SipStatus) {};
+    rpc SipPlayWavFiles (SipPlayWavFilesRequest) returns (SipStatus) {};
 
     // Mutes the microphone in an ongoing call of an active SIP session
-    rpc Mute (google.protobuf.Empty) returns (SipStatus) {};
+    rpc SipMute (google.protobuf.Empty) returns (SipStatus) {};
 
-    // Unmutes the microphone in an ongoing call of an active SIP session
-    rpc UnMute (google.protobuf.Empty) returns (SipStatus) {};
+    // Un-mutes the microphone in an ongoing call of an active SIP session
+    rpc SipUnMute (google.protobuf.Empty) returns (SipStatus) {};
 }
 
 // Ends an ongoing call of the active SIP session of the active SIP account
-message EndCallRequest{
+message SipEndCallRequest{
 
     // Set to <code>True</code> to forcefully hang up the call
     bool hard_hangup = 1;
 }
 
 // Request to start the call with the active SIP session of the active SIP account
-message StartCallRequest{
+message SipStartCallRequest{
 
     // SIP account name
     string callee_id = 1;
 
     // Headers to include when starting the call
-    map<string,string> headers = 2;
+    map<string, string> headers = 2;
 }
 
-message RegisterAccountRequest{
+message SipRegisterAccountRequest{
     // Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or
     // <code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>.
     // Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect
@@ -92,7 +92,7 @@ message RegisterAccountRequest{
 }
 
 // Request for starting a new SIP session for a specified account
-message StartSessionRequest{
+message SipStartSessionRequest{
     // Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or
     // <code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>.
     // Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect
@@ -104,12 +104,12 @@ message StartSessionRequest{
 }
 
 // Request for transferring a call with or without headers
-message TransferCallRequest{
+message SipTransferCallRequest{
     // The account name or phone number to transfer the call to
     string transfer_id = 1;
 
     // The headers to include when transferring the call
-    map<string,string> headers = 2;
+    map<string, string> headers = 2;
 }
 
 message SipStatus{
@@ -117,7 +117,7 @@ message SipStatus{
     // <code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>.
     // Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect
     // to a SIP server running on port <code>5099</code>
-    string account_name=1;
+    string account_name = 1;
 
     // Timestamp of the status
     google.protobuf.Timestamp timestamp = 2;
@@ -203,7 +203,7 @@ message SipStatus{
     string transfer_call_id = 5;
 
     // Headers to include when calling outbound or transfer
-    map<string,string> headers = 6;
+    map<string, string> headers = 6;
 
     // More detailed description of the status
     string description = 7;
@@ -224,7 +224,7 @@ message SipStatusHistoryResponse{
 }
 
 // Plays a list of wav files
-message PlayWavFilesRequest{
+message SipPlayWavFilesRequest{
 
     // Wav files as bytes in a list that will be played
     repeated bytes wav_files = 1;
