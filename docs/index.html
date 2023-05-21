@@ -2740,27 +2740,27 @@
                       
                       <ul>
                       
-                        <li><a href="#ondewo.sip.Sip.StartSession" class="title-badge method">StartSession</a></li>
+                        <li><a href="#ondewo.sip.Sip.SipStartSession" class="title-badge method">SipStartSession</a></li>
                       
-                        <li><a href="#ondewo.sip.Sip.EndSession" class="title-badge method">EndSession</a></li>
+                        <li><a href="#ondewo.sip.Sip.SipEndSession" class="title-badge method">SipEndSession</a></li>
                       
-                        <li><a href="#ondewo.sip.Sip.StartCall" class="title-badge method">StartCall</a></li>
+                        <li><a href="#ondewo.sip.Sip.SipStartCall" class="title-badge method">SipStartCall</a></li>
                       
-                        <li><a href="#ondewo.sip.Sip.EndCall" class="title-badge method">EndCall</a></li>
+                        <li><a href="#ondewo.sip.Sip.SipEndCall" class="title-badge method">SipEndCall</a></li>
                       
-                        <li><a href="#ondewo.sip.Sip.TransferCall" class="title-badge method">TransferCall</a></li>
+                        <li><a href="#ondewo.sip.Sip.SipTransferCall" class="title-badge method">SipTransferCall</a></li>
                       
-                        <li><a href="#ondewo.sip.Sip.RegisterAccount" class="title-badge method">RegisterAccount</a></li>
+                        <li><a href="#ondewo.sip.Sip.SipRegisterAccount" class="title-badge method">SipRegisterAccount</a></li>
                       
-                        <li><a href="#ondewo.sip.Sip.GetSipStatus" class="title-badge method">GetSipStatus</a></li>
+                        <li><a href="#ondewo.sip.Sip.SipGetSipStatus" class="title-badge method">SipGetSipStatus</a></li>
                       
-                        <li><a href="#ondewo.sip.Sip.GetSipStatusHistory" class="title-badge method">GetSipStatusHistory</a></li>
+                        <li><a href="#ondewo.sip.Sip.SipGetSipStatusHistory" class="title-badge method">SipGetSipStatusHistory</a></li>
                       
-                        <li><a href="#ondewo.sip.Sip.PlayWavFiles" class="title-badge method">PlayWavFiles</a></li>
+                        <li><a href="#ondewo.sip.Sip.SipPlayWavFiles" class="title-badge method">SipPlayWavFiles</a></li>
                       
-                        <li><a href="#ondewo.sip.Sip.Mute" class="title-badge method">Mute</a></li>
+                        <li><a href="#ondewo.sip.Sip.SipMute" class="title-badge method">SipMute</a></li>
                       
-                        <li><a href="#ondewo.sip.Sip.UnMute" class="title-badge method">UnMute</a></li>
+                        <li><a href="#ondewo.sip.Sip.SipUnMute" class="title-badge method">SipUnMute</a></li>
                       
                       </ul>
                       
@@ -2773,15 +2773,27 @@
                   <ul>
                     
                       <li>
-                        <a href="#ondewo.sip.EndCallRequest" class="title-badge message">EndCallRequest</a>
+                        <a href="#ondewo.sip.SipEndCallRequest" class="title-badge message">SipEndCallRequest</a>
                       </li>
                     
                       <li>
-                        <a href="#ondewo.sip.PlayWavFilesRequest" class="title-badge message">PlayWavFilesRequest</a>
+                        <a href="#ondewo.sip.SipPlayWavFilesRequest" class="title-badge message">SipPlayWavFilesRequest</a>
                       </li>
                     
                       <li>
-                        <a href="#ondewo.sip.RegisterAccountRequest" class="title-badge message">RegisterAccountRequest</a>
+                        <a href="#ondewo.sip.SipRegisterAccountRequest" class="title-badge message">SipRegisterAccountRequest</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.sip.SipStartCallRequest" class="title-badge message">SipStartCallRequest</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.sip.SipStartCallRequest.HeadersEntry" class="title-badge message">SipStartCallRequest.HeadersEntry</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.sip.SipStartSessionRequest" class="title-badge message">SipStartSessionRequest</a>
                       </li>
                     
                       <li>
@@ -2797,23 +2809,11 @@
                       </li>
                     
                       <li>
-                        <a href="#ondewo.sip.StartCallRequest" class="title-badge message">StartCallRequest</a>
+                        <a href="#ondewo.sip.SipTransferCallRequest" class="title-badge message">SipTransferCallRequest</a>
                       </li>
                     
                       <li>
-                        <a href="#ondewo.sip.StartCallRequest.HeadersEntry" class="title-badge message">StartCallRequest.HeadersEntry</a>
-                      </li>
-                    
-                      <li>
-                        <a href="#ondewo.sip.StartSessionRequest" class="title-badge message">StartSessionRequest</a>
-                      </li>
-                    
-                      <li>
-                        <a href="#ondewo.sip.TransferCallRequest" class="title-badge message">TransferCallRequest</a>
-                      </li>
-                    
-                      <li>
-                        <a href="#ondewo.sip.TransferCallRequest.HeadersEntry" class="title-badge message">TransferCallRequest.HeadersEntry</a>
+                        <a href="#ondewo.sip.SipTransferCallRequest.HeadersEntry" class="title-badge message">SipTransferCallRequest.HeadersEntry</a>
                       </li>
                     
                   </ul>
@@ -25486,72 +25486,72 @@ started before the end of an utterance). </p></td>
         
         <div id="ondewo.sip.Sip-methods" class="service-methods">Service Methods</div>
         
-          <h4 id="ondewo.sip.Sip.StartSession" class="title-badge method">StartSession</h4>
+          <h4 id="ondewo.sip.Sip.SipStartSession" class="title-badge method">SipStartSession</h4>
 
-          <pre>rpc StartSession (<a href="#ondewo.sip.StartSessionRequest">StartSessionRequest</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
+          <pre>rpc SipStartSession (<a href="#ondewo.sip.SipStartSessionRequest">SipStartSessionRequest</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
           Starts a new SIP session for an account registered at a SIP server. <code>RegisterAccount</code> need to be called before.
         
-          <h4 id="ondewo.sip.Sip.EndSession" class="title-badge method">EndSession</h4>
+          <h4 id="ondewo.sip.Sip.SipEndSession" class="title-badge method">SipEndSession</h4>
 
-          <pre>rpc EndSession (<a href="#google.protobuf.Empty">.google.protobuf.Empty</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
+          <pre>rpc SipEndSession (<a href="#google.protobuf.Empty">.google.protobuf.Empty</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
           Ends a SIP session for an account registered at a SIP server
         
-          <h4 id="ondewo.sip.Sip.StartCall" class="title-badge method">StartCall</h4>
+          <h4 id="ondewo.sip.Sip.SipStartCall" class="title-badge method">SipStartCall</h4>
 
-          <pre>rpc StartCall (<a href="#ondewo.sip.StartCallRequest">StartCallRequest</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
+          <pre>rpc SipStartCall (<a href="#ondewo.sip.SipStartCallRequest">SipStartCallRequest</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
           Starts a call in an active SIP session for an account registered at a SIP server
         
-          <h4 id="ondewo.sip.Sip.EndCall" class="title-badge method">EndCall</h4>
+          <h4 id="ondewo.sip.Sip.SipEndCall" class="title-badge method">SipEndCall</h4>
 
-          <pre>rpc EndCall (<a href="#ondewo.sip.EndCallRequest">EndCallRequest</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
+          <pre>rpc SipEndCall (<a href="#ondewo.sip.SipEndCallRequest">SipEndCallRequest</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
           Ends a call in an active SIP session for an account registered at a SIP server
         
-          <h4 id="ondewo.sip.Sip.TransferCall" class="title-badge method">TransferCall</h4>
+          <h4 id="ondewo.sip.Sip.SipTransferCall" class="title-badge method">SipTransferCall</h4>
 
-          <pre>rpc TransferCall (<a href="#ondewo.sip.TransferCallRequest">TransferCallRequest</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
+          <pre>rpc SipTransferCall (<a href="#ondewo.sip.SipTransferCallRequest">SipTransferCallRequest</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
           Transfers a call in an active SIP session for an account registered at a SIP server to
 another SIP account or phone number specified by <code>transfer_id</code>
         
-          <h4 id="ondewo.sip.Sip.RegisterAccount" class="title-badge method">RegisterAccount</h4>
+          <h4 id="ondewo.sip.Sip.SipRegisterAccount" class="title-badge method">SipRegisterAccount</h4>
 
-          <pre>rpc RegisterAccount (<a href="#ondewo.sip.RegisterAccountRequest">RegisterAccountRequest</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
+          <pre>rpc SipRegisterAccount (<a href="#ondewo.sip.SipRegisterAccountRequest">SipRegisterAccountRequest</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
           Registers s SIP account at a SIP server
         
-          <h4 id="ondewo.sip.Sip.GetSipStatus" class="title-badge method">GetSipStatus</h4>
+          <h4 id="ondewo.sip.Sip.SipGetSipStatus" class="title-badge method">SipGetSipStatus</h4>
 
-          <pre>rpc GetSipStatus (<a href="#google.protobuf.Empty">.google.protobuf.Empty</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
+          <pre>rpc SipGetSipStatus (<a href="#google.protobuf.Empty">.google.protobuf.Empty</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
           Gets the current SIP status
         
-          <h4 id="ondewo.sip.Sip.GetSipStatusHistory" class="title-badge method">GetSipStatusHistory</h4>
+          <h4 id="ondewo.sip.Sip.SipGetSipStatusHistory" class="title-badge method">SipGetSipStatusHistory</h4>
 
-          <pre>rpc GetSipStatusHistory (<a href="#google.protobuf.Empty">.google.protobuf.Empty</a>) returns (<a href="#ondewo.sip.SipStatusHistoryResponse">SipStatusHistoryResponse)</a></pre>
+          <pre>rpc SipGetSipStatusHistory (<a href="#google.protobuf.Empty">.google.protobuf.Empty</a>) returns (<a href="#ondewo.sip.SipStatusHistoryResponse">SipStatusHistoryResponse)</a></pre>
 
           Gets the history of SIP status
         
-          <h4 id="ondewo.sip.Sip.PlayWavFiles" class="title-badge method">PlayWavFiles</h4>
+          <h4 id="ondewo.sip.Sip.SipPlayWavFiles" class="title-badge method">SipPlayWavFiles</h4>
 
-          <pre>rpc PlayWavFiles (<a href="#ondewo.sip.PlayWavFilesRequest">PlayWavFilesRequest</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
+          <pre>rpc SipPlayWavFiles (<a href="#ondewo.sip.SipPlayWavFilesRequest">SipPlayWavFilesRequest</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
           Plays wav files during an ongoing call of an active SIP session
         
-          <h4 id="ondewo.sip.Sip.Mute" class="title-badge method">Mute</h4>
+          <h4 id="ondewo.sip.Sip.SipMute" class="title-badge method">SipMute</h4>
 
-          <pre>rpc Mute (<a href="#google.protobuf.Empty">.google.protobuf.Empty</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
+          <pre>rpc SipMute (<a href="#google.protobuf.Empty">.google.protobuf.Empty</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
           Mutes the microphone in an ongoing call of an active SIP session
         
-          <h4 id="ondewo.sip.Sip.UnMute" class="title-badge method">UnMute</h4>
+          <h4 id="ondewo.sip.Sip.SipUnMute" class="title-badge method">SipUnMute</h4>
 
-          <pre>rpc UnMute (<a href="#google.protobuf.Empty">.google.protobuf.Empty</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
+          <pre>rpc SipUnMute (<a href="#google.protobuf.Empty">.google.protobuf.Empty</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
-          Unmutes the microphone in an ongoing call of an active SIP session
+          Un-mutes the microphone in an ongoing call of an active SIP session
         
 
         
@@ -25562,7 +25562,7 @@ another SIP account or phone number specified by <code>transfer_id</code>
       
       <div id="ondewo/sip/sip.proto-messages" class="object-category">Messages</div>
       
-        <h3 id="ondewo.sip.EndCallRequest" class="title-badge message">EndCallRequest</h3>
+        <h3 id="ondewo.sip.SipEndCallRequest" class="title-badge message">SipEndCallRequest</h3>
         <p>Ends an ongoing call of the active SIP session of the active SIP account</p>
 
         
@@ -25586,7 +25586,7 @@ another SIP account or phone number specified by <code>transfer_id</code>
 
         
       
-        <h3 id="ondewo.sip.PlayWavFilesRequest" class="title-badge message">PlayWavFilesRequest</h3>
+        <h3 id="ondewo.sip.SipPlayWavFilesRequest" class="title-badge message">SipPlayWavFilesRequest</h3>
         <p>Plays a list of wav files</p>
 
         
@@ -25610,7 +25610,7 @@ another SIP account or phone number specified by <code>transfer_id</code>
 
         
       
-        <h3 id="ondewo.sip.RegisterAccountRequest" class="title-badge message">RegisterAccountRequest</h3>
+        <h3 id="ondewo.sip.SipRegisterAccountRequest" class="title-badge message">SipRegisterAccountRequest</h3>
         <p></p>
 
         
@@ -25649,6 +25649,102 @@ to a SIP server running on port <code>5099</code> </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Optional: outbound proxy address, e.g. <code>my.outbound.proxy.com</code> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.sip.SipStartCallRequest" class="title-badge message">SipStartCallRequest</h3>
+        <p>Request to start the call with the active SIP session of the active SIP account</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>callee_id</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>SIP account name </p></td>
+                </tr>
+              
+                <tr>
+                  <td>headers</td>
+                  <td><a href="#ondewo.sip.SipStartCallRequest.HeadersEntry">SipStartCallRequest.HeadersEntry</a></td>
+                  <td>repeated</td>
+                  <td><p>Headers to include when starting the call </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.sip.SipStartCallRequest.HeadersEntry" class="title-badge message">SipStartCallRequest.HeadersEntry</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>key</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>value</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.sip.SipStartSessionRequest" class="title-badge message">SipStartSessionRequest</h3>
+        <p>Request for starting a new SIP session for a specified account</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>account_name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or
+<code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>.
+Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect
+to a SIP server running on port <code>5099</code> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>auto_answer_interval</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p>answer interval </p></td>
                 </tr>
               
             </tbody>
@@ -25796,103 +25892,7 @@ to a SIP server running on port <code>5099</code> </p></td>
 
         
       
-        <h3 id="ondewo.sip.StartCallRequest" class="title-badge message">StartCallRequest</h3>
-        <p>Request to start the call with the active SIP session of the active SIP account</p>
-
-        
-          <table class="field-table">
-            <thead>
-              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>callee_id</td>
-                  <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p>SIP account name </p></td>
-                </tr>
-              
-                <tr>
-                  <td>headers</td>
-                  <td><a href="#ondewo.sip.StartCallRequest.HeadersEntry">StartCallRequest.HeadersEntry</a></td>
-                  <td>repeated</td>
-                  <td><p>Headers to include when starting the call </p></td>
-                </tr>
-              
-            </tbody>
-          </table>
-
-          
-
-        
-      
-        <h3 id="ondewo.sip.StartCallRequest.HeadersEntry" class="title-badge message">StartCallRequest.HeadersEntry</h3>
-        <p></p>
-
-        
-          <table class="field-table">
-            <thead>
-              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>key</td>
-                  <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-                <tr>
-                  <td>value</td>
-                  <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-            </tbody>
-          </table>
-
-          
-
-        
-      
-        <h3 id="ondewo.sip.StartSessionRequest" class="title-badge message">StartSessionRequest</h3>
-        <p>Request for starting a new SIP session for a specified account</p>
-
-        
-          <table class="field-table">
-            <thead>
-              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>account_name</td>
-                  <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p>Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or
-<code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>.
-Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect
-to a SIP server running on port <code>5099</code> </p></td>
-                </tr>
-              
-                <tr>
-                  <td>auto_answer_interval</td>
-                  <td><a href="#int32">int32</a></td>
-                  <td></td>
-                  <td><p>answer interval </p></td>
-                </tr>
-              
-            </tbody>
-          </table>
-
-          
-
-        
-      
-        <h3 id="ondewo.sip.TransferCallRequest" class="title-badge message">TransferCallRequest</h3>
+        <h3 id="ondewo.sip.SipTransferCallRequest" class="title-badge message">SipTransferCallRequest</h3>
         <p>Request for transferring a call with or without headers</p>
 
         
@@ -25911,7 +25911,7 @@ to a SIP server running on port <code>5099</code> </p></td>
               
                 <tr>
                   <td>headers</td>
-                  <td><a href="#ondewo.sip.TransferCallRequest.HeadersEntry">TransferCallRequest.HeadersEntry</a></td>
+                  <td><a href="#ondewo.sip.SipTransferCallRequest.HeadersEntry">SipTransferCallRequest.HeadersEntry</a></td>
                   <td>repeated</td>
                   <td><p>The headers to include when transferring the call </p></td>
                 </tr>
@@ -25923,7 +25923,7 @@ to a SIP server running on port <code>5099</code> </p></td>
 
         
       
-        <h3 id="ondewo.sip.TransferCallRequest.HeadersEntry" class="title-badge message">TransferCallRequest.HeadersEntry</h3>
+        <h3 id="ondewo.sip.SipTransferCallRequest.HeadersEntry" class="title-badge message">SipTransferCallRequest.HeadersEntry</h3>
         <p></p>
 
         

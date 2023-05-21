@@ -521,17 +521,17 @@
     - [Speech2Text](#ondewo.s2t.Speech2Text)
   
 - [ondewo/sip/sip.proto](#ondewo/sip/sip.proto)
-    - [EndCallRequest](#ondewo.sip.EndCallRequest)
-    - [PlayWavFilesRequest](#ondewo.sip.PlayWavFilesRequest)
-    - [RegisterAccountRequest](#ondewo.sip.RegisterAccountRequest)
+    - [SipEndCallRequest](#ondewo.sip.SipEndCallRequest)
+    - [SipPlayWavFilesRequest](#ondewo.sip.SipPlayWavFilesRequest)
+    - [SipRegisterAccountRequest](#ondewo.sip.SipRegisterAccountRequest)
+    - [SipStartCallRequest](#ondewo.sip.SipStartCallRequest)
+    - [SipStartCallRequest.HeadersEntry](#ondewo.sip.SipStartCallRequest.HeadersEntry)
+    - [SipStartSessionRequest](#ondewo.sip.SipStartSessionRequest)
     - [SipStatus](#ondewo.sip.SipStatus)
     - [SipStatus.HeadersEntry](#ondewo.sip.SipStatus.HeadersEntry)
     - [SipStatusHistoryResponse](#ondewo.sip.SipStatusHistoryResponse)
-    - [StartCallRequest](#ondewo.sip.StartCallRequest)
-    - [StartCallRequest.HeadersEntry](#ondewo.sip.StartCallRequest.HeadersEntry)
-    - [StartSessionRequest](#ondewo.sip.StartSessionRequest)
-    - [TransferCallRequest](#ondewo.sip.TransferCallRequest)
-    - [TransferCallRequest.HeadersEntry](#ondewo.sip.TransferCallRequest.HeadersEntry)
+    - [SipTransferCallRequest](#ondewo.sip.SipTransferCallRequest)
+    - [SipTransferCallRequest.HeadersEntry](#ondewo.sip.SipTransferCallRequest.HeadersEntry)
   
     - [SipStatus.StatusType](#ondewo.sip.SipStatus.StatusType)
   
@@ -9154,9 +9154,9 @@ endpoints of speech-to-text service
 
 
 
-<a name="ondewo.sip.EndCallRequest"></a>
+<a name="ondewo.sip.SipEndCallRequest"></a>
 
-### EndCallRequest
+### SipEndCallRequest
 Ends an ongoing call of the active SIP session of the active SIP account
 
 
@@ -9169,9 +9169,9 @@ Ends an ongoing call of the active SIP session of the active SIP account
 
 
 
-<a name="ondewo.sip.PlayWavFilesRequest"></a>
+<a name="ondewo.sip.SipPlayWavFilesRequest"></a>
 
-### PlayWavFilesRequest
+### SipPlayWavFilesRequest
 Plays a list of wav files
 
 
@@ -9184,9 +9184,9 @@ Plays a list of wav files
 
 
 
-<a name="ondewo.sip.RegisterAccountRequest"></a>
+<a name="ondewo.sip.SipRegisterAccountRequest"></a>
 
-### RegisterAccountRequest
+### SipRegisterAccountRequest
 
 
 
@@ -9196,6 +9196,54 @@ Plays a list of wav files
 | password | [string](#string) |  | Password of the account |
 | auth_username | [string](#string) |  | Optional: authentication user name |
 | outbound_proxy | [string](#string) |  | Optional: outbound proxy address, e.g. <code>my.outbound.proxy.com</code> |
+
+
+
+
+
+
+<a name="ondewo.sip.SipStartCallRequest"></a>
+
+### SipStartCallRequest
+Request to start the call with the active SIP session of the active SIP account
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| callee_id | [string](#string) |  | SIP account name |
+| headers | [SipStartCallRequest.HeadersEntry](#ondewo.sip.SipStartCallRequest.HeadersEntry) | repeated | Headers to include when starting the call |
+
+
+
+
+
+
+<a name="ondewo.sip.SipStartCallRequest.HeadersEntry"></a>
+
+### SipStartCallRequest.HeadersEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.sip.SipStartSessionRequest"></a>
+
+### SipStartSessionRequest
+Request for starting a new SIP session for a specified account
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| account_name | [string](#string) |  | Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or <code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>. Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect to a SIP server running on port <code>5099</code> |
+| auto_answer_interval | [int32](#int32) |  | answer interval |
 
 
 
@@ -9256,73 +9304,25 @@ History of SIP status
 
 
 
-<a name="ondewo.sip.StartCallRequest"></a>
+<a name="ondewo.sip.SipTransferCallRequest"></a>
 
-### StartCallRequest
-Request to start the call with the active SIP session of the active SIP account
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| callee_id | [string](#string) |  | SIP account name |
-| headers | [StartCallRequest.HeadersEntry](#ondewo.sip.StartCallRequest.HeadersEntry) | repeated | Headers to include when starting the call |
-
-
-
-
-
-
-<a name="ondewo.sip.StartCallRequest.HeadersEntry"></a>
-
-### StartCallRequest.HeadersEntry
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| key | [string](#string) |  |  |
-| value | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="ondewo.sip.StartSessionRequest"></a>
-
-### StartSessionRequest
-Request for starting a new SIP session for a specified account
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| account_name | [string](#string) |  | Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or <code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>. Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect to a SIP server running on port <code>5099</code> |
-| auto_answer_interval | [int32](#int32) |  | answer interval |
-
-
-
-
-
-
-<a name="ondewo.sip.TransferCallRequest"></a>
-
-### TransferCallRequest
+### SipTransferCallRequest
 Request for transferring a call with or without headers
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | transfer_id | [string](#string) |  | The account name or phone number to transfer the call to |
-| headers | [TransferCallRequest.HeadersEntry](#ondewo.sip.TransferCallRequest.HeadersEntry) | repeated | The headers to include when transferring the call |
+| headers | [SipTransferCallRequest.HeadersEntry](#ondewo.sip.SipTransferCallRequest.HeadersEntry) | repeated | The headers to include when transferring the call |
 
 
 
 
 
 
-<a name="ondewo.sip.TransferCallRequest.HeadersEntry"></a>
+<a name="ondewo.sip.SipTransferCallRequest.HeadersEntry"></a>
 
-### TransferCallRequest.HeadersEntry
+### SipTransferCallRequest.HeadersEntry
 
 
 
@@ -9383,17 +9383,17 @@ SIP LifeCycle is explained at <a href="https://thanhloi2603.wordpress.com/2017/0
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| StartSession | [StartSessionRequest](#ondewo.sip.StartSessionRequest) | [SipStatus](#ondewo.sip.SipStatus) | Starts a new SIP session for an account registered at a SIP server. <code>RegisterAccount</code> need to be called before. |
-| EndSession | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatus](#ondewo.sip.SipStatus) | Ends a SIP session for an account registered at a SIP server |
-| StartCall | [StartCallRequest](#ondewo.sip.StartCallRequest) | [SipStatus](#ondewo.sip.SipStatus) | Starts a call in an active SIP session for an account registered at a SIP server |
-| EndCall | [EndCallRequest](#ondewo.sip.EndCallRequest) | [SipStatus](#ondewo.sip.SipStatus) | Ends a call in an active SIP session for an account registered at a SIP server |
-| TransferCall | [TransferCallRequest](#ondewo.sip.TransferCallRequest) | [SipStatus](#ondewo.sip.SipStatus) | Transfers a call in an active SIP session for an account registered at a SIP server to another SIP account or phone number specified by <code>transfer_id</code> |
-| RegisterAccount | [RegisterAccountRequest](#ondewo.sip.RegisterAccountRequest) | [SipStatus](#ondewo.sip.SipStatus) | Registers s SIP account at a SIP server |
-| GetSipStatus | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatus](#ondewo.sip.SipStatus) | Gets the current SIP status |
-| GetSipStatusHistory | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatusHistoryResponse](#ondewo.sip.SipStatusHistoryResponse) | Gets the history of SIP status |
-| PlayWavFiles | [PlayWavFilesRequest](#ondewo.sip.PlayWavFilesRequest) | [SipStatus](#ondewo.sip.SipStatus) | Plays wav files during an ongoing call of an active SIP session |
-| Mute | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatus](#ondewo.sip.SipStatus) | Mutes the microphone in an ongoing call of an active SIP session |
-| UnMute | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatus](#ondewo.sip.SipStatus) | Unmutes the microphone in an ongoing call of an active SIP session |
+| SipStartSession | [SipStartSessionRequest](#ondewo.sip.SipStartSessionRequest) | [SipStatus](#ondewo.sip.SipStatus) | Starts a new SIP session for an account registered at a SIP server. <code>RegisterAccount</code> need to be called before. |
+| SipEndSession | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatus](#ondewo.sip.SipStatus) | Ends a SIP session for an account registered at a SIP server |
+| SipStartCall | [SipStartCallRequest](#ondewo.sip.SipStartCallRequest) | [SipStatus](#ondewo.sip.SipStatus) | Starts a call in an active SIP session for an account registered at a SIP server |
+| SipEndCall | [SipEndCallRequest](#ondewo.sip.SipEndCallRequest) | [SipStatus](#ondewo.sip.SipStatus) | Ends a call in an active SIP session for an account registered at a SIP server |
+| SipTransferCall | [SipTransferCallRequest](#ondewo.sip.SipTransferCallRequest) | [SipStatus](#ondewo.sip.SipStatus) | Transfers a call in an active SIP session for an account registered at a SIP server to another SIP account or phone number specified by <code>transfer_id</code> |
+| SipRegisterAccount | [SipRegisterAccountRequest](#ondewo.sip.SipRegisterAccountRequest) | [SipStatus](#ondewo.sip.SipStatus) | Registers s SIP account at a SIP server |
+| SipGetSipStatus | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatus](#ondewo.sip.SipStatus) | Gets the current SIP status |
+| SipGetSipStatusHistory | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatusHistoryResponse](#ondewo.sip.SipStatusHistoryResponse) | Gets the history of SIP status |
+| SipPlayWavFiles | [SipPlayWavFilesRequest](#ondewo.sip.SipPlayWavFilesRequest) | [SipStatus](#ondewo.sip.SipStatus) | Plays wav files during an ongoing call of an active SIP session |
+| SipMute | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatus](#ondewo.sip.SipStatus) | Mutes the microphone in an ongoing call of an active SIP session |
+| SipUnMute | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatus](#ondewo.sip.SipStatus) | Un-mutes the microphone in an ongoing call of an active SIP session |
 
  <!-- end services -->
 
