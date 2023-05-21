@@ -1,5 +1,12 @@
 # Release History
+*****************
 
+## Release ONDEWO VTSI API 6.2.0
+
+## Improvements
+
+* [[OND233-323]](https://ondewo.atlassian.net/browse/OND233-323) - Updated Sip API 5.0.0
+* 
 *****************
 
 ## Release ONDEWO VTSI API 6.1.0
