@@ -42,6 +42,10 @@ service Projects {
 
     // Undeploy a VTSI project
     rpc UndeployVtsiProject (UndeployVtsiProjectRequest) returns (UndeployVtsiProjectResponse);
+
+    // Get a VTSI project with configs
+    rpc ListVtsiProjects (ListVtsiProjectsRequest) returns (ListVtsiProjectsResponse);
+
 }
 
 
@@ -199,6 +203,46 @@ message GetVtsiProjectRequest{
     string name = 1;
 }
 
+// Request to get the list of agents
+message ListVtsiProjectsRequest {
+
+    // Optional. Specify the view of the returned VtsiProject (full view by default)
+    VtsiProjectView project_view = 1;
+
+    // Optional. The next_page_token value returned from a previous list request.
+    string page_token = 2;
+}
+
+// Get list of vtsi projects
+message ListVtsiProjectsResponse {
+
+    // The list of vtsi projects
+    repeated VtsiProject vtsi_projects = 1;
+
+    // Token to retrieve the next page of results, or empty if there are no
+    // more results in the list.
+    string next_page_token = 2;
+}
+
+// Structure of VTSI_PROJECT view
+enum VtsiProjectView {
+
+    // Unspecified VTSI_PROJECT view: the view is defined by the call:
+    // - CreateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW
+    // - UpdateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW
+    // - GetVTSI_PROJECT: VTSI_PROJECT_VIEW_FULL
+    // - ListVTSI_PROJECTs: VTSI_PROJECT_VIEW_SHALLOW
+    VTSI_PROJECT_VIEW_UNSPECIFIED = 0;
+
+    // Full VTSI_PROJECT view: populate all the fields of the VTSI_PROJECT message including configs.
+    VTSI_PROJECT_VIEW_FULL = 1;
+
+    // Shallow VTSI_PROJECT view: populates all the fields except configs.
+    VTSI_PROJECT_VIEW_SHALLOW = 2;
+
+    // Minimum view including only VTSI_PROJECT UUID and VTSI_PROJECT display name
+    VTSI_PROJECT_VIEW_MINIMUM = 3;
+}
 
 // Request to updated VTSI project
 message UpdateVtsiProjectRequest{
