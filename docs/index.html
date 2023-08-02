@@ -3402,6 +3402,8 @@
                       
                         <li><a href="#ondewo.vtsi.Projects.UndeployVtsiProject" class="title-badge method">UndeployVtsiProject</a></li>
                       
+                        <li><a href="#ondewo.vtsi.Projects.ListVtsiProjects" class="title-badge method">ListVtsiProjects</a></li>
+                      
                       </ul>
                       
                     </li>
@@ -3453,6 +3455,14 @@
                       </li>
                     
                       <li>
+                        <a href="#ondewo.vtsi.ListVtsiProjectsRequest" class="title-badge message">ListVtsiProjectsRequest</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.ListVtsiProjectsResponse" class="title-badge message">ListVtsiProjectsResponse</a>
+                      </li>
+                    
+                      <li>
                         <a href="#ondewo.vtsi.UndeployVtsiProjectRequest" class="title-badge message">UndeployVtsiProjectRequest</a>
                       </li>
                     
@@ -3480,6 +3490,10 @@
                     
                       <li>
                         <a href="#ondewo.vtsi.VtsiProjectStatus" class="title-badge enum">VtsiProjectStatus</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.VtsiProjectView" class="title-badge enum">VtsiProjectView</a>
                       </li>
                     
                   </ul>
@@ -30354,6 +30368,12 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
 
           Undeploy a VTSI project
         
+          <h4 id="ondewo.vtsi.Projects.ListVtsiProjects" class="title-badge method">ListVtsiProjects</h4>
+
+          <pre>rpc ListVtsiProjects (<a href="#ondewo.vtsi.ListVtsiProjectsRequest">ListVtsiProjectsRequest</a>) returns (<a href="#ondewo.vtsi.ListVtsiProjectsResponse">ListVtsiProjectsResponse)</a></pre>
+
+          Get a VTSI project with configs
+        
 
         
 
@@ -30711,6 +30731,69 @@ If no name is given a new parent name is created. The parent has the format:
 
         
       
+        <h3 id="ondewo.vtsi.ListVtsiProjectsRequest" class="title-badge message">ListVtsiProjectsRequest</h3>
+        <p>Request to get the list of agents</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>project_view</td>
+                  <td><a href="#ondewo.vtsi.VtsiProjectView">VtsiProjectView</a></td>
+                  <td></td>
+                  <td><p>Optional. Specify the view of the returned VtsiProject (full view by default) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>page_token</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>Optional. The next_page_token value returned from a previous list request. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.ListVtsiProjectsResponse" class="title-badge message">ListVtsiProjectsResponse</h3>
+        <p>Get list of vtsi projects</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>vtsi_projects</td>
+                  <td><a href="#ondewo.vtsi.VtsiProject">VtsiProject</a></td>
+                  <td>repeated</td>
+                  <td><p>The list of vtsi projects </p></td>
+                </tr>
+              
+                <tr>
+                  <td>next_page_token</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>Token to retrieve the next page of results, or empty if there are no
+more results in the list. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
         <h3 id="ondewo.vtsi.UndeployVtsiProjectRequest" class="title-badge message">UndeployVtsiProjectRequest</h3>
         <p>Request to undeploy a vtsi project</p>
 
@@ -30968,6 +31051,45 @@ Only when a new VtsiProject is created the name can be undefined/empty </p></td>
                 <td>DELETED</td>
                 <td>7</td>
                 <td><p>Project is deleted</p></td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+        <h3 id="ondewo.vtsi.VtsiProjectView" class="title-badge enum">VtsiProjectView</h3>
+        <p>Structure of VTSI_PROJECT view</p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>VTSI_PROJECT_VIEW_UNSPECIFIED</td>
+                <td>0</td>
+                <td><p>Unspecified VTSI_PROJECT view: the view is defined by the call:
+- CreateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW
+- UpdateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW
+- GetVTSI_PROJECT: VTSI_PROJECT_VIEW_FULL
+- ListVTSI_PROJECTs: VTSI_PROJECT_VIEW_SHALLOW</p></td>
+              </tr>
+            
+              <tr>
+                <td>VTSI_PROJECT_VIEW_FULL</td>
+                <td>1</td>
+                <td><p>Full VTSI_PROJECT view: populate all the fields of the VTSI_PROJECT message including configs.</p></td>
+              </tr>
+            
+              <tr>
+                <td>VTSI_PROJECT_VIEW_SHALLOW</td>
+                <td>2</td>
+                <td><p>Shallow VTSI_PROJECT view: populates all the fields except configs.</p></td>
+              </tr>
+            
+              <tr>
+                <td>VTSI_PROJECT_VIEW_MINIMUM</td>
+                <td>3</td>
+                <td><p>Minimum view including only VTSI_PROJECT UUID and VTSI_PROJECT display name</p></td>
               </tr>
             
           </tbody>

@@ -659,6 +659,8 @@
     - [DeployVtsiProjectRequest](#ondewo.vtsi.DeployVtsiProjectRequest)
     - [DeployVtsiProjectResponse](#ondewo.vtsi.DeployVtsiProjectResponse)
     - [GetVtsiProjectRequest](#ondewo.vtsi.GetVtsiProjectRequest)
+    - [ListVtsiProjectsRequest](#ondewo.vtsi.ListVtsiProjectsRequest)
+    - [ListVtsiProjectsResponse](#ondewo.vtsi.ListVtsiProjectsResponse)
     - [UndeployVtsiProjectRequest](#ondewo.vtsi.UndeployVtsiProjectRequest)
     - [UndeployVtsiProjectResponse](#ondewo.vtsi.UndeployVtsiProjectResponse)
     - [UpdateVtsiProjectRequest](#ondewo.vtsi.UpdateVtsiProjectRequest)
@@ -666,6 +668,7 @@
     - [VtsiProject](#ondewo.vtsi.VtsiProject)
   
     - [VtsiProjectStatus](#ondewo.vtsi.VtsiProjectStatus)
+    - [VtsiProjectView](#ondewo.vtsi.VtsiProjectView)
   
     - [Projects](#ondewo.vtsi.Projects)
   
@@ -11381,6 +11384,38 @@ Request to retrieve a VTSI project
 
 
 
+<a name="ondewo.vtsi.ListVtsiProjectsRequest"></a>
+
+### ListVtsiProjectsRequest
+Request to get the list of agents
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| project_view | [VtsiProjectView](#ondewo.vtsi.VtsiProjectView) |  | Optional. Specify the view of the returned VtsiProject (full view by default) |
+| page_token | [string](#string) |  | Optional. The next_page_token value returned from a previous list request. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListVtsiProjectsResponse"></a>
+
+### ListVtsiProjectsResponse
+Get list of vtsi projects
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_projects | [VtsiProject](#ondewo.vtsi.VtsiProject) | repeated | The list of vtsi projects |
+| next_page_token | [string](#string) |  | Token to retrieve the next page of results, or empty if there are no more results in the list. |
+
+
+
+
+
+
 <a name="ondewo.vtsi.UndeployVtsiProjectRequest"></a>
 
 ### UndeployVtsiProjectRequest
@@ -11486,6 +11521,20 @@ Status of a VtsiProject.
 | DELETED | 7 | Project is deleted |
 
 
+
+<a name="ondewo.vtsi.VtsiProjectView"></a>
+
+### VtsiProjectView
+Structure of VTSI_PROJECT view
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| VTSI_PROJECT_VIEW_UNSPECIFIED | 0 | Unspecified VTSI_PROJECT view: the view is defined by the call: - CreateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW - UpdateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW - GetVTSI_PROJECT: VTSI_PROJECT_VIEW_FULL - ListVTSI_PROJECTs: VTSI_PROJECT_VIEW_SHALLOW |
+| VTSI_PROJECT_VIEW_FULL | 1 | Full VTSI_PROJECT view: populate all the fields of the VTSI_PROJECT message including configs. |
+| VTSI_PROJECT_VIEW_SHALLOW | 2 | Shallow VTSI_PROJECT view: populates all the fields except configs. |
+| VTSI_PROJECT_VIEW_MINIMUM | 3 | Minimum view including only VTSI_PROJECT UUID and VTSI_PROJECT display name |
+
+
  <!-- end enums -->
 
  <!-- end HasExtensions -->
@@ -11504,6 +11553,7 @@ ONDEWO VTSI API
 | DeleteVtsiProject | [DeleteVtsiProjectRequest](#ondewo.vtsi.DeleteVtsiProjectRequest) | [DeleteVtsiProjectResponse](#ondewo.vtsi.DeleteVtsiProjectResponse) | Delete a VTSI project with configs |
 | DeployVtsiProject | [DeployVtsiProjectRequest](#ondewo.vtsi.DeployVtsiProjectRequest) | [DeployVtsiProjectResponse](#ondewo.vtsi.DeployVtsiProjectResponse) | Deploy a VTSI project |
 | UndeployVtsiProject | [UndeployVtsiProjectRequest](#ondewo.vtsi.UndeployVtsiProjectRequest) | [UndeployVtsiProjectResponse](#ondewo.vtsi.UndeployVtsiProjectResponse) | Undeploy a VTSI project |
+| ListVtsiProjects | [ListVtsiProjectsRequest](#ondewo.vtsi.ListVtsiProjectsRequest) | [ListVtsiProjectsResponse](#ondewo.vtsi.ListVtsiProjectsResponse) | Get a VTSI project with configs |
 
  <!-- end services -->
 
