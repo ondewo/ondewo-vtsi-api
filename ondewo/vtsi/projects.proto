@@ -207,7 +207,7 @@ message GetVtsiProjectRequest{
 message ListVtsiProjectsRequest {
 
     // Optional. Specify the view of the returned VtsiProject (full view by default)
-    VtsiProjectView project_view = 1;
+    VtsiProjectView vtsi_project_view = 1;
 
     // Optional. The next_page_token value returned from a previous list request.
     string page_token = 2;
