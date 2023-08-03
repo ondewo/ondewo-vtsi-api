@@ -211,6 +211,10 @@ message ListVtsiProjectsRequest {
 
     // Optional. The next_page_token value returned from a previous list request.
     string page_token = 2;
+
+    // Optional field to define the sorting of the list of VTSI projects in the response.
+    // If not specified, the default behavior is to have no sorting.
+    VtsiProjectSorting vtsi_project_sorting = 3;
 }
 
 // This is a protobuf message definition for the response of getting a list of VTSI projects.
@@ -224,10 +228,6 @@ message ListVtsiProjectsResponse {
     // This field is a string that holds a token for fetching the next page of results.
     // If there are no more results in the list, this field will be empty.
     string next_page_token = 2;
-
-    // Optional field to define the sorting of the list of VTSI projects in the response.
-    // If not specified, the default behavior is to have no sorting.
-    VtsiProjectSorting vtsi_project_sorting = 3;
 }
 
 // This protobuf message defines the sorting order for VTSI (Virtual Test System Infrastructure) projects.
