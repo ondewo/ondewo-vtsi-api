@@ -11392,7 +11392,7 @@ Request to get the list of agents
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| project_view | [VtsiProjectView](#ondewo.vtsi.VtsiProjectView) |  | Optional. Specify the view of the returned VtsiProject (full view by default) |
+| vtsi_project_view | [VtsiProjectView](#ondewo.vtsi.VtsiProjectView) |  | Optional. Specify the view of the returned VtsiProject (full view by default) |
 | page_token | [string](#string) |  | Optional. The next_page_token value returned from a previous list request. |
 
 
