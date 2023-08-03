@@ -11495,11 +11495,14 @@ The VTSI project with its configuration setting
 | max_callers | [int32](#int32) |  | The maximum number of callers that this project can have. |
 | max_listeners | [int32](#int32) |  | The maximum number of listeners that this project can have. |
 | asterisk_configs | [AsteriskConfigs](#ondewo.vtsi.AsteriskConfigs) |  | Configs to start the asterisk server. |
-| vtsi_project_status | [VtsiProjectStatus](#ondewo.vtsi.VtsiProjectStatus) |  |  |
+| vtsi_project_status | [VtsiProjectStatus](#ondewo.vtsi.VtsiProjectStatus) |  | The status of the VTSI project. |
 | created_by | [string](#string) |  | The user who created the vtsi project. Readonly. |
 | created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Creation time of the vtsi project. Readonly. |
 | modified_by | [string](#string) |  | The user who modified the vtsi project. Readonly. |
 | modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification time of the vtsi project. Readonly. |
+| active_callers | [int32](#int32) |  | The number of active callers in this project. |
+| active_listeners | [int32](#int32) |  | The number of active listeners in this project. |
+| asterisk_port | [int32](#int32) |  | The port of the asterisk server |
 
 
 
