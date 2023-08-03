@@ -1,11 +1,13 @@
 # Release History
+
 *****************
 
 ## Release ONDEWO VTSI API 6.3.0
 
 ## Improvements
 
-* [[OND233-331]](https://ondewo.atlassian.net/browse/OND233-331) - Added list ListVtsiProjects
+* [[OND233-331]](https://ondewo.atlassian.net/browse/OND233-331) - Added ListVtsiProjects to list VTSI projects incl.
+  the capabilities to sorting and for different views
 
 *****************
 
