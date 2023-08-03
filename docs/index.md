@@ -11397,6 +11397,7 @@ Request to get the list of agents
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_view | [VtsiProjectView](#ondewo.vtsi.VtsiProjectView) |  | Optional. Specify the view of the returned VtsiProject (full view by default) |
 | page_token | [string](#string) |  | Optional. The next_page_token value returned from a previous list request. |
+| vtsi_project_sorting | [VtsiProjectSorting](#ondewo.vtsi.VtsiProjectSorting) |  | Optional field to define the sorting of the list of VTSI projects in the response. If not specified, the default behavior is to have no sorting. |
 
 
 
@@ -11413,7 +11414,6 @@ This is a protobuf message definition for the response of getting a list of VTSI
 | ----- | ---- | ----- | ----------- |
 | vtsi_projects | [VtsiProject](#ondewo.vtsi.VtsiProject) | repeated | The list of VTSI projects returned in the response. Use the 'repeated' keyword to indicate that this field can contain multiple instances of VtsiProject. |
 | next_page_token | [string](#string) |  | Token to retrieve the next page of results. This field is a string that holds a token for fetching the next page of results. If there are no more results in the list, this field will be empty. |
-| vtsi_project_sorting | [VtsiProjectSorting](#ondewo.vtsi.VtsiProjectSorting) |  | Optional field to define the sorting of the list of VTSI projects in the response. If not specified, the default behavior is to have no sorting. |
 
 
 
