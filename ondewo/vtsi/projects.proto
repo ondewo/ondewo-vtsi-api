@@ -213,15 +213,63 @@ message ListVtsiProjectsRequest {
     string page_token = 2;
 }
 
-// Get list of vtsi projects
+// This is a protobuf message definition for the response of getting a list of VTSI projects.
 message ListVtsiProjectsResponse {
 
-    // The list of vtsi projects
+    // The list of VTSI projects returned in the response.
+    // Use the 'repeated' keyword to indicate that this field can contain multiple instances of VtsiProject.
     repeated VtsiProject vtsi_projects = 1;
 
-    // Token to retrieve the next page of results, or empty if there are no
-    // more results in the list.
+    // Token to retrieve the next page of results.
+    // This field is a string that holds a token for fetching the next page of results.
+    // If there are no more results in the list, this field will be empty.
     string next_page_token = 2;
+
+    // Optional field to define the sorting of the list of VTSI projects in the response.
+    // If not specified, the default behavior is to have no sorting.
+    VtsiProjectSorting vtsi_project_sorting = 3;
+}
+
+// This protobuf message defines the sorting order for VTSI (Virtual Test System Infrastructure) projects.
+message VtsiProjectSorting {
+
+    // Enum to specify the sorting field for VTSI projects.
+    enum VtsiProjectSortingField {
+
+        // No sorting
+        NO_VTSI_PROJECT_SORTING = 0;
+
+        // Sort by project name such as <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>.
+        SORT_VTSI_PROJECT_BY_NAME = 1;
+
+        // Sort by display name
+        SORT_VTSI_PROJECT_BY_DISPLAY_NAME = 2;
+
+        // Sort by creation date
+        SORT_VTSI_PROJECT_BY_CREATION_DATE = 3;
+
+        // Sort by last modified date
+        SORT_VTSI_PROJECT_BY_LAST_MODIFIED = 4;
+    }
+
+    // sorting field for vtsi projects sorting
+    VtsiProjectSortingField sorting_field = 1;
+
+    // Sorting mode
+    VtsiProjectSortingMode sorting_mode = 2;
+}
+
+// Sorting mode
+enum VtsiProjectSortingMode {
+    // The ascending sorting mode.
+    // When sorting using this mode, VtsiProject objects will be arranged
+    // in ascending order based on the specified criteria.
+    ASCENDING = 0;
+
+    // The descending sorting mode.
+    // When sorting using this mode, VtsiProject objects will be arranged
+    // in descending order based on the specified criteria.
+    DESCENDING = 1;
 }
 
 // Structure of VTSI_PROJECT view
