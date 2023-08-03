@@ -69,6 +69,7 @@ message VtsiProject{
     // Configs to start the asterisk server.
     AsteriskConfigs asterisk_configs = 5;
 
+    // The status of the VTSI project.
     VtsiProjectStatus vtsi_project_status = 6;
 
     // The user who created the vtsi project. Readonly.
@@ -82,6 +83,15 @@ message VtsiProject{
 
     // Modification time of the vtsi project. Readonly.
     google.protobuf.Timestamp modified_at = 10;
+
+    // The number of active callers in this project.
+    int32 active_callers = 11;
+
+    // The number of active listeners in this project.
+    int32 active_listeners = 12;
+
+    // The port of the asterisk server
+    int32 asterisk_port = 13;
 
 }
 
