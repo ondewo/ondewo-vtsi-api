@@ -666,7 +666,10 @@
     - [UpdateVtsiProjectRequest](#ondewo.vtsi.UpdateVtsiProjectRequest)
     - [UpdateVtsiProjectResponse](#ondewo.vtsi.UpdateVtsiProjectResponse)
     - [VtsiProject](#ondewo.vtsi.VtsiProject)
+    - [VtsiProjectSorting](#ondewo.vtsi.VtsiProjectSorting)
   
+    - [VtsiProjectSorting.VtsiProjectSortingField](#ondewo.vtsi.VtsiProjectSorting.VtsiProjectSortingField)
+    - [VtsiProjectSortingMode](#ondewo.vtsi.VtsiProjectSortingMode)
     - [VtsiProjectStatus](#ondewo.vtsi.VtsiProjectStatus)
     - [VtsiProjectView](#ondewo.vtsi.VtsiProjectView)
   
@@ -11403,13 +11406,14 @@ Request to get the list of agents
 <a name="ondewo.vtsi.ListVtsiProjectsResponse"></a>
 
 ### ListVtsiProjectsResponse
-Get list of vtsi projects
+This is a protobuf message definition for the response of getting a list of VTSI projects.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| vtsi_projects | [VtsiProject](#ondewo.vtsi.VtsiProject) | repeated | The list of vtsi projects |
-| next_page_token | [string](#string) |  | Token to retrieve the next page of results, or empty if there are no more results in the list. |
+| vtsi_projects | [VtsiProject](#ondewo.vtsi.VtsiProject) | repeated | The list of VTSI projects returned in the response. Use the 'repeated' keyword to indicate that this field can contain multiple instances of VtsiProject. |
+| next_page_token | [string](#string) |  | Token to retrieve the next page of results. This field is a string that holds a token for fetching the next page of results. If there are no more results in the list, this field will be empty. |
+| vtsi_project_sorting | [VtsiProjectSorting](#ondewo.vtsi.VtsiProjectSorting) |  | Optional field to define the sorting of the list of VTSI projects in the response. If not specified, the default behavior is to have no sorting. |
 
 
 
@@ -11501,7 +11505,50 @@ The VTSI project with its configuration setting
 
 
 
+
+<a name="ondewo.vtsi.VtsiProjectSorting"></a>
+
+### VtsiProjectSorting
+This protobuf message defines the sorting order for VTSI (Virtual Test System Infrastructure) projects.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sorting_field | [VtsiProjectSorting.VtsiProjectSortingField](#ondewo.vtsi.VtsiProjectSorting.VtsiProjectSortingField) |  | sorting field for vtsi projects sorting |
+| sorting_mode | [VtsiProjectSortingMode](#ondewo.vtsi.VtsiProjectSortingMode) |  | Sorting mode |
+
+
+
+
+
  <!-- end messages -->
+
+
+<a name="ondewo.vtsi.VtsiProjectSorting.VtsiProjectSortingField"></a>
+
+### VtsiProjectSorting.VtsiProjectSortingField
+Enum to specify the sorting field for VTSI projects.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| NO_VTSI_PROJECT_SORTING | 0 | No sorting |
+| SORT_VTSI_PROJECT_BY_NAME | 1 | Sort by project name such as <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>. |
+| SORT_VTSI_PROJECT_BY_DISPLAY_NAME | 2 | Sort by display name |
+| SORT_VTSI_PROJECT_BY_CREATION_DATE | 3 | Sort by creation date |
+| SORT_VTSI_PROJECT_BY_LAST_MODIFIED | 4 | Sort by last modified date |
+
+
+
+<a name="ondewo.vtsi.VtsiProjectSortingMode"></a>
+
+### VtsiProjectSortingMode
+Sorting mode
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| ASCENDING | 0 | The ascending sorting mode. When sorting using this mode, VtsiProject objects will be arranged in ascending order based on the specified criteria. |
+| DESCENDING | 1 | The descending sorting mode. When sorting using this mode, VtsiProject objects will be arranged in descending order based on the specified criteria. |
+
 
 
 <a name="ondewo.vtsi.VtsiProjectStatus"></a>

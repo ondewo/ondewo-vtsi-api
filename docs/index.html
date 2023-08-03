@@ -3482,11 +3482,23 @@
                         <a href="#ondewo.vtsi.VtsiProject" class="title-badge message">VtsiProject</a>
                       </li>
                     
+                      <li>
+                        <a href="#ondewo.vtsi.VtsiProjectSorting" class="title-badge message">VtsiProjectSorting</a>
+                      </li>
+                    
                   </ul>
                   
                   
                   <a href="#ondewo/vtsi/projects.proto-enums">Enums</a>
                   <ul>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.VtsiProjectSorting.VtsiProjectSortingField" class="title-badge enum">VtsiProjectSorting.VtsiProjectSortingField</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.VtsiProjectSortingMode" class="title-badge enum">VtsiProjectSortingMode</a>
+                      </li>
                     
                       <li>
                         <a href="#ondewo.vtsi.VtsiProjectStatus" class="title-badge enum">VtsiProjectStatus</a>
@@ -30763,7 +30775,7 @@ If no name is given a new parent name is created. The parent has the format:
         
       
         <h3 id="ondewo.vtsi.ListVtsiProjectsResponse" class="title-badge message">ListVtsiProjectsResponse</h3>
-        <p>Get list of vtsi projects</p>
+        <p>This is a protobuf message definition for the response of getting a list of VTSI projects.</p>
 
         
           <table class="field-table">
@@ -30776,15 +30788,25 @@ If no name is given a new parent name is created. The parent has the format:
                   <td>vtsi_projects</td>
                   <td><a href="#ondewo.vtsi.VtsiProject">VtsiProject</a></td>
                   <td>repeated</td>
-                  <td><p>The list of vtsi projects </p></td>
+                  <td><p>The list of VTSI projects returned in the response.
+Use the 'repeated' keyword to indicate that this field can contain multiple instances of VtsiProject. </p></td>
                 </tr>
               
                 <tr>
                   <td>next_page_token</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>Token to retrieve the next page of results, or empty if there are no
-more results in the list. </p></td>
+                  <td><p>Token to retrieve the next page of results.
+This field is a string that holds a token for fetching the next page of results.
+If there are no more results in the list, this field will be empty. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>vtsi_project_sorting</td>
+                  <td><a href="#ondewo.vtsi.VtsiProjectSorting">VtsiProjectSorting</a></td>
+                  <td></td>
+                  <td><p>Optional field to define the sorting of the list of VTSI projects in the response.
+If not specified, the default behavior is to have no sorting. </p></td>
                 </tr>
               
             </tbody>
@@ -30992,10 +31014,109 @@ Only when a new VtsiProject is created the name can be undefined/empty </p></td>
 
         
       
+        <h3 id="ondewo.vtsi.VtsiProjectSorting" class="title-badge message">VtsiProjectSorting</h3>
+        <p>This protobuf message defines the sorting order for VTSI (Virtual Test System Infrastructure) projects.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>sorting_field</td>
+                  <td><a href="#ondewo.vtsi.VtsiProjectSorting.VtsiProjectSortingField">VtsiProjectSorting.VtsiProjectSortingField</a></td>
+                  <td></td>
+                  <td><p>sorting field for vtsi projects sorting </p></td>
+                </tr>
+              
+                <tr>
+                  <td>sorting_mode</td>
+                  <td><a href="#ondewo.vtsi.VtsiProjectSortingMode">VtsiProjectSortingMode</a></td>
+                  <td></td>
+                  <td><p>Sorting mode </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
       
 
       
       <div id="ondewo/vtsi/projects.proto-enums" class="object-category">Enums</div>
+      
+        <h3 id="ondewo.vtsi.VtsiProjectSorting.VtsiProjectSortingField" class="title-badge enum">VtsiProjectSorting.VtsiProjectSortingField</h3>
+        <p>Enum to specify the sorting field for VTSI projects.</p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>NO_VTSI_PROJECT_SORTING</td>
+                <td>0</td>
+                <td><p>No sorting</p></td>
+              </tr>
+            
+              <tr>
+                <td>SORT_VTSI_PROJECT_BY_NAME</td>
+                <td>1</td>
+                <td><p>Sort by project name such as <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>.</p></td>
+              </tr>
+            
+              <tr>
+                <td>SORT_VTSI_PROJECT_BY_DISPLAY_NAME</td>
+                <td>2</td>
+                <td><p>Sort by display name</p></td>
+              </tr>
+            
+              <tr>
+                <td>SORT_VTSI_PROJECT_BY_CREATION_DATE</td>
+                <td>3</td>
+                <td><p>Sort by creation date</p></td>
+              </tr>
+            
+              <tr>
+                <td>SORT_VTSI_PROJECT_BY_LAST_MODIFIED</td>
+                <td>4</td>
+                <td><p>Sort by last modified date</p></td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+        <h3 id="ondewo.vtsi.VtsiProjectSortingMode" class="title-badge enum">VtsiProjectSortingMode</h3>
+        <p>Sorting mode</p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>ASCENDING</td>
+                <td>0</td>
+                <td><p>The ascending sorting mode.
+When sorting using this mode, VtsiProject objects will be arranged
+in ascending order based on the specified criteria.</p></td>
+              </tr>
+            
+              <tr>
+                <td>DESCENDING</td>
+                <td>1</td>
+                <td><p>The descending sorting mode.
+When sorting using this mode, VtsiProject objects will be arranged
+in descending order based on the specified criteria.</p></td>
+              </tr>
+            
+          </tbody>
+        </table>
       
         <h3 id="ondewo.vtsi.VtsiProjectStatus" class="title-badge enum">VtsiProjectStatus</h3>
         <p>Status of a VtsiProject.</p>
