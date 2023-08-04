@@ -10559,6 +10559,8 @@ Represents the response for listing callers.
 | call_view | [CallView](#ondewo.vtsi.CallView) |  | you can specify the view to be shallow or full .. see above for more info |
 | call_type | [CallType](#ondewo.vtsi.CallType) |  | both by default, or only listeners, or only callers |
 | page_token | [string](#string) |  | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
+| active | [bool](#bool) |  | Optional. Filter based on active or inactive calls |
+| sip_status_type | [ondewo.sip.SipStatus.StatusType](#ondewo.sip.SipStatus.StatusType) |  | Optional. Filter based on sip status type |
 
 
 
