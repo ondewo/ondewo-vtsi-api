@@ -220,6 +220,7 @@ message ListVtsiProjectsRequest {
     VtsiProjectView vtsi_project_view = 1;
 
     // Optional. The next_page_token value returned from a previous list request.
+    // Example: "current_index-1--page_size-20"
     string page_token = 2;
 
     // Optional field to define the sorting of the list of VTSI projects in the response.

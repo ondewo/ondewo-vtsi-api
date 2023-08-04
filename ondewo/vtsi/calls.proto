@@ -521,6 +521,10 @@ message ListCallersRequest {
     // The format is: "projects/<project_uuid>/project".
     string vtsi_project_name = 1;
 
+    // Optional. The next_page_token value returned from a previous list request.
+    // Example: "current_index-1--page_size-20"
+    string page_token = 2;
+
 }
 
 // Represents the response for listing callers.
@@ -546,6 +550,10 @@ message ListListenersRequest {
     // The format is: "projects/<project_uuid>/project".
     string vtsi_project_name = 1;
 
+    // Optional. The next_page_token value returned from a previous list request.
+    // Example: "current_index-1--page_size-20"
+    string page_token = 2;
+
 }
 
 // Represents the response for listing listeners.
@@ -554,6 +562,10 @@ message ListListenersResponse {
     // The list of listeners.
     repeated Listener listeners = 1;
 
+    // Token to retrieve the next page of results.
+    // This field is a string that holds a token for fetching the next page of results.
+    // If there are no more results in the list, this field will be empty.
+    string next_page_token = 2;
 }
 
 // Represents a request to get a specific listener.
@@ -836,6 +848,10 @@ message ListCallsRequest{
 
     // both by default, or only listeners, or only callers
     CallType call_type = 3;
+
+    // Optional. The next_page_token value returned from a previous list request.
+    // Example: "current_index-1--page_size-20"
+    string page_token = 4;
 }
 
 // Response to list all VoipInfos
@@ -843,6 +859,12 @@ message ListCallsResponse{
 
     // VoipInfos
     repeated Call calls = 1;
+
+    // Token to retrieve the next page of results.
+    // This field is a string that holds a token for fetching the next page of results.
+    // If there are no more results in the list, this field will be empty.
+    string next_page_token = 2;
+
 }
 
 // status of ondewo-sip instance
