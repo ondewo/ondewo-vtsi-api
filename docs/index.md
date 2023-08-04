@@ -10525,6 +10525,7 @@ Represents a request to list callers.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name for which to perform the call. The format is: "projects/<project_uuid>/project". |
+| page_token | [string](#string) |  | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
 
 
 
@@ -10557,6 +10558,7 @@ Represents the response for listing callers.
 | vtsi_project_name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | call_view | [CallView](#ondewo.vtsi.CallView) |  | you can specify the view to be shallow or full .. see above for more info |
 | call_type | [CallType](#ondewo.vtsi.CallType) |  | both by default, or only listeners, or only callers |
+| page_token | [string](#string) |  | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
 
 
 
@@ -10572,6 +10574,7 @@ Response to list all VoipInfos
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | calls | [Call](#ondewo.vtsi.Call) | repeated | VoipInfos |
+| next_page_token | [string](#string) |  | Token to retrieve the next page of results. This field is a string that holds a token for fetching the next page of results. If there are no more results in the list, this field will be empty. |
 
 
 
@@ -10587,6 +10590,7 @@ Represents a request to list listeners.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name for which to perform the call. The format is: "projects/<project_uuid>/project". |
+| page_token | [string](#string) |  | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
 
 
 
@@ -10602,6 +10606,7 @@ Represents the response for listing listeners.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | listeners | [Listener](#ondewo.vtsi.Listener) | repeated | The list of listeners. |
+| next_page_token | [string](#string) |  | Token to retrieve the next page of results. This field is a string that holds a token for fetching the next page of results. If there are no more results in the list, this field will be empty. |
 
 
 
@@ -11479,7 +11484,7 @@ Request to get the list of agents
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_view | [VtsiProjectView](#ondewo.vtsi.VtsiProjectView) |  | Optional. Specify the view of the returned VtsiProject (full view by default) |
-| page_token | [string](#string) |  | Optional. The next_page_token value returned from a previous list request. |
+| page_token | [string](#string) |  | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
 | vtsi_project_sorting | [VtsiProjectSorting](#ondewo.vtsi.VtsiProjectSorting) |  | Optional field to define the sorting of the list of VTSI projects in the response. If not specified, the default behavior is to have no sorting. |
 
 
