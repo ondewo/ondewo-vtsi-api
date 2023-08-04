@@ -852,6 +852,12 @@ message ListCallsRequest{
     // Optional. The next_page_token value returned from a previous list request.
     // Example: "current_index-1--page_size-20"
     string page_token = 4;
+
+    // Optional. Filter based on active or inactive calls
+    bool active = 5;
+
+    // Optional. Filter based on sip status type
+    ondewo.sip.SipStatus.StatusType sip_status_type = 6;
 }
 
 // Response to list all VoipInfos
