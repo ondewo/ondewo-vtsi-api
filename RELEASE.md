@@ -2,6 +2,20 @@
 
 *****************
 
+## Release ONDEWO VTSI API 6.4.0
+
+## Improvements
+
+* [[OND233-332]](https://ondewo.atlassian.net/browse/OND233-332) - Added ListCallers, GetCaller, ListListeners and
+  GetListener
+
+## Breaking changes
+
+* [[OND233-332]](https://ondewo.atlassian.net/browse/OND233-332) - Renamed GetCallInfo and ListCallInfos methods to
+  GetCall and ListCalls
+
+*****************
+
 ## Release ONDEWO VTSI API 6.3.0
 
 ## Improvements
