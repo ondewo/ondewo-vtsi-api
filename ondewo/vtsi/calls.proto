@@ -39,11 +39,23 @@ service Calls {
     // start multiple ondewo-sip callers instances for a specific nlu-project.
     rpc StartCallers (StartCallersRequest) returns (StartCallersResponse);
 
+    // lists all available callers
+    rpc ListCallers (ListCallersRequest) returns (ListCallersResponse);
+
+    // gets a caller
+    rpc GetCaller (GetCallerRequest) returns (Caller);
+
     // start single listener instance for a specific nlu-project.
     rpc StartListener (StartListenerRequest) returns (StartListenerResponse);
 
     // start multiple ondewo-sip listeners instances for a specific nlu-project.
     rpc StartListeners (StartListenersRequest) returns (StartListenersResponse);
+
+    // lists all available listeners
+    rpc ListListeners (ListListenersRequest) returns (ListListenersResponse);
+
+    // gets a listener
+    rpc GetListener (GetListenerRequest) returns (Listener);
 
     // start multiple ondewo-sip callers instances with schedules
     rpc StartScheduledCaller (StartScheduledCallerRequest) returns (StartScheduledCallerResponse);
@@ -69,10 +81,10 @@ service Calls {
     rpc TransferCalls (TransferCallsRequest) returns (TransferCallsResponse);
 
     // get call log for single call instance
-    rpc GetCallInfo (GetCallInfoRequest) returns (GetCallInfoResponse);
+    rpc GetCall (GetCallRequest) returns (Call);
 
     // get call log for all call instances
-    rpc ListCallInfo (ListCallInfoRequest) returns (ListCallInfoResponse);
+    rpc ListCalls (ListCallsRequest) returns (ListCallsResponse);
 
     // Get a s2t or t2s audio file for this conversation if it exists in Minio
     rpc GetAudioFile (GetAudioFileRequest) returns (GetAudioFileResponse);
@@ -501,6 +513,58 @@ message StartCallersResponse {
 
 }
 
+
+// Represents a request to list callers.
+message ListCallersRequest {
+
+    // VTSI project name for which to perform the call.
+    // The format is: "projects/<project_uuid>/project".
+    string vtsi_project_name = 1;
+
+}
+
+// Represents the response for listing callers.
+message ListCallersResponse {
+
+    // The list of callers.
+    repeated Caller callers = 1;
+
+}
+
+// Represents a request to get a specific caller.
+message GetCallerRequest {
+
+    // The caller to retrieve.
+    Caller callers = 1;
+
+}
+
+// Represents a request to list listeners.
+message ListListenersRequest {
+
+    // VTSI project name for which to perform the call.
+    // The format is: "projects/<project_uuid>/project".
+    string vtsi_project_name = 1;
+
+}
+
+// Represents the response for listing listeners.
+message ListListenersResponse {
+
+    // The list of listeners.
+    repeated Listener listeners = 1;
+
+}
+
+// Represents a request to get a specific listener.
+message GetListenerRequest {
+
+    // The listener to retrieve.
+    Listener listeners = 1;
+
+}
+
+
 // request for starting a scheduled call
 message StartScheduledCallerRequest {
 
@@ -689,7 +753,7 @@ message TransferCallsResponse {
 }
 
 // request to get a call instance's call logs
-message GetCallInfoRequest {
+message GetCallRequest {
 
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
@@ -700,11 +764,11 @@ message GetCallInfoRequest {
     string call_name = 2;
 
     /* you can specify the view to be shallow or full .. see above for more info*/
-    CallInfoView call_info_view = 3;
+    CallView call_view = 3;
 }
 
-// CallInfo view options
-enum CallInfoView {
+// Call view options
+enum CallView {
 
     // Gives you all basic info like call name, start_time, end_time, current sip status
     SHALLOW = 0;
@@ -713,31 +777,22 @@ enum CallInfoView {
     FULL = 1;
 }
 
-// response with call logs
-message GetCallInfoResponse {
-
-    // CallInfo to view active logs of calls
-    CallInfo active_log = 1;
-
-    // logs of calls associated with call instance
-    repeated CallInfo done_logs = 2;
-}
 
 // CallType
 enum CallType {
 
     // both listeners and callers
-    both = 0;
+    BOTH = 0;
 
-    // voip call listeners
-    listener = 1;
+    // listeners
+    LISTENER = 1;
 
-    // voip call callers
-    caller = 2;
+    // caller
+    CALLER = 2;
 }
 
 // Call log
-message CallInfo {
+message Call {
 
     // call name
     // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
@@ -771,23 +826,23 @@ message CallInfo {
     AllServicesStatuses services_statuses = 10;
 }
 
-message ListCallInfoRequest{
+message ListCallsRequest{
 
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
     // you can specify the view to be shallow or full .. see above for more info
-    CallInfoView call_info_view = 2;
+    CallView call_view = 2;
 
     // both by default, or only listeners, or only callers
     CallType call_type = 3;
 }
 
 // Response to list all VoipInfos
-message ListCallInfoResponse{
+message ListCallsResponse{
 
     // VoipInfos
-    repeated CallInfo call_infos = 1;
+    repeated Call calls = 1;
 }
 
 // status of ondewo-sip instance
