@@ -10468,7 +10468,7 @@ Represents a request to get a specific caller.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| callers | [Caller](#ondewo.vtsi.Caller) |  | The caller to retrieve. |
+| name | [string](#string) |  | The name of caller to retrieve. |
 
 
 
@@ -10515,7 +10515,7 @@ Represents a request to get a specific listener.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| listeners | [Listener](#ondewo.vtsi.Listener) |  | The listener to retrieve. |
+| name | [string](#string) |  | The name of listener to retrieve. |
 
 
 
