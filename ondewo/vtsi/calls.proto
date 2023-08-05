@@ -538,8 +538,8 @@ message ListCallersResponse {
 // Represents a request to get a specific caller.
 message GetCallerRequest {
 
-    // The caller to retrieve.
-    Caller callers = 1;
+    // The name of caller to retrieve.
+    string name = 1;
 
 }
 
@@ -571,8 +571,8 @@ message ListListenersResponse {
 // Represents a request to get a specific listener.
 message GetListenerRequest {
 
-    // The listener to retrieve.
-    Listener listeners = 1;
+    // The name of listener to retrieve.
+    string name = 1;
 
 }
 
