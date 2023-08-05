@@ -10468,6 +10468,7 @@ Represents a request to get a specific caller.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | name | [string](#string) |  | The name of caller to retrieve. |
 
 
@@ -10515,6 +10516,7 @@ Represents a request to get a specific listener.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | name | [string](#string) |  | The name of listener to retrieve. |
 
 
