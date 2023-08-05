@@ -812,7 +812,7 @@ message Call {
     // call name
     // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
-    string call_name = 1;
+    string name = 1;
 
     // sip account used
     string sip_account = 2;
