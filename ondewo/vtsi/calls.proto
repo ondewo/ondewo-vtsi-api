@@ -831,29 +831,32 @@ message Call {
     // end time of log
     google.protobuf.Timestamp end_time = 7;
 
+    // current sip status type
+    ondewo.sip.SipStatus.StatusType sip_status_type = 8;
+
     // current sip status
-    ondewo.sip.SipStatus sip_status = 8;
+    optional ondewo.sip.SipStatus sip_status = 9;
 
     // sip status history
-    ondewo.sip.SipStatusHistoryResponse sip_status_history = 9;
+    optional ondewo.sip.SipStatusHistoryResponse sip_status_history = 10;
 
     // All container health statuses
-    AllServicesStatuses services_statuses = 10;
+    optional AllServicesStatuses services_statuses = 11;
 
     // Is a call active or not
-    bool active = 11;
+    bool active = 12;
 
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string vtsi_project_name = 12;
+    string vtsi_project_name = 13;
 
     // Detailed configuration of the services used for the call such as S2T, T2S, NLU, SIP and CSI
-    CommonServicesConfig common_services_config = 13;
+    optional CommonServicesConfig common_services_config = 14;
 
     // SIP port of the call
-    int32 sip_port = 14;
+    optional int32 sip_port = 15;
 
     // CSi port of the call
-    int32  csi_port = 15;
+    optional int32  csi_port = 16;
 
 }
 
