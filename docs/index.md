@@ -10323,14 +10323,15 @@ Call log
 | phone_number | [string](#string) |  |  |
 | start_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | start time of log |
 | end_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | end time of log |
-| sip_status | [ondewo.sip.SipStatus](#ondewo.sip.SipStatus) |  | current sip status |
-| sip_status_history | [ondewo.sip.SipStatusHistoryResponse](#ondewo.sip.SipStatusHistoryResponse) |  | sip status history |
-| services_statuses | [AllServicesStatuses](#ondewo.vtsi.AllServicesStatuses) |  | All container health statuses |
+| sip_status_type | [ondewo.sip.SipStatus.StatusType](#ondewo.sip.SipStatus.StatusType) |  | current sip status type |
+| sip_status | [ondewo.sip.SipStatus](#ondewo.sip.SipStatus) | optional | current sip status |
+| sip_status_history | [ondewo.sip.SipStatusHistoryResponse](#ondewo.sip.SipStatusHistoryResponse) | optional | sip status history |
+| services_statuses | [AllServicesStatuses](#ondewo.vtsi.AllServicesStatuses) | optional | All container health statuses |
 | active | [bool](#bool) |  | Is a call active or not |
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
-| common_services_config | [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig) |  | Detailed configuration of the services used for the call such as S2T, T2S, NLU, SIP and CSI |
-| sip_port | [int32](#int32) |  | SIP port of the call |
-| csi_port | [int32](#int32) |  | CSi port of the call |
+| common_services_config | [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig) | optional | Detailed configuration of the services used for the call such as S2T, T2S, NLU, SIP and CSI |
+| sip_port | [int32](#int32) | optional | SIP port of the call |
+| csi_port | [int32](#int32) | optional | CSi port of the call |
 
 
 
