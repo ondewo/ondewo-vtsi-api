@@ -10453,7 +10453,7 @@ request to get a call instance's call logs
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | call_name | [string](#string) |  | call name For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
-| call_view | [CallView](#ondewo.vtsi.CallView) |  | you can specify the view to be shallow or full .. see above for more info |
+| call_view | [CallView](#ondewo.vtsi.CallView) | optional | you can specify the view to be shallow or full .. see above for more info |
 
 
 
@@ -10531,7 +10531,7 @@ Represents a request to list callers.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name for which to perform the call. The format is: "projects/<project_uuid>/project". |
-| page_token | [string](#string) |  | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
+| page_token | [string](#string) | optional | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
 
 
 
@@ -10562,11 +10562,11 @@ Represents the response for listing callers.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
-| call_view | [CallView](#ondewo.vtsi.CallView) |  | you can specify the view to be shallow or full .. see above for more info |
-| call_type | [CallType](#ondewo.vtsi.CallType) |  | both by default, or only listeners, or only callers |
-| page_token | [string](#string) |  | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
-| active | [bool](#bool) |  | Optional. Filter based on active or inactive calls |
-| sip_status_type | [ondewo.sip.SipStatus.StatusType](#ondewo.sip.SipStatus.StatusType) |  | Optional. Filter based on sip status type |
+| call_view | [CallView](#ondewo.vtsi.CallView) | optional | you can specify the view to be shallow or full .. see above for more info |
+| call_type | [CallType](#ondewo.vtsi.CallType) | optional | both by default, or only listeners, or only callers |
+| page_token | [string](#string) | optional | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
+| active | [bool](#bool) | optional | Optional. Filter based on active or inactive calls |
+| sip_status_type | [ondewo.sip.SipStatus.StatusType](#ondewo.sip.SipStatus.StatusType) | optional | Optional. Filter based on sip status type |
 
 
 
@@ -10598,7 +10598,7 @@ Represents a request to list listeners.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name for which to perform the call. The format is: "projects/<project_uuid>/project". |
-| page_token | [string](#string) |  | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
+| page_token | [string](#string) | optional | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
 
 
 
@@ -11493,8 +11493,8 @@ Request to get the list of agents
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_view | [VtsiProjectView](#ondewo.vtsi.VtsiProjectView) |  | Optional. Specify the view of the returned VtsiProject (full view by default) |
-| page_token | [string](#string) |  | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
-| vtsi_project_sorting | [VtsiProjectSorting](#ondewo.vtsi.VtsiProjectSorting) |  | Optional field to define the sorting of the list of VTSI projects in the response. If not specified, the default behavior is to have no sorting. |
+| page_token | [string](#string) | optional | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
+| vtsi_project_sorting | [VtsiProjectSorting](#ondewo.vtsi.VtsiProjectSorting) | optional | Optional field to define the sorting of the list of VTSI projects in the response. If not specified, the default behavior is to have no sorting. |
 
 
 
@@ -11614,8 +11614,8 @@ This protobuf message defines the sorting order for VTSI (Virtual Test System In
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| sorting_field | [VtsiProjectSorting.VtsiProjectSortingField](#ondewo.vtsi.VtsiProjectSorting.VtsiProjectSortingField) |  | sorting field for vtsi projects sorting |
-| sorting_mode | [VtsiProjectSortingMode](#ondewo.vtsi.VtsiProjectSortingMode) |  | Sorting mode |
+| sorting_field | [VtsiProjectSorting.VtsiProjectSortingField](#ondewo.vtsi.VtsiProjectSorting.VtsiProjectSortingField) | optional | sorting field for vtsi projects sorting |
+| sorting_mode | [VtsiProjectSortingMode](#ondewo.vtsi.VtsiProjectSortingMode) | optional | Sorting mode |
 
 
 
