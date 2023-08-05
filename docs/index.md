@@ -10326,6 +10326,11 @@ Call log
 | sip_status | [ondewo.sip.SipStatus](#ondewo.sip.SipStatus) |  | current sip status |
 | sip_status_history | [ondewo.sip.SipStatusHistoryResponse](#ondewo.sip.SipStatusHistoryResponse) |  | sip status history |
 | services_statuses | [AllServicesStatuses](#ondewo.vtsi.AllServicesStatuses) |  | All container health statuses |
+| active | [bool](#bool) |  | Is a call active or not |
+| vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| common_services_config | [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig) |  | Detailed configuration of the services used for the call such as S2T, T2S, NLU, SIP and CSI |
+| sip_port | [int32](#int32) |  | SIP port of the call |
+| csi_port | [int32](#int32) |  | CSi port of the call |
 
 
 
@@ -11263,8 +11268,9 @@ Call view options
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
-| SHALLOW | 0 | Gives you all basic info like call name, start_time, end_time, current sip status |
-| FULL | 1 | Gives you the full info with status history and the services statuses |
+| MINIMUM | 0 | Gives only minimum info about the call |
+| SHALLOW | 1 | Gives further basic info like call name, start_time, end_time, current sip status |
+| FULL | 2 | Gives you the full info with status history and the services statuses |
 
 
  <!-- end enums -->
