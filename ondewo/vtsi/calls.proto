@@ -523,7 +523,7 @@ message ListCallersRequest {
 
     // Optional. The next_page_token value returned from a previous list request.
     // Example: "current_index-1--page_size-20"
-    string page_token = 2;
+    optional string page_token = 2;
 
 }
 
@@ -552,7 +552,7 @@ message ListListenersRequest {
 
     // Optional. The next_page_token value returned from a previous list request.
     // Example: "current_index-1--page_size-20"
-    string page_token = 2;
+    optional string page_token = 2;
 
 }
 
@@ -775,8 +775,8 @@ message GetCallRequest {
     // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     string call_name = 2;
 
-    /* you can specify the view to be shallow or full .. see above for more info*/
-    CallView call_view = 3;
+    // you can specify the view to be shallow or full .. see above for more info
+    optional CallView call_view = 3;
 }
 
 // Call view options
@@ -866,20 +866,20 @@ message ListCallsRequest{
     string vtsi_project_name = 1;
 
     // you can specify the view to be shallow or full .. see above for more info
-    CallView call_view = 2;
+    optional CallView call_view = 2;
 
     // both by default, or only listeners, or only callers
-    CallType call_type = 3;
+    optional CallType call_type = 3;
 
     // Optional. The next_page_token value returned from a previous list request.
     // Example: "current_index-1--page_size-20"
-    string page_token = 4;
+    optional string page_token = 4;
 
     // Optional. Filter based on active or inactive calls
-    bool active = 5;
+    optional  bool active = 5;
 
     // Optional. Filter based on sip status type
-    ondewo.sip.SipStatus.StatusType sip_status_type = 6;
+    optional ondewo.sip.SipStatus.StatusType sip_status_type = 6;
 }
 
 // Response to list all VoipInfos
