@@ -10316,7 +10316,7 @@ Call log
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| call_name | [string](#string) |  | call name For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
+| name | [string](#string) |  | call name For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
 | sip_account | [string](#string) |  | sip account used |
 | container_name | [string](#string) |  | container name which you get from docker ps |
 | call_type | [CallType](#ondewo.vtsi.CallType) |  | Listener or caller enum .. if not specified |
