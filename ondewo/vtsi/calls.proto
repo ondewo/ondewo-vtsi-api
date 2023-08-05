@@ -846,13 +846,13 @@ message Call {
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 12;
 
-    // Detailed deploy data for this call
+    // Detailed configuration of the services used for the call such as S2T, T2S, NLU, SIP and CSI
     CommonServicesConfig common_services_config = 13;
 
-    // SIP port
+    // SIP port of the call
     int32 sip_port = 14;
 
-    // CSO port
+    // CSi port of the call
     int32  csi_port = 15;
 
 }
