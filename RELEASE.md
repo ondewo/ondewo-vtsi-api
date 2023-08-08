@@ -2,6 +2,15 @@
 
 *****************
 
+## Release ONDEWO VTSI API 6.5.0
+
+## Improvements
+
+* [[OND233-333]](https://ondewo.atlassian.net/browse/OND233-333) - Add associated NLU agents in VtsiProject and in
+  ListVtsiProjects
+
+*****************
+
 ## Release ONDEWO VTSI API 6.4.0
 
 ## Improvements

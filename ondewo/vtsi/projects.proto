@@ -93,6 +93,10 @@ message VtsiProject{
     // The port of the asterisk server
     int32 asterisk_port = 13;
 
+    // associated NLU agents
+    // Format: `projects/<Project ID>/agent`.
+    repeated string nlu_agent_names = 14;
+
 }
 
 // Status of a VtsiProject.
@@ -223,9 +227,13 @@ message ListVtsiProjectsRequest {
     // Example: "current_index-1--page_size-20"
     optional string page_token = 2;
 
-    // Optional field to define the sorting of the list of VTSI projects in the response.
+    // Optional. Field to define the sorting of the list of VTSI projects in the response.
     // If not specified, the default behavior is to have no sorting.
     optional VtsiProjectSorting vtsi_project_sorting = 3;
+
+    // Optional. Filter based on associated NLU agents
+    // Format: `projects/<Project ID>/agent`.
+    repeated string nlu_agent_names = 4;
 }
 
 // This is a protobuf message definition for the response of getting a list of VTSI projects.
