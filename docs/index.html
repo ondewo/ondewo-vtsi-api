@@ -776,6 +776,14 @@
                       
                         <li><a href="#ondewo.nlu.EntityTypes.BatchDeleteEntityTypes" class="title-badge method">BatchDeleteEntityTypes</a></li>
                       
+                        <li><a href="#ondewo.nlu.EntityTypes.GetEntity" class="title-badge method">GetEntity</a></li>
+                      
+                        <li><a href="#ondewo.nlu.EntityTypes.CreateEntity" class="title-badge method">CreateEntity</a></li>
+                      
+                        <li><a href="#ondewo.nlu.EntityTypes.UpdateEntity" class="title-badge method">UpdateEntity</a></li>
+                      
+                        <li><a href="#ondewo.nlu.EntityTypes.DeleteEntity" class="title-badge method">DeleteEntity</a></li>
+                      
                         <li><a href="#ondewo.nlu.EntityTypes.BatchCreateEntities" class="title-badge method">BatchCreateEntities</a></li>
                       
                         <li><a href="#ondewo.nlu.EntityTypes.BatchUpdateEntities" class="title-badge method">BatchUpdateEntities</a></li>
@@ -801,10 +809,6 @@
                       </li>
                     
                       <li>
-                        <a href="#ondewo.nlu.BatchCreateEntitiesRequest.CreateEntityRequest" class="title-badge message">BatchCreateEntitiesRequest.CreateEntityRequest</a>
-                      </li>
-                    
-                      <li>
                         <a href="#ondewo.nlu.BatchDeleteEntitiesRequest" class="title-badge message">BatchDeleteEntitiesRequest</a>
                       </li>
                     
@@ -813,19 +817,11 @@
                       </li>
                     
                       <li>
-                        <a href="#ondewo.nlu.BatchDeleteEntitiesResponse.DeleteEntityStatus" class="title-badge message">BatchDeleteEntitiesResponse.DeleteEntityStatus</a>
-                      </li>
-                    
-                      <li>
                         <a href="#ondewo.nlu.BatchDeleteEntityTypesRequest" class="title-badge message">BatchDeleteEntityTypesRequest</a>
                       </li>
                     
                       <li>
                         <a href="#ondewo.nlu.BatchEntitiesResponse" class="title-badge message">BatchEntitiesResponse</a>
-                      </li>
-                    
-                      <li>
-                        <a href="#ondewo.nlu.BatchEntitiesResponse.EntityStatus" class="title-badge message">BatchEntitiesResponse.EntityStatus</a>
                       </li>
                     
                       <li>
@@ -845,11 +841,27 @@
                       </li>
                     
                       <li>
+                        <a href="#ondewo.nlu.CreateEntityRequest" class="title-badge message">CreateEntityRequest</a>
+                      </li>
+                    
+                      <li>
                         <a href="#ondewo.nlu.CreateEntityTypeRequest" class="title-badge message">CreateEntityTypeRequest</a>
                       </li>
                     
                       <li>
+                        <a href="#ondewo.nlu.DeleteEntityRequest" class="title-badge message">DeleteEntityRequest</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.nlu.DeleteEntityStatus" class="title-badge message">DeleteEntityStatus</a>
+                      </li>
+                    
+                      <li>
                         <a href="#ondewo.nlu.DeleteEntityTypeRequest" class="title-badge message">DeleteEntityTypeRequest</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.nlu.EntityStatus" class="title-badge message">EntityStatus</a>
                       </li>
                     
                       <li>
@@ -873,6 +885,10 @@
                       </li>
                     
                       <li>
+                        <a href="#ondewo.nlu.GetEntityRequest" class="title-badge message">GetEntityRequest</a>
+                      </li>
+                    
+                      <li>
                         <a href="#ondewo.nlu.GetEntityTypeRequest" class="title-badge message">GetEntityTypeRequest</a>
                       </li>
                     
@@ -890,6 +906,10 @@
                     
                       <li>
                         <a href="#ondewo.nlu.ListEntityTypesResponse" class="title-badge message">ListEntityTypesResponse</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.nlu.UpdateEntityRequest" class="title-badge message">UpdateEntityRequest</a>
                       </li>
                     
                       <li>
@@ -2679,6 +2699,10 @@
                       </li>
                     
                       <li>
+                        <a href="#ondewo.s2t.TranscriptionAlternative" class="title-badge message">TranscriptionAlternative</a>
+                      </li>
+                    
+                      <li>
                         <a href="#ondewo.s2t.TranscriptionReturnOptions" class="title-badge message">TranscriptionReturnOptions</a>
                       </li>
                     
@@ -2707,7 +2731,11 @@
                       </li>
                     
                       <li>
-                        <a href="#ondewo.s2t.WordTiming" class="title-badge message">WordTiming</a>
+                        <a href="#ondewo.s2t.WordAlternative" class="title-badge message">WordAlternative</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.s2t.WordDetail" class="title-badge message">WordDetail</a>
                       </li>
                     
                   </ul>
@@ -2718,6 +2746,10 @@
                     
                       <li>
                         <a href="#ondewo.s2t.Decoding" class="title-badge enum">Decoding</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.s2t.InferenceBackend" class="title-badge enum">InferenceBackend</a>
                       </li>
                     
                   </ul>
@@ -3578,7 +3610,7 @@
 <pre>
 grpcurl -plaintext -H 'cai-token: aimp' -d '{
   "agent": {
-    "display_name": "Pizza Bot",
+    "display_name": "My Pizza Bot",
     "default_language_code": "en",
     "supported_language_codes": ["en"],
     "time_zone": "Europe/Vienna",
@@ -4309,7 +4341,7 @@ Operation <response: [google.protobuf.Empty][google.protobuf.Empty],
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to train is associated with.
-Format: `projects/<Project ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -4348,7 +4380,7 @@ Format: `projects/<Project ID>`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project of this agent.
-Format: `projects/<Project ID>/agent`.
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
 Read-only in the Agent message </p></td>
                 </tr>
               
@@ -4539,7 +4571,7 @@ Read-only in the Agent message </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to build cache is associated with.
-Format: `projects/<Project ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -4643,7 +4675,7 @@ Sorting position of the GetPlatformMappingRequest. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to fetch is associated with.
-Format: `projects/<Project ID>/agents`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre> </p></td>
                 </tr>
               
             </tbody>
@@ -4668,7 +4700,7 @@ Format: `projects/<Project ID>/agents`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to fetch is associated with.
-Format: `projects/<Project ID>/agents`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -4714,7 +4746,7 @@ Format: `projects/<Project ID>/agents`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to export is associated with.
-Format: `projects/<Project ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -4803,7 +4835,7 @@ curl \
                   <td></td>
                   <td><p>Agent related info
 Required. The project that the agent to export is associated with.
-Format: `projects/<Project ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -4923,7 +4955,7 @@ Optional: bigger than zero </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to fetch is associated with.
-Format: `projects/<Project ID>/agents`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -4969,7 +5001,7 @@ Format: `projects/<Project ID>/agents`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to fetch is associated with.
-Format: `projects/<Project ID>/agents`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -5022,7 +5054,7 @@ Format: `projects/<Project ID>/agents`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent is associated with.
-Format: `projects/<Project ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -5068,7 +5100,7 @@ Format: `projects/<Project ID>/agent`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to fetch is associated with.
-Format: `projects/<Project ID>/agents`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -5187,7 +5219,7 @@ Format: `projects/<Project ID>/agents`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to fetch is associated with.
-Format: `projects/<Project ID>/agents`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -5320,7 +5352,7 @@ Format: `projects/<Project ID>/agents`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to fetch is associated with.
-Format: `projects/<Project ID>/agents`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -5425,7 +5457,7 @@ Format: `projects/<Project ID>/agents`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to fetch is associated with.
-Format: `projects/<Project ID>/agents`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -5544,7 +5576,7 @@ Format: `projects/<Project ID>/agents`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to fetch is associated with.
-Format: `projects/<Project ID>/agents`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -5663,7 +5695,7 @@ Format: `projects/<Project ID>/agents`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to fetch is associated with.
-Format: `projects/<Project ID>/agents`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -5782,7 +5814,7 @@ Format: `projects/<Project ID>/agents`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to fetch is associated with.
-Format: `projects/<Project ID>/agents`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -5908,7 +5940,7 @@ Format: `projects/<Project ID>/agents`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to fetch is associated with.
-Format: `projects/<Project ID>/agents`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -6041,7 +6073,7 @@ Format: `projects/<Project ID>/agents`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to fetch is associated with.
-Format: `projects/<Project ID>/agents`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -6167,7 +6199,7 @@ Format: `projects/<Project ID>/agents`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to fetch is associated with.
-Format: `projects/<Project ID>/agents`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -6314,7 +6346,7 @@ Format: `projects/<Project ID>/agents`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to fetch is associated with.
-Format: `projects/<Project ID>/agents`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -6346,7 +6378,7 @@ Format: `projects/<Project ID>/agents`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project to get statistics from.
-Format: `projects/<Project ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -6431,7 +6463,7 @@ the language to calculate statistics about </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to fetch is associated with.
-Format: `projects/<Project ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -6532,7 +6564,7 @@ Format: `projects/<Project ID>/agent`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent is associated with.
-Format: `projects/<Project ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
             </tbody>
@@ -6557,7 +6589,7 @@ Format: `projects/<Project ID>/agent`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project to get statistics from.
-Format: `projects/<Project ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -6614,7 +6646,7 @@ Format: `projects/<Project ID>`. </p></td>
                   <td><a href="#google.protobuf.FieldMask">google.protobuf.FieldMask</a></td>
                   <td></td>
                   <td><p>Optional. The mask to control which data fields will be added to the returned data.
-Example: path=["session.duration_in_s_min", "session.tags"] </p></td>
+Example: paths=["duration_in_s_min", "id", "session_id", "project_id"] </p></td>
                 </tr>
               
                 <tr>
@@ -6684,7 +6716,7 @@ Example: path=["session.duration_in_s_min", "session.tags"] </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to import is associated with.
-Format: `projects/<Project ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -6898,7 +6930,7 @@ more results in the list. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to train is associated with.
-Format: `projects/<Project ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -7022,7 +7054,7 @@ more results in the list. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to train is associated with.
-Format: `projects/<Project ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -7100,7 +7132,7 @@ with optimized thresholds will be returned but not updated on the server </p></t
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent is associated with.
-Format: `projects/<Project ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -7178,7 +7210,7 @@ example {'OndewoIntentSimilarityMatch': 0.59, 'OndewoIntentNamedSimilarityMatch'
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to fetch is associated with.
-Format: `projects/<Project ID>/agents`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -7217,7 +7249,7 @@ Format: `projects/<Project ID>/agents`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to train is associated with.
-Format: `projects/<Project ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -7249,7 +7281,7 @@ Format: `projects/<Project ID>`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to restore is associated with.
-Format: `projects/<Project ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -7302,7 +7334,7 @@ curl \
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project of which to set the status.
-Format: `projects/<Project ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -7341,7 +7373,7 @@ Format: `projects/<Project ID>/agent`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to fetch is associated with.
-Format: `projects/<Project ID>/agents`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -7394,7 +7426,7 @@ Format: `projects/<Project ID>/agents`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to train is associated with.
-Format: `projects/<Project ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -7471,7 +7503,7 @@ Format: `projects/<Project ID>`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project that the agent to train is associated with.
-Format: `projects/<Project ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -7926,6 +7958,48 @@ Example:
   <code>SELECT ... FROM session, session_steps</code></p></td>
               </tr>
             
+              <tr>
+                <td>SESSION_LEAST_X_INTENTS</td>
+                <td>11</td>
+                <td><p>report least x detected intents in session. Supports SessionFilter to filter</p></td>
+              </tr>
+            
+              <tr>
+                <td>SESSION_LEAST_X_ENTITY_TYPES</td>
+                <td>12</td>
+                <td><p>report least x detected entity types. Supports SessionFilter to filter</p></td>
+              </tr>
+            
+              <tr>
+                <td>SESSION_LEAST_X_ENTITY_VALUES</td>
+                <td>13</td>
+                <td><p>report least x detected entity values Supports SessionFilter to filter</p></td>
+              </tr>
+            
+              <tr>
+                <td>SESSION_LEAST_X_USERS</td>
+                <td>14</td>
+                <td><p>report least x users. Supports SessionFilter to filter (Coming soon! Not yet implemented)</p></td>
+              </tr>
+            
+              <tr>
+                <td>SESSION_LEAST_X_LABELS</td>
+                <td>15</td>
+                <td><p>report least x labels. Supports SessionFilter to filter</p></td>
+              </tr>
+            
+              <tr>
+                <td>SESSION_LEAST_X_TAGS</td>
+                <td>16</td>
+                <td><p>report least x tags. Supports SessionFilter to filter</p></td>
+              </tr>
+            
+              <tr>
+                <td>TOTAL_STATISTICS</td>
+                <td>17</td>
+                <td><p>report total numbers of e.g. sessions, session steps, etc.</p></td>
+              </tr>
+            
           </tbody>
         </table>
       
@@ -8210,7 +8284,7 @@ Example:
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The project of this agent.
-Format: `projects/<Project ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -8527,7 +8601,7 @@ UNSPECIFIED - default mode, described in agent config </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>the parent of the request
-Format: `projects/<Project ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -8580,7 +8654,7 @@ Format: `projects/<Project ID>`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>the parent of the request
-Format: `projects/<Project ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -8603,7 +8677,7 @@ Format: `projects/<Project ID>`. </p></td>
                   <td></td>
                   <td><p>Optional. The name of the relevant intent. Used to establish preference
 hierarchy for entities that correspond to intent parameters
-Format: `projects/<Project ID>/agent/intents/<Intent ID>` </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;</code></pre> </p></td>
                 </tr>
               
             </tbody>
@@ -8704,7 +8778,7 @@ Format: `projects/<Project ID>/agent/intents/<Intent ID>` </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>the parent of the request
-Format: `projects/<Project ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -8781,7 +8855,7 @@ Format: `projects/<Project ID>`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>the parent of the request
-Format: `projects/<Project ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -8865,7 +8939,7 @@ Format: `projects/<Project ID>`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>the parent of the request
-Format: `projects/<Project ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -8956,7 +9030,7 @@ Format: `projects/<Project ID>`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>the parent of the request
-Format: `projects/<Project ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -9062,7 +9136,7 @@ as duplicate. Meaningful values of similarity_threshold are between 0.95 and 1.0
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>the parent of the request
-Format: `projects/<Project ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> </p></td>
                 </tr>
               
             </tbody>
@@ -9149,7 +9223,7 @@ Format: `projects/<Project ID>`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The unique identifier of this intent.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -9873,7 +9947,7 @@ Keys are the display names of context parameters. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The session to create a context for.
-Format: `projects/<Project ID>/agent/sessions/<Session ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -9891,7 +9965,7 @@ Format: `projects/<Project ID>/agent/sessions/<Session ID>`. </p></td>
         
       
         <h3 id="ondewo.nlu.DeleteAllContextsRequest" class="title-badge message">DeleteAllContextsRequest</h3>
-        <p>The request message for [Contexts.DeleteAllContexts][google.cloud.dialogflow.v2.Contexts.DeleteAllContexts].</p><p>Required. The name of the session to delete all contexts from.</p><p>Format: `projects/<PROJECT_ID>/agent/sessions/<SESSION_UUID>`.</p>
+        <p>The request message for [Contexts.DeleteAllContexts][google.cloud.dialogflow.v2.Contexts.DeleteAllContexts].</p><p>Required. The name of the session to delete all contexts from.</p><p>Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code></pre></p>
 
         
           <table class="field-table">
@@ -9979,7 +10053,7 @@ Format: `projects/<Project ID>/agent/sessions/<Session ID>`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The session to list all contexts from.
-Format: `projects/<Project ID>/agent/sessions/<Session ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -10131,6 +10205,30 @@ Operation <response: [BatchUpdateEntityTypesResponse][google.cloud.dialogflow.v2
 Operation <response: [google.protobuf.Empty][google.protobuf.Empty],
            metadata: [google.protobuf.Struct][google.protobuf.Struct]>
         
+          <h4 id="ondewo.nlu.EntityTypes.GetEntity" class="title-badge method">GetEntity</h4>
+
+          <pre>rpc GetEntity (<a href="#ondewo.nlu.GetEntityRequest">GetEntityRequest</a>) returns (<a href="#ondewo.nlu.EntityType.Entity">EntityType.Entity)</a></pre>
+
+          Retrieves the specified entity .
+        
+          <h4 id="ondewo.nlu.EntityTypes.CreateEntity" class="title-badge method">CreateEntity</h4>
+
+          <pre>rpc CreateEntity (<a href="#ondewo.nlu.CreateEntityRequest">CreateEntityRequest</a>) returns (<a href="#ondewo.nlu.EntityType.Entity">EntityType.Entity)</a></pre>
+
+          Creates an entity  in the specified agent.
+        
+          <h4 id="ondewo.nlu.EntityTypes.UpdateEntity" class="title-badge method">UpdateEntity</h4>
+
+          <pre>rpc UpdateEntity (<a href="#ondewo.nlu.UpdateEntityRequest">UpdateEntityRequest</a>) returns (<a href="#ondewo.nlu.EntityType.Entity">EntityType.Entity)</a></pre>
+
+          Updates the specified entity .
+        
+          <h4 id="ondewo.nlu.EntityTypes.DeleteEntity" class="title-badge method">DeleteEntity</h4>
+
+          <pre>rpc DeleteEntity (<a href="#ondewo.nlu.DeleteEntityRequest">DeleteEntityRequest</a>) returns (<a href="#ondewo.nlu.DeleteEntityStatus">DeleteEntityStatus)</a></pre>
+
+          Deletes the specified entity .
+        
           <h4 id="ondewo.nlu.EntityTypes.BatchCreateEntities" class="title-badge method">BatchCreateEntities</h4>
 
           <pre>rpc BatchCreateEntities (<a href="#ondewo.nlu.BatchCreateEntitiesRequest">BatchCreateEntitiesRequest</a>) returns (<a href="#ondewo.nlu.BatchEntitiesResponse">BatchEntitiesResponse)</a></pre>
@@ -10247,6 +10345,46 @@ Operation <response: [google.protobuf.Empty][google.protobuf.Empty],
               </tr>
               
             
+              
+              
+              <tr>
+                <td>GetEntity</td>
+                <td>GET</td>
+                <td>/v2/{name=projects/*/agent/entityTypes/*/entities/*}</td>
+                <td></td>
+              </tr>
+              
+            
+              
+              
+              <tr>
+                <td>CreateEntity</td>
+                <td>POST</td>
+                <td>/v2/{parent=projects/*/agent}/entityTypes/*/entities/</td>
+                <td>*</td>
+              </tr>
+              
+            
+              
+              
+              <tr>
+                <td>UpdateEntity</td>
+                <td>PATCH</td>
+                <td>/v2/{entity_.name=projects/*/agent/entityTypes/*/entities/*}</td>
+                <td>*</td>
+              </tr>
+              
+            
+              
+              
+              <tr>
+                <td>DeleteEntity</td>
+                <td>DELETE</td>
+                <td>/v2/{name=projects/*/agent/entityTypes/*/entities/*}</td>
+                <td></td>
+              </tr>
+              
+            
             </tbody>
           </table>
           
@@ -10270,41 +10408,9 @@ Operation <response: [google.protobuf.Empty][google.protobuf.Empty],
               
                 <tr>
                   <td>create_entity_requests</td>
-                  <td><a href="#ondewo.nlu.BatchCreateEntitiesRequest.CreateEntityRequest">BatchCreateEntitiesRequest.CreateEntityRequest</a></td>
+                  <td><a href="#ondewo.nlu.CreateEntityRequest">CreateEntityRequest</a></td>
                   <td>repeated</td>
-                  <td><p> </p></td>
-                </tr>
-              
-            </tbody>
-          </table>
-
-          
-
-        
-      
-        <h3 id="ondewo.nlu.BatchCreateEntitiesRequest.CreateEntityRequest" class="title-badge message">BatchCreateEntitiesRequest.CreateEntityRequest</h3>
-        <p></p>
-
-        
-          <table class="field-table">
-            <thead>
-              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>entity_type_name</td>
-                  <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p>Required. Name of the entity type in which to create the entity value. Format:
-`projects/<Project ID>/agent/entityTypes/<Entity Type ID>`. </p></td>
-                </tr>
-              
-                <tr>
-                  <td>entity</td>
-                  <td><a href="#ondewo.nlu.EntityType.Entity">EntityType.Entity</a></td>
-                  <td></td>
-                  <td><p>The entity value to create </p></td>
+                  <td><p>The create entity requests in a batch </p></td>
                 </tr>
               
             </tbody>
@@ -10351,47 +10457,16 @@ Operation <response: [google.protobuf.Empty][google.protobuf.Empty],
               
                 <tr>
                   <td>delete_statuses</td>
-                  <td><a href="#ondewo.nlu.BatchDeleteEntitiesResponse.DeleteEntityStatus">BatchDeleteEntitiesResponse.DeleteEntityStatus</a></td>
+                  <td><a href="#ondewo.nlu.DeleteEntityStatus">DeleteEntityStatus</a></td>
                   <td>repeated</td>
-                  <td><p> </p></td>
+                  <td><p>status of an entity deletion </p></td>
                 </tr>
               
                 <tr>
                   <td>has_errors</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-            </tbody>
-          </table>
-
-          
-
-        
-      
-        <h3 id="ondewo.nlu.BatchDeleteEntitiesResponse.DeleteEntityStatus" class="title-badge message">BatchDeleteEntitiesResponse.DeleteEntityStatus</h3>
-        <p>This message contains the status of an entity deletion</p>
-
-        
-          <table class="field-table">
-            <thead>
-              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>successfully_deleted</td>
-                  <td><a href="#google.protobuf.Empty">google.protobuf.Empty</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-                <tr>
-                  <td>error_message</td>
-                  <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p> </p></td>
+                  <td><p>error messages </p></td>
                 </tr>
               
             </tbody>
@@ -10446,7 +10521,7 @@ same agent as `parent`. </p></td>
               
                 <tr>
                   <td>entity_statuses</td>
-                  <td><a href="#ondewo.nlu.BatchEntitiesResponse.EntityStatus">BatchEntitiesResponse.EntityStatus</a></td>
+                  <td><a href="#ondewo.nlu.EntityStatus">EntityStatus</a></td>
                   <td>repeated</td>
                   <td><p>A list of entity statuses </p></td>
                 </tr>
@@ -10465,39 +10540,8 @@ same agent as `parent`. </p></td>
 
         
       
-        <h3 id="ondewo.nlu.BatchEntitiesResponse.EntityStatus" class="title-badge message">BatchEntitiesResponse.EntityStatus</h3>
-        <p></p>
-
-        
-          <table class="field-table">
-            <thead>
-              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
-            </thead>
-            <tbody>
-              
-                <tr>
-                  <td>entity</td>
-                  <td><a href="#ondewo.nlu.EntityType.Entity">EntityType.Entity</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-                <tr>
-                  <td>error_message</td>
-                  <td><a href="#string">string</a></td>
-                  <td></td>
-                  <td><p> </p></td>
-                </tr>
-              
-            </tbody>
-          </table>
-
-          
-
-        
-      
         <h3 id="ondewo.nlu.BatchGetEntitiesRequest" class="title-badge message">BatchGetEntitiesRequest</h3>
-        <p>Thiss message is a request to get a batch of entities</p>
+        <p>This message is a request to get a batch of entities</p>
 
         
           <table class="field-table">
@@ -10560,7 +10604,7 @@ same agent as `parent`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The name of the agent to update or create entity types in.
-Format: `projects/<Project ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -10629,6 +10673,38 @@ Note: languages must be enabled in the agent, before they can be used. </p></td>
 
         
       
+        <h3 id="ondewo.nlu.CreateEntityRequest" class="title-badge message">CreateEntityRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>entity_type_name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>Required. Name of the entity type in which to create the entity value. Format:
+`projects/<Project ID>/agent/entityTypes/<Entity Type ID>/entities/<Entity ID>`. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>entity</td>
+                  <td><a href="#ondewo.nlu.EntityType.Entity">EntityType.Entity</a></td>
+                  <td></td>
+                  <td><p>The entity value to create </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
         <h3 id="ondewo.nlu.CreateEntityTypeRequest" class="title-badge message">CreateEntityTypeRequest</h3>
         <p>The request message for [EntityTypes.CreateEntityType][google.cloud.dialogflow.v2.EntityTypes.CreateEntityType].</p>
 
@@ -10644,7 +10720,7 @@ Note: languages must be enabled in the agent, before they can be used. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The agent to create a entity type for.
-Format: `projects/<Project ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -10679,6 +10755,62 @@ Note: languages must be enabled in the agent, before they can be used. </p></td>
 
         
       
+        <h3 id="ondewo.nlu.DeleteEntityRequest" class="title-badge message">DeleteEntityRequest</h3>
+        <p>This message is a request to delete a batch of entities</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The unique identifiers of the entities. Format:
+`projects/<Project ID>/agent/entityTypes/<Entity Type ID>/entities/<Entity ID>`. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.nlu.DeleteEntityStatus" class="title-badge message">DeleteEntityStatus</h3>
+        <p>This message contains the status of an entity deletion</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>successfully_deleted</td>
+                  <td><a href="#google.protobuf.Empty">google.protobuf.Empty</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>error_message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
         <h3 id="ondewo.nlu.DeleteEntityTypeRequest" class="title-badge message">DeleteEntityTypeRequest</h3>
         <p>The request message for [EntityTypes.DeleteEntityType][google.cloud.dialogflow.v2.EntityTypes.DeleteEntityType].</p>
 
@@ -10694,7 +10826,38 @@ Note: languages must be enabled in the agent, before they can be used. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The name of the entity type to delete.
-Format: `projects/<Project ID>/agent/entityTypes/<EntityType ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/entityTypes/&lt;entity_type_uuid&gt;</code></pre> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.nlu.EntityStatus" class="title-badge message">EntityStatus</h3>
+        <p>This message is for the entity status</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>entity</td>
+                  <td><a href="#ondewo.nlu.EntityType.Entity">EntityType.Entity</a></td>
+                  <td></td>
+                  <td><p>The entity </p></td>
+                </tr>
+              
+                <tr>
+                  <td>error_message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>Error message </p></td>
                 </tr>
               
             </tbody>
@@ -10940,6 +11103,31 @@ must contain exactly one synonym equal to `value`. </p></td>
 
         
       
+        <h3 id="ondewo.nlu.GetEntityRequest" class="title-badge message">GetEntityRequest</h3>
+        <p>This message is a request to get a an entity</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The unique identifiers of the entities. Format:
+`projects/<Project ID>/agent/entityTypes/<Entity Type ID>/entities/<Entity ID>`. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
         <h3 id="ondewo.nlu.GetEntityTypeRequest" class="title-badge message">GetEntityTypeRequest</h3>
         <p>The request message for [EntityTypes.GetEntityType][google.cloud.dialogflow.v2.EntityTypes.GetEntityType].</p>
 
@@ -10955,7 +11143,7 @@ must contain exactly one synonym equal to `value`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The name of the entity type.
-Format: `projects/<Project ID>/agent/entityTypes/<EntityType ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/entityTypes/&lt;entity_type_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -11098,7 +11286,7 @@ more results in the list. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The agent to list all entity types from.
-Format: `projects/<Project ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -11180,6 +11368,30 @@ more results in the list. </p></td>
 
         
       
+        <h3 id="ondewo.nlu.UpdateEntityRequest" class="title-badge message">UpdateEntityRequest</h3>
+        <p>This message is a request to update an entity</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>entity</td>
+                  <td><a href="#ondewo.nlu.EntityType.Entity">EntityType.Entity</a></td>
+                  <td></td>
+                  <td><p>The entity to update </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
         <h3 id="ondewo.nlu.UpdateEntityTypeRequest" class="title-badge message">UpdateEntityTypeRequest</h3>
         <p>The request message for [EntityTypes.UpdateEntityType][google.cloud.dialogflow.v2.EntityTypes.UpdateEntityType].</p>
 
@@ -11195,7 +11407,7 @@ more results in the list. </p></td>
                   <td><a href="#ondewo.nlu.EntityType">EntityType</a></td>
                   <td></td>
                   <td><p>Required. The entity type to update.
-Format: `projects/<Project ID>/agent/entityTypes/<EntityType ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/entityTypes/&lt;entity_type_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -11983,7 +12195,7 @@ filled in. </p></td>
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
                   <td><p>Required. The names of the  response messages.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>/parameters/<Parameter ID>` </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;/parameters/&lt;parameter_uuid</code></pre> </p></td>
                 </tr>
               
             </tbody>
@@ -12070,7 +12282,7 @@ Format: `projects/<Project ID>/agent/intents/<Intent ID>/parameters/<Parameter I
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
                   <td><p>Required. The names of the  response messages.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>/responseMessages/<Message ID>` </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;/responseMessages/&lt;message_uuid&gt;</code></pre> </p></td>
                 </tr>
               
             </tbody>
@@ -12157,7 +12369,7 @@ Format: `projects/<Project ID>/agent/intents/<Intent ID>/responseMessages/<Messa
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
                   <td><p>Required. The names of the training phrases.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>/trainingPhrases/<Training Phrase ID>` </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;/trainingPhrases/&lt;training_phrase_uuid&gt;</code></pre> </p></td>
                 </tr>
               
             </tbody>
@@ -12244,7 +12456,7 @@ Format: `projects/<Project ID>/agent/intents/<Intent ID>/trainingPhrases/<Traini
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
                   <td><p>Required. The names of the response messages.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>/parameters/<Parameter ID>` </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;/parameters/&lt;parameter_uuid</code></pre> </p></td>
                 </tr>
               
             </tbody>
@@ -12269,7 +12481,7 @@ Format: `projects/<Project ID>/agent/intents/<Intent ID>/parameters/<Parameter I
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
                   <td><p>Required. The names of the response messages.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>/responseMessages/<Message ID>` </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;/responseMessages/&lt;message_uuid&gt;</code></pre> </p></td>
                 </tr>
               
             </tbody>
@@ -12294,7 +12506,7 @@ Format: `projects/<Project ID>/agent/intents/<Intent ID>/responseMessages/<Messa
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
                   <td><p>Required. The names of the training phrases.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>/trainingPhrases/<Training Phrase ID>` </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;/trainingPhrases/&lt;training_phrase_uuid&gt;</code></pre> </p></td>
                 </tr>
               
             </tbody>
@@ -12474,7 +12686,7 @@ Format: `projects/<Project ID>/agent/intents/<Intent ID>/trainingPhrases/<Traini
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The name of the agent to update or create intents in.
-Format: `projects/<Project ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -12636,7 +12848,7 @@ Note: languages must be enabled in the agent, before they can be used. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The agent to create a intent for.
-Format: `projects/<Project ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -12686,7 +12898,7 @@ Note: languages must be enabled in the agent, before they can be used. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The name of the intent to delete.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;</code></pre> </p></td>
                 </tr>
               
             </tbody>
@@ -12736,7 +12948,7 @@ Format: `projects/<Project ID>/agent/intents/<Intent ID>`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The name of the intent.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -12788,7 +13000,7 @@ where <CURRENT_INDEX> and <PAGE_SIZE> are of type int </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The path of the intent.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;</code></pre> </p></td>
                 </tr>
               
             </tbody>
@@ -12839,7 +13051,7 @@ Format: `projects/<Project ID>/agent/intents/<Intent ID>`. </p></td>
                   <td><p>Required for all methods except `create` (`create` populates the name
 automatically.
 The unique identifier of this intent.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -12887,7 +13099,7 @@ auto-markup in the UI is turned off. </p></td>
                   <td>repeated</td>
                   <td><p>Optional. The list of context names required for this intent to be
 triggered.
-Format: `projects/<Project ID>/agent/sessions/-/contexts/<Context ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/-/contexts/&lt;context_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -12922,7 +13134,7 @@ trained on. </p></td>
 is matched. Context messages in this collection should not set the
 parameters field. Setting the `lifespan_count` to 0 will reset the context
 when the intent is matched.
-Format: `projects/<Project ID>/agent/sessions/-/contexts/<Context ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/-/contexts/&lt;context_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -12962,7 +13174,7 @@ taken from among the messages assigned to the DEFAULT_PLATFORM. </p></td>
                   <td></td>
                   <td><p>The unique identifier of the root intent in the chain of followup intents.
 It identifies the correct followup intents chain for this intent.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -12972,7 +13184,7 @@ Format: `projects/<Project ID>/agent/intents/<Intent ID>`. </p></td>
                   <td><p>The unique identifier of the parent intent in the chain of followup
 intents.
 It identifies the parent followup intent.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -13069,7 +13281,7 @@ where <CURRENT_INDEX> and <PAGE_SIZE> are of type int </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The unique identifier of the followup intent.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -13077,7 +13289,7 @@ Format: `projects/<Project ID>/agent/intents/<Intent ID>`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The unique identifier of the followup intent parent.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;</code></pre> </p></td>
                 </tr>
               
             </tbody>
@@ -13102,7 +13314,7 @@ Format: `projects/<Project ID>/agent/intents/<Intent ID>`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The name of the return message.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>/responseMessages/<Message ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;/responseMessages/&lt;message_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -13930,7 +14142,7 @@ e.g., screen readers. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The unique identifier of this parameter.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>/parameters/<Parameter ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;/parameters/&lt;parameter_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -14025,7 +14237,7 @@ user in order to collect value for the parameter. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The unique identifier of this prompt.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>/parameters/<Parameter ID>/prompts/<Prompt ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;/parameters/&lt;parameter_uuid&gt;/prompts/&lt;prompt_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -14064,7 +14276,7 @@ Format: `projects/<Project ID>/agent/intents/<Intent ID>/parameters/<Parameter I
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The unique identifier of this training phrase.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>/trainingPhrases/<Training Phrase ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;/trainingPhrases/&lt;training_phrase_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -14264,7 +14476,7 @@ annotation. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The path of the intent.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -14296,7 +14508,7 @@ Format: `projects/<Project ID>/agent/intents/<Intent ID>`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The agent to list all intents from.
-Format: `projects/<Project ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -14404,7 +14616,7 @@ where <CURRENT_INDEX> and <PAGE_SIZE> are of type int </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The agent to list all intents from.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -14480,7 +14692,7 @@ where <CURRENT_INDEX> and <PAGE_SIZE> are of type int, <SUB_FIELD> is of type st
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The agent to list all intents from.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -14557,7 +14769,7 @@ where <CURRENT_INDEX> and <PAGE_SIZE> are of type int, <SUB_FIELD> is of type st
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The agent to list all intents from.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -14749,7 +14961,7 @@ where <CURRENT_INDEX> and <PAGE_SIZE> are of type int, <SUB_FIELD> is of type st
                   <td><a href="#ondewo.nlu.Intent">Intent</a></td>
                   <td></td>
                   <td><p>Required. The intent to update.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -15395,7 +15607,21 @@ The Training phrases field is populated with only a few entries and no annotatio
                   <td>description</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>description, normally needed for suboperations when type is OPERATION_TYPE_UNSPECIFIED </p></td>
+                  <td><p>description, normally needed for sub operations when type is OPERATION_TYPE_UNSPECIFIED </p></td>
+                </tr>
+              
+                <tr>
+                  <td>log</td>
+                  <td><a href="#string">string</a></td>
+                  <td>repeated</td>
+                  <td><p>The log output of an operation </p></td>
+                </tr>
+              
+                <tr>
+                  <td>log_limit</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p>The log output of an operation limited to the last x log entries </p></td>
                 </tr>
               
             </tbody>
@@ -17444,7 +17670,7 @@ as a side effect: also update training data in ondewo-cai
                   <td></td>
                   <td><p>Creates a session that collects all the conversation interactions between the machine and a user
 The unique identifier of an Agent
-Format: `projects/<PROJECT_ID>/agent`.
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
 
 Required. </p></td>
                 </tr>
@@ -17495,7 +17721,7 @@ Optional. If not provided, it will be auto-generated </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The unique identifier for the session under review
-Format: `projects/<PROJECT_ID>/agent/sessions/<SESSION_ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -17503,7 +17729,7 @@ Format: `projects/<PROJECT_ID>/agent/sessions/<SESSION_ID>`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Optional: The unique identifier of the parent review
-Format: `projects/<PROJECT_ID>/agent/sessions/<SESSION_ID>/reviews/<SESSION_REVIEW_ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/reviews/&lt;session_review_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -17573,7 +17799,7 @@ Format: `projects/<PROJECT_ID>/agent/sessions/<SESSION_ID>/reviews/<SESSION_REVI
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The session to be deleted
-Format: `projects/<PROJECT_ID>/agent/sessions/<SESSION_UUID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code></pre> </p></td>
                 </tr>
               
             </tbody>
@@ -17795,7 +18021,7 @@ do not necessarily need to specify the same language. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The unique identifier of the session for which the latest review should be returned
-Format: `projects/<PROJECT_ID>/agent/sessions/<SESSION_ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -17827,7 +18053,7 @@ Format: `projects/<PROJECT_ID>/agent/sessions/<SESSION_ID>`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The session to be returned
-Format: `projects/<PROJECT_ID>/agent/sessions/<SESSION_ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -17952,7 +18178,7 @@ for more details. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The parent for which the account_ids for all sessions should be listed
-Format: `projects/<PROJECT_ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -18008,7 +18234,7 @@ Format: `projects/<PROJECT_ID>/agent`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The parent for which the datastream_ids for all sessions should be listed
-Format: `projects/<PROJECT_ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -18064,7 +18290,7 @@ Format: `projects/<PROJECT_ID>/agent`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The parent for which the identified_user_ids for all sessions should be listed
-Format: `projects/<PROJECT_ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -18120,7 +18346,7 @@ Format: `projects/<PROJECT_ID>/agent`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The parent for which the input_contexts for all sessions should be listed
-Format: `projects/<PROJECT_ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -18176,7 +18402,7 @@ Format: `projects/<PROJECT_ID>/agent`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The parent for which the language_codes for all sessions should be listed
-Format: `projects/<PROJECT_ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -18232,7 +18458,7 @@ Format: `projects/<PROJECT_ID>/agent`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The parent for which the matched_entity_types for all sessions should be listed
-Format: `projects/<PROJECT_ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -18288,7 +18514,7 @@ Format: `projects/<PROJECT_ID>/agent`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The parent for which the matched_intents for all sessions should be listed
-Format: `projects/<PROJECT_ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -18344,7 +18570,7 @@ Format: `projects/<PROJECT_ID>/agent`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The parent for which the origin_ids for all sessions should be listed
-Format: `projects/<PROJECT_ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -18400,7 +18626,7 @@ Format: `projects/<PROJECT_ID>/agent`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The parent for which the output_contexts for all sessions should be listed
-Format: `projects/<PROJECT_ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -18456,7 +18682,7 @@ Format: `projects/<PROJECT_ID>/agent`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The parent for which the platforms for all sessions should be listed
-Format: `projects/<PROJECT_ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -18512,7 +18738,7 @@ Format: `projects/<PROJECT_ID>/agent`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The parent for which the property_ids for all sessions should be listed
-Format: `projects/<PROJECT_ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -18568,7 +18794,7 @@ Format: `projects/<PROJECT_ID>/agent`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The parent for which the labels for all sessions should be listed
-Format: `projects/<PROJECT_ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -18648,7 +18874,7 @@ Format: `projects/<PROJECT_ID>/agent`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The unique identifier for the session for which reviews should be listed
-Format: `projects/<PROJECT_ID>/agent/sessions/<SESSION_ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -18718,7 +18944,7 @@ Format: `projects/<PROJECT_ID>/agent/sessions/<SESSION_ID>`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The parent for which sessions should be listed
-Format: `projects/<PROJECT_ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -18803,7 +19029,7 @@ Example: path=["session_info.duration_in_s_min"] </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The parent for which the tags for all sessions should be listed
-Format: `projects/<PROJECT_ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -18859,7 +19085,7 @@ Format: `projects/<PROJECT_ID>/agent`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The parent for which the user_ids for all sessions should be listed
-Format: `projects/<PROJECT_ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -19223,7 +19449,7 @@ for a list of the currently supported language codes. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The unique identifier of the session
-Format: `projects/<PROJECT_ID>/agent/sessions/<SESSION_ID> </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -19237,7 +19463,7 @@ Format: `projects/<PROJECT_ID>/agent/sessions/<SESSION_ID> </p></td>
                   <td>session_info</td>
                   <td><a href="#ondewo.nlu.SessionInfo">SessionInfo</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>session information </p></td>
                 </tr>
               
             </tbody>
@@ -19316,7 +19542,7 @@ in the following range. Defaults to +1 if not set. </p></td>
               
                 <tr>
                   <td>earliest</td>
-                  <td><a href="#float">float</a></td>
+                  <td><a href="#double">double</a></td>
                   <td></td>
                   <td><p>Match only sessions whose time range falls within the following range (in UNIX epochs).
 Defaults to 0 if not set. </p></td>
@@ -19324,7 +19550,7 @@ Defaults to 0 if not set. </p></td>
               
                 <tr>
                   <td>latest</td>
-                  <td><a href="#float">float</a></td>
+                  <td><a href="#double">double</a></td>
                   <td></td>
                   <td><p>Match only sessions whose time range falls within the following range (in UNIX epochs).
 Defaults to current epoch if not set </p></td>
@@ -19606,6 +19832,20 @@ For a voice assistant device, this is the device-id or the app id </p></td>
                   <td><p>Ids of the "identified user" e.g. for a chatbot the email address or for a phone bot the phone number of the user </p></td>
                 </tr>
               
+                <tr>
+                  <td>duration_interval_60s_rounded_min</td>
+                  <td><a href="#float">float</a></td>
+                  <td></td>
+                  <td><p>Match only sessions for which the duration in 60 seconds rounded are larger or equal </p></td>
+                </tr>
+              
+                <tr>
+                  <td>duration_interval_60s_rounded_max</td>
+                  <td><a href="#float">float</a></td>
+                  <td></td>
+                  <td><p>Match only sessions for which the duration in 60 seconds rounded are smaller or equal </p></td>
+                </tr>
+              
             </tbody>
           </table>
 
@@ -19666,7 +19906,7 @@ The language codes used in the given session. </p></td>
               
                 <tr>
                   <td>earliest</td>
-                  <td><a href="#float">float</a></td>
+                  <td><a href="#double">double</a></td>
                   <td></td>
                   <td><p>The earliest date of the given session (in UNIX epochs), i.e. the time of the first interaction of a user
 in the given session </p></td>
@@ -19674,7 +19914,7 @@ in the given session </p></td>
               
                 <tr>
                   <td>latest</td>
-                  <td><a href="#float">float</a></td>
+                  <td><a href="#double">double</a></td>
                   <td></td>
                   <td><p>The latest date of the given session (in UNIX epochs), i.e. the time of the last interaction of a user
 in the given session </p></td>
@@ -19857,6 +20097,13 @@ For a voice assistant device, this is the device-id or the app id </p></td>
                   <td><p>Ids of the "identified user" e.g. for a chatbot the email address or for a phone bot the phone number of the user </p></td>
                 </tr>
               
+                <tr>
+                  <td>duration_interval_60s_rounded</td>
+                  <td><a href="#float">float</a></td>
+                  <td></td>
+                  <td><p>duration in 60 seconds intervals rounded </p></td>
+                </tr>
+              
             </tbody>
           </table>
 
@@ -19903,7 +20150,7 @@ For a voice assistant device, this is the device-id or the app id </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The unique identifier for the given review
-Format: `projects/<PROJECT_ID>/agent/sessions/<SESSION_ID>/reviews/<SESSION_REVIEW_ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/reviews/&lt;session_review_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -19935,7 +20182,7 @@ Format: `projects/<PROJECT_ID>/agent/sessions/<SESSION_ID>/reviews/<SESSION_REVI
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The unique identifier for the given review step
-Format: `projects/<PROJECT_ID>/agent/sessions/<SESSION_ID>/reviews/<SESSION_REVIEW_ID>/sessionreviewsteps/<SESSION_REVIEW_STEP_ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/reviews/&lt;review_uuid&gt;/sessionreviewsteps/&lt;session_review_step_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -19990,6 +20237,13 @@ This string represents what has been passed to the entity recognition and intent
                   <td><p>Messages for each of the Intent.Message.Platform were sent to the user </p></td>
                 </tr>
               
+                <tr>
+                  <td>timestamp</td>
+                  <td><a href="#google.protobuf.Timestamp">google.protobuf.Timestamp</a></td>
+                  <td></td>
+                  <td><p>Timestamp of session review step </p></td>
+                </tr>
+              
             </tbody>
           </table>
 
@@ -20012,7 +20266,7 @@ This string represents what has been passed to the entity recognition and intent
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The unique identifier for the given review
-Format: `projects/<PROJECT_ID>/agent/sessions/<SESSION_ID>/sessionsteps/<SESSION_ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/steps/&lt;session_step_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -20034,6 +20288,13 @@ Format: `projects/<PROJECT_ID>/agent/sessions/<SESSION_ID>/sessionsteps/<SESSION
                   <td><a href="#ondewo.nlu.Context">Context</a></td>
                   <td>repeated</td>
                   <td><p>The contexts which were active at the beginning of this step </p></td>
+                </tr>
+              
+                <tr>
+                  <td>timestamp</td>
+                  <td><a href="#google.protobuf.Timestamp">google.protobuf.Timestamp</a></td>
+                  <td></td>
+                  <td><p>Timestamp of session step </p></td>
                 </tr>
               
             </tbody>
@@ -20268,7 +20529,7 @@ do not necessarily need to specify the same language. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The unique identifier for the given review
-Format: `projects/<PROJECT_ID>/agent/sessions/<SESSION_ID>/steps/<SESSION_ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/steps/&lt;session_step_uuid&gt;</code></pre>. </p></td>
                 </tr>
               
                 <tr>
@@ -21599,7 +21860,7 @@ capturing groups.
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The agent to list all intents from.
-Format: `projects/<Project ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -21671,7 +21932,7 @@ Overrides the default: '.,;!?:' </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The agent to list all intents from.
-Format: `projects/<Project ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -21803,7 +22064,7 @@ the training phrases. Overrides the default: '.,;!?:' </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The agent to list all intents from.
-Format: `projects/<Project ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -21930,7 +22191,7 @@ Example: ['sys.ignore.'] -> would delete entity types with display names sys.ign
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The agent to list all intents from.
-Format: `projects/<Project ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -22040,7 +22301,7 @@ Default = None </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The agent to list all intents from.
-Format: `projects/<Project ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -22144,7 +22405,7 @@ Default = 10000 </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The agent to list all intents from.
-Format: `projects/<Project ID>/agent`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -22152,7 +22413,7 @@ Format: `projects/<Project ID>/agent`. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. The name of the intent.
-Format: `projects/<Project ID>/agent/intents/<Intent ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -22794,7 +23055,7 @@ It's purpose is to report the reachability of a Webhook server. </p></td>
                   <td></td>
                   <td><p>The unique identifier of detectIntent request session.
 Can be used to identify end-user inside webhook implementation.
-Format: `projects/<Project ID>/agent/sessions/<Session ID>`. </p></td>
+Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code></pre> </p></td>
                 </tr>
               
                 <tr>
@@ -23494,7 +23755,7 @@ language code. </p></td>
       
         
         <h3 id="ondewo.s2t.Speech2Text" class="title-badge service">Speech2Text</h3>
-        <p>endpoints of speech-to-text service</p>
+        <p>Speech-to-text service</p>
 
         
         <div id="ondewo.s2t.Speech2Text-methods" class="service-methods">Service Methods</div>
@@ -23503,7 +23764,7 @@ language code. </p></td>
 
           <pre>rpc TranscribeFile (<a href="#ondewo.s2t.TranscribeFileRequest">TranscribeFileRequest</a>) returns (<a href="#ondewo.s2t.TranscribeFileResponse">TranscribeFileResponse)</a></pre>
 
-          
+          Transcribes an audio file
         
           <h4 id="ondewo.s2t.Speech2Text.TranscribeStream" class="title-badge method">TranscribeStream</h4>
 
@@ -23603,7 +23864,7 @@ id and a list of the language models loaded in the pipeline.
       <div id="ondewo/s2t/speech-to-text.proto-messages" class="object-category">Messages</div>
       
         <h3 id="ondewo.s2t.AcousticModels" class="title-badge message">AcousticModels</h3>
-        <p></p>
+        <p>AcousticModels contains information about different types of acoustic models.</p>
 
         
           <table class="field-table">
@@ -23616,49 +23877,49 @@ id and a list of the language models loaded in the pipeline.
                   <td>type</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Type of the acoustic model. </p></td>
                 </tr>
               
                 <tr>
                   <td>quartznet</td>
                   <td><a href="#ondewo.s2t.Quartznet">Quartznet</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Configuration for the Quartznet model. </p></td>
                 </tr>
               
                 <tr>
                   <td>quartznet_triton</td>
                   <td><a href="#ondewo.s2t.QuartznetTriton">QuartznetTriton</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Configuration for the Quartznet model using Triton. </p></td>
                 </tr>
               
                 <tr>
                   <td>wav2vec</td>
                   <td><a href="#ondewo.s2t.Wav2Vec">Wav2Vec</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Configuration for the Wav2Vec model. </p></td>
                 </tr>
               
                 <tr>
                   <td>wav2vec_triton</td>
                   <td><a href="#ondewo.s2t.Wav2VecTriton">Wav2VecTriton</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Configuration for the Wav2Vec model using Triton. </p></td>
                 </tr>
               
                 <tr>
                   <td>whisper</td>
                   <td><a href="#ondewo.s2t.Whisper">Whisper</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Configuration for the Whisper model. </p></td>
                 </tr>
               
                 <tr>
                   <td>whisper_triton</td>
                   <td><a href="#ondewo.s2t.WhisperTriton">WhisperTriton</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Configuration for the Whisper model using Triton. </p></td>
                 </tr>
               
             </tbody>
@@ -23669,7 +23930,7 @@ id and a list of the language models loaded in the pipeline.
         
       
         <h3 id="ondewo.s2t.AddDataToUserLanguageModelRequest" class="title-badge message">AddDataToUserLanguageModelRequest</h3>
-        <p></p>
+        <p>AddDataToUserLanguageModelRequest is used to request the addition of data to a user-specific language model.</p>
 
         
           <table class="field-table">
@@ -23682,14 +23943,15 @@ id and a list of the language models loaded in the pipeline.
                   <td>language_model_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>Name of the language model to which to add data </p></td>
+                  <td><p>Name of the language model to which to add data. Example: "user_lm_1" </p></td>
                 </tr>
               
                 <tr>
                   <td>zipped_data</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>Zip file containing data in the form of text files </p></td>
+                  <td><p>Zip file containing data in the form of text files.
+Example: A zip file with text files containing sentences or phrases in the target language. </p></td>
                 </tr>
               
             </tbody>
@@ -23700,7 +23962,7 @@ id and a list of the language models loaded in the pipeline.
         
       
         <h3 id="ondewo.s2t.CkptFile" class="title-badge message">CkptFile</h3>
-        <p></p>
+        <p>CkptFile contains information about checkpoint files.</p>
 
         
           <table class="field-table">
@@ -23713,7 +23975,7 @@ id and a list of the language models loaded in the pipeline.
                   <td>path</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Path to the checkpoint file. </p></td>
                 </tr>
               
             </tbody>
@@ -23724,7 +23986,7 @@ id and a list of the language models loaded in the pipeline.
         
       
         <h3 id="ondewo.s2t.CreateUserLanguageModelRequest" class="title-badge message">CreateUserLanguageModelRequest</h3>
-        <p></p>
+        <p>CreateUserLanguageModelRequest is used to request the creation of a new user-specific language model.</p>
 
         
           <table class="field-table">
@@ -23737,7 +23999,7 @@ id and a list of the language models loaded in the pipeline.
                   <td>language_model_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>Name of the language model to create </p></td>
+                  <td><p>Name of the language model to create. Example: "user_lm_1" </p></td>
                 </tr>
               
             </tbody>
@@ -23748,7 +24010,7 @@ id and a list of the language models loaded in the pipeline.
         
       
         <h3 id="ondewo.s2t.DeleteUserLanguageModelRequest" class="title-badge message">DeleteUserLanguageModelRequest</h3>
-        <p></p>
+        <p>DeleteUserLanguageModelRequest is used to request the deletion of a user-specific language model.</p>
 
         
           <table class="field-table">
@@ -23761,7 +24023,7 @@ id and a list of the language models loaded in the pipeline.
                   <td>language_model_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>Name of the language model to delete </p></td>
+                  <td><p>Name of the language model to delete. Example: "user_lm_1" </p></td>
                 </tr>
               
             </tbody>
@@ -23772,7 +24034,7 @@ id and a list of the language models loaded in the pipeline.
         
       
         <h3 id="ondewo.s2t.LanguageModelPipelineId" class="title-badge message">LanguageModelPipelineId</h3>
-        <p></p>
+        <p>LanguageModelPipelineId contains information about a pipeline and its available language models.</p>
 
         
           <table class="field-table">
@@ -23785,14 +24047,14 @@ id and a list of the language models loaded in the pipeline.
                   <td>pipeline_id</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>One pipeline id </p></td>
+                  <td><p>A pipeline ID. Example: "pipeline_1" </p></td>
                 </tr>
               
                 <tr>
                   <td>model_names</td>
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
-                  <td><p>A list of all available language models for above pipeline id </p></td>
+                  <td><p>A list of all available language models for the corresponding pipeline ID. Example: ["model_1", "model_2"] </p></td>
                 </tr>
               
             </tbody>
@@ -23803,7 +24065,7 @@ id and a list of the language models loaded in the pipeline.
         
       
         <h3 id="ondewo.s2t.LanguageModels" class="title-badge message">LanguageModels</h3>
-        <p></p>
+        <p>LanguageModels contains information about language models.</p>
 
         
           <table class="field-table">
@@ -23816,35 +24078,35 @@ id and a list of the language models loaded in the pipeline.
                   <td>path</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>Path to the directory of language models </p></td>
+                  <td><p>Path to the directory of language models. </p></td>
                 </tr>
               
                 <tr>
                   <td>beam_size</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Beam size for the search algorithm. </p></td>
                 </tr>
               
                 <tr>
                   <td>default_lm</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>this language model will be selected if none is given </p></td>
+                  <td><p>Default language model to be selected if none is given. </p></td>
                 </tr>
               
                 <tr>
                   <td>beam_search_scorer_alpha</td>
                   <td><a href="#float">float</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Weight for the language model scorer (alpha). </p></td>
                 </tr>
               
                 <tr>
                   <td>beam_search_scorer_beta</td>
                   <td><a href="#float">float</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Weight for the word insertion penalty (beta). </p></td>
                 </tr>
               
             </tbody>
@@ -23855,7 +24117,7 @@ id and a list of the language models loaded in the pipeline.
         
       
         <h3 id="ondewo.s2t.ListS2tDomainsRequest" class="title-badge message">ListS2tDomainsRequest</h3>
-        <p></p>
+        <p>Request message to list available domains. Optionally also filters can be set.</p>
 
         
           <table class="field-table">
@@ -23868,14 +24130,14 @@ id and a list of the language models loaded in the pipeline.
                   <td>languages</td>
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
-                  <td><p> </p></td>
+                  <td><p>Filter for languages </p></td>
                 </tr>
               
                 <tr>
                   <td>pipeline_owners</td>
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
-                  <td><p> </p></td>
+                  <td><p>Filter for pipeline owner </p></td>
                 </tr>
               
             </tbody>
@@ -23886,7 +24148,7 @@ id and a list of the language models loaded in the pipeline.
         
       
         <h3 id="ondewo.s2t.ListS2tDomainsResponse" class="title-badge message">ListS2tDomainsResponse</h3>
-        <p></p>
+        <p>Response message to list available domains</p>
 
         
           <table class="field-table">
@@ -23899,7 +24161,7 @@ id and a list of the language models loaded in the pipeline.
                   <td>domains</td>
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
-                  <td><p> </p></td>
+                  <td><p>domains available. Example: ["medical", "finance"] </p></td>
                 </tr>
               
             </tbody>
@@ -23910,7 +24172,7 @@ id and a list of the language models loaded in the pipeline.
         
       
         <h3 id="ondewo.s2t.ListS2tLanguageModelsRequest" class="title-badge message">ListS2tLanguageModelsRequest</h3>
-        <p></p>
+        <p>ListS2tLanguageModelsRequest is used to request a list of available language models for specified pipelines.</p>
 
         
           <table class="field-table">
@@ -23923,7 +24185,8 @@ id and a list of the language models loaded in the pipeline.
                   <td>ids</td>
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
-                  <td><p>List of pipeline id(s) to see their available language models </p></td>
+                  <td><p>List of pipeline IDs to retrieve their available language models.
+Example: ["pipeline_1", "pipeline_2"] </p></td>
                 </tr>
               
             </tbody>
@@ -23934,7 +24197,7 @@ id and a list of the language models loaded in the pipeline.
         
       
         <h3 id="ondewo.s2t.ListS2tLanguageModelsResponse" class="title-badge message">ListS2tLanguageModelsResponse</h3>
-        <p></p>
+        <p>ListS2tLanguageModelsResponse is used to return the available language models for specified pipelines.</p>
 
         
           <table class="field-table">
@@ -23947,7 +24210,10 @@ id and a list of the language models loaded in the pipeline.
                   <td>lm_pipeline_ids</td>
                   <td><a href="#ondewo.s2t.LanguageModelPipelineId">LanguageModelPipelineId</a></td>
                   <td>repeated</td>
-                  <td><p>Response is a dictionary of type Dict[pipeline id, List of available language models] </p></td>
+                  <td><p>Response is a list of LanguageModelPipelineId, where each element contains a pipeline ID and its associated
+language models.
+Example: [{pipeline_id: "pipeline_1", model_names: ["model_1", "model_2"]}, {pipeline_id: "pipeline_2",
+model_names: ["model_3"]}] </p></td>
                 </tr>
               
             </tbody>
@@ -23958,7 +24224,7 @@ id and a list of the language models loaded in the pipeline.
         
       
         <h3 id="ondewo.s2t.ListS2tLanguagesRequest" class="title-badge message">ListS2tLanguagesRequest</h3>
-        <p></p>
+        <p>ListS2tLanguagesRequest is used to request a list of available languages. Optionally, filters can be set.</p>
 
         
           <table class="field-table">
@@ -23971,14 +24237,15 @@ id and a list of the language models loaded in the pipeline.
                   <td>domains</td>
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
-                  <td><p> </p></td>
+                  <td><p>Filter for domains.  Example: ["medical", "finance"] </p></td>
                 </tr>
               
                 <tr>
                   <td>pipeline_owners</td>
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
-                  <td><p> </p></td>
+                  <td><p>Filter for pipeline owners.
+Example: ["ondewo", "partner_company"] </p></td>
                 </tr>
               
             </tbody>
@@ -23989,7 +24256,7 @@ id and a list of the language models loaded in the pipeline.
         
       
         <h3 id="ondewo.s2t.ListS2tLanguagesResponse" class="title-badge message">ListS2tLanguagesResponse</h3>
-        <p></p>
+        <p>Response message to list available languages</p>
 
         
           <table class="field-table">
@@ -24002,7 +24269,7 @@ id and a list of the language models loaded in the pipeline.
                   <td>languages</td>
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
-                  <td><p> </p></td>
+                  <td><p>available languages </p></td>
                 </tr>
               
             </tbody>
@@ -24013,7 +24280,7 @@ id and a list of the language models loaded in the pipeline.
         
       
         <h3 id="ondewo.s2t.ListS2tPipelinesRequest" class="title-badge message">ListS2tPipelinesRequest</h3>
-        <p></p>
+        <p>Request to list all speech-to-text pipelines. Optionally also filter criteria can be set</p>
 
         
           <table class="field-table">
@@ -24026,21 +24293,21 @@ id and a list of the language models loaded in the pipeline.
                   <td>languages</td>
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
-                  <td><p> </p></td>
+                  <td><p>Filter for languages </p></td>
                 </tr>
               
                 <tr>
                   <td>pipeline_owners</td>
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
-                  <td><p> </p></td>
+                  <td><p>Filter for pipeline owners </p></td>
                 </tr>
               
                 <tr>
                   <td>domains</td>
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
-                  <td><p> </p></td>
+                  <td><p>Filter for domains </p></td>
                 </tr>
               
                 <tr>
@@ -24059,7 +24326,7 @@ Default false: return registered and persisted (from config files) configs. </p>
         
       
         <h3 id="ondewo.s2t.ListS2tPipelinesResponse" class="title-badge message">ListS2tPipelinesResponse</h3>
-        <p></p>
+        <p>ListS2tPipelinesResponse is used to return a list of all speech-to-text pipelines.</p>
 
         
           <table class="field-table">
@@ -24072,7 +24339,9 @@ Default false: return registered and persisted (from config files) configs. </p>
                   <td>pipeline_configs</td>
                   <td><a href="#ondewo.s2t.Speech2TextConfig">Speech2TextConfig</a></td>
                   <td>repeated</td>
-                  <td><p> </p></td>
+                  <td><p>A list of Speech2TextConfig message instances containing the configuration of each pipeline.
+Example: [{id: "pipeline_1", description: {language: "en"}, active: true, ...}, {id: "pipeline_2",
+description: {language: "fr"}, active: true, ...}] </p></td>
                 </tr>
               
             </tbody>
@@ -24083,7 +24352,7 @@ Default false: return registered and persisted (from config files) configs. </p>
         
       
         <h3 id="ondewo.s2t.Logging" class="title-badge message">Logging</h3>
-        <p></p>
+        <p>Logging contains configuration for logging.</p>
 
         
           <table class="field-table">
@@ -24096,14 +24365,14 @@ Default false: return registered and persisted (from config files) configs. </p>
                   <td>type</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Type of logging. </p></td>
                 </tr>
               
                 <tr>
                   <td>path</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Path for logging. </p></td>
                 </tr>
               
             </tbody>
@@ -24114,7 +24383,7 @@ Default false: return registered and persisted (from config files) configs. </p>
         
       
         <h3 id="ondewo.s2t.Matchbox" class="title-badge message">Matchbox</h3>
-        <p></p>
+        <p>Matchbox contains configuration for the Matchbox voice activity detection model.</p>
 
         
           <table class="field-table">
@@ -24127,21 +24396,21 @@ Default false: return registered and persisted (from config files) configs. </p>
                   <td>model_config</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Path to the Matchbox model configuration. </p></td>
                 </tr>
               
                 <tr>
                   <td>encoder_path</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Path to the Matchbox encoder. </p></td>
                 </tr>
               
                 <tr>
                   <td>decoder_path</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Path to the Matchbox decoder. </p></td>
                 </tr>
               
             </tbody>
@@ -24152,7 +24421,7 @@ Default false: return registered and persisted (from config files) configs. </p>
         
       
         <h3 id="ondewo.s2t.PostProcessing" class="title-badge message">PostProcessing</h3>
-        <p></p>
+        <p>PostProcessing contains the configuration for post-processing.</p>
 
         
           <table class="field-table">
@@ -24165,7 +24434,7 @@ Default false: return registered and persisted (from config files) configs. </p>
                   <td>pipeline</td>
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
-                  <td><p>List of names of active post-processors </p></td>
+                  <td><p>List of names of active post-processors. </p></td>
                 </tr>
               
                 <tr>
@@ -24183,7 +24452,7 @@ Default false: return registered and persisted (from config files) configs. </p>
         
       
         <h3 id="ondewo.s2t.PostProcessingOptions" class="title-badge message">PostProcessingOptions</h3>
-        <p></p>
+        <p>Configuration of the post-processing options</p>
 
         
           <table class="field-table">
@@ -24196,14 +24465,14 @@ Default false: return registered and persisted (from config files) configs. </p>
                   <td>spelling_correction</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>Whether or not to use spelling correction </p></td>
+                  <td><p>Whether to use spelling correction </p></td>
                 </tr>
               
                 <tr>
                   <td>normalize</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>Whether or not to disable normalization </p></td>
+                  <td><p>Whether to disable normalization </p></td>
                 </tr>
               
                 <tr>
@@ -24222,7 +24491,7 @@ configuration. If not set, all values are replaced by the ones in current pipeli
         
       
         <h3 id="ondewo.s2t.PostProcessors" class="title-badge message">PostProcessors</h3>
-        <p></p>
+        <p>PostProcessors contains configurations for post-processors.</p>
 
         
           <table class="field-table">
@@ -24235,14 +24504,14 @@ configuration. If not set, all values are replaced by the ones in current pipeli
                   <td>sym_spell</td>
                   <td><a href="#ondewo.s2t.SymSpell">SymSpell</a></td>
                   <td></td>
-                  <td><p>Configuration of the sym-spell spelling correction </p></td>
+                  <td><p>Configuration of the SymSpell spelling correction. </p></td>
                 </tr>
               
                 <tr>
                   <td>normalization</td>
                   <td><a href="#ondewo.s2t.S2TNormalization">S2TNormalization</a></td>
                   <td></td>
-                  <td><p>Configuration of the normalization object </p></td>
+                  <td><p>Configuration of the normalization object. </p></td>
                 </tr>
               
             </tbody>
@@ -24253,7 +24522,7 @@ configuration. If not set, all values are replaced by the ones in current pipeli
         
       
         <h3 id="ondewo.s2t.PtFiles" class="title-badge message">PtFiles</h3>
-        <p></p>
+        <p>PtFiles contains information about PT files.</p>
 
         
           <table class="field-table">
@@ -24266,14 +24535,14 @@ configuration. If not set, all values are replaced by the ones in current pipeli
                   <td>path</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Path to the PT files. </p></td>
                 </tr>
               
                 <tr>
                   <td>step</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Step for the PT files. </p></td>
                 </tr>
               
             </tbody>
@@ -24284,7 +24553,7 @@ configuration. If not set, all values are replaced by the ones in current pipeli
         
       
         <h3 id="ondewo.s2t.Pyannote" class="title-badge message">Pyannote</h3>
-        <p></p>
+        <p>Pyannote contains configuration for the Pyannote voice activity detection model.</p>
 
         
           <table class="field-table">
@@ -24297,49 +24566,49 @@ configuration. If not set, all values are replaced by the ones in current pipeli
                   <td>model_path</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Path to the Pyannote model. </p></td>
                 </tr>
               
                 <tr>
                   <td>min_audio_size</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Minimum audio size for processing. </p></td>
                 </tr>
               
                 <tr>
                   <td>offset</td>
                   <td><a href="#float">float</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Offset for voice activity detection. </p></td>
                 </tr>
               
                 <tr>
                   <td>onset</td>
                   <td><a href="#float">float</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Onset for voice activity detection. </p></td>
                 </tr>
               
                 <tr>
                   <td>log_scale</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>whether to use log scale </p></td>
                 </tr>
               
                 <tr>
                   <td>min_duration_off</td>
                   <td><a href="#float">float</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Minimum duration for an off segment. </p></td>
                 </tr>
               
                 <tr>
                   <td>min_duration_on</td>
                   <td><a href="#float">float</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Minimum duration for an on segment. </p></td>
                 </tr>
               
             </tbody>
@@ -24350,7 +24619,7 @@ configuration. If not set, all values are replaced by the ones in current pipeli
         
       
         <h3 id="ondewo.s2t.Quartznet" class="title-badge message">Quartznet</h3>
-        <p></p>
+        <p>Quartznet contains information about the Quartznet model.</p>
 
         
           <table class="field-table">
@@ -24363,35 +24632,35 @@ configuration. If not set, all values are replaced by the ones in current pipeli
                   <td>config_path</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Path to the configuration file. </p></td>
                 </tr>
               
                 <tr>
                   <td>load_type</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Type of loading for the model. </p></td>
                 </tr>
               
                 <tr>
                   <td>pt_files</td>
                   <td><a href="#ondewo.s2t.PtFiles">PtFiles</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Configuration for PT files. </p></td>
                 </tr>
               
                 <tr>
                   <td>ckpt_file</td>
                   <td><a href="#ondewo.s2t.CkptFile">CkptFile</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Configuration for checkpoint files. </p></td>
                 </tr>
               
                 <tr>
                   <td>use_gpu</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Indicates if GPU is used. </p></td>
                 </tr>
               
             </tbody>
@@ -24402,7 +24671,7 @@ configuration. If not set, all values are replaced by the ones in current pipeli
         
       
         <h3 id="ondewo.s2t.QuartznetTriton" class="title-badge message">QuartznetTriton</h3>
-        <p></p>
+        <p>QuartznetTriton contains information about the Quartznet model using Triton.</p>
 
         
           <table class="field-table">
@@ -24415,21 +24684,21 @@ configuration. If not set, all values are replaced by the ones in current pipeli
                   <td>config_path</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Path to the configuration file. </p></td>
                 </tr>
               
                 <tr>
                   <td>triton_url</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>URL for the Triton server. </p></td>
                 </tr>
               
                 <tr>
                   <td>triton_model</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Triton model name. </p></td>
                 </tr>
               
             </tbody>
@@ -24440,7 +24709,7 @@ configuration. If not set, all values are replaced by the ones in current pipeli
         
       
         <h3 id="ondewo.s2t.S2TDescription" class="title-badge message">S2TDescription</h3>
-        <p></p>
+        <p>S2TDescription contains descriptive information about the speech-to-text pipeline.</p>
 
         
           <table class="field-table">
@@ -24453,28 +24722,28 @@ configuration. If not set, all values are replaced by the ones in current pipeli
                   <td>language</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Language of the speech-to-text system. </p></td>
                 </tr>
               
                 <tr>
                   <td>pipeline_owner</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Owner of the pipeline. </p></td>
                 </tr>
               
                 <tr>
                   <td>domain</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Domain of the speech-to-text system. </p></td>
                 </tr>
               
                 <tr>
                   <td>comments</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Comments about the system. </p></td>
                 </tr>
               
             </tbody>
@@ -24485,7 +24754,7 @@ configuration. If not set, all values are replaced by the ones in current pipeli
         
       
         <h3 id="ondewo.s2t.S2TGetServiceInfoResponse" class="title-badge message">S2TGetServiceInfoResponse</h3>
-        <p></p>
+        <p>S2TGetServiceInfoResponse is used to return version information about the speech-to-text service.</p>
 
         
           <table class="field-table">
@@ -24498,7 +24767,7 @@ configuration. If not set, all values are replaced by the ones in current pipeli
                   <td>version</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Version number based on semantic versioning, e.g. "4.2.0". </p></td>
                 </tr>
               
             </tbody>
@@ -24509,7 +24778,7 @@ configuration. If not set, all values are replaced by the ones in current pipeli
         
       
         <h3 id="ondewo.s2t.S2TInference" class="title-badge message">S2TInference</h3>
-        <p></p>
+        <p>S2TInference contains information about inference models used in the speech-to-text pipeline.</p>
 
         
           <table class="field-table">
@@ -24522,14 +24791,21 @@ configuration. If not set, all values are replaced by the ones in current pipeli
                   <td>acoustic_models</td>
                   <td><a href="#ondewo.s2t.AcousticModels">AcousticModels</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Configuration for the acoustic models. </p></td>
                 </tr>
               
                 <tr>
                   <td>language_models</td>
                   <td><a href="#ondewo.s2t.LanguageModels">LanguageModels</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Configuration for the language models. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>inference_backend</td>
+                  <td><a href="#ondewo.s2t.InferenceBackend">InferenceBackend</a></td>
+                  <td></td>
+                  <td><p>Configuration for the inference backend. </p></td>
                 </tr>
               
             </tbody>
@@ -24540,7 +24816,7 @@ configuration. If not set, all values are replaced by the ones in current pipeli
         
       
         <h3 id="ondewo.s2t.S2TNormalization" class="title-badge message">S2TNormalization</h3>
-        <p></p>
+        <p>S2TNormalization contains configuration for the speech-to-text normalization.</p>
 
         
           <table class="field-table">
@@ -24553,7 +24829,7 @@ configuration. If not set, all values are replaced by the ones in current pipeli
                   <td>language</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>In which language to normalization transcription. </p></td>
+                  <td><p>Language for normalization of transcriptions. </p></td>
                 </tr>
               
             </tbody>
@@ -24564,7 +24840,7 @@ configuration. If not set, all values are replaced by the ones in current pipeli
         
       
         <h3 id="ondewo.s2t.S2tPipelineId" class="title-badge message">S2tPipelineId</h3>
-        <p></p>
+        <p>The pipeline id for a specific pipeline configuration</p>
 
         
           <table class="field-table">
@@ -24588,7 +24864,7 @@ configuration. If not set, all values are replaced by the ones in current pipeli
         
       
         <h3 id="ondewo.s2t.Speech2TextConfig" class="title-badge message">Speech2TextConfig</h3>
-        <p></p>
+        <p>Speech2TextConfig is a configuration message for the speech-to-text pipeline</p>
 
         
           <table class="field-table">
@@ -24601,56 +24877,56 @@ configuration. If not set, all values are replaced by the ones in current pipeli
                   <td>id</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Unique identifier for the configuration. </p></td>
                 </tr>
               
                 <tr>
                   <td>description</td>
                   <td><a href="#ondewo.s2t.S2TDescription">S2TDescription</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Description of the speech-to-text system. </p></td>
                 </tr>
               
                 <tr>
                   <td>active</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Indicates if the configuration is active. </p></td>
                 </tr>
               
                 <tr>
                   <td>inference</td>
                   <td><a href="#ondewo.s2t.S2TInference">S2TInference</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Configuration for inference models. </p></td>
                 </tr>
               
                 <tr>
                   <td>streaming_server</td>
                   <td><a href="#ondewo.s2t.StreamingServer">StreamingServer</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Configuration for the streaming server. </p></td>
                 </tr>
               
                 <tr>
                   <td>voice_activity_detection</td>
                   <td><a href="#ondewo.s2t.VoiceActivityDetection">VoiceActivityDetection</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Configuration for voice activity detection. </p></td>
                 </tr>
               
                 <tr>
                   <td>post_processing</td>
                   <td><a href="#ondewo.s2t.PostProcessing">PostProcessing</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Configuration for post-processing. </p></td>
                 </tr>
               
                 <tr>
                   <td>logging</td>
                   <td><a href="#ondewo.s2t.Logging">Logging</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Configuration for logging. </p></td>
                 </tr>
               
             </tbody>
@@ -24661,7 +24937,7 @@ configuration. If not set, all values are replaced by the ones in current pipeli
         
       
         <h3 id="ondewo.s2t.StreamingServer" class="title-badge message">StreamingServer</h3>
-        <p></p>
+        <p>StreamingServer contains information about the streaming server.</p>
 
         
           <table class="field-table">
@@ -24674,28 +24950,28 @@ configuration. If not set, all values are replaced by the ones in current pipeli
                   <td>host</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Hostname of the streaming server. </p></td>
                 </tr>
               
                 <tr>
                   <td>port</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Port number of the streaming server. </p></td>
                 </tr>
               
                 <tr>
                   <td>output_style</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Output style for the streaming server. </p></td>
                 </tr>
               
                 <tr>
                   <td>streaming_speech_recognition</td>
                   <td><a href="#ondewo.s2t.StreamingSpeechRecognition">StreamingSpeechRecognition</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Configuration for streaming speech recognition. </p></td>
                 </tr>
               
             </tbody>
@@ -24706,7 +24982,7 @@ configuration. If not set, all values are replaced by the ones in current pipeli
         
       
         <h3 id="ondewo.s2t.StreamingSpeechRecognition" class="title-badge message">StreamingSpeechRecognition</h3>
-        <p></p>
+        <p>StreamingSpeechRecognition contains information about streaming speech recognition settings.</p>
 
         
           <table class="field-table">
@@ -24719,49 +24995,49 @@ configuration. If not set, all values are replaced by the ones in current pipeli
                   <td>transcribe_not_final</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Indicates whether to transcribe non-final results. </p></td>
                 </tr>
               
                 <tr>
                   <td>decoding_method</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Decoding method for speech recognition. </p></td>
                 </tr>
               
                 <tr>
                   <td>sampling_rate</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Sampling rate for audio input. </p></td>
                 </tr>
               
                 <tr>
                   <td>min_audio_chunk_size</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Minimum audio chunk size for processing. </p></td>
                 </tr>
               
                 <tr>
                   <td>start_of_utterance_threshold</td>
                   <td><a href="#float">float</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Threshold for detecting the start of an utterance. </p></td>
                 </tr>
               
                 <tr>
                   <td>end_of_utterance_threshold</td>
                   <td><a href="#float">float</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Threshold for detecting the end of an utterance. </p></td>
                 </tr>
               
                 <tr>
                   <td>next_chunk_timeout</td>
                   <td><a href="#float">float</a></td>
                   <td></td>
-                  <td><p>if time between audio chunks exceeds next_chunk_timeout, stream will be stopped </p></td>
+                  <td><p>Timeout between audio chunks; if exceeded, the stream will be stopped. </p></td>
                 </tr>
               
             </tbody>
@@ -24772,7 +25048,7 @@ configuration. If not set, all values are replaced by the ones in current pipeli
         
       
         <h3 id="ondewo.s2t.SymSpell" class="title-badge message">SymSpell</h3>
-        <p></p>
+        <p>SymSpell contains configuration for the SymSpell spelling correction.</p>
 
         
           <table class="field-table">
@@ -24811,7 +25087,7 @@ takes longer to process!) </p></td>
         
       
         <h3 id="ondewo.s2t.TrainUserLanguageModelRequest" class="title-badge message">TrainUserLanguageModelRequest</h3>
-        <p></p>
+        <p>TrainUserLanguageModelRequest is used to request the training of a user-specific language model.</p>
 
         
           <table class="field-table">
@@ -24824,14 +25100,14 @@ takes longer to process!) </p></td>
                   <td>language_model_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>Name of the language model to train </p></td>
+                  <td><p>Name of the language model to train. Example: "user_lm_1" </p></td>
                 </tr>
               
                 <tr>
                   <td>order</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p>Order n of the ngram </p></td>
+                  <td><p>Order n of the ngram. Example: 3 (for trigram model) </p></td>
                 </tr>
               
             </tbody>
@@ -24842,7 +25118,7 @@ takes longer to process!) </p></td>
         
       
         <h3 id="ondewo.s2t.TranscribeFileRequest" class="title-badge message">TranscribeFileRequest</h3>
-        <p></p>
+        <p>A request to transcribe an audio file</p>
 
         
           <table class="field-table">
@@ -24873,7 +25149,7 @@ takes longer to process!) </p></td>
         
       
         <h3 id="ondewo.s2t.TranscribeFileResponse" class="title-badge message">TranscribeFileResponse</h3>
-        <p></p>
+        <p>The response message for a transcribe file request</p>
 
         
           <table class="field-table">
@@ -24897,13 +25173,6 @@ takes longer to process!) </p></td>
                 </tr>
               
                 <tr>
-                  <td>word_timing</td>
-                  <td><a href="#ondewo.s2t.WordTiming">WordTiming</a></td>
-                  <td>repeated</td>
-                  <td><p>List of words with timestamps for their start and end </p></td>
-                </tr>
-              
-                <tr>
                   <td>audio_uuid</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
@@ -24918,7 +25187,7 @@ takes longer to process!) </p></td>
         
       
         <h3 id="ondewo.s2t.TranscribeRequestConfig" class="title-badge message">TranscribeRequestConfig</h3>
-        <p></p>
+        <p>Configuration for a request to transcribe audio</p>
 
         
           <table class="field-table">
@@ -24991,7 +25260,7 @@ takes longer to process!) </p></td>
         
       
         <h3 id="ondewo.s2t.TranscribeStreamRequest" class="title-badge message">TranscribeStreamRequest</h3>
-        <p></p>
+        <p>Request to transcribe an audio stream</p>
 
         
           <table class="field-table">
@@ -25036,7 +25305,7 @@ takes longer to process!) </p></td>
         
       
         <h3 id="ondewo.s2t.TranscribeStreamResponse" class="title-badge message">TranscribeStreamResponse</h3>
-        <p></p>
+        <p>The response message of a stream transcription</p>
 
         
           <table class="field-table">
@@ -25110,7 +25379,7 @@ started before the end of an utterance). </p></td>
         
       
         <h3 id="ondewo.s2t.Transcription" class="title-badge message">Transcription</h3>
-        <p></p>
+        <p>The transcription message</p>
 
         
           <table class="field-table">
@@ -25130,7 +25399,61 @@ started before the end of an utterance). </p></td>
                   <td>confidence_score</td>
                   <td><a href="#float">float</a></td>
                   <td></td>
-                  <td><p>The corresponding confidence score </p></td>
+                  <td><p>The corresponding confidence score. The confidence estimate between 0.0 and 1.0. A higher number
+indicates an estimated greater likelihood that the recognized words are correct. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>words</td>
+                  <td><a href="#ondewo.s2t.WordDetail">WordDetail</a></td>
+                  <td>repeated</td>
+                  <td><p>List of the words of transcription with their confidence scores and probable alternatives </p></td>
+                </tr>
+              
+                <tr>
+                  <td>alternatives</td>
+                  <td><a href="#ondewo.s2t.TranscriptionAlternative">TranscriptionAlternative</a></td>
+                  <td>repeated</td>
+                  <td><p>List of alternative transcriptions, confidence scores, words timings and alternative words </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.s2t.TranscriptionAlternative" class="title-badge message">TranscriptionAlternative</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>transcript</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The alternative transcribed text </p></td>
+                </tr>
+              
+                <tr>
+                  <td>confidence</td>
+                  <td><a href="#float">float</a></td>
+                  <td></td>
+                  <td><p>The corresponding confidence score to the alternative transcript. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>words</td>
+                  <td><a href="#ondewo.s2t.WordDetail">WordDetail</a></td>
+                  <td>repeated</td>
+                  <td><p>A list of word-specific information for each recognized word, including word timings, confidence score of
+the word and alternative words. </p></td>
                 </tr>
               
             </tbody>
@@ -25141,7 +25464,7 @@ started before the end of an utterance). </p></td>
         
       
         <h3 id="ondewo.s2t.TranscriptionReturnOptions" class="title-badge message">TranscriptionReturnOptions</h3>
-        <p></p>
+        <p>Configuration of the return values of a transcribe request</p>
 
         
           <table class="field-table">
@@ -25165,6 +25488,13 @@ started before the end of an utterance). </p></td>
                 </tr>
               
                 <tr>
+                  <td>return_confidence_score</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>Whether or not to return confidence scores </p></td>
+                </tr>
+              
+                <tr>
                   <td>return_alternative_transcriptions</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
@@ -25172,10 +25502,24 @@ started before the end of an utterance). </p></td>
                 </tr>
               
                 <tr>
-                  <td>return_confidence_score</td>
+                  <td>return_alternative_transcriptions_nr</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p>Optional. Number of alternative transcriptions results from beam-search or greedy-search </p></td>
+                </tr>
+              
+                <tr>
+                  <td>return_alternative_words</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>Whether or not to return confidence scores </p></td>
+                  <td><p>Whether or not to return alternative results from beam-search </p></td>
+                </tr>
+              
+                <tr>
+                  <td>return_alternative_words_nr</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p>Optional. Number of alternative words to results </p></td>
                 </tr>
               
                 <tr>
@@ -25193,7 +25537,7 @@ started before the end of an utterance). </p></td>
         
       
         <h3 id="ondewo.s2t.UtteranceDetectionOptions" class="title-badge message">UtteranceDetectionOptions</h3>
-        <p></p>
+        <p>Configuration of the options to detect utterances</p>
 
         
           <table class="field-table">
@@ -25238,7 +25582,7 @@ started before the end of an utterance). </p></td>
         
       
         <h3 id="ondewo.s2t.VoiceActivityDetection" class="title-badge message">VoiceActivityDetection</h3>
-        <p></p>
+        <p>VoiceActivityDetection contains information about voice activity detection settings.</p>
 
         
           <table class="field-table">
@@ -25251,28 +25595,28 @@ started before the end of an utterance). </p></td>
                   <td>active</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Indicates if voice activity detection is active. </p></td>
                 </tr>
               
                 <tr>
                   <td>sampling_rate</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Sampling rate for voice activity detection. </p></td>
                 </tr>
               
                 <tr>
                   <td>pyannote</td>
                   <td><a href="#ondewo.s2t.Pyannote">Pyannote</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Configuration for the Pyannote model. </p></td>
                 </tr>
               
                 <tr>
                   <td>matchbox</td>
                   <td><a href="#ondewo.s2t.Matchbox">Matchbox</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Configuration for the Matchbox model. </p></td>
                 </tr>
               
             </tbody>
@@ -25283,7 +25627,7 @@ started before the end of an utterance). </p></td>
         
       
         <h3 id="ondewo.s2t.Wav2Vec" class="title-badge message">Wav2Vec</h3>
-        <p></p>
+        <p>Wav2Vec contains information about the Wav2Vec model.</p>
 
         
           <table class="field-table">
@@ -25296,14 +25640,14 @@ started before the end of an utterance). </p></td>
                   <td>model_path</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Path to the model. </p></td>
                 </tr>
               
                 <tr>
                   <td>use_gpu</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Indicates if GPU is used. </p></td>
                 </tr>
               
             </tbody>
@@ -25314,7 +25658,7 @@ started before the end of an utterance). </p></td>
         
       
         <h3 id="ondewo.s2t.Wav2VecTriton" class="title-badge message">Wav2VecTriton</h3>
-        <p></p>
+        <p>Wav2VecTriton contains information about the Wav2Vec model using Triton.</p>
 
         
           <table class="field-table">
@@ -25327,28 +25671,28 @@ started before the end of an utterance). </p></td>
                   <td>processor_path</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Path to the processor. </p></td>
                 </tr>
               
                 <tr>
                   <td>triton_model_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Name of the Triton model. </p></td>
                 </tr>
               
                 <tr>
                   <td>triton_model_version</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Version of the Triton model. </p></td>
                 </tr>
               
                 <tr>
                   <td>check_status_timeout</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Timeout for checking model status. </p></td>
                 </tr>
               
             </tbody>
@@ -25359,7 +25703,7 @@ started before the end of an utterance). </p></td>
         
       
         <h3 id="ondewo.s2t.Whisper" class="title-badge message">Whisper</h3>
-        <p></p>
+        <p>Whisper contains information about the Whisper model.</p>
 
         
           <table class="field-table">
@@ -25372,21 +25716,21 @@ started before the end of an utterance). </p></td>
                   <td>model_path</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Path to the model. </p></td>
                 </tr>
               
                 <tr>
                   <td>use_gpu</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Indicates if GPU is used. </p></td>
                 </tr>
               
                 <tr>
                   <td>language</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Language of the model. </p></td>
                 </tr>
               
             </tbody>
@@ -25397,7 +25741,7 @@ started before the end of an utterance). </p></td>
         
       
         <h3 id="ondewo.s2t.WhisperTriton" class="title-badge message">WhisperTriton</h3>
-        <p></p>
+        <p>WhisperTriton contains information about the Whisper model using Triton.</p>
 
         
           <table class="field-table">
@@ -25410,28 +25754,28 @@ started before the end of an utterance). </p></td>
                   <td>processor_path</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Path to the processor. </p></td>
                 </tr>
               
                 <tr>
                   <td>triton_model_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Name of the Triton model. </p></td>
                 </tr>
               
                 <tr>
                   <td>triton_model_version</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Version of the Triton model. </p></td>
                 </tr>
               
                 <tr>
                   <td>check_status_timeout</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Timeout for checking model status. </p></td>
                 </tr>
               
             </tbody>
@@ -25441,7 +25785,7 @@ started before the end of an utterance). </p></td>
 
         
       
-        <h3 id="ondewo.s2t.WordTiming" class="title-badge message">WordTiming</h3>
+        <h3 id="ondewo.s2t.WordAlternative" class="title-badge message">WordAlternative</h3>
         <p></p>
 
         
@@ -25455,21 +25799,68 @@ started before the end of an utterance). </p></td>
                   <td>word</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>Transcribed word </p></td>
+                  <td><p>The recognized word corresponding to this set of information. </p></td>
                 </tr>
               
                 <tr>
-                  <td>begin</td>
-                  <td><a href="#int32">int32</a></td>
+                  <td>confidence</td>
+                  <td><a href="#float">float</a></td>
                   <td></td>
-                  <td><p>Timestamp for start of word </p></td>
+                  <td><p>The corresponding confidence score to the alternative word. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.s2t.WordDetail" class="title-badge message">WordDetail</h3>
+        <p>WordDetail provides word-specific information for recognized words.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>start_time</td>
+                  <td><a href="#float">float</a></td>
+                  <td></td>
+                  <td><p>The start time of the spoken word relative to the beginning of the audio.
+The accuracy of the time offset can vary, and this is an experimental feature. </p></td>
                 </tr>
               
                 <tr>
-                  <td>end</td>
-                  <td><a href="#int32">int32</a></td>
+                  <td>end_time</td>
+                  <td><a href="#float">float</a></td>
                   <td></td>
-                  <td><p>Timestamp for end of word </p></td>
+                  <td><p>The end time of the spoken word relative to the beginning of the audio.
+The accuracy of the time offset can vary, and this is an experimental feature. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>word</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The recognized word corresponding to this set of information. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>confidence</td>
+                  <td><a href="#float">float</a></td>
+                  <td></td>
+                  <td><p>The corresponding confidence score to the word. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>word_alternatives</td>
+                  <td><a href="#ondewo.s2t.WordAlternative">WordAlternative</a></td>
+                  <td>repeated</td>
+                  <td><p>List of alternative words and confidence scores of each. </p></td>
                 </tr>
               
             </tbody>
@@ -25485,7 +25876,7 @@ started before the end of an utterance). </p></td>
       <div id="ondewo/s2t/speech-to-text.proto-enums" class="object-category">Enums</div>
       
         <h3 id="ondewo.s2t.Decoding" class="title-badge enum">Decoding</h3>
-        <p></p>
+        <p>The decoding configuration</p>
         <table class="enum-table">
           <thead>
             <tr><td>Name</td><td>Number</td><td>Description</td></tr>
@@ -25513,7 +25904,36 @@ started before the end of an utterance). </p></td>
               <tr>
                 <td>BEAM_SEARCH</td>
                 <td>3</td>
-                <td><p>beam search whitout LM head, to configure decoding mode for seq2seq models.</p></td>
+                <td><p>beam search without LM head, to configure decoding mode for seq2seq models.</p></td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+        <h3 id="ondewo.s2t.InferenceBackend" class="title-badge enum">InferenceBackend</h3>
+        <p></p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>INFERENCE_BACKEND_UNKNOWN</td>
+                <td>0</td>
+                <td><p>Not set</p></td>
+              </tr>
+            
+              <tr>
+                <td>INFERENCE_BACKEND_PYTORCH</td>
+                <td>1</td>
+                <td><p>Run pytorch model</p></td>
+              </tr>
+            
+              <tr>
+                <td>INFERENCE_BACKEND_FLAX</td>
+                <td>2</td>
+                <td><p>Run flax model</p></td>
               </tr>
             
           </tbody>
