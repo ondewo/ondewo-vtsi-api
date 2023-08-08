@@ -31057,8 +31057,16 @@ Example: "current_index-1--page_size-20" </p></td>
                   <td>vtsi_project_sorting</td>
                   <td><a href="#ondewo.vtsi.VtsiProjectSorting">VtsiProjectSorting</a></td>
                   <td>optional</td>
-                  <td><p>Optional field to define the sorting of the list of VTSI projects in the response.
+                  <td><p>Optional. Field to define the sorting of the list of VTSI projects in the response.
 If not specified, the default behavior is to have no sorting. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>nlu_agent_names</td>
+                  <td><a href="#string">string</a></td>
+                  <td>repeated</td>
+                  <td><p>Optional. Filter based on associated NLU agents
+Format: `projects/<Project ID>/agent`. </p></td>
                 </tr>
               
             </tbody>
@@ -31312,6 +31320,14 @@ Only when a new VtsiProject is created the name can be undefined/empty </p></td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
                   <td><p>The port of the asterisk server </p></td>
+                </tr>
+              
+                <tr>
+                  <td>nlu_agent_names</td>
+                  <td><a href="#string">string</a></td>
+                  <td>repeated</td>
+                  <td><p>associated NLU agents
+Format: `projects/<Project ID>/agent`. </p></td>
                 </tr>
               
             </tbody>

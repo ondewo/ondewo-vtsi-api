@@ -11496,7 +11496,8 @@ Request to get the list of agents
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_view | [VtsiProjectView](#ondewo.vtsi.VtsiProjectView) |  | Optional. Specify the view of the returned VtsiProject (full view by default) |
 | page_token | [string](#string) | optional | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
-| vtsi_project_sorting | [VtsiProjectSorting](#ondewo.vtsi.VtsiProjectSorting) | optional | Optional field to define the sorting of the list of VTSI projects in the response. If not specified, the default behavior is to have no sorting. |
+| vtsi_project_sorting | [VtsiProjectSorting](#ondewo.vtsi.VtsiProjectSorting) | optional | Optional. Field to define the sorting of the list of VTSI projects in the response. If not specified, the default behavior is to have no sorting. |
+| nlu_agent_names | [string](#string) | repeated | Optional. Filter based on associated NLU agents Format: `projects/<Project ID>/agent`. |
 
 
 
@@ -11602,6 +11603,7 @@ The VTSI project with its configuration setting
 | active_callers | [int32](#int32) |  | The number of active callers in this project. |
 | active_listeners | [int32](#int32) |  | The number of active listeners in this project. |
 | asterisk_port | [int32](#int32) |  | The port of the asterisk server |
+| nlu_agent_names | [string](#string) | repeated | associated NLU agents Format: `projects/<Project ID>/agent`. |
 
 
 
