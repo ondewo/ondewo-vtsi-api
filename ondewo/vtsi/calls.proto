@@ -616,8 +616,8 @@ message DeleteListenerResponse {
 // Represents a request to delete multiple listeners.
 message DeleteListenersRequest {
 
-    // The name of the listener to delete in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
-    repeated string name = 1;
+    // The names of the listeners to delete in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
+    repeated string names = 1;
 
 }
 
@@ -655,7 +655,7 @@ message DeleteCallerResponse {
 message DeleteCallersRequest {
 
     // The name of the caller to delete in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
-    repeated string name = 1;
+    repeated string names = 1;
 
 }
 
