@@ -899,7 +899,7 @@ enum CallType {
     CALLER = 2;
 }
 
-// Call log
+// Call
 message Call {
 
     // call name
@@ -953,6 +953,7 @@ message Call {
 
 }
 
+// Request to list calls
 message ListCallsRequest{
 
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
