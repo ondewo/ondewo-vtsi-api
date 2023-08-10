@@ -603,6 +603,14 @@
     - [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig)
     - [Credentials](#ondewo.vtsi.Credentials)
     - [CsiVtsiConfig](#ondewo.vtsi.CsiVtsiConfig)
+    - [DeleteCallerRequest](#ondewo.vtsi.DeleteCallerRequest)
+    - [DeleteCallerResponse](#ondewo.vtsi.DeleteCallerResponse)
+    - [DeleteCallersRequest](#ondewo.vtsi.DeleteCallersRequest)
+    - [DeleteCallersResponse](#ondewo.vtsi.DeleteCallersResponse)
+    - [DeleteListenerRequest](#ondewo.vtsi.DeleteListenerRequest)
+    - [DeleteListenerResponse](#ondewo.vtsi.DeleteListenerResponse)
+    - [DeleteListenersRequest](#ondewo.vtsi.DeleteListenersRequest)
+    - [DeleteListenersResponse](#ondewo.vtsi.DeleteListenersResponse)
     - [GetAudioFileRequest](#ondewo.vtsi.GetAudioFileRequest)
     - [GetAudioFileResponse](#ondewo.vtsi.GetAudioFileResponse)
     - [GetCallRequest](#ondewo.vtsi.GetCallRequest)
@@ -10533,6 +10541,130 @@ CSI configuration
 
 
 
+<a name="ondewo.vtsi.DeleteCallerRequest"></a>
+
+### DeleteCallerRequest
+Represents a request to delete a specific caller.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the caller to delete in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DeleteCallerResponse"></a>
+
+### DeleteCallerResponse
+Represents a request to delete a specific caller.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the deleted caller in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> |
+| error_message | [string](#string) |  | error message if there are any. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DeleteCallersRequest"></a>
+
+### DeleteCallersRequest
+Represents a request to delete multiple callers.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) | repeated | The name of the caller to delete in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DeleteCallersResponse"></a>
+
+### DeleteCallersResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| delete_caller_responses | [DeleteCallerResponse](#ondewo.vtsi.DeleteCallerResponse) | repeated | responses to delete callers |
+| error_message | [string](#string) |  | error message if there are any. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DeleteListenerRequest"></a>
+
+### DeleteListenerRequest
+Represents a request to delete a specific listener.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the listener to delete in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DeleteListenerResponse"></a>
+
+### DeleteListenerResponse
+Represents a request to delete a specific listener.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the deleted listener in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> |
+| error_message | [string](#string) |  | error message if there are any. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DeleteListenersRequest"></a>
+
+### DeleteListenersRequest
+Represents a request to delete multiple listeners.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) | repeated | The name of the listener to delete in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DeleteListenersResponse"></a>
+
+### DeleteListenersResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| delete_listener_responses | [DeleteListenerResponse](#ondewo.vtsi.DeleteListenerResponse) | repeated | responses to delete listeners |
+| error_message | [string](#string) |  | error message if there are any. |
+
+
+
+
+
+
 <a name="ondewo.vtsi.GetAudioFileRequest"></a>
 
 ### GetAudioFileRequest
@@ -11263,7 +11395,7 @@ Response to stop/kill a ondewo-sip listener or caller instance for a specific vt
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| stop_call_responses | [StopCallResponse](#ondewo.vtsi.StopCallResponse) | repeated |  |
+| stop_call_responses | [StopCallResponse](#ondewo.vtsi.StopCallResponse) | repeated | responses to stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project. |
 | error_message | [string](#string) |  | overall error message if you have any so if it's unhealthy |
 
 
@@ -11414,10 +11546,14 @@ ONDEWO VTSI API
 | StartCallers | [StartCallersRequest](#ondewo.vtsi.StartCallersRequest) | [StartCallersResponse](#ondewo.vtsi.StartCallersResponse) | start multiple ondewo-sip callers instances for a specific nlu-project. |
 | ListCallers | [ListCallersRequest](#ondewo.vtsi.ListCallersRequest) | [ListCallersResponse](#ondewo.vtsi.ListCallersResponse) | lists all available callers |
 | GetCaller | [GetCallerRequest](#ondewo.vtsi.GetCallerRequest) | [Caller](#ondewo.vtsi.Caller) | gets a caller |
+| DeleteCaller | [DeleteCallerRequest](#ondewo.vtsi.DeleteCallerRequest) | [DeleteCallerResponse](#ondewo.vtsi.DeleteCallerResponse) | deletes a caller |
+| DeleteCallers | [DeleteCallersRequest](#ondewo.vtsi.DeleteCallersRequest) | [DeleteCallersResponse](#ondewo.vtsi.DeleteCallersResponse) | deletes multiple callers |
 | StartListener | [StartListenerRequest](#ondewo.vtsi.StartListenerRequest) | [StartListenerResponse](#ondewo.vtsi.StartListenerResponse) | start single listener instance for a specific nlu-project. |
 | StartListeners | [StartListenersRequest](#ondewo.vtsi.StartListenersRequest) | [StartListenersResponse](#ondewo.vtsi.StartListenersResponse) | start multiple ondewo-sip listeners instances for a specific nlu-project. |
 | ListListeners | [ListListenersRequest](#ondewo.vtsi.ListListenersRequest) | [ListListenersResponse](#ondewo.vtsi.ListListenersResponse) | lists all available listeners |
 | GetListener | [GetListenerRequest](#ondewo.vtsi.GetListenerRequest) | [Listener](#ondewo.vtsi.Listener) | gets a listener |
+| DeleteListener | [DeleteListenerRequest](#ondewo.vtsi.DeleteListenerRequest) | [DeleteListenerResponse](#ondewo.vtsi.DeleteListenerResponse) | deletes a listener |
+| DeleteListeners | [DeleteListenersRequest](#ondewo.vtsi.DeleteListenersRequest) | [DeleteListenersResponse](#ondewo.vtsi.DeleteListenersResponse) | deletes multiple listeners |
 | StartScheduledCaller | [StartScheduledCallerRequest](#ondewo.vtsi.StartScheduledCallerRequest) | [StartScheduledCallerResponse](#ondewo.vtsi.StartScheduledCallerResponse) | start multiple ondewo-sip callers instances with schedules |
 | StartScheduledCallers | [StartScheduledCallersRequest](#ondewo.vtsi.StartScheduledCallersRequest) | [StartScheduledCallersResponse](#ondewo.vtsi.StartScheduledCallersResponse) | start multiple ondewo-sip callers instances with schedules |
 | StopCall | [StopCallRequest](#ondewo.vtsi.StopCallRequest) | [StopCallResponse](#ondewo.vtsi.StopCallResponse) | stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project. |
