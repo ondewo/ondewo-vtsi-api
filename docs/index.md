@@ -10450,7 +10450,7 @@ Call
 | sip_account | [string](#string) |  | sip account used |
 | container_name | [string](#string) |  | container name which you get from docker ps |
 | call_type | [CallType](#ondewo.vtsi.CallType) |  | Listener or caller enum .. if not specified |
-| phone_number | [string](#string) |  |  |
+| phone_number | [string](#string) |  | callee voip id or callee phone number |
 | start_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | start time of log |
 | end_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | end time of log |
 | sip_status_type | [ondewo.sip.SipStatus.StatusType](#ondewo.sip.SipStatus.StatusType) |  | current sip status type |
@@ -10461,7 +10461,8 @@ Call
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | common_services_config | [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig) | optional | Detailed configuration of the services used for the call such as S2T, T2S, NLU, SIP and CSI |
 | sip_port | [int32](#int32) | optional | SIP port of the call |
-| csi_port | [int32](#int32) | optional | CSi port of the call |
+| csi_port | [int32](#int32) | optional | CSI port of the call |
+| nlu_session_name | [string](#string) | optional | NLU session name |
 
 
 
