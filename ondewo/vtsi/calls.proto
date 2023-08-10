@@ -950,10 +950,10 @@ message Call {
     optional int32 sip_port = 15;
 
     // CSI port of the call
-    optional int32  csi_port = 16;
+    optional int32 csi_port = 16;
 
     // NLU session name
-    optional string  nlu_session_name = 17;
+    optional string nlu_session_name = 17;
 
 }
 
