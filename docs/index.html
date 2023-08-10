@@ -3136,6 +3136,10 @@
                       
                         <li><a href="#ondewo.vtsi.Calls.GetCaller" class="title-badge method">GetCaller</a></li>
                       
+                        <li><a href="#ondewo.vtsi.Calls.DeleteCaller" class="title-badge method">DeleteCaller</a></li>
+                      
+                        <li><a href="#ondewo.vtsi.Calls.DeleteCallers" class="title-badge method">DeleteCallers</a></li>
+                      
                         <li><a href="#ondewo.vtsi.Calls.StartListener" class="title-badge method">StartListener</a></li>
                       
                         <li><a href="#ondewo.vtsi.Calls.StartListeners" class="title-badge method">StartListeners</a></li>
@@ -3143,6 +3147,10 @@
                         <li><a href="#ondewo.vtsi.Calls.ListListeners" class="title-badge method">ListListeners</a></li>
                       
                         <li><a href="#ondewo.vtsi.Calls.GetListener" class="title-badge method">GetListener</a></li>
+                      
+                        <li><a href="#ondewo.vtsi.Calls.DeleteListener" class="title-badge method">DeleteListener</a></li>
+                      
+                        <li><a href="#ondewo.vtsi.Calls.DeleteListeners" class="title-badge method">DeleteListeners</a></li>
                       
                         <li><a href="#ondewo.vtsi.Calls.StartScheduledCaller" class="title-badge method">StartScheduledCaller</a></li>
                       
@@ -3214,6 +3222,38 @@
                     
                       <li>
                         <a href="#ondewo.vtsi.CsiVtsiConfig" class="title-badge message">CsiVtsiConfig</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.DeleteCallerRequest" class="title-badge message">DeleteCallerRequest</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.DeleteCallerResponse" class="title-badge message">DeleteCallerResponse</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.DeleteCallersRequest" class="title-badge message">DeleteCallersRequest</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.DeleteCallersResponse" class="title-badge message">DeleteCallersResponse</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.DeleteListenerRequest" class="title-badge message">DeleteListenerRequest</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.DeleteListenerResponse" class="title-badge message">DeleteListenerResponse</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.DeleteListenersRequest" class="title-badge message">DeleteListenersRequest</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.DeleteListenersResponse" class="title-badge message">DeleteListenersResponse</a>
                       </li>
                     
                       <li>
@@ -28528,6 +28568,18 @@ pipelines with the specifications received in the ListT2sPipelinesRequest. </p><
 
           gets a caller
         
+          <h4 id="ondewo.vtsi.Calls.DeleteCaller" class="title-badge method">DeleteCaller</h4>
+
+          <pre>rpc DeleteCaller (<a href="#ondewo.vtsi.DeleteCallerRequest">DeleteCallerRequest</a>) returns (<a href="#ondewo.vtsi.DeleteCallerResponse">DeleteCallerResponse)</a></pre>
+
+          deletes a caller
+        
+          <h4 id="ondewo.vtsi.Calls.DeleteCallers" class="title-badge method">DeleteCallers</h4>
+
+          <pre>rpc DeleteCallers (<a href="#ondewo.vtsi.DeleteCallersRequest">DeleteCallersRequest</a>) returns (<a href="#ondewo.vtsi.DeleteCallersResponse">DeleteCallersResponse)</a></pre>
+
+          deletes multiple callers
+        
           <h4 id="ondewo.vtsi.Calls.StartListener" class="title-badge method">StartListener</h4>
 
           <pre>rpc StartListener (<a href="#ondewo.vtsi.StartListenerRequest">StartListenerRequest</a>) returns (<a href="#ondewo.vtsi.StartListenerResponse">StartListenerResponse)</a></pre>
@@ -28551,6 +28603,18 @@ pipelines with the specifications received in the ListT2sPipelinesRequest. </p><
           <pre>rpc GetListener (<a href="#ondewo.vtsi.GetListenerRequest">GetListenerRequest</a>) returns (<a href="#ondewo.vtsi.Listener">Listener)</a></pre>
 
           gets a listener
+        
+          <h4 id="ondewo.vtsi.Calls.DeleteListener" class="title-badge method">DeleteListener</h4>
+
+          <pre>rpc DeleteListener (<a href="#ondewo.vtsi.DeleteListenerRequest">DeleteListenerRequest</a>) returns (<a href="#ondewo.vtsi.DeleteListenerResponse">DeleteListenerResponse)</a></pre>
+
+          deletes a listener
+        
+          <h4 id="ondewo.vtsi.Calls.DeleteListeners" class="title-badge method">DeleteListeners</h4>
+
+          <pre>rpc DeleteListeners (<a href="#ondewo.vtsi.DeleteListenersRequest">DeleteListenersRequest</a>) returns (<a href="#ondewo.vtsi.DeleteListenersResponse">DeleteListenersResponse)</a></pre>
+
+          deletes multiple listeners
         
           <h4 id="ondewo.vtsi.Calls.StartScheduledCaller" class="title-badge method">StartScheduledCaller</h4>
 
@@ -29118,6 +29182,226 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
                   <td><p>Setting to activate if it is possible to send control messages
 a.) via RabbitMQ to remote control the system
 b.) via embeddings in NLU text responses </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.DeleteCallerRequest" class="title-badge message">DeleteCallerRequest</h3>
+        <p>Represents a request to delete a specific caller.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The name of the caller to delete in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.DeleteCallerResponse" class="title-badge message">DeleteCallerResponse</h3>
+        <p>Represents a request to delete a specific caller.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The name of the deleted caller in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>error_message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>error message if there are any. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.DeleteCallersRequest" class="title-badge message">DeleteCallersRequest</h3>
+        <p>Represents a request to delete multiple callers.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td><a href="#string">string</a></td>
+                  <td>repeated</td>
+                  <td><p>The name of the caller to delete in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.DeleteCallersResponse" class="title-badge message">DeleteCallersResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>delete_caller_responses</td>
+                  <td><a href="#ondewo.vtsi.DeleteCallerResponse">DeleteCallerResponse</a></td>
+                  <td>repeated</td>
+                  <td><p>responses to delete callers </p></td>
+                </tr>
+              
+                <tr>
+                  <td>error_message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>error message if there are any. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.DeleteListenerRequest" class="title-badge message">DeleteListenerRequest</h3>
+        <p>Represents a request to delete a specific listener.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The name of the listener to delete in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.DeleteListenerResponse" class="title-badge message">DeleteListenerResponse</h3>
+        <p>Represents a request to delete a specific listener.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The name of the deleted listener in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>error_message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>error message if there are any. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.DeleteListenersRequest" class="title-badge message">DeleteListenersRequest</h3>
+        <p>Represents a request to delete multiple listeners.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td><a href="#string">string</a></td>
+                  <td>repeated</td>
+                  <td><p>The name of the listener to delete in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.DeleteListenersResponse" class="title-badge message">DeleteListenersResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>delete_listener_responses</td>
+                  <td><a href="#ondewo.vtsi.DeleteListenerResponse">DeleteListenerResponse</a></td>
+                  <td>repeated</td>
+                  <td><p>responses to delete listeners </p></td>
+                </tr>
+              
+                <tr>
+                  <td>error_message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>error message if there are any. </p></td>
                 </tr>
               
             </tbody>
@@ -30730,7 +31014,7 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
                   <td>stop_call_responses</td>
                   <td><a href="#ondewo.vtsi.StopCallResponse">StopCallResponse</a></td>
                   <td>repeated</td>
-                  <td><p> </p></td>
+                  <td><p>responses to stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project. </p></td>
                 </tr>
               
                 <tr>
