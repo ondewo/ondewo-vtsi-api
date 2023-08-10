@@ -916,6 +916,7 @@ message Call {
     // Listener or caller enum .. if not specified
     CallType call_type = 4;
 
+    // callee voip id or callee phone number
     string phone_number = 5;
 
     // start time of log
@@ -948,8 +949,11 @@ message Call {
     // SIP port of the call
     optional int32 sip_port = 15;
 
-    // CSi port of the call
+    // CSI port of the call
     optional int32  csi_port = 16;
+
+    // NLU session name
+    optional string  nlu_session_name = 17;
 
 }
 
