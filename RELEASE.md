@@ -2,6 +2,14 @@
 
 *****************
 
+## Release ONDEWO VTSI API 6.6.0
+
+## Improvements
+
+* [[OND233-335]](https://ondewo.atlassian.net/browse/OND233-335) - Add DeleteCallers and DeleteListeners
+
+*****************
+
 ## Release ONDEWO VTSI API 6.5.0
 
 ## Improvements

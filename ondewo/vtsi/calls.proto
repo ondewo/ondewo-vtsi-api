@@ -45,6 +45,12 @@ service Calls {
     // gets a caller
     rpc GetCaller (GetCallerRequest) returns (Caller);
 
+    // deletes a caller
+    rpc DeleteCaller (DeleteCallerRequest) returns (DeleteCallerResponse);
+
+    // deletes multiple callers
+    rpc DeleteCallers (DeleteCallersRequest) returns (DeleteCallersResponse);
+
     // start single listener instance for a specific nlu-project.
     rpc StartListener (StartListenerRequest) returns (StartListenerResponse);
 
@@ -56,6 +62,12 @@ service Calls {
 
     // gets a listener
     rpc GetListener (GetListenerRequest) returns (Listener);
+
+    // deletes a listener
+    rpc DeleteListener (DeleteListenerRequest) returns (DeleteListenerResponse);
+
+    // deletes multiple listeners
+    rpc DeleteListeners (DeleteListenersRequest) returns (DeleteListenersResponse);
 
     // start multiple ondewo-sip callers instances with schedules
     rpc StartScheduledCaller (StartScheduledCallerRequest) returns (StartScheduledCallerResponse);
@@ -582,6 +594,80 @@ message GetListenerRequest {
 
 }
 
+// Represents a request to delete a specific listener.
+message DeleteListenerRequest {
+
+    // The name of the listener to delete in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
+    string name = 1;
+
+}
+
+// Represents a request to delete a specific listener.
+message DeleteListenerResponse {
+
+    // The name of the deleted listener in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
+    string name = 1;
+
+    // error message if there are any.
+    string error_message = 2;
+
+}
+
+// Represents a request to delete multiple listeners.
+message DeleteListenersRequest {
+
+    // The name of the listener to delete in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
+    repeated string name = 1;
+
+}
+
+message DeleteListenersResponse {
+
+    // responses to delete listeners
+    repeated DeleteListenerResponse delete_listener_responses = 1;
+
+    // error message if there are any.
+    string error_message = 2;
+
+}
+
+
+// Represents a request to delete a specific caller.
+message DeleteCallerRequest {
+
+    // The name of the caller to delete in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
+    string name = 1;
+
+}
+
+// Represents a request to delete a specific caller.
+message DeleteCallerResponse {
+
+    // The name of the deleted caller in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
+    string name = 1;
+
+    // error message if there are any.
+    string error_message = 2;
+
+}
+
+// Represents a request to delete multiple callers.
+message DeleteCallersRequest {
+
+    // The name of the caller to delete in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
+    repeated string name = 1;
+
+}
+
+message DeleteCallersResponse {
+
+    // responses to delete callers
+    repeated DeleteCallerResponse delete_caller_responses = 1;
+
+    // error message if there are any.
+    string error_message = 2;
+
+}
 
 // request for starting a scheduled call
 message StartScheduledCallerRequest {
@@ -698,6 +784,7 @@ message StopCallsRequest {
 // Response to stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.
 message StopCallsResponse {
 
+    // responses to stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.
     repeated StopCallResponse stop_call_responses = 1;
 
     // overall error message if you have any so if it's unhealthy
