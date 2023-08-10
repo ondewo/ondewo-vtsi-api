@@ -10441,7 +10441,7 @@ base configuration of services (ondewo-nlu, text-to-speech, speech-to-text, aste
 <a name="ondewo.vtsi.Call"></a>
 
 ### Call
-Call log
+Call
 
 
 | Field | Type | Label | Description |
@@ -10580,7 +10580,7 @@ Represents a request to delete multiple callers.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) | repeated | The name of the caller to delete in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> |
+| names | [string](#string) | repeated | The name of the caller to delete in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> |
 
 
 
@@ -10642,7 +10642,7 @@ Represents a request to delete multiple listeners.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) | repeated | The name of the listener to delete in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> |
+| names | [string](#string) | repeated | The names of the listeners to delete in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> |
 
 
 
@@ -10812,7 +10812,7 @@ Represents the response for listing callers.
 <a name="ondewo.vtsi.ListCallsRequest"></a>
 
 ### ListCallsRequest
-
+Request to list calls
 
 
 | Field | Type | Label | Description |
