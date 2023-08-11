@@ -214,6 +214,9 @@ message SipStatus{
     // Traceback of the exception
     string exception_traceback = 9;
 
+    // session name of the NLU session
+    string nlu_session_name = 10;
+
 }
 
 // History of SIP status
