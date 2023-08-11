@@ -9408,6 +9408,7 @@ Request for starting a new SIP session for a specified account
 | description | [string](#string) |  | More detailed description of the status |
 | exception_name | [string](#string) |  | Name of the exception |
 | exception_traceback | [string](#string) |  | Traceback of the exception |
+| nlu_session_name | [string](#string) |  | session name of the NLU session |
 
 
 
