@@ -7,7 +7,7 @@
 ## Improvements
 
 * [[OND233-335]](https://ondewo.atlassian.net/browse/OND233-335) - Add DeleteCallers, DeleteCaller, DeleteListener and
-  DeleteListeners. Also added nlu_session_name to Call
+  DeleteListeners. Also added nlu_session_name to Call and added CallType SCHEDULED_CALLER.
 
 *****************
 
