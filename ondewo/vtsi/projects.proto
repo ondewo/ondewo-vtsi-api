@@ -295,13 +295,13 @@ enum VtsiProjectSortingMode {
 }
 
 // Structure of VTSI_PROJECT view
+// - CreateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW
+// - UpdateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW
+// - GetVTSI_PROJECT: VTSI_PROJECT_VIEW_FULL
+// - ListVTSI_PROJECTs: VTSI_PROJECT_VIEW_SHALLOW
 enum VtsiProjectView {
 
     // Unspecified VTSI_PROJECT view: the view is defined by the call:
-    // - CreateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW
-    // - UpdateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW
-    // - GetVTSI_PROJECT: VTSI_PROJECT_VIEW_FULL
-    // - ListVTSI_PROJECTs: VTSI_PROJECT_VIEW_SHALLOW
     VTSI_PROJECT_VIEW_UNSPECIFIED = 0;
 
     // Full VTSI_PROJECT view: populate all the fields of the VTSI_PROJECT message including configs.

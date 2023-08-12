@@ -897,6 +897,9 @@ enum CallType {
 
     // caller
     CALLER = 2;
+
+    // scheduled caller
+    SCHEDULED_CALLER = 3;
 }
 
 // Call
