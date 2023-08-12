@@ -11740,6 +11740,7 @@ Request to retrieve a VTSI project
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| vtsi_project_view | [VtsiProjectView](#ondewo.vtsi.VtsiProjectView) |  | Optional. Specify the view of the returned VtsiProject (full view by default) |
 
 
 
