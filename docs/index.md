@@ -11629,7 +11629,7 @@ Configuration variables for the Asterisk server
 | sip_trunk_host | [string](#string) |  | SIP trunk host. |
 | transfer_number | [string](#string) |  | Transfer number. |
 | transfer_number_host | [string](#string) |  | Transfer number host. |
-| sip_trunk_phone_number | [string](#string) |  | SIP trunk phone number. |
+| sip_trunk_phone_number | [string](#string) |  | SIP trunk phone number / caller id. |
 
 
 
