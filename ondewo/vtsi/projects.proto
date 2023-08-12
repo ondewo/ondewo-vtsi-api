@@ -215,6 +215,9 @@ message GetVtsiProjectRequest{
 
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
+
+    // Optional. Specify the view of the returned VtsiProject (full view by default)
+    VtsiProjectView vtsi_project_view = 2;
 }
 
 // Request to get the list of agents
