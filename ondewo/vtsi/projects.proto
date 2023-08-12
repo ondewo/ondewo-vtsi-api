@@ -146,7 +146,7 @@ message AsteriskConfigsVariables{
     // Transfer number host.
     string transfer_number_host = 5;
 
-    // SIP trunk phone number.
+    // SIP trunk phone number / caller id.
     string sip_trunk_phone_number = 6;
 
 }
