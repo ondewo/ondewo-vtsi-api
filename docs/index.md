@@ -11517,6 +11517,7 @@ CallType
 | BOTH | 0 | both listeners and callers |
 | LISTENER | 1 | listeners |
 | CALLER | 2 | caller |
+| SCHEDULED_CALLER | 3 | scheduled caller |
 
 
 
@@ -11938,10 +11939,14 @@ Status of a VtsiProject.
 
 ### VtsiProjectView
 Structure of VTSI_PROJECT view
+- CreateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW
+- UpdateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW
+- GetVTSI_PROJECT: VTSI_PROJECT_VIEW_FULL
+- ListVTSI_PROJECTs: VTSI_PROJECT_VIEW_SHALLOW
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
-| VTSI_PROJECT_VIEW_UNSPECIFIED | 0 | Unspecified VTSI_PROJECT view: the view is defined by the call: - CreateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW - UpdateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW - GetVTSI_PROJECT: VTSI_PROJECT_VIEW_FULL - ListVTSI_PROJECTs: VTSI_PROJECT_VIEW_SHALLOW |
+| VTSI_PROJECT_VIEW_UNSPECIFIED | 0 | Unspecified VTSI_PROJECT view: the view is defined by the call: |
 | VTSI_PROJECT_VIEW_FULL | 1 | Full VTSI_PROJECT view: populate all the fields of the VTSI_PROJECT message including configs. |
 | VTSI_PROJECT_VIEW_SHALLOW | 2 | Shallow VTSI_PROJECT view: populates all the fields except configs. |
 | VTSI_PROJECT_VIEW_MINIMUM | 3 | Minimum view including only VTSI_PROJECT UUID and VTSI_PROJECT display name |

@@ -31294,6 +31294,12 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
                 <td><p>caller</p></td>
               </tr>
             
+              <tr>
+                <td>SCHEDULED_CALLER</td>
+                <td>3</td>
+                <td><p>scheduled caller</p></td>
+              </tr>
+            
           </tbody>
         </table>
       
@@ -32226,7 +32232,7 @@ in descending order based on the specified criteria.</p></td>
         </table>
       
         <h3 id="ondewo.vtsi.VtsiProjectView" class="title-badge enum">VtsiProjectView</h3>
-        <p>Structure of VTSI_PROJECT view</p>
+        <p>Structure of VTSI_PROJECT view</p><p>- CreateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW</p><p>- UpdateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW</p><p>- GetVTSI_PROJECT: VTSI_PROJECT_VIEW_FULL</p><p>- ListVTSI_PROJECTs: VTSI_PROJECT_VIEW_SHALLOW</p>
         <table class="enum-table">
           <thead>
             <tr><td>Name</td><td>Number</td><td>Description</td></tr>
@@ -32236,11 +32242,7 @@ in descending order based on the specified criteria.</p></td>
               <tr>
                 <td>VTSI_PROJECT_VIEW_UNSPECIFIED</td>
                 <td>0</td>
-                <td><p>Unspecified VTSI_PROJECT view: the view is defined by the call:
-- CreateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW
-- UpdateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW
-- GetVTSI_PROJECT: VTSI_PROJECT_VIEW_FULL
-- ListVTSI_PROJECTs: VTSI_PROJECT_VIEW_SHALLOW</p></td>
+                <td><p>Unspecified VTSI_PROJECT view: the view is defined by the call:</p></td>
               </tr>
             
               <tr>
