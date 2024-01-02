@@ -97,6 +97,12 @@ message VtsiProject{
     // Format: `projects/<Project ID>/agent`.
     repeated string nlu_agent_names = 14;
 
+    // The number of deployed callers in this project.
+    int32 deployed_callers = 15;
+
+    // The number of deployed listeners in this project.
+    int32 deployed_listeners = 16;
+
 }
 
 // Status of a VtsiProject.
