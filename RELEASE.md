@@ -2,12 +2,32 @@
 
 *****************
 
+## Release ONDEWO VTSI API 6.7.0
+
+## Improvements
+
+* [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341) Added `CallFilter` to improving monitoring capabilities
+  and filtering with `ListCallsRequest`
+* [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341) Added `deployed_callers` and `deployed_listeners`
+  to `VtsiProject`
+* [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341)  Upgrade to ONDEWO NLU API 4.8.0, and therefore
+  removed `GetAudioFile` and `GetFullConversationAudioFile` from ONDEWO VTSI API since it is now in ONDEWO NLU
+  API ([[OND21-2143]](https://ondewo.atlassian.net/browse/OND211-2143))
+
+## Bug Fixes
+
+* [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341) `TransferCallRequest` should not have a repeated field
+  `transfer_id`
+
+*****************
+
 ## Release ONDEWO VTSI API 6.6.0
 
 ## Improvements
 
-* [[OND233-335]](https://ondewo.atlassian.net/browse/OND233-335) - Add DeleteCallers, DeleteCaller, DeleteListener and
-  DeleteListeners. Also added nlu_session_name to Call and added CallType SCHEDULED_CALLER.
+* [[OND233-335]](https://ondewo.atlassian.net/browse/OND233-335) - Add `DeleteCallers`, `DeleteCaller`, `DeleteListener`
+  and
+  `DeleteListeners`. Also added `nlu_session_name` to `Call` and added `CallType.SCHEDULED_CALLER`.
 
 *****************
 
@@ -15,8 +35,8 @@
 
 ## Improvements
 
-* [[OND233-333]](https://ondewo.atlassian.net/browse/OND233-333) - Add associated NLU agents in VtsiProject and in
-  ListVtsiProjects
+* [[OND233-333]](https://ondewo.atlassian.net/browse/OND233-333) - Add associated NLU agents in `VtsiProject` and in
+  `ListVtsiProjects`
 
 *****************
 
@@ -24,13 +44,13 @@
 
 ## Improvements
 
-* [[OND233-332]](https://ondewo.atlassian.net/browse/OND233-332) - Added ListCallers, GetCaller, ListListeners and
-  GetListener
+* [[OND233-332]](https://ondewo.atlassian.net/browse/OND233-332) - Added `ListCallers`, `GetCaller`, `ListListeners` and
+  `GetListener`
 
 ## Breaking changes
 
-* [[OND233-332]](https://ondewo.atlassian.net/browse/OND233-332) - Renamed GetCallInfo and ListCallInfos methods to
-  GetCall and ListCalls
+* [[OND233-332]](https://ondewo.atlassian.net/browse/OND233-332) - Renamed `GetCallInfo` and `ListCallInfos` methods to
+  `GetCall` and `ListCalls`
 
 *****************
 
@@ -38,7 +58,7 @@
 
 ## Improvements
 
-* [[OND233-331]](https://ondewo.atlassian.net/browse/OND233-331) - Added ListVtsiProjects to list VTSI projects incl.
+* [[OND233-331]](https://ondewo.atlassian.net/browse/OND233-331) - Added `ListVtsiProjects` to list VTSI projects incl.
   the capabilities to sorting and for different views
 
 *****************
@@ -63,8 +83,8 @@
 
 ## Improvements
 
-* [[OND233-323]](https://ondewo.atlassian.net/browse/OND233-323) - Added VtsiProjectStatus
-* [[OND233-323]](https://ondewo.atlassian.net/browse/OND233-323) - Use Timestamp instead of double
+* [[OND233-323]](https://ondewo.atlassian.net/browse/OND233-323) - Added `VtsiProjectStatus`
+* [[OND233-323]](https://ondewo.atlassian.net/browse/OND233-323) - Use `Timestamp` instead of double
 
 *****************
 
@@ -80,7 +100,7 @@
 
 ## Improvements
 
-* Adjusted TransferCalls and TransferCallsRequest
+* Adjusted `TransferCalls` and `TransferCallsRequest`
 * Upgraded to NLU API 2.13.0
 
 *****************
@@ -91,7 +111,7 @@
 
 * New VTSI API release 3.0.0
 * [[OND211-2039]](https://ondewo.atlassian.net/browse/OND211-2039) - Automated Release Process
-* [[OND211-2039]](https://ondewo.atlassian.net/browse/OND211-2039) - added pre-commit hooks and adjusted files tot them
+* [[OND211-2039]](https://ondewo.atlassian.net/browse/OND211-2039) - Added pre-commit hooks and adjusted files tot them
 
 *****************
 
@@ -149,7 +169,7 @@ Adaptation to new s2t and t2s configs
 
 ### Migration Guide
 
-[Replace submodule](https://stackoverflow.com/a/1260982/7756727) in the client.
+* [Replace submodule](https://stackoverflow.com/a/1260982/7756727) in the client.
 
 *****************
 
@@ -211,7 +231,7 @@ Adaptation to new s2t and t2s configs
 
 ### Migration Guide
 
-[Replace submodule](https://stackoverflow.com/a/1260982/7756727) in the client.
+* [Replace submodule](https://stackoverflow.com/a/1260982/7756727) in the client.
 
 *****************
 
@@ -231,7 +251,7 @@ Adaptation to new s2t and t2s configs
 
 ### Migration Guide
 
-[Replace submodule](https://stackoverflow.com/a/1260982/7756727) in the client.
+* [Replace submodule](https://stackoverflow.com/a/1260982/7756727) in the client.
 
 *****************
 
@@ -251,7 +271,7 @@ Adaptation to new s2t and t2s configs
 
 ### Migration Guide
 
-[Replace submodule](https://stackoverflow.com/a/1260982/7756727) in the client.
+* [Replace submodule](https://stackoverflow.com/a/1260982/7756727) in the client.
 
 *****************
 
@@ -271,7 +291,7 @@ Adaptation to new s2t and t2s configs
 
 ### Migration Guide
 
-[Replace submodule](https://stackoverflow.com/a/1260982/7756727) in the client.
+* [Replace submodule](https://stackoverflow.com/a/1260982/7756727) in the client.
 
 *****************
 
@@ -293,7 +313,7 @@ Adaptation to new s2t and t2s configs
 
 ### Migration Guide
 
-[Replace submodule](https://stackoverflow.com/a/1260982/7756727) in the client.
+* [Replace submodule](https://stackoverflow.com/a/1260982/7756727) in the client.
 
 *****************
 
@@ -317,6 +337,6 @@ Adaptation to new s2t and t2s configs
 
 ### Migration Guide
 
-[Replace submodule](https://stackoverflow.com/a/1260982/7756727) in the client.
+* [Replace submodule](https://stackoverflow.com/a/1260982/7756727) in the client.
 
 *****************

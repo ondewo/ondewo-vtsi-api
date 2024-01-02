@@ -21,6 +21,7 @@ import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 //import "google/rpc/status.proto";
 import "ondewo/nlu/context.proto";
+import "ondewo/nlu/intent.proto";
 import "ondewo/s2t/speech-to-text.proto";
 import "ondewo/t2s/text-to-speech.proto";
 import "ondewo/sip/sip.proto";
@@ -98,11 +99,6 @@ service Calls {
     // get call log for all call instances
     rpc ListCalls (ListCallsRequest) returns (ListCallsResponse);
 
-    // Get a s2t or t2s audio file for this conversation if it exists in Minio
-    rpc GetAudioFile (GetAudioFileRequest) returns (GetAudioFileResponse);
-
-    // Get The whole conversation in an audio file
-    rpc GetFullConversationAudioFile (GetFullConversationAudioFileRequest) returns (GetFullConversationAudioFileResponse) {};
 }
 
 // base configuration of services (ondewo-nlu, text-to-speech, speech-to-text, asterisk)
@@ -264,10 +260,6 @@ message AudioObjectStorageConfig{
     // Configuration of the Minio Audio Object Store
     AudioObjectStorageServicesActivationConfig audio_object_storage_services_activation_config = 2;
 
-    // Configuration of the Minio Audio Object Store
-    oneof audio_storage_config{
-        MinioConfig minio_config = 3;
-    }
 }
 
 // Configuration of the Minio Audio Object Store
@@ -331,28 +323,6 @@ message RabbitMqConfig{
 
 }
 
-// Configuration of the Minio Audio Object Store
-message MinioConfig{
-
-    // host
-    string host = 1;
-
-    // port
-    int32 port = 2;
-
-    // access key of server
-    string access_key = 3;
-
-    // secret key of server
-    string secret_key = 4;
-
-    // if you need to do a secure connection "ssl"
-    bool secure = 5;
-
-    // session_token in case you need secure connection
-    string session_token = 6;
-
-}
 
 // Callback for the Speech-2-Text platform
 message S2tVtsiCallbacks{
@@ -810,7 +780,7 @@ message TransferCallRequest{
     string call_name = 2;
 
     // transfer_id to transfer the call to, so the number or voip number you want to be transferred too
-    repeated string transfer_id = 3;
+    string transfer_id = 3;
 
 }
 
@@ -958,7 +928,62 @@ message Call {
     // NLU session name
     optional string nlu_session_name = 17;
 
+    // Messages for each of the Intent.Message.Platform were sent to the user
+    optional Intent.Message.Platform platforms = 18;
+
 }
+
+// Definition of a CallFilter, representing filters for querying calls.
+
+message CallFilter {
+
+    // Optional: Filter by call names.
+    repeated string call_names = 1;
+
+    // Optional: Filter by NLU session names.
+    repeated string nlu_session_names = 2;
+
+    // Optional: Filter by SIP accounts.
+    repeated string sip_accounts = 3;
+
+    // Optional: Filter by phone numbers.
+    repeated string phone_numbers = 4;
+
+    // Optional: Filter by container names.
+    repeated string container_names = 5;
+
+    // Optional: Filter by SIP ports.
+    repeated string sip_ports = 6;
+
+    // Optional: Filter by CSI ports.
+    repeated string csi_ports = 7;
+
+    // Optional: Filter by call types (both by default, or only listeners, or only callers).
+    repeated CallType call_types = 8;
+
+    // Optional: Filter based on SIP status types.
+    repeated ondewo.sip.SipStatus.StatusType sip_status_types = 9;
+
+    // Optional: Filter based on active or inactive calls.
+    optional bool active = 10;
+
+    // Optional: Start time of the log.
+    optional google.protobuf.Timestamp start_time = 11;
+
+    // Optional: End time of the log.
+    optional google.protobuf.Timestamp end_time = 12;
+
+    // Optional: Match only sessions for which the duration in seconds is larger or equal.
+    optional float duration_in_s_min = 13;
+
+    // Optional: Match only calls for which the duration in seconds is smaller or equal.
+    optional float duration_in_s_max = 14;
+
+    // Optional: Platform responses sent to the user. Default is text: <code>Platform.PLATFORM_UNSPECIFIED</code>.
+    repeated Intent.Message.Platform platforms = 15;
+
+}
+
 
 // Request to list calls
 message ListCallsRequest{
@@ -969,18 +994,13 @@ message ListCallsRequest{
     // you can specify the view to be shallow or full .. see above for more info
     optional CallView call_view = 2;
 
-    // both by default, or only listeners, or only callers
-    optional CallType call_type = 3;
+    // Optional. A filter to narrow the response down to sessions of interest.
+    optional CallFilter call_filter = 3;
 
     // Optional. The next_page_token value returned from a previous list request.
     // Example: "current_index-1--page_size-20"
     optional string page_token = 4;
 
-    // Optional. Filter based on active or inactive calls
-    optional  bool active = 5;
-
-    // Optional. Filter based on sip status type
-    optional ondewo.sip.SipStatus.StatusType sip_status_type = 6;
 }
 
 // Response to list all VoipInfos
@@ -1023,45 +1043,4 @@ message ServiceStatus {
 
     // error messages if you have any so if it's unhealthy
     string error_message = 2;
-}
-
-// Request to retrieve audio files
-message GetAudioFileRequest{
-
-    // name of the bucket in Minio Audio Object Store
-    string bucket_name = 1;
-
-    // name of the object in Minio Audio Object Store, format is UUID
-    string object_name = 2;
-
-    // Optional to add if you want to retrieve it from a specific minio server
-    MinioConfig minio_config = 3;
-
-}
-
-// Response to retrieve the bytes of the audio file requested from Minio
-message GetAudioFileResponse{
-
-    // audio bytes from Minio Audio Object Store
-    bytes audio = 1;
-}
-
-// Request to retrieve one audio file with all audio files combined into one
-message GetFullConversationAudioFileRequest{
-
-    // name of the bucket in Minio Audio Object Store
-    string bucket_name = 1;
-
-    // names of the objects in Minio Audio Object Store belonging to a whole NLU "conversation" session
-    repeated string object_names = 2;
-
-    // Optional to add if you want to retrieve it from a specific minio server
-    MinioConfig minio_config = 3;
-}
-
-// Retrieve one audio file with all audio files combined into one
-message GetFullConversationAudioFileResponse{
-
-    // audio bytes from Minio Audio Object Store
-    bytes audio = 1;
 }
