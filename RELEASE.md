@@ -2,6 +2,14 @@
 
 *****************
 
+## Release ONDEWO VTSI API 6.8.0
+
+## Improvements
+
+* [[OND211-2162]](https://ondewo.atlassian.net/browse/OND211-2162) Updated to NLU API 5.0.0
+
+*****************
+
 ## Release ONDEWO VTSI API 6.7.0
 
 ## Improvements
