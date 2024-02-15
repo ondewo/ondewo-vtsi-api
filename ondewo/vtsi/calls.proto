@@ -929,7 +929,7 @@ message Call {
     optional string nlu_session_name = 17;
 
     // Messages for each of the Intent.Message.Platform were sent to the user
-    optional Intent.Message.Platform platforms = 18;
+    optional ondewo.nlu.Intent.Message.Platform platforms = 18;
 
 }
 
@@ -980,7 +980,7 @@ message CallFilter {
     optional float duration_in_s_max = 14;
 
     // Optional: Platform responses sent to the user. Default is text: <code>Platform.PLATFORM_UNSPECIFIED</code>.
-    repeated Intent.Message.Platform platforms = 15;
+    repeated ondewo.nlu.Intent.Message.Platform platforms = 15;
 
 }
 

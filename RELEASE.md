@@ -6,13 +6,13 @@
 
 ## Improvements
 
+* [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341) Updated dependencies to apis nlu 4.9.0, s2t 5.6.0 and
+  t2s 5.2.0 and therefore removed `GetAudioFile` and `GetFullConversationAudioFile` from ONDEWO VTSI API since it is now
+  in ONDEWO NLU API ([[OND21-2143]](https://ondewo.atlassian.net/browse/OND211-2143))
 * [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341) Added `CallFilter` to improving monitoring capabilities
   and filtering with `ListCallsRequest`
 * [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341) Added `deployed_callers` and `deployed_listeners`
   to `VtsiProject`
-* [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341)  Upgrade to ONDEWO NLU API 4.8.0, and therefore
-  removed `GetAudioFile` and `GetFullConversationAudioFile` from ONDEWO VTSI API since it is now in ONDEWO NLU
-  API ([[OND21-2143]](https://ondewo.atlassian.net/browse/OND211-2143))
 
 ## Bug Fixes
 

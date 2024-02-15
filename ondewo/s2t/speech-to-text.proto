@@ -102,7 +102,9 @@ enum InferenceBackend {
 
     // Run flax model
     INFERENCE_BACKEND_FLAX = 2;
+
 }
+
 
 ///////////////////////////
 // Configuration Message //
@@ -119,29 +121,44 @@ message TranscribeRequestConfig {
 
     // Optional. Language model name for decoding (in none, default will be taken from config file)
     oneof oneof_language_model_name {
+
+        // Name of the language model
         string language_model_name = 3;
     }
 
     // Optional. Configuration of spelling correction and normalization
     oneof oneof_post_processing {
+
+        // The postprocessing options
         PostProcessingOptions post_processing = 4;
     }
 
     // Optional. Configuration for the detection of utterances
     oneof oneof_utterance_detection {
+
+        // The utterance detection options
         UtteranceDetectionOptions utterance_detection = 5;
     }
 
     // Optional. Which method to be used for voice activity detection
     oneof voice_activity_detection {
+
+        // Voice activity detection with pyannote
         Pyannote pyannote = 6;
-        Matchbox matchbox = 7;
     }
 
     // Optional. Specify which data to return
     oneof oneof_return_options {
+
+        // The transcribe return options
         TranscriptionReturnOptions return_options = 8;
     }
+
+    // Optional. Specify language of transcription to return
+    optional string language = 9;
+
+    // Optional. Specify task of s2t model, e.g. 'transcribe' and 'translate'
+    optional string task = 10;
 
 }
 
@@ -179,17 +196,13 @@ message UtteranceDetectionOptions {
 
     // Whether or not to transcribe unfinished utterances.
     oneof oneof_transcribe_not_final {
+
+        // Return also immediate transcription results
         bool transcribe_not_final = 1;
     }
 
-    // Specifies the minimal duration of voice signal to indicate the start of an utterance
-    float start_of_utterance_threshold = 2;
-
-    // Specifies the minimal duration of a non-voice signal to indicate the end of an utterance
-    float end_of_utterance_threshold = 3;
-
     // if time between audio chunks exceeds next_chunk_timeout, stream will be stopped
-    float next_chunk_timeout = 4;
+    float next_chunk_timeout = 2;
 
 }
 
@@ -324,6 +337,8 @@ message TranscribeStreamResponse {
 
     // The configuration to override the default configuration
     oneof oneof_config {
+
+        // The configuration for the transcription
         TranscribeRequestConfig config = 8;
     }
 
@@ -533,23 +548,17 @@ message AcousticModels {
     // Type of the acoustic model.
     string type = 1;
 
-    // Configuration for the Quartznet model.
-    Quartznet quartznet = 2;
-
-    // Configuration for the Quartznet model using Triton.
-    QuartznetTriton quartznet_triton = 3;
-
     // Configuration for the Wav2Vec model.
-    Wav2Vec wav2vec = 4;
+    Wav2Vec wav2vec = 2;
 
     // Configuration for the Wav2Vec model using Triton.
-    Wav2VecTriton wav2vec_triton = 5;
+    Wav2VecTriton wav2vec_triton = 3;
 
     // Configuration for the Whisper model.
-    Whisper whisper = 6;
+    Whisper whisper = 4;
 
     // Configuration for the Whisper model using Triton.
-    WhisperTriton whisper_triton = 7;
+    WhisperTriton whisper_triton = 5;
 
 }
 
@@ -562,8 +571,12 @@ message Whisper {
     // Indicates if GPU is used.
     bool use_gpu = 2;
 
-    // Language of the model.
+    // Default language of the model.
     string language = 3;
+
+    // Default task of the model.
+    string task = 4;
+
 
 }
 
@@ -581,6 +594,18 @@ message WhisperTriton {
 
     // Timeout for checking model status.
     int64 check_status_timeout = 4;
+
+    // Default language of the model.
+    string language = 5;
+
+    // Default task of the model. E.g., transcribe, translate, etc.
+    string task = 6;
+
+    // Host name of triton inference server that serves the WhisperTriton model
+    string triton_server_host = 7;
+
+    // Port number of triton inference server that serves the WhisperTriton model
+    int64 triton_server_port = 8;
 
 }
 
@@ -610,30 +635,12 @@ message Wav2VecTriton {
     // Timeout for checking model status.
     int64 check_status_timeout = 4;
 
+    // Host name of triton inference server that serves the Wav2VecTriton model
+    string triton_server_host = 5;
+
+    // Port number of triton inference server that serves the Wav2VecTriton model
+    int64 triton_server_port = 6;
 }
-
-
-// Quartznet contains information about the Quartznet model.
-message Quartznet {
-
-    // Path to the configuration file.
-    string config_path = 1;
-
-    // Type of loading for the model.
-    string load_type = 2;
-
-    // Configuration for PT files.
-    PtFiles pt_files = 3;
-
-    // Configuration for checkpoint files.
-    CkptFile ckpt_file = 4;
-
-    // Indicates if GPU is used.
-    bool use_gpu = 5;
-
-}
-
-
 
 // PtFiles contains information about PT files.
 message PtFiles {
@@ -651,20 +658,6 @@ message CkptFile {
 
     // Path to the checkpoint file.
     string path = 1;
-
-}
-
-// QuartznetTriton contains information about the Quartznet model using Triton.
-message QuartznetTriton {
-
-    // Path to the configuration file.
-    string config_path = 1;
-
-    // URL for the Triton server.
-    string triton_url = 2;
-
-    // Triton model name.
-    string triton_model = 3;
 
 }
 
@@ -721,14 +714,8 @@ message StreamingSpeechRecognition {
     // Minimum audio chunk size for processing.
     int64 min_audio_chunk_size = 4;
 
-    // Threshold for detecting the start of an utterance.
-    float start_of_utterance_threshold = 5;
-
-    // Threshold for detecting the end of an utterance.
-    float end_of_utterance_threshold = 6;
-
     // Timeout between audio chunks; if exceeded, the stream will be stopped.
-    float next_chunk_timeout = 7;
+    float next_chunk_timeout = 5;
 
 }
 
@@ -744,52 +731,31 @@ message VoiceActivityDetection {
     // Configuration for the Pyannote model.
     Pyannote pyannote = 3;
 
-    // Configuration for the Matchbox model.
-    Matchbox matchbox = 4;
-
 }
 
 // Pyannote contains configuration for the Pyannote voice activity detection model.
+// Library: [pyannote-audio](https://github.com/pyannote/pyannote-audio/blob/develop/tutorials/voice_activity_detection.ipynb)
 message Pyannote {
 
-    // Path to the Pyannote model.
-    string model_path = 1;
+    // Full name of the Pyannote model.
+    string model_name = 1;
 
     // Minimum audio size for processing.
     int64 min_audio_size = 2;
 
-    // Offset for voice activity detection.
-    float offset = 3;
+    // Fill inactive regions shorter than that many seconds.
+    // Example [notebook](https://github.com/pyannote/pyannote-audio/blob/develop/tutorials/voice_activity_detection.ipynb)
+    float min_duration_off = 3;
 
-    // Onset for voice activity detection.
-    float onset = 4;
+    // Remove active regions shorter than that many seconds
+    // Example [notebook](https://github.com/pyannote/pyannote-audio/blob/develop/tutorials/voice_activity_detection.ipynb)
+    float min_duration_on = 4;
 
-    // Log scale configuration for the model.
-    oneof oneof_log_scale {
+    // Host name of triton inference server that serves the Pyannote model
+    string triton_server_host = 5;
 
-        // whether to use log scale
-        bool log_scale = 5;
-    }
-
-    // Minimum duration for an off segment.
-    float min_duration_off = 6;
-
-    // Minimum duration for an on segment.
-    float min_duration_on = 7;
-
-}
-
-// Matchbox contains configuration for the Matchbox voice activity detection model.
-message Matchbox {
-
-    // Path to the Matchbox model configuration.
-    string model_config = 1;
-
-    // Path to the Matchbox encoder.
-    string encoder_path = 2;
-
-    // Path to the Matchbox decoder.
-    string decoder_path = 3;
+    // Port number of triton inference server that serves the Pyannote model
+    int64 triton_server_port = 6;
 
 }
 
