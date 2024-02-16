@@ -58,6 +58,12 @@ service Calls {
     // start multiple ondewo-sip listeners instances for a specific nlu-project.
     rpc StartListeners (StartListenersRequest) returns (StartListenersResponse);
 
+    // stop a ondewo-sip listeners instances for a specific nlu-project.
+    rpc StopListener (StopListenerRequest) returns (StopListenerResponse);
+
+    // stop multiple ondewo-sip listeners instances for a specific nlu-project.
+    rpc StopListeners (StopListenersRequest) returns (StopListenersResponse);
+
     // lists all available listeners
     rpc ListListeners (ListListenersRequest) returns (ListListenersResponse);
 
@@ -561,6 +567,80 @@ message GetListenerRequest {
 
     // The name of listener to retrieve.
     string name = 2;
+
+}
+
+// Represents a request to stop a specific listener.
+message StopListenerRequest {
+
+    // The name of the listener to stop in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
+    string name = 1;
+
+}
+
+// Represents a request to stop a specific listener.
+message StopListenerResponse {
+
+    // The name of the stop listener in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
+    string name = 1;
+
+    // error message if there are any.
+    string error_message = 2;
+
+}
+
+// Represents a request to stop multiple listeners.
+message StopListenersRequest {
+
+    // The names of the listeners to stop in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
+    repeated string names = 1;
+
+}
+
+message StopListenersResponse {
+
+    // responses to stop listeners
+    repeated StopListenerResponse stop_listener_responses = 1;
+
+    // error message if there are any.
+    string error_message = 2;
+
+}
+
+// Represents a request to stop a specific caller.
+message StopCallerRequest {
+
+    // The name of the caller to stop in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
+    string name = 1;
+
+}
+
+// Represents a request to stop a specific caller.
+message StopCallerResponse {
+
+    // The name of the stop caller in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
+    string name = 1;
+
+    // error message if there are any.
+    string error_message = 2;
+
+}
+
+// Represents a request to stop multiple callers.
+message StopCallersRequest {
+
+    // The names of the callers to stop in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
+    repeated string names = 1;
+
+}
+
+message StopCallersResponse {
+
+    // responses to stop callers
+    repeated StopCallerResponse stop_caller_responses = 1;
+
+    // error message if there are any.
+    string error_message = 2;
 
 }
 
