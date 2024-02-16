@@ -730,6 +730,7 @@
     - [TransferCallsRequest](#ondewo.vtsi.TransferCallsRequest)
     - [TransferCallsResponse](#ondewo.vtsi.TransferCallsResponse)
   
+    - [CallStatus](#ondewo.vtsi.CallStatus)
     - [CallType](#ondewo.vtsi.CallType)
     - [CallView](#ondewo.vtsi.CallView)
   
@@ -12200,7 +12201,7 @@ Call
 | csi_ports | [string](#string) | repeated | Optional: Filter by CSI ports. |
 | call_types | [CallType](#ondewo.vtsi.CallType) | repeated | Optional: Filter by call types (both by default, or only listeners, or only callers). |
 | sip_status_types | [ondewo.sip.SipStatus.StatusType](#ondewo.sip.SipStatus.StatusType) | repeated | Optional: Filter based on SIP status types. |
-| active | [bool](#bool) | optional | Optional: Filter based on active or inactive calls. |
+| call_status | [CallStatus](#ondewo.vtsi.CallStatus) | optional | Optional: Filter based on active or inactive calls. |
 | start_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) | optional | Optional: Start time of the log. |
 | end_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) | optional | Optional: End time of the log. |
 | duration_in_s_min | [float](#float) | optional | Optional: Match only sessions for which the duration in seconds is larger or equal. |
@@ -13163,6 +13164,19 @@ Response to transfer a call to a phone number or voip number
  <!-- end messages -->
 
 
+<a name="ondewo.vtsi.CallStatus"></a>
+
+### CallStatus
+Call view options
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| CALL_STATUS_UNSPECIFIED | 0 | Unspecified call status |
+| CALL_STATUS_ACTIVE | 1 | Call is active |
+| CALL_STATUS_INACTIVE | 2 | Call is inactive |
+
+
+
 <a name="ondewo.vtsi.CallType"></a>
 
 ### CallType
@@ -13170,10 +13184,10 @@ CallType
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
-| BOTH | 0 | both listeners and callers |
-| LISTENER | 1 | listeners |
-| CALLER | 2 | caller |
-| SCHEDULED_CALLER | 3 | scheduled caller |
+| BOTH | 0 | Both listener and caller |
+| LISTENER | 1 | Listener |
+| CALLER | 2 | Caller |
+| SCHEDULED_CALLER | 3 | Scheduled Caller |
 
 
 

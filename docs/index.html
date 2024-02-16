@@ -3800,6 +3800,10 @@
                   <ul>
                     
                       <li>
+                        <a href="#ondewo.vtsi.CallStatus" class="title-badge enum">CallStatus</a>
+                      </li>
+                    
+                      <li>
                         <a href="#ondewo.vtsi.CallType" class="title-badge enum">CallType</a>
                       </li>
                     
@@ -34393,8 +34397,8 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
                 </tr>
               
                 <tr>
-                  <td>active</td>
-                  <td><a href="#bool">bool</a></td>
+                  <td>call_status</td>
+                  <td><a href="#ondewo.vtsi.CallStatus">CallStatus</a></td>
                   <td>optional</td>
                   <td><p>Optional: Filter based on active or inactive calls. </p></td>
                 </tr>
@@ -36491,6 +36495,35 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
       
       <div id="ondewo/vtsi/calls.proto-enums" class="object-category">Enums</div>
       
+        <h3 id="ondewo.vtsi.CallStatus" class="title-badge enum">CallStatus</h3>
+        <p>Call view options</p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>CALL_STATUS_UNSPECIFIED</td>
+                <td>0</td>
+                <td><p>Unspecified call status</p></td>
+              </tr>
+            
+              <tr>
+                <td>CALL_STATUS_ACTIVE</td>
+                <td>1</td>
+                <td><p>Call is active</p></td>
+              </tr>
+            
+              <tr>
+                <td>CALL_STATUS_INACTIVE</td>
+                <td>2</td>
+                <td><p>Call is inactive</p></td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
         <h3 id="ondewo.vtsi.CallType" class="title-badge enum">CallType</h3>
         <p>CallType</p>
         <table class="enum-table">
@@ -36502,25 +36535,25 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
               <tr>
                 <td>BOTH</td>
                 <td>0</td>
-                <td><p>both listeners and callers</p></td>
+                <td><p>Both listener and caller</p></td>
               </tr>
             
               <tr>
                 <td>LISTENER</td>
                 <td>1</td>
-                <td><p>listeners</p></td>
+                <td><p>Listener</p></td>
               </tr>
             
               <tr>
                 <td>CALLER</td>
                 <td>2</td>
-                <td><p>caller</p></td>
+                <td><p>Caller</p></td>
               </tr>
             
               <tr>
                 <td>SCHEDULED_CALLER</td>
                 <td>3</td>
-                <td><p>scheduled caller</p></td>
+                <td><p>Scheduled Caller</p></td>
               </tr>
             
           </tbody>
