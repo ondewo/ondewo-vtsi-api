@@ -2,6 +2,14 @@
 
 *****************
 
+## Release ONDEWO VTSI API 6.9.0
+
+## Improvements
+
+* [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341) Added CallStatus
+
+*****************
+
 ## Release ONDEWO VTSI API 6.8.0
 
 ## Improvements

@@ -855,20 +855,33 @@ enum CallView {
     FULL = 2;
 }
 
+// Call view options
+enum CallStatus {
+
+    // Unspecified call status
+    CALL_STATUS_UNSPECIFIED = 0;
+
+    // Call is active
+    CALL_STATUS_ACTIVE = 1;
+
+    // Call is inactive
+    CALL_STATUS_INACTIVE = 2;
+}
+
 
 // CallType
 enum CallType {
 
-    // both listeners and callers
+    // Both listener and caller
     BOTH = 0;
 
-    // listeners
+    // Listener
     LISTENER = 1;
 
-    // caller
+    // Caller
     CALLER = 2;
 
-    // scheduled caller
+    // Scheduled Caller
     SCHEDULED_CALLER = 3;
 }
 
@@ -965,7 +978,7 @@ message CallFilter {
     repeated ondewo.sip.SipStatus.StatusType sip_status_types = 9;
 
     // Optional: Filter based on active or inactive calls.
-    optional bool active = 10;
+    optional CallStatus call_status = 10;
 
     // Optional: Start time of the log.
     optional google.protobuf.Timestamp start_time = 11;

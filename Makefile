@@ -17,7 +17,7 @@ export
 
 # MUST BE THE SAME AS API in Mayor and Minor Version Number
 # example: API 2.9.0 --> Client 2.9.X
-ONDEWO_VTSI_API_VERSION=6.8.0
+ONDEWO_VTSI_API_VERSION=6.9.0
 
 ONDEWO_NLU_API_GIT_BRANCH=tags/5.0.0
 ONDEWO_S2T_API_GIT_BRANCH=tags/5.6.0
