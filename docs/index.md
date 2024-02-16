@@ -721,8 +721,16 @@
     - [StopAllCallsRequest](#ondewo.vtsi.StopAllCallsRequest)
     - [StopCallRequest](#ondewo.vtsi.StopCallRequest)
     - [StopCallResponse](#ondewo.vtsi.StopCallResponse)
+    - [StopCallerRequest](#ondewo.vtsi.StopCallerRequest)
+    - [StopCallerResponse](#ondewo.vtsi.StopCallerResponse)
+    - [StopCallersRequest](#ondewo.vtsi.StopCallersRequest)
+    - [StopCallersResponse](#ondewo.vtsi.StopCallersResponse)
     - [StopCallsRequest](#ondewo.vtsi.StopCallsRequest)
     - [StopCallsResponse](#ondewo.vtsi.StopCallsResponse)
+    - [StopListenerRequest](#ondewo.vtsi.StopListenerRequest)
+    - [StopListenerResponse](#ondewo.vtsi.StopListenerResponse)
+    - [StopListenersRequest](#ondewo.vtsi.StopListenersRequest)
+    - [StopListenersResponse](#ondewo.vtsi.StopListenersResponse)
     - [T2sVtsiCallbacks](#ondewo.vtsi.T2sVtsiCallbacks)
     - [T2sVtsiConfig](#ondewo.vtsi.T2sVtsiConfig)
     - [TransferCallRequest](#ondewo.vtsi.TransferCallRequest)
@@ -13030,6 +13038,68 @@ Response to stop/kill a ondewo-sip listener or caller instance for a specific vt
 
 
 
+<a name="ondewo.vtsi.StopCallerRequest"></a>
+
+### StopCallerRequest
+Represents a request to stop a specific caller.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the caller to stop in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StopCallerResponse"></a>
+
+### StopCallerResponse
+Represents a request to stop a specific caller.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the stop caller in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> |
+| error_message | [string](#string) |  | error message if there are any. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StopCallersRequest"></a>
+
+### StopCallersRequest
+Represents a request to stop multiple callers.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| names | [string](#string) | repeated | The names of the callers to stop in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StopCallersResponse"></a>
+
+### StopCallersResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| stop_caller_responses | [StopCallerResponse](#ondewo.vtsi.StopCallerResponse) | repeated | responses to stop callers |
+| error_message | [string](#string) |  | error message if there are any. |
+
+
+
+
+
+
 <a name="ondewo.vtsi.StopCallsRequest"></a>
 
 ### StopCallsRequest
@@ -13056,6 +13126,68 @@ Response to stop/kill a ondewo-sip listener or caller instance for a specific vt
 | ----- | ---- | ----- | ----------- |
 | stop_call_responses | [StopCallResponse](#ondewo.vtsi.StopCallResponse) | repeated | responses to stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project. |
 | error_message | [string](#string) |  | overall error message if you have any so if it's unhealthy |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StopListenerRequest"></a>
+
+### StopListenerRequest
+Represents a request to stop a specific listener.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the listener to stop in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StopListenerResponse"></a>
+
+### StopListenerResponse
+Represents a request to stop a specific listener.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the stop listener in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> |
+| error_message | [string](#string) |  | error message if there are any. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StopListenersRequest"></a>
+
+### StopListenersRequest
+Represents a request to stop multiple listeners.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| names | [string](#string) | repeated | The names of the listeners to stop in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StopListenersResponse"></a>
+
+### StopListenersResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| stop_listener_responses | [StopListenerResponse](#ondewo.vtsi.StopListenerResponse) | repeated | responses to stop listeners |
+| error_message | [string](#string) |  | error message if there are any. |
 
 
 
@@ -13223,6 +13355,8 @@ ONDEWO VTSI API
 | DeleteCallers | [DeleteCallersRequest](#ondewo.vtsi.DeleteCallersRequest) | [DeleteCallersResponse](#ondewo.vtsi.DeleteCallersResponse) | deletes multiple callers |
 | StartListener | [StartListenerRequest](#ondewo.vtsi.StartListenerRequest) | [StartListenerResponse](#ondewo.vtsi.StartListenerResponse) | start single listener instance for a specific nlu-project. |
 | StartListeners | [StartListenersRequest](#ondewo.vtsi.StartListenersRequest) | [StartListenersResponse](#ondewo.vtsi.StartListenersResponse) | start multiple ondewo-sip listeners instances for a specific nlu-project. |
+| StopListener | [StopListenerRequest](#ondewo.vtsi.StopListenerRequest) | [StopListenerResponse](#ondewo.vtsi.StopListenerResponse) | stop a ondewo-sip listeners instances for a specific nlu-project. |
+| StopListeners | [StopListenersRequest](#ondewo.vtsi.StopListenersRequest) | [StopListenersResponse](#ondewo.vtsi.StopListenersResponse) | stop multiple ondewo-sip listeners instances for a specific nlu-project. |
 | ListListeners | [ListListenersRequest](#ondewo.vtsi.ListListenersRequest) | [ListListenersResponse](#ondewo.vtsi.ListListenersResponse) | lists all available listeners |
 | GetListener | [GetListenerRequest](#ondewo.vtsi.GetListenerRequest) | [Listener](#ondewo.vtsi.Listener) | gets a listener |
 | DeleteListener | [DeleteListenerRequest](#ondewo.vtsi.DeleteListenerRequest) | [DeleteListenerResponse](#ondewo.vtsi.DeleteListenerResponse) | deletes a listener |

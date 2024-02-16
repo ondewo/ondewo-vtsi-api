@@ -3501,6 +3501,10 @@
                       
                         <li><a href="#ondewo.vtsi.Calls.StartListeners" class="title-badge method">StartListeners</a></li>
                       
+                        <li><a href="#ondewo.vtsi.Calls.StopListener" class="title-badge method">StopListener</a></li>
+                      
+                        <li><a href="#ondewo.vtsi.Calls.StopListeners" class="title-badge method">StopListeners</a></li>
+                      
                         <li><a href="#ondewo.vtsi.Calls.ListListeners" class="title-badge method">ListListeners</a></li>
                       
                         <li><a href="#ondewo.vtsi.Calls.GetListener" class="title-badge method">GetListener</a></li>
@@ -3762,11 +3766,43 @@
                       </li>
                     
                       <li>
+                        <a href="#ondewo.vtsi.StopCallerRequest" class="title-badge message">StopCallerRequest</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.StopCallerResponse" class="title-badge message">StopCallerResponse</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.StopCallersRequest" class="title-badge message">StopCallersRequest</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.StopCallersResponse" class="title-badge message">StopCallersResponse</a>
+                      </li>
+                    
+                      <li>
                         <a href="#ondewo.vtsi.StopCallsRequest" class="title-badge message">StopCallsRequest</a>
                       </li>
                     
                       <li>
                         <a href="#ondewo.vtsi.StopCallsResponse" class="title-badge message">StopCallsResponse</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.StopListenerRequest" class="title-badge message">StopListenerRequest</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.StopListenerResponse" class="title-badge message">StopListenerResponse</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.StopListenersRequest" class="title-badge message">StopListenersRequest</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.StopListenersResponse" class="title-badge message">StopListenersResponse</a>
                       </li>
                     
                       <li>
@@ -33913,6 +33949,18 @@ The default value is the language of the pipeline. </p></td>
 
           start multiple ondewo-sip listeners instances for a specific nlu-project.
         
+          <h4 id="ondewo.vtsi.Calls.StopListener" class="title-badge method">StopListener</h4>
+
+          <pre>rpc StopListener (<a href="#ondewo.vtsi.StopListenerRequest">StopListenerRequest</a>) returns (<a href="#ondewo.vtsi.StopListenerResponse">StopListenerResponse)</a></pre>
+
+          stop a ondewo-sip listeners instances for a specific nlu-project.
+        
+          <h4 id="ondewo.vtsi.Calls.StopListeners" class="title-badge method">StopListeners</h4>
+
+          <pre>rpc StopListeners (<a href="#ondewo.vtsi.StopListenersRequest">StopListenersRequest</a>) returns (<a href="#ondewo.vtsi.StopListenersResponse">StopListenersResponse)</a></pre>
+
+          stop multiple ondewo-sip listeners instances for a specific nlu-project.
+        
           <h4 id="ondewo.vtsi.Calls.ListListeners" class="title-badge method">ListListeners</h4>
 
           <pre>rpc ListListeners (<a href="#ondewo.vtsi.ListListenersRequest">ListListenersRequest</a>) returns (<a href="#ondewo.vtsi.ListListenersResponse">ListListenersResponse)</a></pre>
@@ -36208,6 +36256,116 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
 
         
       
+        <h3 id="ondewo.vtsi.StopCallerRequest" class="title-badge message">StopCallerRequest</h3>
+        <p>Represents a request to stop a specific caller.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The name of the caller to stop in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.StopCallerResponse" class="title-badge message">StopCallerResponse</h3>
+        <p>Represents a request to stop a specific caller.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The name of the stop caller in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>error_message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>error message if there are any. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.StopCallersRequest" class="title-badge message">StopCallersRequest</h3>
+        <p>Represents a request to stop multiple callers.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>names</td>
+                  <td><a href="#string">string</a></td>
+                  <td>repeated</td>
+                  <td><p>The names of the callers to stop in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.StopCallersResponse" class="title-badge message">StopCallersResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>stop_caller_responses</td>
+                  <td><a href="#ondewo.vtsi.StopCallerResponse">StopCallerResponse</a></td>
+                  <td>repeated</td>
+                  <td><p>responses to stop callers </p></td>
+                </tr>
+              
+                <tr>
+                  <td>error_message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>error message if there are any. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
         <h3 id="ondewo.vtsi.StopCallsRequest" class="title-badge message">StopCallsRequest</h3>
         <p>Request to stop/kill specific ondewo-sip listeners or callers instance for a specific vtsi-project.</p>
 
@@ -36263,6 +36421,116 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>overall error message if you have any so if it's unhealthy </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.StopListenerRequest" class="title-badge message">StopListenerRequest</h3>
+        <p>Represents a request to stop a specific listener.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The name of the listener to stop in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.StopListenerResponse" class="title-badge message">StopListenerResponse</h3>
+        <p>Represents a request to stop a specific listener.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The name of the stop listener in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>error_message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>error message if there are any. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.StopListenersRequest" class="title-badge message">StopListenersRequest</h3>
+        <p>Represents a request to stop multiple listeners.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>names</td>
+                  <td><a href="#string">string</a></td>
+                  <td>repeated</td>
+                  <td><p>The names of the listeners to stop in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.StopListenersResponse" class="title-badge message">StopListenersResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>stop_listener_responses</td>
+                  <td><a href="#ondewo.vtsi.StopListenerResponse">StopListenerResponse</a></td>
+                  <td>repeated</td>
+                  <td><p>responses to stop listeners </p></td>
+                </tr>
+              
+                <tr>
+                  <td>error_message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>error message if there are any. </p></td>
                 </tr>
               
             </tbody>
