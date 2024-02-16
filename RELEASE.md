@@ -337,7 +337,7 @@ Adaptation to new s2t and t2s configs
 
 ### New Features
 
-* Refactored individual project APIs into seperate repos.
+* Refactored individual project APIs into separate repos.
 
 ### Improvements
 
