@@ -6,7 +6,7 @@
 
 ## Improvements
 
-* [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341) Added CallStatus
+* [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341) Added CallStatus, StopListener/s and StopCaller/s
 
 *****************
 
