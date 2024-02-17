@@ -13357,6 +13357,8 @@ ONDEWO VTSI API
 | GetCaller | [GetCallerRequest](#ondewo.vtsi.GetCallerRequest) | [Caller](#ondewo.vtsi.Caller) | gets a caller |
 | DeleteCaller | [DeleteCallerRequest](#ondewo.vtsi.DeleteCallerRequest) | [DeleteCallerResponse](#ondewo.vtsi.DeleteCallerResponse) | deletes a caller |
 | DeleteCallers | [DeleteCallersRequest](#ondewo.vtsi.DeleteCallersRequest) | [DeleteCallersResponse](#ondewo.vtsi.DeleteCallersResponse) | deletes multiple callers |
+| StopCaller | [StopCallerRequest](#ondewo.vtsi.StopCallerRequest) | [StopCallerResponse](#ondewo.vtsi.StopCallerResponse) | stops a caller |
+| StopCallers | [StopCallersRequest](#ondewo.vtsi.StopCallersRequest) | [StopCallersResponse](#ondewo.vtsi.StopCallersResponse) | stops multiple callers |
 | StartListener | [StartListenerRequest](#ondewo.vtsi.StartListenerRequest) | [StartListenerResponse](#ondewo.vtsi.StartListenerResponse) | start single listener instance for a specific nlu-project. |
 | StartListeners | [StartListenersRequest](#ondewo.vtsi.StartListenersRequest) | [StartListenersResponse](#ondewo.vtsi.StartListenersResponse) | start multiple ondewo-sip listeners instances for a specific nlu-project. |
 | StopListener | [StopListenerRequest](#ondewo.vtsi.StopListenerRequest) | [StopListenerResponse](#ondewo.vtsi.StopListenerResponse) | stop a ondewo-sip listeners instances for a specific nlu-project. |
