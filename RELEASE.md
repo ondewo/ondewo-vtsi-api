@@ -6,7 +6,10 @@
 
 ## Improvements
 
-* [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341) Added CallStatus, StopListener/s and StopCaller/s
+* [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341) Added CallStatus, StopListener/s and StopCaller/s for
+  improved control over the Listeners and Callers
+* [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341) Added CallView to ListCallersRequest,
+  ListListenersRequest, GetCallerRequest and GetListenerRequest for better control of data transfer amounts
 
 *****************
 

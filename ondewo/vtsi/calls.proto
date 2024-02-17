@@ -513,6 +513,9 @@ message ListCallersRequest {
     // Example: "current_index-1--page_size-20"
     optional string page_token = 2;
 
+    // you can specify the view to be shallow or full
+    optional CallView call_view = 3;
+
 }
 
 // Represents the response for listing callers.
@@ -532,6 +535,9 @@ message GetCallerRequest {
     // The name of caller to retrieve.
     string name = 2;
 
+    // you can specify the view to be shallow or full
+    optional CallView call_view = 3;
+
 }
 
 // Represents a request to list listeners.
@@ -544,6 +550,9 @@ message ListListenersRequest {
     // Optional. The next_page_token value returned from a previous list request.
     // Example: "current_index-1--page_size-20"
     optional string page_token = 2;
+
+    // you can specify the view to be shallow or full
+    optional CallView call_view = 3;
 
 }
 
@@ -567,6 +576,9 @@ message GetListenerRequest {
 
     // The name of listener to retrieve.
     string name = 2;
+
+    // you can specify the view to be shallow or full
+    optional CallView call_view = 3;
 
 }
 
