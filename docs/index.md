@@ -12445,6 +12445,7 @@ Represents a request to get a specific caller.
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | name | [string](#string) |  | The name of caller to retrieve. |
+| call_view | [CallView](#ondewo.vtsi.CallView) | optional | you can specify the view to be shallow or full |
 
 
 
@@ -12461,6 +12462,7 @@ Represents a request to get a specific listener.
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | name | [string](#string) |  | The name of listener to retrieve. |
+| call_view | [CallView](#ondewo.vtsi.CallView) | optional | you can specify the view to be shallow or full |
 
 
 
@@ -12477,6 +12479,7 @@ Represents a request to list callers.
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name for which to perform the call. The format is: "projects/<project_uuid>/project". |
 | page_token | [string](#string) | optional | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
+| call_view | [CallView](#ondewo.vtsi.CallView) | optional | you can specify the view to be shallow or full |
 
 
 
@@ -12542,6 +12545,7 @@ Represents a request to list listeners.
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name for which to perform the call. The format is: "projects/<project_uuid>/project". |
 | page_token | [string](#string) | optional | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
+| call_view | [CallView](#ondewo.vtsi.CallView) | optional | you can specify the view to be shallow or full |
 
 
 
