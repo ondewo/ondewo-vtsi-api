@@ -52,6 +52,12 @@ service Calls {
     // deletes multiple callers
     rpc DeleteCallers (DeleteCallersRequest) returns (DeleteCallersResponse);
 
+    // stops a caller
+    rpc StopCaller (StopCallerRequest) returns (StopCallerResponse);
+
+    // stops multiple callers
+    rpc StopCallers (StopCallersRequest) returns (StopCallersResponse);
+
     // start single listener instance for a specific nlu-project.
     rpc StartListener (StartListenerRequest) returns (StartListenerResponse);
 
