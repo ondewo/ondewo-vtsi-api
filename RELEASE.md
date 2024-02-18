@@ -10,6 +10,8 @@
   improved control over the Listeners and Callers
 * [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341) Added CallView to ListCallersRequest,
   ListListenersRequest, GetCallerRequest and GetListenerRequest for better control of data transfer amounts
+* [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341) Added platform to choose the NLU platform in the
+  NluVtsiConfig for DetectIntent response generation
 
 *****************
 
