@@ -167,6 +167,10 @@ message NluVtsiConfig{
 
     // http basic auth token
     string http_basic_auth_token = 8;
+
+    // Return the message specified in Intent.Message.Platform platform to the user in the DetectIntentResponse
+    optional ondewo.nlu.Intent.Message.Platform platform = 9;
+
 }
 
 // Text-2-Speech Configuration
