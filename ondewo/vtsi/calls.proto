@@ -19,7 +19,6 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
-//import "google/rpc/status.proto";
 import "ondewo/nlu/context.proto";
 import "ondewo/nlu/intent.proto";
 import "ondewo/s2t/speech-to-text.proto";
