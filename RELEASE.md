@@ -2,16 +2,27 @@
 
 *****************
 
+## Release ONDEWO VTSI API 7.0.0
+
+### Improvements
+
+* [[OND233-366]](https://ondewo.atlassian.net/browse/OND233-366) Upgrade to ONDEWO NLU
+  API [4.7.0](https://github.com/ondewo/ondewo-nlu-api/releases/4.7.0), ONDEWO S2T
+  API [5.4.0](https://github.com/ondewo/ondewo-s2t-api/releases/5.4.0) and ONDEWO T2S API
+  [5.3.0](https://github.com/ondewo/ondewo-t2s-api/releases/5.3.0) library
+
+*****************
+
 ## Release ONDEWO VTSI API 6.9.0
 
 ### Improvements
 
-* [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341) Added CallStatus, StopListener/s and StopCaller/s for
-  improved control over the Listeners and Callers
-* [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341) Added CallView to ListCallersRequest,
-  ListListenersRequest, GetCallerRequest and GetListenerRequest for better control of data transfer amounts
+* [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341) Added `CallStatus`, `StopListener`, `StopListeners`,
+  `StopCaller` and `StopCallers` for improved control over the Listeners and Callers
+* [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341) Added `CallView` to `ListCallersRequest`,
+  `ListListenersRequest`, `GetCallerRequest` and `GetListenerRequest` for better control of data transfer amounts
 * [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341) Added platform to choose the NLU platform in the
-  NluVtsiConfig for DetectIntent response generation
+  `NluVtsiConfig` for `DetectIntent` response generation
 
 *****************
 
@@ -19,7 +30,8 @@
 
 ### Improvements
 
-* [[OND211-2162]](https://ondewo.atlassian.net/browse/OND211-2162) Updated to NLU API 5.0.0
+* [[OND211-2162]](https://ondewo.atlassian.net/browse/OND211-2162) Updated to ONDEWO NLU
+  API [5.0.0](https://github.com/ondewo/ondewo-nlu-api/releases/5.0.0)
 
 *****************
 
@@ -27,8 +39,11 @@
 
 ### Improvements
 
-* [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341) Updated dependencies to apis nlu 4.9.0, s2t 5.6.0 and
-  t2s 5.2.0 and therefore removed `GetAudioFile` and `GetFullConversationAudioFile` from ONDEWO VTSI API since it is now
+* [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341) Updated dependencies to ONDEWO NLU
+  API [4.9.0](https://github.com/ondewo/ondewo-nlu-api/releases/4.9.0), ONDEWO S2T
+  API [5.6.0](https://github.com/ondewo/ondewo-s2t-api/releases/5.6.0) and ONDEWO T2S API
+  [5.2.0](https://github.com/ondewo/ondewo-t2s-api/releases/5.2.0) and therefore removed `GetAudioFile`
+  and `GetFullConversationAudioFile` from ONDEWO VTSI API since it is now
   in ONDEWO NLU API ([[OND21-2143]](https://ondewo.atlassian.net/browse/OND211-2143))
 * [[OND233-341]](https://ondewo.atlassian.net/browse/OND233-341) Added `CallFilter` to improving monitoring capabilities
   and filtering with `ListCallsRequest`

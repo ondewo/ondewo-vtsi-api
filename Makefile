@@ -17,11 +17,11 @@ export
 
 # MUST BE THE SAME AS API in Mayor and Minor Version Number
 # example: API 2.9.0 --> Client 2.9.X
-ONDEWO_VTSI_API_VERSION=6.9.0
+ONDEWO_VTSI_API_VERSION=7.0.0
 
 ONDEWO_NLU_API_GIT_BRANCH=tags/5.0.0
-ONDEWO_S2T_API_GIT_BRANCH=tags/5.6.0
-ONDEWO_T2S_API_GIT_BRANCH=tags/5.2.0
+ONDEWO_S2T_API_GIT_BRANCH=tags/5.7.0
+ONDEWO_T2S_API_GIT_BRANCH=tags/5.3.0
 ONDEWO_SIP_API_GIT_BRANCH=tags/5.1.0
 ONDEWO_NLU_DIR=ondewo-nlu-api
 ONDEWO_S2T_DIR=ondewo-s2t-api
@@ -116,8 +116,8 @@ githubio_logic: | githubio_logic_pre
 	@git -C ondewo.github.io push
 
 update_githubio:
-	@rm -rf ondewo.github.io
-	@git clone git@github.com:ondewo/ondewo.github.io.git
+	-@rm -rf ondewo.github.io
+	-@git clone git@github.com:ondewo/ondewo.github.io.git
 	@make githubio_logic || (echo "Done")
 	@rm -rf ondewo.github.io
 
