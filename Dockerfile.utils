@@ -29,9 +29,9 @@ COPY LICENSE .
 
 COPY README.md .
 
-COPY CONTRIBUTING.md .
-
 COPY RELEASE.md .
+
+COPY ondewo ondewo
 
 # run the container forever
 CMD tail -f /dev/null
