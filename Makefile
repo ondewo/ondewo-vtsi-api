@@ -224,9 +224,9 @@ release_client:
 # Change Version Number and RELEASE NOTES
 	cd ${REPO_DIR} && sed -i -e '/Release History/r ../temp-notes' ${RELEASEMD}
 	cd ${REPO_DIR} && head -20 ${RELEASEMD}
-	cd ${REPO_DIR} && sed -i -e 's/ONDEWO_VTSI_VERSION.*=.*[0-9]*.[0-9]*.[0-9]/ONDEWO_VTSI_VERSION = ${ONDEWO_VTSI_API_VERSION}/' Makefile
-	cd ${REPO_DIR} && sed -i -e 's/ONDEWO_PROTO_COMPILER_GIT_BRANCH.*=.*tags\/[0-9]*.[0-9]*.[0-9]/ONDEWO_PROTO_COMPILER_GIT_BRANCH=tags\/${PROTO_COMPILER}/' Makefile
-	cd ${REPO_DIR} && sed -i -e 's/VTSI_API_GIT_BRANCH=tags\/[0-9]*.[0-9]*.[0-9]/VTSI_API_GIT_BRANCH=tags\/${ONDEWO_VTSI_API_VERSION}/' Makefile && head -30 Makefile
+	cd ${REPO_DIR} && sed -i -e 's/ONDEWO_VTSI_VERSION.*=.*/ONDEWO_VTSI_VERSION = ${ONDEWO_VTSI_API_VERSION}/' Makefile
+	cd ${REPO_DIR} && sed -i -e 's/ONDEWO_PROTO_COMPILER_GIT_BRANCH.*=.*/ONDEWO_PROTO_COMPILER_GIT_BRANCH=tags\/${PROTO_COMPILER}/' Makefile
+	cd ${REPO_DIR} && sed -i -e 's/VTSI_API_GIT_BRANCH.*=.*/VTSI_API_GIT_BRANCH=tags\/${ONDEWO_VTSI_API_VERSION}/' Makefile && head -30 Makefile
 
 # Build new code
 	make -C ${REPO_DIR} ondewo_release | tee build_log_${REPO_NAME}.txt
