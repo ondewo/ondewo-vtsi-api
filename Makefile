@@ -144,6 +144,12 @@ update_githubio:
 #		Submodules
 
 build: init_submodules checkout_defined_submodule_versions ## Checks out and copies submodule protos to ondewo directory
+	git add google
+	git add ondewo
+	if [ -n "$$(git status --porcelain)" ]; then \
+		git commit -m "Prepare for release of ondewo-vtsi-api ${ONDEWO_VTSI_API_VERSION}"; \
+		git push; \
+	fi
 
 init_submodules: ## Initialize submodules
 	@echo "START initializing submodules ..."
