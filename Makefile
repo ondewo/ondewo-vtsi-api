@@ -18,10 +18,10 @@ export
 # example: API 2.9.0 --> Client 2.9.X
 ONDEWO_VTSI_API_VERSION=8.0.0
 
-ONDEWO_NLU_API_GIT_BRANCH=tags/5.0.0
-ONDEWO_S2T_API_GIT_BRANCH=tags/5.7.0
-ONDEWO_T2S_API_GIT_BRANCH=tags/5.3.0
-ONDEWO_SIP_API_GIT_BRANCH=tags/5.1.0
+ONDEWO_NLU_API_GIT_BRANCH=tags/6.0.0
+ONDEWO_S2T_API_GIT_BRANCH=tags/6.0.0
+ONDEWO_T2S_API_GIT_BRANCH=tags/6.0.0
+ONDEWO_SIP_API_GIT_BRANCH=tags/5.2.0
 ONDEWO_NLU_DIR=ondewo-nlu-api
 ONDEWO_S2T_DIR=ondewo-s2t-api
 ONDEWO_T2S_DIR=ondewo-t2s-api
@@ -214,7 +214,7 @@ release_client:
 # Get newest Proto-Compiler Version
 	$(eval PROTO_COMPILER:= $(shell curl https://api.github.com/repos/ondewo/ondewo-proto-compiler/tags | grep "\"name\"" | head -1 | cut -d '"' -f 4))
 # Clone Repo
-	rm -rf ${REPO_DIR}
+	rm -rf ${REPO_DIR} || sudo rm -rf ${REPO_DIR}
 	rm -f build_log_${REPO_NAME}.txt
 
 	@echo ${GENERIC_RELEASE_NOTES} > temp-notes && sed -i 's/\\//g' temp-notes && sed -i 's/REPONAME/${UPPER_REPO_NAME}/g' temp-notes
