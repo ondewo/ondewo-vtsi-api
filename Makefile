@@ -143,7 +143,7 @@ update_githubio:
 ########################################################
 #		Submodules
 
-build: init_submodules checkout_defined_submodule_versions ## Checks out and copys submodule protos to ondewo directory
+build: init_submodules checkout_defined_submodule_versions ## Checks out and copies submodule protos to ondewo directory
 
 init_submodules: ## Initialize submodules
 	@echo "START initializing submodules ..."
@@ -274,7 +274,7 @@ release_js_client: ## Release JS Client
 ########################################################
 #		GITHUB
 
-build_and_release_to_github_via_docker: build_utils_docker_image release_to_github_via_docker_image ## Release automation for building and releasing on GitHub via a docker image
+build_and_release_to_github_via_docker: build build_utils_docker_image release_to_github_via_docker_image ## Release automation for building and releasing on GitHub via a docker image
 
 build_utils_docker_image: ## Build utils docker image
 	docker build -f Dockerfile.utils -t ${IMAGE_UTILS_NAME} .
