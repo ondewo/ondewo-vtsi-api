@@ -16,6 +16,7 @@ syntax = "proto3";
 
 package ondewo.s2t;
 import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
 
 // Speech-to-text service
 service Speech2Text {
@@ -105,7 +106,6 @@ enum InferenceBackend {
 
 }
 
-
 ///////////////////////////
 // Configuration Message //
 ///////////////////////////
@@ -159,6 +159,120 @@ message TranscribeRequestConfig {
 
     // Optional. Specify task of s2t model, e.g. 'transcribe' and 'translate'
     optional string task = 10;
+
+    // Optional. s2t_service_config provides the configuration of the service such as API key, bearer tokens, JWT,
+    // and other header information as key value pairs, e.g., <pre><code>MY_API_KEY='LKJDIFe244LKJOI'</code></pre>
+    optional google.protobuf.Struct s2t_service_config = 11;
+
+    // Optional. Defines the cloud provider's specific configuration for using speech to text cloud services
+    // The default value is None.
+    optional S2tCloudProviderConfig s2t_cloud_provider_config = 12;
+
+}
+
+// Configuration for cloud provider settings for Speech-to-Text (S2T).
+message S2tCloudProviderConfig {
+
+    // Optional. Configuration for Amazon web service speech-to-text provider.
+    optional S2tCloudProviderConfigAmazon s2t_cloud_provider_config_amazon = 1;
+
+    // Optional. Configuration for DeepGram speech-to-text provider.
+    optional S2tCloudProviderConfigDeepgram s2t_cloud_provider_config_deepgram = 2;
+
+    // Optional. Configuration for Google speech-to-text provider.
+    optional S2tCloudProviderConfigGoogle s2t_cloud_provider_config_google = 3;
+
+    // Optional. Configuration for Microsoft Azure speech-to-text provider.
+    optional S2tCloudProviderConfigMicrosoft s2t_cloud_provider_config_microsoft = 4;
+
+}
+
+// Configuration details specific to the Amazon web service speech-to-text provider.
+message S2tCloudProviderConfigAmazon {
+
+    // Optional. Enables or disables partial_results_stabilization feature. More details at:
+    // https://docs.aws.amazon.com/transcribe/latest/dg/streaming-partial-results.html#streaming-partial-result-stabilization
+    optional bool enable_partial_results_stabilization = 1;
+
+    // Optional. You can use this field to set the stability level of the transcription results.
+    // A higher stability level means that the transcription results are less likely to change.
+    // Higher stability levels can come with lower overall transcription accuracy.
+    // Defaults to "high" if not set explicitly.
+    optional string partial_results_stability = 2;
+
+    // Optional. The name of your customize language model you want to use.
+    // More details at: https://docs.aws.amazon.com/transcribe/latest/dg/custom-language-models.html
+    optional string language_model_name = 3;
+
+    // Optional. The name of your customize language model you want to use.
+    // More details at: https://docs.aws.amazon.com/transcribe/latest/dg/custom-vocabulary.html
+    optional string vocabulary_name = 4;
+
+}
+
+// Configuration details specific to the Deepgram speech-to-text provider.
+message S2tCloudProviderConfigDeepgram {
+
+    // Optional. Enables or disables punctuate feature of Deepgram to add punctuations to the resulted transcript.
+    // More details at: https://developers.deepgram.com/docs/punctuation
+    optional bool punctuate = 1;
+
+    // Optional. Enables or disables smart_format feature of Deepgram transcription result to improve readability.
+    // More details at: https://developers.deepgram.com/docs/smart-format
+    optional bool smart_format = 2;
+
+    // Optional. Enables or disables numerals feature of Deepgram to convert numbers to numeric form in the resulted
+    // transcript. More details at: https://developers.deepgram.com/docs/numerals
+    optional bool numerals = 3;
+
+    // Optional. Enables or disables measurements feature of Deepgram to convert measurement units (i.e. Kilogram)
+    // to abbreviated form (i.e. Kg) in the resulted transcript.
+    // More details at: https://developers.deepgram.com/docs/measurements
+    optional bool measurements = 4;
+
+    // Optional. Enables or disables dictation feature of Deepgram to convert spoken dictation commands into their
+    // corresponding punctuation marks. More details at: https://developers.deepgram.com/docs/dictation
+    optional bool dictation = 5;
+
+}
+
+// Configuration details specific to the Google speech-to-text provider.
+message S2tCloudProviderConfigGoogle {
+
+    // Optional. Enables or disables automatic_punctuation feature of Google s2t to add punctuations to the resulted
+    // transcript. More details at: https://cloud.google.com/speech-to-text/docs/automatic-punctuation
+    optional bool enable_automatic_punctuation = 1;
+
+    // Optional. Enables or disables word_time_offsets feature of Google s2t to add word-level timestamps (time-offset)
+    // to the resulted transcript. More details at: https://cloud.google.com/speech-to-text/docs/async-time-offsets
+    optional bool enable_word_time_offsets = 2;
+
+    // Optional. Enables or disables word_confidence feature of Google s2t to add word-level confidence scores
+    // to the resulted transcript. More details at: https://cloud.google.com/speech-to-text/docs/word-confidence
+    optional bool enable_word_confidence = 3;
+
+    // Optional. Enables or disables transcript_normalization feature of Google s2t to automatically
+    // replace parts of the transcript with phrases of your choosing. More details at:
+    // https://cloud.google.com/speech-to-text/v2/docs/reference/rpc/google.cloud.speech.v2#transcriptnormalization
+    optional bool transcript_normalization = 4;
+
+    // Optional. Maximum number of recognition hypotheses to be returned, may be returned fewer than max_alternatives.
+    // Valid values are 0-30. A value of 0 or 1 will return a maximum of one. If omitted, will return a maximum of one.
+    optional int32 max_alternatives = 5;
+
+}
+
+// Configuration details specific to the Microsoft Azure speech-to-text provider.
+message S2tCloudProviderConfigMicrosoft {
+
+    // Optional. Enables or disables the Microsoft Azure fast transcription API. It is faster than SDK but is in
+    // preview version.
+    // More details at: https://learn.microsoft.com/en-us/azure/ai-services/speech-service/fast-transcription-create
+    optional bool use_fast_transcription_api = 1;
+
+    // Optional. Enables or disables the `detailed` format for the result of Microsoft Azure s2t service
+    // to add timestamps and confidences to the resulted transcript.
+    optional bool use_detailed_output_format = 2;
 
 }
 
@@ -416,7 +530,6 @@ message ListS2tPipelinesResponse {
     repeated Speech2TextConfig pipeline_configs = 1;
 }
 
-
 ////////////////////////
 // LIST S2T LANGUAGES //
 ////////////////////////
@@ -478,7 +591,6 @@ message S2TGetServiceInfoResponse {
 ///////////////////////////////////
 // SPEECH-2-TEXT PIPELINE CONFIG //
 ///////////////////////////////////
-
 
 // Speech2TextConfig is a configuration message for the speech-to-text pipeline
 message Speech2TextConfig {
@@ -560,6 +672,135 @@ message AcousticModels {
     // Configuration for the Whisper model using Triton.
     WhisperTriton whisper_triton = 5;
 
+    // Amazon web service cloud service inference settings.
+    S2tCloudServiceAmazon s2t_cloud_service_amazon = 6;
+
+    // Deepgram cloud service inference settings.
+    S2tCloudServiceDeepgram s2t_cloud_service_deepgram = 7;
+
+    // Google cloud service inference settings.
+    S2tCloudServiceGoogle s2t_cloud_service_google = 8;
+
+    // Microsoft Azure cloud service inference settings.
+    S2tCloudServiceMicrosoft s2t_cloud_service_microsoft = 9;
+
+}
+
+// S2tCloudServiceAmazon message contains settings for the Amazon web service Cloud service inference.
+message S2tCloudServiceAmazon {
+
+    // Language of the audio to transcribe by Amazon web service s2t cloud service. It should be 4-letter language code
+    // (BCP-47) e.g. 'en-US' or 'de-DE'.
+    string language = 1;
+
+    // Specifies if streaming mode of Amazon web service speech to text is available for the selected language,
+    // otherwise batch mode transcription is used. See the list of languages and available transcription modes at:
+    // https://docs.aws.amazon.com/transcribe/latest/dg/supported-languages.html
+    bool streaming_available = 2;
+
+    // Enables or disables partial_results_stabilization feature. More details at:
+    // https://docs.aws.amazon.com/transcribe/latest/dg/streaming-partial-results.html#streaming-partial-result-stabilization
+    bool enable_partial_results_stabilization = 3;
+
+    // You can use this field to set the stability level of the transcription results.
+    // A higher stability level means that the transcription results are less likely to change.
+    // Higher stability levels can come with lower overall transcription accuracy.
+    // Defaults to "high" if not set explicitly.
+    string partial_results_stability = 4;
+
+    // The name of your customize language model you want to use.
+    // More details at: https://docs.aws.amazon.com/transcribe/latest/dg/custom-language-models.html
+    string language_model_name = 5;
+
+    // The name of your customize language model you want to use.
+    // More details at: https://docs.aws.amazon.com/transcribe/latest/dg/custom-vocabulary.html
+    string vocabulary_name = 6;
+
+}
+
+// S2tCloudServiceDeepgram message contains settings for the Deepgram Cloud service inference.
+message S2tCloudServiceDeepgram {
+
+    // Model name from one of the speech-to-text models provided by Deepgram for the desired use-case.
+    // Provided model names and details at: https://developers.deepgram.com/docs/model
+    string model_name = 1;
+
+    // Language of the audio to transcribe by Deepgram s2t cloud service. It should be 4-letter language code
+    // (BCP-47) e.g. 'en-US' or 'de-DE'.
+    string language = 2;
+
+    // Enables or disables punctuate feature of Deepgram to add punctuations to the resulted transcript.
+    // More details at: https://developers.deepgram.com/docs/punctuation
+    bool punctuate = 3;
+
+    // Enables or disables smart_format feature of Deepgram transcription result to improve readability.
+    // More details at: https://developers.deepgram.com/docs/smart-format
+    bool smart_format = 4;
+
+    // Enables or disables numerals feature of Deepgram to convert numbers to numeric form in the resulted transcript.
+    // More details at: https://developers.deepgram.com/docs/numerals
+    bool numerals = 5;
+
+    // Enables or disables measurements feature of Deepgram to convert measurement units (i.e. Kilogram)
+    // to abbreviated form (i.e. Kg) in the resulted transcript.
+    // More details at: https://developers.deepgram.com/docs/measurements
+    bool measurements = 6;
+
+    // Enables or disables dictation feature of Deepgram to convert spoken dictation commands into their corresponding
+    // punctuation marks. More details at: https://developers.deepgram.com/docs/dictation
+    bool dictation = 7;
+
+}
+
+// S2tCloudServiceGoogle message contains settings for the Google Cloud service inference.
+message S2tCloudServiceGoogle {
+
+    // Model name from one of the speech-to-text models provided by Google for the desired use-case.
+    // Provided model names and details at: https://cloud.google.com/speech-to-text/docs/transcription-model
+    string model_name = 1;
+
+    // Language of the audio to transcribe by Google s2t cloud service. It should be 4-letter language code
+    // (BCP-47) e.g. 'en-US' or 'de-DE'.
+    string language = 2;
+
+    // Enables or disables automatic_punctuation feature of Google s2t to add punctuations to the resulted transcript.
+    // More details at: https://cloud.google.com/speech-to-text/docs/automatic-punctuation
+    bool enable_automatic_punctuation = 3;
+
+    // Enables or disables word_time_offsets feature of Google s2t to add word-level timestamps (time-offsets)
+    // to the resulted transcript. More details at: https://cloud.google.com/speech-to-text/docs/async-time-offsets
+    bool enable_word_time_offsets = 4;
+
+    // Enables or disables word_confidence feature of Google s2t to add word-level confidence scores
+    // to the resulted transcript. More details at: https://cloud.google.com/speech-to-text/docs/word-confidence
+    bool enable_word_confidence = 5;
+
+    // Enables or disables transcript_normalization feature of Google s2t to automatically
+    // replace parts of the transcript with phrases of your choosing. More details at:
+    // https://cloud.google.com/speech-to-text/v2/docs/reference/rpc/google.cloud.speech.v2#transcriptnormalization
+    bool transcript_normalization = 6;
+
+    // Maximum number of recognition hypotheses to be returned. The server may return fewer than max_alternatives.
+    // Valid values are 0-30. A value of 0 or 1 will return a maximum of one. If omitted, will return a maximum of one.
+    int32 max_alternatives = 7;
+
+}
+
+// S2tCloudServiceMicrosoft message contains settings for the Microsoft Azure Cloud service inference.
+message S2tCloudServiceMicrosoft {
+
+    // Language of the audio to transcribe by Microsoft Azure s2t cloud service. It should be 4-letter language code
+    // (BCP-47) e.g. 'en-US' or 'de-DE'.
+    string language = 1;
+
+    // Enables or disables the Microsoft Azure fast transcription API. It is faster than SDK but is in preview version.
+    // More details at: https://learn.microsoft.com/en-us/azure/ai-services/speech-service/fast-transcription-create
+    bool use_fast_transcription_api = 2;
+
+    // Enables or disables the `detailed` format for the result of Microsoft Azure s2t service
+    // to add timestamps and confidences to the resulted transcript.
+    bool use_detailed_output_format = 3;
+
 }
 
 // Whisper contains information about the Whisper model.
@@ -576,7 +817,6 @@ message Whisper {
 
     // Default task of the model.
     string task = 4;
-
 
 }
 
@@ -818,7 +1058,6 @@ message Logging {
 
 }
 
-
 ///////////////////////////////////////////
 // GET LIST OF AVAILABLE LANGUAGE MODELS //
 ///////////////////////////////////////////
@@ -853,7 +1092,6 @@ message ListS2tLanguageModelsResponse {
     repeated LanguageModelPipelineId lm_pipeline_ids = 1;
 
 }
-
 
 /////////////////////////////////////
 // CUSTOM LANGUAGE MODEL FEATURES  //

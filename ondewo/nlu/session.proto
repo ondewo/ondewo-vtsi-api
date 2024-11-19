@@ -95,10 +95,29 @@ service Sessions {
         };
     };
 
-    // TrackSessionStep: append to an existing session; creates it if not existing
-    rpc TrackSessionStep (TrackSessionStepRequest) returns (Session) {
+    // CreateSessionStep: creates a new session step for a session
+    rpc CreateSessionStep (CreateSessionStepRequest) returns (SessionStep) {};
+
+    // GetSessionStep: gets an existing session step of a session
+    rpc GetSessionStep (GetSessionStepRequest) returns (SessionStep) {
         option (google.api.http) = {
-            post: "/v2/{session_id=projects/*/agent/sessions/*}:trackSessionStep"
+            post: "/v2/{session_id=projects/*/agent/sessions/*}:getSessionStep"
+            body: "*"
+        };
+    };
+
+    // UpdateSessionStep: updates an existing session step in a session
+    rpc UpdateSessionStep (UpdateSessionStepRequest) returns (SessionStep) {
+        option (google.api.http) = {
+            post: "/v2/{session_id=projects/*/agent/sessions/*}:updateSessionStep"
+            body: "*"
+        };
+    };
+
+    // DeleteSessionStep: deletes an existing session step from the session
+    rpc DeleteSessionStep (DeleteSessionStepRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            post: "/v2/{session_id=projects/*/agent/sessions/*}:deleteSessionStep"
             body: "*"
         };
     };
@@ -309,7 +328,7 @@ service Sessions {
 message DetectIntentRequest {
 
     // Required. The name of the session this query is sent to. Format:
-    // `projects/<Project ID>/agent/sessions/<Session ID>`. It's up to the API
+    // `projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;`. It's up to the API
     // caller to choose an appropriate session ID. It can be a random number or
     // some type of user identifier (preferably hashed). The length of the session
     // ID must not exceed 36 bytes.
@@ -332,6 +351,7 @@ message DetectIntentRequest {
     // should be populated iff `query_input` is set to an input audio config.
     // A single request can contain up to 1 minute of speech audio data.
     bytes input_audio = 5;
+
 }
 
 // The message returned from the DetectIntent method.
@@ -490,6 +510,10 @@ message QueryInput {
         // The event to be processed.
         EventInput event = 3;
     }
+
+    // Files as input for the detect intent request, e.g., image, document, audio, video etc.
+    repeated FileResource file_resources = 4;
+
 }
 
 // Represents the result of conversational query or event processing.
@@ -570,6 +594,9 @@ message QueryResult {
     // for a list of the currently supported language codes.
     string language_code = 15;
 
+    // Generated or attached files, e.g., llm generates a picture or file attachment
+    repeated FileResource file_resources = 16;
+
 }
 
 
@@ -588,8 +615,8 @@ message StreamingDetectIntentRequest {
 
     // Required. The name of the session the query is sent to.
     // Format of the session name:
-    // `projects/<Project ID>/agent/sessions/<Session ID>`. It’s up to the API
-    // caller to choose an appropriate <Session ID>. It can be a random number or
+    // `projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;`. It’s up to the API
+    // caller to choose an appropriate &lt;session_uuid&gt;. It can be a random number or
     // some type of user identifier (preferably hashed). The length of the session
     // ID must not exceed 36 characters.
     string session = 1;
@@ -621,6 +648,7 @@ message StreamingDetectIntentRequest {
     // `query_input` was set to a streaming input audio config. The complete audio
     // over all streaming messages must not exceed 1 minute.
     bytes input_audio = 6;
+
 }
 
 // The top-level message returned from the
@@ -649,6 +677,7 @@ message StreamingDetectIntentResponse {
 
     // Specifies the status of the webhook request.
     google.rpc.Status webhook_status = 4;
+
 }
 
 // Contains a speech recognition result corresponding to a portion of the audio
@@ -726,6 +755,7 @@ message StreamingRecognitionResult {
     // This field is typically only provided if `is_final` is true and you should
     // not rely on it being accurate or even set.
     float confidence = 4;
+
 }
 
 // Instructs the speech recognizer how to process the audio content.
@@ -883,7 +913,7 @@ message Session {
 message SessionStep {
 
     // The unique identifier for the given review
-    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/steps/&lt;session_step_uuid&gt;</code></pre>
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/sessionsteps/&lt;session_step_uuid&gt;</code></pre>
     string name = 1;
 
     // The detect intent request of the session step
@@ -915,18 +945,57 @@ message SessionStep {
 
 }
 
-// TrackSessionStepRequest stores a session step into the session
-message TrackSessionStepRequest {
+// This message is a request to get a session step
+message GetSessionStepRequest {
+
+    // The unique identifier for the given session step
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/sessionsteps/&lt;session_step_uuid&gt;
+    string name = 1;
+
+    // Optional. The mask to control which fields will be filled with data.
+    // Example: path=["session_step.detect_intent_response.query_result.fulfillment_messages"]
+    google.protobuf.FieldMask field_mask = 2;
+
+}
+
+// UpdateSessionStepRequest stores a session step into the session
+message UpdateSessionStepRequest {
+
+    // The session step to be updated
+    SessionStep session_step = 1;
+
+    // Optional. The mask to control which fields will be updated.
+    // Example: path=["session_step.detect_intent_response.query_result.fulfillment_messages"]
+    google.protobuf.FieldMask update_mask = 2;
+
+    // Optional. The mask to control which fields will be filled with data.
+    // Example: path=["session_step.detect_intent_response.query_result.fulfillment_messages"]
+    google.protobuf.FieldMask field_mask = 3;
+
+}
+
+// This message is a request to delete a session step of a session
+message DeleteSessionStepRequest {
+
+    // The unique identifier for the given session step
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/sessionsteps/&lt;session_step_uuid&gt;</code></pre>.
+    string name = 1;
+
+}
+
+// CreateSessionStepRequest stores a session step into the session
+message CreateSessionStepRequest {
 
     // The unique identifier for the given review
-    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/steps/&lt;session_step_uuid&gt;</code></pre>.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/sessionsteps/&lt;session_step_uuid&gt;</code></pre>.
     string session_id = 1;
 
     // The session step to be added
     SessionStep session_step = 2;
 
-    // Defines which fields of the session should be returned in the response
-    Session.View session_view = 3;
+    // field mask specifying what the request should return, e.g. only name, created_at etc.
+    google.protobuf.FieldMask field_mask = 3;
+
 }
 
 // This message is a request to list sessions
@@ -1316,7 +1385,8 @@ message ListSessionsResponse {
     // The requested sessions
     repeated Session sessions = 1;
 
-    // Token to retrieve the next page of results, or empty if there are no more results in the list
+    // The next_page_token is used to retrieve the next page of a returned result,
+    // e.g. next_page_token is current_index-2
     string next_page_token = 2;
 }
 
@@ -1922,7 +1992,8 @@ message ListSessionReviewsResponse {
     // The requested session reviews
     repeated SessionReview session_reviews = 1;
 
-    // Token to retrieve the next page of results, or empty if there are no more results in the list
+    // The next_page_token is used to retrieve the next page of a returned result,
+    // e.g. next_page_token is current_index-2
     string next_page_token = 2;
 }
 
@@ -1979,6 +2050,83 @@ enum AudioFileResourceType {
 
 }
 
+// Represents a file resource that can either be an image, audio, document, or video file.
+message FileResource {
+
+    // Oneof to specify either an image, audio, document, or video file resource.
+    // Only one of the file types will be set at a time.
+    oneof file_resource {
+
+        // Document file resource (e.g., markdown, text, word, powerpoint, pdf, excel etc.).
+        DocumentFileResource document_file_resource = 1;
+
+        // An audio file resource, such as a recording or sound file.
+        AudioFileResource audio_file_resource = 2;
+
+        // An image file resource, such as a JPEG, PNG, etc.
+        ImageFileResource image_file_resource = 3;
+
+        // A video file resource, such as an MP4 or AVI file.
+        VideoFileResource video_file_resource = 4;
+
+    }
+
+}
+
+// Represents a document file resource (e.g., text, markdown, PDF, DOCX).
+message DocumentFileResource {
+
+    // The unique identifier for the document file resource.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/documents/&lt;document_uuid&gt;</code></pre>
+    string name = 1;
+
+    // The display name of the document file, which can be the file name (e.g., "report.pdf")
+    // or a user-assigned name.
+    string display_name = 2;
+
+    // The raw bytes of the document file (e.g., PDF, DOCX, TXT).
+    bytes bytes = 3;
+
+    // Creation date and time of the document file. This is a read-only field.
+    google.protobuf.Timestamp created_at = 4;
+
+    // The last modification date and time of the document file. This is a read-only field.
+    google.protobuf.Timestamp modified_at = 5;
+
+    // The UUID of the user who created the document file.
+    string created_by = 6;
+
+    // The UUID of the user who last modified the document file.
+    string modified_by = 7;
+
+}
+
+message ImageFileResource {
+
+    // The unique identifier of the session for which the latest review should be returned
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/images/&lt;image_uuid&gt;</code></pre>
+    string name = 1;
+
+    // File name of the image, e.g., MyPicture.jpg, or a user assigned display name
+    string display_name = 2;
+
+    // Bytes of the audio file
+    bytes bytes = 3;
+
+    // Creation date and time. Read-only field.
+    google.protobuf.Timestamp created_at = 4;
+
+    // Modification date and time. Read-only field.
+    google.protobuf.Timestamp modified_at = 5;
+
+    // User id in form of a valid UUID.
+    string created_by = 6;
+
+    // User id in form of a valid UUID.
+    string modified_by = 7;
+
+}
+
 message AudioFileResource {
 
     // The unique identifier of the session for which the latest review should be returned
@@ -2015,6 +2163,45 @@ message AudioFileResource {
 
     // User id in form of a valid UUID.
     string modified_by = 11;
+
+    // Bytes of the audio file
+    string display_name = 12;
+
+}
+
+// Represents a video file resource (e.g., MP4, AVI).
+message VideoFileResource {
+
+    // The unique identifier for the video file resource.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/videos/&lt;video_uuid&gt;</code></pre>
+    string name = 1;
+
+    // The display name of the video file, which can be a user-assigned label.
+    string display_name = 2;
+
+    // The raw bytes representing the video file (e.g., MP4, AVI).
+    bytes bytes = 3;
+
+    // The duration of the video file in seconds.
+    float duration_in_s = 4;
+
+    // The resolution of the video (e.g., "1920x1080" for Full HD).
+    string resolution = 5;
+
+    // The frame rate of the video (e.g., 30 fps).
+    float frame_rate = 6;
+
+    // Creation date and time of the video file. This is a read-only field.
+    google.protobuf.Timestamp created_at = 7;
+
+    // The last modification date and time of the video file. This is a read-only field.
+    google.protobuf.Timestamp modified_at = 8;
+
+    // The UUID of the user who created the video file.
+    string created_by = 9;
+
+    // The UUID of the user who last modified the video file.
+    string modified_by = 10;
 
 }
 
@@ -2072,7 +2259,8 @@ message GetAudioFilesResponse {
     // error message if there are any.
     string error_message = 2;
 
-    // Token to retrieve the next page of results, or empty if there are no more results in the list
+    // The next_page_token is used to retrieve the next page of a returned result,
+    // e.g. next_page_token is current_index-2
     string next_page_token = 3;
 
 }
@@ -2090,6 +2278,11 @@ message AddAudioFilesRequest {
 
     // AudioFileResources to be added
     repeated AudioFileResource audio_file_resources = 3;
+
+    // The unique identifier of the session step for which the audio files should be listed
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/sessionsteps/&lt;session_step_uuid&gt;/&lt</code></pre>
+    string session_step_id = 4;
+
 }
 
 // This message is a request to add the audio files specified
@@ -2101,6 +2294,7 @@ message AddAudioFilesResponse {
 
     // error message if there are any.
     string error_message = 2;
+
 }
 
 // This message is a request to the delete audio files specified
@@ -2113,6 +2307,7 @@ message DeleteAudioFilesRequest {
     // The unique identifier of the audio file of the specific session
     // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/audios/&lt;audio_uuid&gt;</code></pre>
     repeated string names = 2;
+
 }
 
 // This message is a request to the delete audio files specified
@@ -2124,6 +2319,7 @@ message DeleteAudioFilesResponse {
 
     // error message if there are any.
     string error_message = 2;
+
 }
 
 // This message is a request to list all available audio files of a session
@@ -2177,7 +2373,8 @@ message ListAudioFilesResponse {
     // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/audios/&lt;audio_uuid&gt;</code></pre>
     repeated AudioFileResource audio_files = 1;
 
-    // Token to retrieve the next page of results, or empty if there are no more results in the list
+    // The next_page_token is used to retrieve the next page of a returned result,
+    // e.g. next_page_token is current_index-2
     string next_page_token = 2;
 
     // error message if there are any.

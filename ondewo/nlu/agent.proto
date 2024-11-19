@@ -46,7 +46,6 @@ import "ondewo/nlu/user.proto";
 import "ondewo/nlu/project_role.proto";
 import "ondewo/nlu/operations.proto";
 import "ondewo/nlu/session.proto";
-import "ondewo/nlu/ccai_project.proto";
 
 // Agents are best described as Natural Language Understanding (NLU) modules that transform user requests into actionable data. You can include agents in your app, product, or service to determine user intent and respond to the user in a natural way.
 //
@@ -492,22 +491,8 @@ service Agents {
     rpc GetFullTextSearchIntentParameters (FullTextSearchRequest) returns (FullTextSearchResponseIntentParameters);
 
     // Force reindexing Intent and Entity data of Agent
-    rpc ReindexAgent(ReindexAgentRequest) returns (ondewo.nlu.Operation);
+    rpc ReindexAgent (ReindexAgentRequest) returns (ondewo.nlu.Operation);
 
-    // RPC to create a new CCAI project
-    rpc CreateCcaiProject (CreateCcaiProjectRequest) returns (CreateCcaiProjectResponse) {}
-
-    // RPC to delete an existing CCAI project
-    rpc DeleteCcaiProject (DeleteCcaiProjectRequest) returns (DeleteCcaiProjectResponse) {}
-
-    // RPC to get details of an existing CCAI project
-    rpc GetCcaiProject (GetCcaiProjectRequest) returns (CcaiProject) {}
-
-    // RPC to list all available CCAI projects
-    rpc ListCcaiProjects (ListCcaiProjectsRequest) returns (ListCcaiProjectsResponse) {}
-
-    // RPC to update an existing CCAI project
-    rpc UpdateCcaiProject (UpdateCcaiProjectRequest) returns (UpdateCcaiProjectResponse) {}
 }
 
 // Project/Agent messages
@@ -669,8 +654,8 @@ message ListAgentsResponse {
     // returned based on the page_token field in the request.
     repeated AgentWithOwner agents_with_owners = 1;
 
-    // Token to retrieve the next page of results, or empty if there are no
-    // more results in the list.
+    // The next_page_token is used to retrieve the next page of a returned result,
+    // e.g. next_page_token is current_index-2
     string next_page_token = 2;
 }
 
@@ -681,8 +666,8 @@ message ListAgentsOfUserResponse {
     // returned based on the page_token field in the request.
     repeated AgentOfUserWithOwner agents_of_user_with_owners = 1;
 
-    // Token to retrieve the next page of results, or empty if there are no
-    // more results in the list.
+    // The next_page_token is used to retrieve the next page of a returned result,
+    // e.g. next_page_token is current_index-2
     string next_page_token = 2;
 }
 
@@ -824,7 +809,7 @@ message OptimizeRankingMatchRequest {
 // This message contains the configuration to run Optimize Ranking Match
 message RankingMatchOptimizationConfig {
 
-    // Language code specifies the language of the request, e.g. cz, de, en, es, fi, fr, it, nl, pl, pt, tr, ru
+    // Language code specifies the language of the request in IETF BCP 47 language tag format, e.g. de-DE, en-US, etc.
     string language_code = 1;
 
     // number of splits for optimization
@@ -919,7 +904,7 @@ message GetAgentStatisticsRequest {
 
     // File formats for reports
     ReportFormat format = 2;
-    // Language code specifies the language of the request, e.g. cz, de, en, es, fi, fr, it, nl, pl, pt, tr, ru
+    // Language code specifies the language of the request in IETF BCP 47 language tag format, e.g. de-DE, en-US, etc.
     // the language to calculate statistics about
     string language_code = 3;
 
@@ -1180,8 +1165,8 @@ message ListUsersInProjectResponse {
     // returned based on the page_token field in the request.
     repeated UserInProject users = 1;
 
-    // Token to retrieve the next page of results, or empty if there are no
-    // more results in the list.
+    // The next_page_token is used to retrieve the next page of a returned result,
+    // e.g. next_page_token is current_index-2
     string next_page_token = 2;
 }
 
@@ -1232,8 +1217,8 @@ message ListProjectPermissionsResponse {
     // returned based on the page_token field in the request.
     repeated string permissions = 1;
 
-    // Token to retrieve the next page of results, or empty if there are no
-    // more results in the list.
+    // The next_page_token is used to retrieve the next page of a returned result,
+    // e.g. next_page_token is current_index-2
     string next_page_token = 2;
 }
 
@@ -1312,7 +1297,7 @@ message SetResourcesRequest {
 
     bytes resource_file = 4;
 
-    // Language code specifies the language of the request, e.g. cz, de, en, es, fi, fr, it, nl, pl, pt, tr, ru
+    // Language code specifies the language of the request in IETF BCP 47 language tag format, e.g. de-DE, en-US, etc.
     string language_code = 5;
 }
 
@@ -1327,7 +1312,7 @@ message DeleteResourcesRequest {
 
     string type = 3;
 
-    // Language code specifies the language of the request, e.g. cz, de, en, es, fi, fr, it, nl, pl, pt, tr, ru
+    // Language code specifies the language of the request in IETF BCP 47 language tag format, e.g. de-DE, en-US, etc.
     string language_code = 4;
 }
 
@@ -1342,7 +1327,7 @@ message ExportResourcesRequest {
 
     string type = 3;
 
-    // Language code specifies the language of the request, e.g. cz, de, en, es, fi, fr, it, nl, pl, pt, tr, ru
+    // Language code specifies the language of the request in IETF BCP 47 language tag format, e.g. de-DE, en-US, etc.
     string language_code = 4;
 }
 
@@ -1357,7 +1342,7 @@ message ExportResourcesResponse {
 
     string type = 3;
 
-    // Language code specifies the language of the request, e.g. cz, de, en, es, fi, fr, it, nl, pl, pt, tr, ru
+    // Language code specifies the language of the request in IETF BCP 47 language tag format, e.g. de-DE, en-US, etc.
     string language_code = 4;
 
     bytes resource_file = 5;
@@ -1372,7 +1357,7 @@ message GetModelStatusesRequest {
 
     int32 cache_version = 2;
 
-    // Language code specifies the language of the request, e.g. cz, de, en, es, fi, fr, it, nl, pl, pt, tr, ru
+    // Language code specifies the language of the request in IETF BCP 47 language tag format, e.g. de-DE, en-US, etc.
     string language_code = 3;
 
     string model_name = 4;
@@ -1384,7 +1369,7 @@ message ModelStatus {
     // Cache version that contains the correspondent model
     int32 cache_version = 1;
 
-    // Language code specifies the language of the request, e.g. cz, de, en, es, fi, fr, it, nl, pl, pt, tr, ru
+    // Language code specifies the language of the request in IETF BCP 47 language tag format, e.g. de-DE, en-US, etc.
     string language_code = 2;
 
     // The model name
@@ -1466,7 +1451,7 @@ message FullTextSearchRequest {
     // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
     string parent = 1;
 
-    // Language code specifies the language of the request, e.g. cz, de, en, es, fi, fr, it, nl, pl, pt, tr, ru
+    // Language code specifies the language of the request in IETF BCP 47 language tag format, e.g. de-DE, en-US, etc.
     string language_code = 2;
 
     // What to search for in the elastic server
@@ -1533,7 +1518,7 @@ message FullTextSearchResponseEntityType {
     // Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre>
     string parent = 1;
 
-    // Language code specifies the language of the request, e.g. cz, de, en, es, fi, fr, it, nl, pl, pt, tr, ru
+    // Language code specifies the language of the request in IETF BCP 47 language tag format, e.g. de-DE, en-US, etc.
     string language_code = 2;
 
     message EntityTypeSearchResult {
@@ -1565,7 +1550,8 @@ message FullTextSearchResponseEntityType {
 
     float time = 6;
 
-    // The next_page_token is used to retrieve the next page of a returned result, e.g. next_page_token is current_index-2
+    // The next_page_token is used to retrieve the next page of a returned result,
+    // e.g. next_page_token is current_index-2
     string next_page_token = 7;
 }
 
@@ -1576,7 +1562,7 @@ message FullTextSearchResponseEntity {
     // Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre>
     string parent = 1;
 
-    // Language code specifies the language of the request, e.g. cz, de, en, es, fi, fr, it, nl, pl, pt, tr, ru
+    // Language code specifies the language of the request in IETF BCP 47 language tag format, e.g. de-DE, en-US, etc.
     string language_code = 2;
 
     message EntitySearchResult {
@@ -1612,7 +1598,8 @@ message FullTextSearchResponseEntity {
 
     float time = 6;
 
-    // The next_page_token is used to retrieve the next page of a returned result, e.g. next_page_token is current_index-2
+    // The next_page_token is used to retrieve the next page of a returned result,
+    // e.g. next_page_token is current_index-2
     string next_page_token = 7;
 }
 
@@ -1623,7 +1610,7 @@ message FullTextSearchResponseEntitySynonym {
     // Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre>
     string parent = 1;
 
-    // Language code specifies the language of the request, e.g. cz, de, en, es, fi, fr, it, nl, pl, pt, tr, ru
+    // Language code specifies the language of the request in IETF BCP 47 language tag format, e.g. de-DE, en-US, etc.
     string language_code = 2;
 
     message EntitySynonymSearchResult {
@@ -1663,7 +1650,8 @@ message FullTextSearchResponseEntitySynonym {
 
     float time = 6;
 
-    // The next_page_token is used to retrieve the next page of a returned result, e.g. next_page_token is current_index-2
+    // The next_page_token is used to retrieve the next page of a returned result,
+    // e.g. next_page_token is current_index-2
     string next_page_token = 7;
 }
 
@@ -1673,7 +1661,7 @@ message FullTextSearchResponseIntent {
     // Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre>
     string parent = 1;
 
-    // Language code specifies the language of the request, e.g. cz, de, en, es, fi, fr, it, nl, pl, pt, tr, ru
+    // Language code specifies the language of the request in IETF BCP 47 language tag format, e.g. de-DE, en-US, etc.
     string language_code = 2;
 
     message IntentSearchResult {
@@ -1710,7 +1698,8 @@ message FullTextSearchResponseIntent {
 
     float time = 6;
 
-    // The next_page_token is used to retrieve the next page of a returned result, e.g. next_page_token is current_index-2
+    // The next_page_token is used to retrieve the next page of a returned result,
+    // e.g. next_page_token is current_index-2
     string next_page_token = 7;
 }
 
@@ -1721,7 +1710,7 @@ message FullTextSearchResponseIntentContextIn {
     // Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre>
     string parent = 1;
 
-    // Language code specifies the language of the request, e.g. cz, de, en, es, fi, fr, it, nl, pl, pt, tr, ru
+    // Language code specifies the language of the request in IETF BCP 47 language tag format, e.g. de-DE, en-US, etc.
     string language_code = 2;
 
     message IntentContextInSearchResult {
@@ -1758,7 +1747,8 @@ message FullTextSearchResponseIntentContextIn {
 
     float time = 6;
 
-    // The next_page_token is used to retrieve the next page of a returned result, e.g. next_page_token is current_index-2
+    // The next_page_token is used to retrieve the next page of a returned result,
+    // e.g. next_page_token is current_index-2
     string next_page_token = 7;
 }
 
@@ -1769,7 +1759,7 @@ message FullTextSearchResponseIntentContextOut {
     // Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre>
     string parent = 1;
 
-    // Language code specifies the language of the request, e.g. cz, de, en, es, fi, fr, it, nl, pl, pt, tr, ru
+    // Language code specifies the language of the request in IETF BCP 47 language tag format, e.g. de-DE, en-US, etc.
     string language_code = 2;
 
     message IntentContextOutSearchResult {
@@ -1806,7 +1796,8 @@ message FullTextSearchResponseIntentContextOut {
 
     float time = 6;
 
-    // The next_page_token is used to retrieve the next page of a returned result, e.g. next_page_token is current_index-2
+    // The next_page_token is used to retrieve the next page of a returned result,
+    // e.g. next_page_token is current_index-2
     string next_page_token = 7;
 }
 
@@ -1817,7 +1808,7 @@ message FullTextSearchResponseIntentUsersays {
     // Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre>
     string parent = 1;
 
-    // Language code specifies the language of the request, e.g. cz, de, en, es, fi, fr, it, nl, pl, pt, tr, ru
+    // Language code specifies the language of the request in IETF BCP 47 language tag format, e.g. de-DE, en-US, etc.
     string language_code = 2;
 
     message IntentUsersaysSearchResult {
@@ -1862,7 +1853,8 @@ message FullTextSearchResponseIntentUsersays {
 
     float time = 6;
 
-    // The next_page_token is used to retrieve the next page of a returned result, e.g. next_page_token is current_index-2
+    // The next_page_token is used to retrieve the next page of a returned result,
+    // e.g. next_page_token is current_index-2
     string next_page_token = 7;
 }
 
@@ -1873,7 +1865,7 @@ message FullTextSearchResponseIntentTags {
     // Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre>
     string parent = 1;
 
-    // Language code specifies the language of the request, e.g. cz, de, en, es, fi, fr, it, nl, pl, pt, tr, ru
+    // Language code specifies the language of the request in IETF BCP 47 language tag format, e.g. de-DE, en-US, etc.
     string language_code = 2;
 
     message IntentTagsSearchResult {
@@ -1912,7 +1904,8 @@ message FullTextSearchResponseIntentTags {
 
     float time = 6;
 
-    // The next_page_token is used to retrieve the next page of a returned result, e.g. next_page_token is current_index-2
+    // The next_page_token is used to retrieve the next page of a returned result,
+    // e.g. next_page_token is current_index-2
     string next_page_token = 7;
 }
 
@@ -1923,7 +1916,7 @@ message FullTextSearchResponseIntentResponse {
     // Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre>
     string parent = 1;
 
-    // Language code specifies the language of the request, e.g. cz, de, en, es, fi, fr, it, nl, pl, pt, tr, ru
+    // Language code specifies the language of the request in IETF BCP 47 language tag format, e.g. de-DE, en-US, etc.
     string language_code = 2;
 
     message IntentResponseSearchResult {
@@ -1997,7 +1990,7 @@ message FullTextSearchResponseIntentParameters {
     // Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre>
     string parent = 1;
 
-    // Language code specifies the language of the request, e.g. cz, de, en, es, fi, fr, it, nl, pl, pt, tr, ru
+    // Language code specifies the language of the request in IETF BCP 47 language tag format, e.g. de-DE, en-US, etc.
     string language_code = 2;
 
     message IntentParametersSearchResult {
@@ -2036,7 +2029,8 @@ message FullTextSearchResponseIntentParameters {
 
     float time = 6;
 
-    // The next_page_token is used to retrieve the next page of a returned result, e.g. next_page_token is current_index-2
+    // The next_page_token is used to retrieve the next page of a returned result,
+    // e.g. next_page_token is current_index-2
     string next_page_token = 7;
 }
 
