@@ -12857,7 +12857,7 @@ Retrieves a list of custom phonemizers based on specific requirements. |
 <a name="ondewo.vtsi.AllServicesStatuses"></a>
 
 ### AllServicesStatuses
-status of ondewo-sip instance
+Status of ondewo-sip instance
 
 
 | Field | Type | Label | Description |
@@ -12923,7 +12923,7 @@ Configuration of the Minio Audio Object Store
 <a name="ondewo.vtsi.BaseServiceConfig"></a>
 
 ### BaseServiceConfig
-base configuration of services (ondewo-nlu, text-to-speech, speech-to-text, asterisk)
+Base configuration of services (ondewo-nlu, text-to-speech, speech-to-text, asterisk)
 
 
 | Field | Type | Label | Description |
@@ -12972,7 +12972,7 @@ Call
 <a name="ondewo.vtsi.CallFilter"></a>
 
 ### CallFilter
-
+Definition of a CallFilter, representing filters for querying calls.
 
 
 | Field | Type | Label | Description |
@@ -12991,7 +12991,7 @@ Call
 | end_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) | optional | Optional: End time of the log. |
 | duration_in_s_min | [float](#float) | optional | Optional: Match only sessions for which the duration in seconds is larger or equal. |
 | duration_in_s_max | [float](#float) | optional | Optional: Match only calls for which the duration in seconds is smaller or equal. |
-| platforms | [ondewo.nlu.Intent.Message.Platform](#ondewo.nlu.Intent.Message.Platform) | repeated | Optional: Platform responses sent to the user. Default is text: <code>Platform.PLATFORM_UNSPECIFIED</code>. |
+| platforms | [ondewo.nlu.Intent.Message.Platform](#ondewo.nlu.Intent.Message.Platform) | repeated | Optional: Platform responses sent to the user. Default is text: <code>Platform.PLATFORM_UNSPECIFIED</code> |
 
 
 
@@ -13064,7 +13064,7 @@ CSI configuration
 | t2s_vtsi_callbacks | [T2sVtsiCallbacks](#ondewo.vtsi.T2sVtsiCallbacks) |  | Callback for the Text-2-Speech platform |
 | audio_object_store_config | [AudioObjectStorageConfig](#ondewo.vtsi.AudioObjectStorageConfig) |  | Configuration of the Minio Audio Object Store |
 | message_broker_config | [MessageBrokerConfig](#ondewo.vtsi.MessageBrokerConfig) |  | Configuration of the RabbitMQ Message Broker |
-| activate_control_messages | [bool](#bool) |  | Setting to activate if it is possible to send control messages a.) via RabbitMQ to remote control the system b.) via embeddings in NLU text responses |
+| activate_control_messages | [bool](#bool) |  | Setting to activate if it is possible to send control messages <ul> <li>via RabbitMQ to remote control the system</li> <li>via embeddings in NLU text responses</li> </ul> |
 
 
 
@@ -13198,7 +13198,7 @@ Represents a request to delete multiple listeners.
 <a name="ondewo.vtsi.GetCallRequest"></a>
 
 ### GetCallRequest
-request to get a call instance's call logs
+Request to get a call instance&apos;s call logs
 
 
 | Field | Type | Label | Description |
@@ -13254,7 +13254,7 @@ Represents a request to list callers.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| vtsi_project_name | [string](#string) |  | VTSI project name for which to perform the call. The format is: "projects/<project_uuid>/project". |
+| vtsi_project_name | [string](#string) |  | VTSI project name for which to perform the call. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | page_token | [string](#string) | optional | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
 | call_view | [CallView](#ondewo.vtsi.CallView) | optional | you can specify the view to be shallow or full |
 
@@ -13320,7 +13320,7 @@ Represents a request to list listeners.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| vtsi_project_name | [string](#string) |  | VTSI project name for which to perform the call. The format is: "projects/<project_uuid>/project". |
+| vtsi_project_name | [string](#string) |  | VTSI project name for which to perform the call. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | page_token | [string](#string) | optional | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
 | call_view | [CallView](#ondewo.vtsi.CallView) | optional | you can specify the view to be shallow or full |
 
@@ -13353,7 +13353,7 @@ Represents the response for listing listeners.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | VTSI project name with which to perform the call of the form <code>projects/<project_uuid>/listeners/<listener_uuid></code> |
+| name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> |
 | call_name | [string](#string) |  | The call name that was assigned to the call <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
 | sip_base_config | [SipBaseConfig](#ondewo.vtsi.SipBaseConfig) |  | SIP service configuration |
 | common_services_config | [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig) |  | Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI |
@@ -13425,7 +13425,7 @@ NLU Configuration
 | nlu_base_config | [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig) |  | Base config Host, Port, and [Optional] GRPC cert |
 | credentials | [Credentials](#ondewo.vtsi.Credentials) |  | Credentials with classical username and password |
 | auth_token | [string](#string) |  | Authentication token |
-| agent_name | [string](#string) |  | the resource name of the agent. Format: `projects/<uuid>/agent` |
+| agent_name | [string](#string) |  | The resource name of the agent. Format: <pre><code>projects/&lt;uuid&gt;/agent</code></pre> |
 | language_code | [string](#string) |  | language code in a two letter iso code, e.g. de, en, etc. |
 | initial_intent | [string](#string) |  | name of intent to trigger at the start of a call |
 | contexts | [ondewo.nlu.Context](#ondewo.nlu.Context) | repeated | ondewo-nlu list of contexts |
@@ -13510,7 +13510,7 @@ ScheduledCaller message - a Caller with a schedule when to start calling
 <a name="ondewo.vtsi.ServiceStatus"></a>
 
 ### ServiceStatus
-status of service
+Status of service
 
 
 | Field | Type | Label | Description |
@@ -13526,7 +13526,7 @@ status of service
 <a name="ondewo.vtsi.SipBaseConfig"></a>
 
 ### SipBaseConfig
-The base config is for both the listener and caller .. If you only provide it you will get a listener
+The base config is for both the listener and caller. If you only provide it you will get a listener
 You will need to provide <code>SipCallerConfig</code> for the caller
 
 
@@ -13575,7 +13575,7 @@ Configuration of the SIP caller
 <a name="ondewo.vtsi.StartCallerRequest"></a>
 
 ### StartCallerRequest
-request for starting a caller
+Request for starting a caller
 
 
 | Field | Type | Label | Description |
@@ -13642,7 +13642,7 @@ Response to the start caller request
 <a name="ondewo.vtsi.StartListenerRequest"></a>
 
 ### StartListenerRequest
-request for starting a listener
+Request for starting a listener
 
 
 | Field | Type | Label | Description |
@@ -13709,7 +13709,7 @@ Response to start multiple listeners
 <a name="ondewo.vtsi.StartScheduledCallerRequest"></a>
 
 ### StartScheduledCallerRequest
-request for starting a scheduled call
+Request for starting a scheduled call
 
 
 | Field | Type | Label | Description |
@@ -14125,35 +14125,35 @@ Call view options
 <a name="ondewo.vtsi.Calls"></a>
 
 ### Calls
-ONDEWO VTSI API
+<p>ONDEWO VTSI API</p>
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| StartCaller | [StartCallerRequest](#ondewo.vtsi.StartCallerRequest) | [StartCallerResponse](#ondewo.vtsi.StartCallerResponse) | start single caller instance for a specific nlu-project. |
-| StartCallers | [StartCallersRequest](#ondewo.vtsi.StartCallersRequest) | [StartCallersResponse](#ondewo.vtsi.StartCallersResponse) | start multiple ondewo-sip callers instances for a specific nlu-project. |
-| ListCallers | [ListCallersRequest](#ondewo.vtsi.ListCallersRequest) | [ListCallersResponse](#ondewo.vtsi.ListCallersResponse) | lists all available callers |
-| GetCaller | [GetCallerRequest](#ondewo.vtsi.GetCallerRequest) | [Caller](#ondewo.vtsi.Caller) | gets a caller |
-| DeleteCaller | [DeleteCallerRequest](#ondewo.vtsi.DeleteCallerRequest) | [DeleteCallerResponse](#ondewo.vtsi.DeleteCallerResponse) | deletes a caller |
-| DeleteCallers | [DeleteCallersRequest](#ondewo.vtsi.DeleteCallersRequest) | [DeleteCallersResponse](#ondewo.vtsi.DeleteCallersResponse) | deletes multiple callers |
-| StopCaller | [StopCallerRequest](#ondewo.vtsi.StopCallerRequest) | [StopCallerResponse](#ondewo.vtsi.StopCallerResponse) | stops a caller |
-| StopCallers | [StopCallersRequest](#ondewo.vtsi.StopCallersRequest) | [StopCallersResponse](#ondewo.vtsi.StopCallersResponse) | stops multiple callers |
-| StartListener | [StartListenerRequest](#ondewo.vtsi.StartListenerRequest) | [StartListenerResponse](#ondewo.vtsi.StartListenerResponse) | start single listener instance for a specific nlu-project. |
-| StartListeners | [StartListenersRequest](#ondewo.vtsi.StartListenersRequest) | [StartListenersResponse](#ondewo.vtsi.StartListenersResponse) | start multiple ondewo-sip listeners instances for a specific nlu-project. |
-| StopListener | [StopListenerRequest](#ondewo.vtsi.StopListenerRequest) | [StopListenerResponse](#ondewo.vtsi.StopListenerResponse) | stop a ondewo-sip listeners instances for a specific nlu-project. |
-| StopListeners | [StopListenersRequest](#ondewo.vtsi.StopListenersRequest) | [StopListenersResponse](#ondewo.vtsi.StopListenersResponse) | stop multiple ondewo-sip listeners instances for a specific nlu-project. |
-| ListListeners | [ListListenersRequest](#ondewo.vtsi.ListListenersRequest) | [ListListenersResponse](#ondewo.vtsi.ListListenersResponse) | lists all available listeners |
-| GetListener | [GetListenerRequest](#ondewo.vtsi.GetListenerRequest) | [Listener](#ondewo.vtsi.Listener) | gets a listener |
-| DeleteListener | [DeleteListenerRequest](#ondewo.vtsi.DeleteListenerRequest) | [DeleteListenerResponse](#ondewo.vtsi.DeleteListenerResponse) | deletes a listener |
-| DeleteListeners | [DeleteListenersRequest](#ondewo.vtsi.DeleteListenersRequest) | [DeleteListenersResponse](#ondewo.vtsi.DeleteListenersResponse) | deletes multiple listeners |
-| StartScheduledCaller | [StartScheduledCallerRequest](#ondewo.vtsi.StartScheduledCallerRequest) | [StartScheduledCallerResponse](#ondewo.vtsi.StartScheduledCallerResponse) | start multiple ondewo-sip callers instances with schedules |
-| StartScheduledCallers | [StartScheduledCallersRequest](#ondewo.vtsi.StartScheduledCallersRequest) | [StartScheduledCallersResponse](#ondewo.vtsi.StartScheduledCallersResponse) | start multiple ondewo-sip callers instances with schedules |
-| StopCall | [StopCallRequest](#ondewo.vtsi.StopCallRequest) | [StopCallResponse](#ondewo.vtsi.StopCallResponse) | stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project. |
-| StopCalls | [StopCallsRequest](#ondewo.vtsi.StopCallsRequest) | [StopCallsResponse](#ondewo.vtsi.StopCallsResponse) | stop/kill a list of ondewo-sip listener or caller instances for a specific vtsi-project. "stops both Listener and Caller calls" |
-| StopAllCalls | [StopAllCallsRequest](#ondewo.vtsi.StopAllCallsRequest) | [StopCallsResponse](#ondewo.vtsi.StopCallsResponse) | stop/kill all ondewo-sip listener or caller instance for a specific nlu-project. "stops all Listener and Caller calls" |
-| TransferCall | [TransferCallRequest](#ondewo.vtsi.TransferCallRequest) | [TransferCallResponse](#ondewo.vtsi.TransferCallResponse) | Transfer a call from a listener to another |
-| TransferCalls | [TransferCallsRequest](#ondewo.vtsi.TransferCallsRequest) | [TransferCallsResponse](#ondewo.vtsi.TransferCallsResponse) | Transfer a call from a listener to another |
-| GetCall | [GetCallRequest](#ondewo.vtsi.GetCallRequest) | [Call](#ondewo.vtsi.Call) | get call log for single call instance |
-| ListCalls | [ListCallsRequest](#ondewo.vtsi.ListCallsRequest) | [ListCallsResponse](#ondewo.vtsi.ListCallsResponse) | get call log for all call instances |
+| StartCaller | [StartCallerRequest](#ondewo.vtsi.StartCallerRequest) | [StartCallerResponse](#ondewo.vtsi.StartCallerResponse) | <p>Start single caller instance for a specific nlu-project.</p> |
+| StartCallers | [StartCallersRequest](#ondewo.vtsi.StartCallersRequest) | [StartCallersResponse](#ondewo.vtsi.StartCallersResponse) | <p>Start multiple ondewo-sip callers instances for a specific nlu-project.</p> |
+| ListCallers | [ListCallersRequest](#ondewo.vtsi.ListCallersRequest) | [ListCallersResponse](#ondewo.vtsi.ListCallersResponse) | <p>Lists all available callers</p> |
+| GetCaller | [GetCallerRequest](#ondewo.vtsi.GetCallerRequest) | [Caller](#ondewo.vtsi.Caller) | <p>Gets a caller</p> |
+| DeleteCaller | [DeleteCallerRequest](#ondewo.vtsi.DeleteCallerRequest) | [DeleteCallerResponse](#ondewo.vtsi.DeleteCallerResponse) | <p>Deletes a caller</p> |
+| DeleteCallers | [DeleteCallersRequest](#ondewo.vtsi.DeleteCallersRequest) | [DeleteCallersResponse](#ondewo.vtsi.DeleteCallersResponse) | <p>Deletes multiple callers</p> |
+| StopCaller | [StopCallerRequest](#ondewo.vtsi.StopCallerRequest) | [StopCallerResponse](#ondewo.vtsi.StopCallerResponse) | <p>Stops a caller</p> |
+| StopCallers | [StopCallersRequest](#ondewo.vtsi.StopCallersRequest) | [StopCallersResponse](#ondewo.vtsi.StopCallersResponse) | <p>Stops multiple callers</p> |
+| StartListener | [StartListenerRequest](#ondewo.vtsi.StartListenerRequest) | [StartListenerResponse](#ondewo.vtsi.StartListenerResponse) | <p>Start single listener instance for a specific nlu-project.</p> |
+| StartListeners | [StartListenersRequest](#ondewo.vtsi.StartListenersRequest) | [StartListenersResponse](#ondewo.vtsi.StartListenersResponse) | <p>Start multiple ondewo-sip listeners instances for a specific nlu-project.</p> |
+| StopListener | [StopListenerRequest](#ondewo.vtsi.StopListenerRequest) | [StopListenerResponse](#ondewo.vtsi.StopListenerResponse) | <p>Stop a ondewo-sip listeners instances for a specific nlu-project.</p> |
+| StopListeners | [StopListenersRequest](#ondewo.vtsi.StopListenersRequest) | [StopListenersResponse](#ondewo.vtsi.StopListenersResponse) | <p>Stop multiple ondewo-sip listeners instances for a specific nlu-project.</p> |
+| ListListeners | [ListListenersRequest](#ondewo.vtsi.ListListenersRequest) | [ListListenersResponse](#ondewo.vtsi.ListListenersResponse) | <p>Lists all available listeners</p> |
+| GetListener | [GetListenerRequest](#ondewo.vtsi.GetListenerRequest) | [Listener](#ondewo.vtsi.Listener) | <p>Gets a listener</p> |
+| DeleteListener | [DeleteListenerRequest](#ondewo.vtsi.DeleteListenerRequest) | [DeleteListenerResponse](#ondewo.vtsi.DeleteListenerResponse) | <p>Deletes a listener</p> |
+| DeleteListeners | [DeleteListenersRequest](#ondewo.vtsi.DeleteListenersRequest) | [DeleteListenersResponse](#ondewo.vtsi.DeleteListenersResponse) | <p>Deletes multiple listeners</p> |
+| StartScheduledCaller | [StartScheduledCallerRequest](#ondewo.vtsi.StartScheduledCallerRequest) | [StartScheduledCallerResponse](#ondewo.vtsi.StartScheduledCallerResponse) | <p>Start multiple ondewo-sip callers instances with schedules</p> |
+| StartScheduledCallers | [StartScheduledCallersRequest](#ondewo.vtsi.StartScheduledCallersRequest) | [StartScheduledCallersResponse](#ondewo.vtsi.StartScheduledCallersResponse) | <p>Start multiple ondewo-sip callers instances with schedules</p> |
+| StopCall | [StopCallRequest](#ondewo.vtsi.StopCallRequest) | [StopCallResponse](#ondewo.vtsi.StopCallResponse) | <p>Stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.</p> |
+| StopCalls | [StopCallsRequest](#ondewo.vtsi.StopCallsRequest) | [StopCallsResponse](#ondewo.vtsi.StopCallsResponse) | <p>Stop/kill a list of ondewo-sip listener or caller instances for a specific vtsi-project.</p> <p>Stops both Listener and Caller calls</p> |
+| StopAllCalls | [StopAllCallsRequest](#ondewo.vtsi.StopAllCallsRequest) | [StopCallsResponse](#ondewo.vtsi.StopCallsResponse) | <p>Stop/kill all ondewo-sip listener or caller instance for a specific nlu-project.</p> <p>Stops all Listener and Caller calls</p> |
+| TransferCall | [TransferCallRequest](#ondewo.vtsi.TransferCallRequest) | [TransferCallResponse](#ondewo.vtsi.TransferCallResponse) | <p>Transfer a call from a listener to another</p> |
+| TransferCalls | [TransferCallsRequest](#ondewo.vtsi.TransferCallsRequest) | [TransferCallsResponse](#ondewo.vtsi.TransferCallsResponse) | <p>Transfer a call from a listener to another</p> |
+| GetCall | [GetCallRequest](#ondewo.vtsi.GetCallRequest) | [Call](#ondewo.vtsi.Call) | <p>Get call log for single call instance</p> |
+| ListCalls | [ListCallsRequest](#ondewo.vtsi.ListCallsRequest) | [ListCallsResponse](#ondewo.vtsi.ListCallsResponse) | <p>Get call log for all call instances</p> |
 
  <!-- end services -->
 
@@ -14230,7 +14230,7 @@ Request for creating a VTSI project
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| vtsi_project | [VtsiProject](#ondewo.vtsi.VtsiProject) |  | VTSI project Recommended is to leave "name" empty. The project name here is optional. If no name is given a new parent name is created. The parent has the format: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>. |
+| vtsi_project | [VtsiProject](#ondewo.vtsi.VtsiProject) |  | <p>VTSI project</p> <p>Recommended is to leave &quot;name&quot; empty. The project name here is optional.</p> <p>If no name is given a new parent name is created. The parent has the format:</p> <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | error_message | [string](#string) |  | error message if there are any. |
 
 
@@ -14345,7 +14345,7 @@ Request to get the list of agents
 | vtsi_project_view | [VtsiProjectView](#ondewo.vtsi.VtsiProjectView) |  | Optional. Specify the view of the returned VtsiProject (full view by default) |
 | page_token | [string](#string) | optional | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
 | vtsi_project_sorting | [VtsiProjectSorting](#ondewo.vtsi.VtsiProjectSorting) | optional | Optional. Field to define the sorting of the list of VTSI projects in the response. If not specified, the default behavior is to have no sorting. |
-| nlu_agent_names | [string](#string) | repeated | Optional. Filter based on associated NLU agents Format: `projects/<Project ID>/agent`. |
+| nlu_agent_names | [string](#string) | repeated | Optional. Filter based on associated NLU agents. Format: <pre><code>projects/&lt;Project ID&gt;/agent</code></pre> |
 
 
 
@@ -14360,7 +14360,7 @@ This is a protobuf message definition for the response of getting a list of VTSI
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| vtsi_projects | [VtsiProject](#ondewo.vtsi.VtsiProject) | repeated | The list of VTSI projects returned in the response. Use the 'repeated' keyword to indicate that this field can contain multiple instances of VtsiProject. |
+| vtsi_projects | [VtsiProject](#ondewo.vtsi.VtsiProject) | repeated | The list of VTSI projects returned in the response. Use the &apos;repeated&apos; keyword to indicate that this field can contain multiple instances of VtsiProject. |
 | next_page_token | [string](#string) |  | Token to retrieve the next page of results. This field is a string that holds a token for fetching the next page of results. If there are no more results in the list, this field will be empty. |
 
 
@@ -14451,7 +14451,7 @@ The VTSI project with its configuration setting
 | active_callers | [int32](#int32) |  | The number of active callers in this project. |
 | active_listeners | [int32](#int32) |  | The number of active listeners in this project. |
 | asterisk_port | [int32](#int32) |  | The port of the asterisk server |
-| nlu_agent_names | [string](#string) | repeated | associated NLU agents Format: `projects/<Project ID>/agent`. |
+| nlu_agent_names | [string](#string) | repeated | Associated NLU agents. Format: <pre><code>projects/&lt;Project ID&gt;/agent</code></pre> |
 | deployed_callers | [int32](#int32) |  | The number of deployed callers in this project. |
 | deployed_listeners | [int32](#int32) |  | The number of deployed listeners in this project. |
 
@@ -14527,10 +14527,12 @@ Status of a VtsiProject.
 
 ### VtsiProjectView
 Structure of VTSI_PROJECT view
-- CreateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW
-- UpdateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW
-- GetVTSI_PROJECT: VTSI_PROJECT_VIEW_FULL
-- ListVTSI_PROJECTs: VTSI_PROJECT_VIEW_SHALLOW
+<ul>
+  <li>CreateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW</li>
+  <li>UpdateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW</li>
+  <li>GetVTSI_PROJECT: VTSI_PROJECT_VIEW_FULL</li>
+  <li>ListVTSI_PROJECTs: VTSI_PROJECT_VIEW_SHALLOW</li>
+</ul>
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -14548,17 +14550,17 @@ Structure of VTSI_PROJECT view
 <a name="ondewo.vtsi.Projects"></a>
 
 ### Projects
-ONDEWO VTSI API
+<p>ONDEWO VTSI API</p>
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| CreateVtsiProject | [CreateVtsiProjectRequest](#ondewo.vtsi.CreateVtsiProjectRequest) | [CreateVtsiProjectResponse](#ondewo.vtsi.CreateVtsiProjectResponse) | Create a VTSI project with configs |
-| GetVtsiProject | [GetVtsiProjectRequest](#ondewo.vtsi.GetVtsiProjectRequest) | [VtsiProject](#ondewo.vtsi.VtsiProject) | Get a VTSI project with configs |
-| UpdateVtsiProject | [UpdateVtsiProjectRequest](#ondewo.vtsi.UpdateVtsiProjectRequest) | [UpdateVtsiProjectResponse](#ondewo.vtsi.UpdateVtsiProjectResponse) | Update a VTSI project with configs |
-| DeleteVtsiProject | [DeleteVtsiProjectRequest](#ondewo.vtsi.DeleteVtsiProjectRequest) | [DeleteVtsiProjectResponse](#ondewo.vtsi.DeleteVtsiProjectResponse) | Delete a VTSI project with configs |
-| DeployVtsiProject | [DeployVtsiProjectRequest](#ondewo.vtsi.DeployVtsiProjectRequest) | [DeployVtsiProjectResponse](#ondewo.vtsi.DeployVtsiProjectResponse) | Deploy a VTSI project |
-| UndeployVtsiProject | [UndeployVtsiProjectRequest](#ondewo.vtsi.UndeployVtsiProjectRequest) | [UndeployVtsiProjectResponse](#ondewo.vtsi.UndeployVtsiProjectResponse) | Undeploy a VTSI project |
-| ListVtsiProjects | [ListVtsiProjectsRequest](#ondewo.vtsi.ListVtsiProjectsRequest) | [ListVtsiProjectsResponse](#ondewo.vtsi.ListVtsiProjectsResponse) | Get a VTSI project with configs |
+| CreateVtsiProject | [CreateVtsiProjectRequest](#ondewo.vtsi.CreateVtsiProjectRequest) | [CreateVtsiProjectResponse](#ondewo.vtsi.CreateVtsiProjectResponse) | <p>Create a VTSI project with configs</p> |
+| GetVtsiProject | [GetVtsiProjectRequest](#ondewo.vtsi.GetVtsiProjectRequest) | [VtsiProject](#ondewo.vtsi.VtsiProject) | <p>Get a VTSI project with configs</p> |
+| UpdateVtsiProject | [UpdateVtsiProjectRequest](#ondewo.vtsi.UpdateVtsiProjectRequest) | [UpdateVtsiProjectResponse](#ondewo.vtsi.UpdateVtsiProjectResponse) | <p>Update a VTSI project with configs</p> |
+| DeleteVtsiProject | [DeleteVtsiProjectRequest](#ondewo.vtsi.DeleteVtsiProjectRequest) | [DeleteVtsiProjectResponse](#ondewo.vtsi.DeleteVtsiProjectResponse) | <p>Delete a VTSI project with configs</p> |
+| DeployVtsiProject | [DeployVtsiProjectRequest](#ondewo.vtsi.DeployVtsiProjectRequest) | [DeployVtsiProjectResponse](#ondewo.vtsi.DeployVtsiProjectResponse) | <p>Deploy a VTSI project</p> |
+| UndeployVtsiProject | [UndeployVtsiProjectRequest](#ondewo.vtsi.UndeployVtsiProjectRequest) | [UndeployVtsiProjectResponse](#ondewo.vtsi.UndeployVtsiProjectResponse) | <p>Undeploy a VTSI project</p> |
+| ListVtsiProjects | [ListVtsiProjectsRequest](#ondewo.vtsi.ListVtsiProjectsRequest) | [ListVtsiProjectsResponse](#ondewo.vtsi.ListVtsiProjectsResponse) | <p>Get a VTSI project with configs</p> |
 
  <!-- end services -->
 
