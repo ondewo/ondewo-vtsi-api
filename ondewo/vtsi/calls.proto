@@ -296,11 +296,11 @@ message MessageBrokerConfig{
     // Should the broker be activated or not
     bool activate_message_broker = 1;
 
-    // Configuration of the RabbitMQ Message Broker
+    // Configuration of the Broker service activation
     MessageBrokerServicesActivationConfig message_broker_services_activation_config = 2;
 
-    // Configuration of the RabbitMQ Message Broker
     oneof message_broker_config{
+        // Configuration of the RabbitMQ Message Broker
         RabbitMqConfig rabbit_mq_config = 3;
     }
 }
@@ -330,7 +330,7 @@ message RabbitMqConfig{
     // port where the rabbit mq server runs
     int32 port = 2;
 
-    // port where the rabbit mq server runs
+    // secondary port where the rabbit mq server runs
     int32 port_2 = 3;
 
     // user of server
@@ -374,6 +374,7 @@ message T2sVtsiCallbacks{
 
 }
 
+// Listener represents a listener instance that waits for incoming calls
 message Listener {
 
     // VTSI project name with which to perform the call of the form
@@ -392,6 +393,7 @@ message Listener {
 
 }
 
+// Caller represents a caller instance that initiates outbound calls
 message Caller {
 
     // Caller name with which to perform the call of the form
@@ -430,6 +432,7 @@ message StartListenerResponse {
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
+    // The listener that was started
     Listener listener = 2;
 
     // error message if you have any so if it's unhealthy
@@ -481,6 +484,7 @@ message StartCallerResponse {
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
+    // The caller that was started
     Caller caller = 2;
 
     // error message if you have any so if it's unhealthy
@@ -621,6 +625,7 @@ message StopListenersRequest {
 
 }
 
+// Response to stop multiple listeners
 message StopListenersResponse {
 
     // responses to stop listeners
@@ -658,6 +663,7 @@ message StopCallersRequest {
 
 }
 
+// Response to stop multiple callers
 message StopCallersResponse {
 
     // responses to stop callers
@@ -695,6 +701,7 @@ message DeleteListenersRequest {
 
 }
 
+// Response to delete multiple listeners
 message DeleteListenersResponse {
 
     // responses to delete listeners
@@ -733,6 +740,7 @@ message DeleteCallersRequest {
 
 }
 
+// Response to delete multiple callers
 message DeleteCallersResponse {
 
     // responses to delete callers
@@ -786,6 +794,7 @@ message StartScheduledCallerResponse {
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
+    // The scheduled caller that was created
     ScheduledCaller scheduled_caller = 2;
 
     // error message if you have any so if it's unhealthy
@@ -924,6 +933,7 @@ message TransferCallsResponse {
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
+    // The responses for each transfer call request
     repeated TransferCallResponse transfer_call_responses = 2;
 
     // overall error message if you have any so if it's unhealthy
@@ -1122,7 +1132,7 @@ message ListCallsRequest{
 // Response to list all VoipInfos
 message ListCallsResponse{
 
-    // VoipInfos
+    // The list of calls returned in the response
     repeated Call calls = 1;
 
     // Token to retrieve the next page of results.

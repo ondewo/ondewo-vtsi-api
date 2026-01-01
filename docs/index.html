@@ -36852,7 +36852,7 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
         
       
         <h3 id="ondewo.vtsi.Caller" class="title-badge message">Caller</h3>
-        <p></p>
+        <p>Caller represents a caller instance that initiates outbound calls</p>
 
         
           <table class="field-table">
@@ -37117,7 +37117,7 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
         
       
         <h3 id="ondewo.vtsi.DeleteCallersResponse" class="title-badge message">DeleteCallersResponse</h3>
-        <p></p>
+        <p>Response to delete multiple callers</p>
 
         
           <table class="field-table">
@@ -37227,7 +37227,7 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
         
       
         <h3 id="ondewo.vtsi.DeleteListenersResponse" class="title-badge message">DeleteListenersResponse</h3>
-        <p></p>
+        <p>Response to delete multiple listeners</p>
 
         
           <table class="field-table">
@@ -37497,7 +37497,7 @@ Example: "current_index-1--page_size-20" </p></td>
                   <td>calls</td>
                   <td><a href="#ondewo.vtsi.Call">Call</a></td>
                   <td>repeated</td>
-                  <td><p>VoipInfos </p></td>
+                  <td><p>The list of calls returned in the response </p></td>
                 </tr>
               
                 <tr>
@@ -37590,7 +37590,7 @@ If there are no more results in the list, this field will be empty. </p></td>
         
       
         <h3 id="ondewo.vtsi.Listener" class="title-badge message">Listener</h3>
-        <p></p>
+        <p>Listener represents a listener instance that waits for incoming calls</p>
 
         
           <table class="field-table">
@@ -37657,14 +37657,14 @@ If there are no more results in the list, this field will be empty. </p></td>
                   <td>message_broker_services_activation_config</td>
                   <td><a href="#ondewo.vtsi.MessageBrokerServicesActivationConfig">MessageBrokerServicesActivationConfig</a></td>
                   <td></td>
-                  <td><p>Configuration of the RabbitMQ Message Broker </p></td>
+                  <td><p>Configuration of the Broker service activation </p></td>
                 </tr>
               
                 <tr>
                   <td>rabbit_mq_config</td>
                   <td><a href="#ondewo.vtsi.RabbitMqConfig">RabbitMqConfig</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Configuration of the RabbitMQ Message Broker </p></td>
                 </tr>
               
             </tbody>
@@ -37860,7 +37860,7 @@ Format: <pre><code>projects/&lt;uuid&gt;/agent</code></pre> </p></td>
                   <td>port_2</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p>port where the rabbit mq server runs </p></td>
+                  <td><p>secondary port where the rabbit mq server runs </p></td>
                 </tr>
               
                 <tr>
@@ -38185,7 +38185,7 @@ TODO to be refactored with a more complex scheduling object </p></td>
                   <td>caller</td>
                   <td><a href="#ondewo.vtsi.Caller">Caller</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The caller that was started </p></td>
                 </tr>
               
                 <tr>
@@ -38330,7 +38330,7 @@ TODO to be refactored with a more complex scheduling object </p></td>
                   <td>listener</td>
                   <td><a href="#ondewo.vtsi.Listener">Listener</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The listener that was started </p></td>
                 </tr>
               
                 <tr>
@@ -38476,7 +38476,7 @@ TODO to be refactored with a more complex scheduling object </p></td>
                   <td>scheduled_caller</td>
                   <td><a href="#ondewo.vtsi.ScheduledCaller">ScheduledCaller</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The scheduled caller that was created </p></td>
                 </tr>
               
                 <tr>
@@ -38732,7 +38732,7 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
         
       
         <h3 id="ondewo.vtsi.StopCallersResponse" class="title-badge message">StopCallersResponse</h3>
-        <p></p>
+        <p>Response to stop multiple callers</p>
 
         
           <table class="field-table">
@@ -38906,7 +38906,7 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
         
       
         <h3 id="ondewo.vtsi.StopListenersResponse" class="title-badge message">StopListenersResponse</h3>
-        <p></p>
+        <p>Response to stop multiple listeners</p>
 
         
           <table class="field-table">
@@ -39137,7 +39137,7 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
                   <td>transfer_call_responses</td>
                   <td><a href="#ondewo.vtsi.TransferCallResponse">TransferCallResponse</a></td>
                   <td>repeated</td>
-                  <td><p> </p></td>
+                  <td><p>The responses for each transfer call request </p></td>
                 </tr>
               
                 <tr>
@@ -39487,9 +39487,9 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
                   <td>vtsi_project</td>
                   <td><a href="#ondewo.vtsi.VtsiProject">VtsiProject</a></td>
                   <td></td>
-                  <td><p><p>VTSI project</p>
-<p>Recommended is to leave &quot;name&quot; empty. The project name here is optional.</p>
-<p>If no name is given a new parent name is created. The parent has the format:</p>
+                  <td><p>VTSI project
+Recommended is to leave &quot;name&quot; empty. The project name here is optional.
+If no name is given a new parent name is created. The parent has the format:
 <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
                 </tr>
               
@@ -40040,7 +40040,7 @@ Format: <pre><code>projects/&lt;Project ID&gt;/agent</code></pre> </p></td>
       <div id="ondewo/vtsi/projects.proto-enums" class="object-category">Enums</div>
       
         <h3 id="ondewo.vtsi.VtsiProjectSorting.VtsiProjectSortingField" class="title-badge enum">VtsiProjectSorting.VtsiProjectSortingField</h3>
-        <p>Enum to specify the sorting field for VTSI projects.</p>
+        <p>Enum to specify the sorting field for VTSI projects.</p><p>Enum defining the field by which VTSI projects can be sorted</p>
         <table class="enum-table">
           <thead>
             <tr><td>Name</td><td>Number</td><td>Description</td></tr>

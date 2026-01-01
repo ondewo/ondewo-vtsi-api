@@ -197,9 +197,9 @@ message AsteriskConfigs{
 // Request for creating a VTSI project
 message CreateVtsiProjectRequest{
 
-    // <p>VTSI project</p>
-    // <p>Recommended is to leave &quot;name&quot; empty. The project name here is optional.</p>
-    // <p>If no name is given a new parent name is created. The parent has the format:</p>
+    // VTSI project
+    // Recommended is to leave &quot;name&quot; empty. The project name here is optional.
+    // If no name is given a new parent name is created. The parent has the format:
     // <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     VtsiProject vtsi_project = 1;
 
@@ -263,6 +263,7 @@ message ListVtsiProjectsResponse {
 message VtsiProjectSorting {
 
     // Enum to specify the sorting field for VTSI projects.
+    // Enum defining the field by which VTSI projects can be sorted
     enum VtsiProjectSortingField {
 
         // No sorting
