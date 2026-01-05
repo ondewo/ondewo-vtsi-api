@@ -13019,8 +13019,7 @@ Caller represents a caller instance that initiates outbound calls
 <a name="ondewo.vtsi.CommonServicesConfig"></a>
 
 ### CommonServicesConfig
-Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI
-which are common for both listener and caller
+Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI which are common for both listener and caller
 
 
 | Field | Type | Label | Description |
