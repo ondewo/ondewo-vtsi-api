@@ -13001,7 +13001,7 @@ Definition of a CallFilter, representing filters for querying calls.
 <a name="ondewo.vtsi.Caller"></a>
 
 ### Caller
-
+Caller represents a caller instance that initiates outbound calls
 
 
 | Field | Type | Label | Description |
@@ -13019,8 +13019,7 @@ Definition of a CallFilter, representing filters for querying calls.
 <a name="ondewo.vtsi.CommonServicesConfig"></a>
 
 ### CommonServicesConfig
-Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI
-which are common for both listener and caller
+Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI which are common for both listener and caller
 
 
 | Field | Type | Label | Description |
@@ -13120,7 +13119,7 @@ Represents a request to delete multiple callers.
 <a name="ondewo.vtsi.DeleteCallersResponse"></a>
 
 ### DeleteCallersResponse
-
+Response to delete multiple callers
 
 
 | Field | Type | Label | Description |
@@ -13182,7 +13181,7 @@ Represents a request to delete multiple listeners.
 <a name="ondewo.vtsi.DeleteListenersResponse"></a>
 
 ### DeleteListenersResponse
-
+Response to delete multiple listeners
 
 
 | Field | Type | Label | Description |
@@ -13304,7 +13303,7 @@ Response to list all VoipInfos
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| calls | [Call](#ondewo.vtsi.Call) | repeated | VoipInfos |
+| calls | [Call](#ondewo.vtsi.Call) | repeated | The list of calls returned in the response |
 | next_page_token | [string](#string) |  | Token to retrieve the next page of results. This field is a string that holds a token for fetching the next page of results. If there are no more results in the list, this field will be empty. |
 
 
@@ -13348,7 +13347,7 @@ Represents the response for listing listeners.
 <a name="ondewo.vtsi.Listener"></a>
 
 ### Listener
-
+Listener represents a listener instance that waits for incoming calls
 
 
 | Field | Type | Label | Description |
@@ -13372,8 +13371,8 @@ Configuration of the RabbitMQ Message Broker
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | activate_message_broker | [bool](#bool) |  | Should the broker be activated or not |
-| message_broker_services_activation_config | [MessageBrokerServicesActivationConfig](#ondewo.vtsi.MessageBrokerServicesActivationConfig) |  | Configuration of the RabbitMQ Message Broker |
-| rabbit_mq_config | [RabbitMqConfig](#ondewo.vtsi.RabbitMqConfig) |  |  |
+| message_broker_services_activation_config | [MessageBrokerServicesActivationConfig](#ondewo.vtsi.MessageBrokerServicesActivationConfig) |  | Configuration of the Broker service activation |
+| rabbit_mq_config | [RabbitMqConfig](#ondewo.vtsi.RabbitMqConfig) |  | Configuration of the RabbitMQ Message Broker |
 
 
 
@@ -13447,7 +13446,7 @@ Configuration of the RabbitMQ Message Broker
 | ----- | ---- | ----- | ----------- |
 | host | [string](#string) |  | host where the rabbit mq server runs |
 | port | [int32](#int32) |  | port where the rabbit mq server runs |
-| port_2 | [int32](#int32) |  | port where the rabbit mq server runs |
+| port_2 | [int32](#int32) |  | secondary port where the rabbit mq server runs |
 | user | [string](#string) |  | user of server |
 | password | [string](#string) |  | password of server |
 
@@ -13598,7 +13597,7 @@ Response to start multiple listeners
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
-| caller | [Caller](#ondewo.vtsi.Caller) |  |  |
+| caller | [Caller](#ondewo.vtsi.Caller) |  | The caller that was started |
 | error_message | [string](#string) |  | error message if you have any so if it's unhealthy |
 
 
@@ -13665,7 +13664,7 @@ Response to start multiple listeners
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
-| listener | [Listener](#ondewo.vtsi.Listener) |  |  |
+| listener | [Listener](#ondewo.vtsi.Listener) |  | The listener that was started |
 | error_message | [string](#string) |  | error message if you have any so if it's unhealthy |
 
 
@@ -13732,7 +13731,7 @@ Response to start multiple listeners
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
-| scheduled_caller | [ScheduledCaller](#ondewo.vtsi.ScheduledCaller) |  |  |
+| scheduled_caller | [ScheduledCaller](#ondewo.vtsi.ScheduledCaller) |  | The scheduled caller that was created |
 | error_message | [string](#string) |  | error message if you have any so if it's unhealthy |
 
 
@@ -13869,7 +13868,7 @@ Represents a request to stop multiple callers.
 <a name="ondewo.vtsi.StopCallersResponse"></a>
 
 ### StopCallersResponse
-
+Response to stop multiple callers
 
 
 | Field | Type | Label | Description |
@@ -13963,7 +13962,7 @@ Represents a request to stop multiple listeners.
 <a name="ondewo.vtsi.StopListenersResponse"></a>
 
 ### StopListenersResponse
-
+Response to stop multiple listeners
 
 
 | Field | Type | Label | Description |
@@ -14068,7 +14067,7 @@ Response to transfer a call to a phone number or voip number
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
-| transfer_call_responses | [TransferCallResponse](#ondewo.vtsi.TransferCallResponse) | repeated |  |
+| transfer_call_responses | [TransferCallResponse](#ondewo.vtsi.TransferCallResponse) | repeated | The responses for each transfer call request |
 | error_message | [string](#string) |  | overall error message if you have any so if it's unhealthy |
 
 
@@ -14230,7 +14229,7 @@ Request for creating a VTSI project
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| vtsi_project | [VtsiProject](#ondewo.vtsi.VtsiProject) |  | <p>VTSI project</p> <p>Recommended is to leave &quot;name&quot; empty. The project name here is optional.</p> <p>If no name is given a new parent name is created. The parent has the format:</p> <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| vtsi_project | [VtsiProject](#ondewo.vtsi.VtsiProject) |  | VTSI project Recommended is to leave &quot;name&quot; empty. The project name here is optional. If no name is given a new parent name is created. The parent has the format: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | error_message | [string](#string) |  | error message if there are any. |
 
 
@@ -14482,6 +14481,7 @@ This protobuf message defines the sorting order for VTSI (Virtual Test System In
 
 ### VtsiProjectSorting.VtsiProjectSortingField
 Enum to specify the sorting field for VTSI projects.
+Enum defining the field by which VTSI projects can be sorted
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
