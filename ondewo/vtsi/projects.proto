@@ -18,32 +18,32 @@ package ondewo.vtsi;
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 
-// ONDEWO VTSI API
+// <p>ONDEWO VTSI API</p>
 service Projects {
 
     //////////////////////////////////////////////////////////////////////////////
     // Project endpoints
     //////////////////////////////////////////////////////////////////////////////
 
-    // Create a VTSI project with configs
+    // <p>Create a VTSI project with configs</p>
     rpc CreateVtsiProject (CreateVtsiProjectRequest) returns (CreateVtsiProjectResponse);
 
-    // Get a VTSI project with configs
+    // <p>Get a VTSI project with configs</p>
     rpc GetVtsiProject (GetVtsiProjectRequest) returns (VtsiProject);
 
-    // Update a VTSI project with configs
+    // <p>Update a VTSI project with configs</p>
     rpc UpdateVtsiProject (UpdateVtsiProjectRequest) returns (UpdateVtsiProjectResponse);
 
-    // Delete a VTSI project with configs
+    // <p>Delete a VTSI project with configs</p>
     rpc DeleteVtsiProject (DeleteVtsiProjectRequest) returns (DeleteVtsiProjectResponse);
 
-    // Deploy a VTSI project
+    // <p>Deploy a VTSI project</p>
     rpc DeployVtsiProject (DeployVtsiProjectRequest) returns (DeployVtsiProjectResponse);
 
-    // Undeploy a VTSI project
+    // <p>Undeploy a VTSI project</p>
     rpc UndeployVtsiProject (UndeployVtsiProjectRequest) returns (UndeployVtsiProjectResponse);
 
-    // Get a VTSI project with configs
+    // <p>Get a VTSI project with configs</p>
     rpc ListVtsiProjects (ListVtsiProjectsRequest) returns (ListVtsiProjectsResponse);
 
 }
@@ -53,7 +53,8 @@ service Projects {
 // The VTSI project with its configuration setting
 message VtsiProject{
 
-    // Required. The project name. Format: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // Required. The project name.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     // Only when a new VtsiProject is created the name can be undefined/empty
     string name = 1;
 
@@ -93,8 +94,8 @@ message VtsiProject{
     // The port of the asterisk server
     int32 asterisk_port = 13;
 
-    // associated NLU agents
-    // Format: `projects/<Project ID>/agent`.
+    // Associated NLU agents.
+    // Format: <pre><code>projects/&lt;Project ID&gt;/agent</code></pre>
     repeated string nlu_agent_names = 14;
 
     // The number of deployed callers in this project.
@@ -197,9 +198,9 @@ message AsteriskConfigs{
 message CreateVtsiProjectRequest{
 
     // VTSI project
-    // Recommended is to leave "name" empty. The project name here is optional.
+    // Recommended is to leave &quot;name&quot; empty. The project name here is optional.
     // If no name is given a new parent name is created. The parent has the format:
-    // <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>.
+    // <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     VtsiProject vtsi_project = 1;
 
     // error message if there are any.
@@ -240,8 +241,8 @@ message ListVtsiProjectsRequest {
     // If not specified, the default behavior is to have no sorting.
     optional VtsiProjectSorting vtsi_project_sorting = 3;
 
-    // Optional. Filter based on associated NLU agents
-    // Format: `projects/<Project ID>/agent`.
+    // Optional. Filter based on associated NLU agents.
+    // Format: <pre><code>projects/&lt;Project ID&gt;/agent</code></pre>
     repeated string nlu_agent_names = 4;
 }
 
@@ -249,7 +250,7 @@ message ListVtsiProjectsRequest {
 message ListVtsiProjectsResponse {
 
     // The list of VTSI projects returned in the response.
-    // Use the 'repeated' keyword to indicate that this field can contain multiple instances of VtsiProject.
+    // Use the &apos;repeated&apos; keyword to indicate that this field can contain multiple instances of VtsiProject.
     repeated VtsiProject vtsi_projects = 1;
 
     // Token to retrieve the next page of results.
@@ -262,6 +263,7 @@ message ListVtsiProjectsResponse {
 message VtsiProjectSorting {
 
     // Enum to specify the sorting field for VTSI projects.
+    // Enum defining the field by which VTSI projects can be sorted
     enum VtsiProjectSortingField {
 
         // No sorting
@@ -301,10 +303,12 @@ enum VtsiProjectSortingMode {
 }
 
 // Structure of VTSI_PROJECT view
-// - CreateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW
-// - UpdateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW
-// - GetVTSI_PROJECT: VTSI_PROJECT_VIEW_FULL
-// - ListVTSI_PROJECTs: VTSI_PROJECT_VIEW_SHALLOW
+// <ul>
+//   <li>CreateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW</li>
+//   <li>UpdateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW</li>
+//   <li>GetVTSI_PROJECT: VTSI_PROJECT_VIEW_FULL</li>
+//   <li>ListVTSI_PROJECTs: VTSI_PROJECT_VIEW_SHALLOW</li>
+// </ul>
 enum VtsiProjectView {
 
     // Unspecified VTSI_PROJECT view: the view is defined by the call:
@@ -374,7 +378,7 @@ message DeployVtsiProjectResponse{
 
 }
 
-//  Request to undeploy a vtsi project
+// Request to undeploy a vtsi project
 message UndeployVtsiProjectRequest{
 
     // Project name of the VTSI project.

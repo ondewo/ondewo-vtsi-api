@@ -26,93 +26,93 @@ import "ondewo/t2s/text-to-speech.proto";
 import "ondewo/sip/sip.proto";
 
 
-// ONDEWO VTSI API
+// <p>ONDEWO VTSI API</p>
 service Calls {
 
     //////////////////////////////////////////////////////////////////////////////
     // Caller and Listener endpoints
     //////////////////////////////////////////////////////////////////////////////
 
-    // start single caller instance for a specific nlu-project.
+    // <p>Start single caller instance for a specific nlu-project.</p>
     rpc StartCaller (StartCallerRequest) returns (StartCallerResponse);
 
-    // start multiple ondewo-sip callers instances for a specific nlu-project.
+    // <p>Start multiple ondewo-sip callers instances for a specific nlu-project.</p>
     rpc StartCallers (StartCallersRequest) returns (StartCallersResponse);
 
-    // lists all available callers
+    // <p>Lists all available callers</p>
     rpc ListCallers (ListCallersRequest) returns (ListCallersResponse);
 
-    // gets a caller
+    // <p>Gets a caller</p>
     rpc GetCaller (GetCallerRequest) returns (Caller);
 
-    // deletes a caller
+    // <p>Deletes a caller</p>
     rpc DeleteCaller (DeleteCallerRequest) returns (DeleteCallerResponse);
 
-    // deletes multiple callers
+    // <p>Deletes multiple callers</p>
     rpc DeleteCallers (DeleteCallersRequest) returns (DeleteCallersResponse);
 
-    // stops a caller
+    // <p>Stops a caller</p>
     rpc StopCaller (StopCallerRequest) returns (StopCallerResponse);
 
-    // stops multiple callers
+    // <p>Stops multiple callers</p>
     rpc StopCallers (StopCallersRequest) returns (StopCallersResponse);
 
-    // start single listener instance for a specific nlu-project.
+    // <p>Start single listener instance for a specific nlu-project.</p>
     rpc StartListener (StartListenerRequest) returns (StartListenerResponse);
 
-    // start multiple ondewo-sip listeners instances for a specific nlu-project.
+    // <p>Start multiple ondewo-sip listeners instances for a specific nlu-project.</p>
     rpc StartListeners (StartListenersRequest) returns (StartListenersResponse);
 
-    // stop a ondewo-sip listeners instances for a specific nlu-project.
+    // <p>Stop a ondewo-sip listeners instances for a specific nlu-project.</p>
     rpc StopListener (StopListenerRequest) returns (StopListenerResponse);
 
-    // stop multiple ondewo-sip listeners instances for a specific nlu-project.
+    // <p>Stop multiple ondewo-sip listeners instances for a specific nlu-project.</p>
     rpc StopListeners (StopListenersRequest) returns (StopListenersResponse);
 
-    // lists all available listeners
+    // <p>Lists all available listeners</p>
     rpc ListListeners (ListListenersRequest) returns (ListListenersResponse);
 
-    // gets a listener
+    // <p>Gets a listener</p>
     rpc GetListener (GetListenerRequest) returns (Listener);
 
-    // deletes a listener
+    // <p>Deletes a listener</p>
     rpc DeleteListener (DeleteListenerRequest) returns (DeleteListenerResponse);
 
-    // deletes multiple listeners
+    // <p>Deletes multiple listeners</p>
     rpc DeleteListeners (DeleteListenersRequest) returns (DeleteListenersResponse);
 
-    // start multiple ondewo-sip callers instances with schedules
+    // <p>Start multiple ondewo-sip callers instances with schedules</p>
     rpc StartScheduledCaller (StartScheduledCallerRequest) returns (StartScheduledCallerResponse);
 
-    // start multiple ondewo-sip callers instances with schedules
+    // <p>Start multiple ondewo-sip callers instances with schedules</p>
     rpc StartScheduledCallers (StartScheduledCallersRequest) returns (StartScheduledCallersResponse);
 
-    // stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.
+    // <p>Stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.</p>
     rpc StopCall (StopCallRequest) returns (StopCallResponse);
 
-    // stop/kill a list of ondewo-sip listener or caller instances for a specific vtsi-project.
-    // "stops both Listener and Caller calls"
+    // <p>Stop/kill a list of ondewo-sip listener or caller instances for a specific vtsi-project.</p>
+    // <p>Stops both Listener and Caller calls</p>
     rpc StopCalls (StopCallsRequest) returns (StopCallsResponse);
 
-    // stop/kill all ondewo-sip listener or caller instance for a specific nlu-project.
-    // "stops all Listener and Caller calls"
+    // <p>Stop/kill all ondewo-sip listener or caller instance for a specific nlu-project.</p>
+    // <p>Stops all Listener and Caller calls</p>
     rpc StopAllCalls (StopAllCallsRequest) returns (StopCallsResponse);
 
-    // Transfer a call from a listener to another
+    // <p>Transfer a call from a listener to another</p>
     rpc TransferCall (TransferCallRequest) returns (TransferCallResponse);
 
-    // Transfer a call from a listener to another
+    // <p>Transfer a call from a listener to another</p>
     rpc TransferCalls (TransferCallsRequest) returns (TransferCallsResponse);
 
-    // get call log for single call instance
+    // <p>Get call log for single call instance</p>
     rpc GetCall (GetCallRequest) returns (Call);
 
-    // get call log for all call instances
+    // <p>Get call log for all call instances</p>
     rpc ListCalls (ListCallsRequest) returns (ListCallsResponse);
 
 }
 
-// base configuration of services (ondewo-nlu, text-to-speech, speech-to-text, asterisk)
+// Base configuration of services (ondewo-nlu, text-to-speech, speech-to-text, asterisk)
 message BaseServiceConfig{
 
     // service host IP
@@ -152,7 +152,8 @@ message NluVtsiConfig{
         string auth_token = 3;
     }
 
-    // the resource name of the agent. Format: `projects/<uuid>/agent`
+    // The resource name of the agent.
+    // Format: <pre><code>projects/&lt;uuid&gt;/agent</code></pre>
     string agent_name = 4;
 
     // language code in a two letter iso code, e.g. de, en, etc.
@@ -199,8 +200,7 @@ message AsteriskConfig{
     BaseServiceConfig asterisk_base_config = 1;
 }
 
-// Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI
-// which are common for both listener and caller
+// Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI which are common for both listener and caller
 message CommonServicesConfig{
 
     // speech-to-text service configuration
@@ -217,7 +217,7 @@ message CommonServicesConfig{
 
 }
 
-// The base config is for both the listener and caller .. If you only provide it you will get a listener
+// The base config is for both the listener and caller. If you only provide it you will get a listener
 // You will need to provide <code>SipCallerConfig</code> for the caller
 message SipBaseConfig{
 
@@ -260,8 +260,10 @@ message CsiVtsiConfig{
     MessageBrokerConfig message_broker_config = 5;
 
     // Setting to activate if it is possible to send control messages
-    // a.) via RabbitMQ to remote control the system
-    // b.) via embeddings in NLU text responses
+    // <ul>
+    //   <li>via RabbitMQ to remote control the system</li>
+    //   <li>via embeddings in NLU text responses</li>
+    // </ul>
     bool activate_control_messages = 6;
 
 }
@@ -293,11 +295,11 @@ message MessageBrokerConfig{
     // Should the broker be activated or not
     bool activate_message_broker = 1;
 
-    // Configuration of the RabbitMQ Message Broker
+    // Configuration of the Broker service activation
     MessageBrokerServicesActivationConfig message_broker_services_activation_config = 2;
 
-    // Configuration of the RabbitMQ Message Broker
     oneof message_broker_config{
+        // Configuration of the RabbitMQ Message Broker
         RabbitMqConfig rabbit_mq_config = 3;
     }
 }
@@ -327,7 +329,7 @@ message RabbitMqConfig{
     // port where the rabbit mq server runs
     int32 port = 2;
 
-    // port where the rabbit mq server runs
+    // secondary port where the rabbit mq server runs
     int32 port_2 = 3;
 
     // user of server
@@ -371,10 +373,11 @@ message T2sVtsiCallbacks{
 
 }
 
+// Listener represents a listener instance that waits for incoming calls
 message Listener {
 
     // VTSI project name with which to perform the call of the form
-    // <code>projects/<project_uuid>/listeners/<listener_uuid></code>
+    // <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
     string name = 1;
 
     // The call name that was assigned to the call
@@ -389,6 +392,7 @@ message Listener {
 
 }
 
+// Caller represents a caller instance that initiates outbound calls
 message Caller {
 
     // Caller name with which to perform the call of the form
@@ -407,7 +411,7 @@ message Caller {
 }
 
 
-// request for starting a listener
+// Request for starting a listener
 message StartListenerRequest {
 
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
@@ -427,6 +431,7 @@ message StartListenerResponse {
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
+    // The listener that was started
     Listener listener = 2;
 
     // error message if you have any so if it's unhealthy
@@ -458,7 +463,7 @@ message StartListenersResponse {
 
 }
 
-// request for starting a caller
+// Request for starting a caller
 message StartCallerRequest {
 
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
@@ -478,6 +483,7 @@ message StartCallerResponse {
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
+    // The caller that was started
     Caller caller = 2;
 
     // error message if you have any so if it's unhealthy
@@ -515,7 +521,7 @@ message StartCallersResponse {
 message ListCallersRequest {
 
     // VTSI project name for which to perform the call.
-    // The format is: "projects/<project_uuid>/project".
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
     // Optional. The next_page_token value returned from a previous list request.
@@ -553,7 +559,7 @@ message GetCallerRequest {
 message ListListenersRequest {
 
     // VTSI project name for which to perform the call.
-    // The format is: "projects/<project_uuid>/project".
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
     // Optional. The next_page_token value returned from a previous list request.
@@ -618,6 +624,7 @@ message StopListenersRequest {
 
 }
 
+// Response to stop multiple listeners
 message StopListenersResponse {
 
     // responses to stop listeners
@@ -655,6 +662,7 @@ message StopCallersRequest {
 
 }
 
+// Response to stop multiple callers
 message StopCallersResponse {
 
     // responses to stop callers
@@ -692,6 +700,7 @@ message DeleteListenersRequest {
 
 }
 
+// Response to delete multiple listeners
 message DeleteListenersResponse {
 
     // responses to delete listeners
@@ -730,6 +739,7 @@ message DeleteCallersRequest {
 
 }
 
+// Response to delete multiple callers
 message DeleteCallersResponse {
 
     // responses to delete callers
@@ -740,7 +750,7 @@ message DeleteCallersResponse {
 
 }
 
-// request for starting a scheduled call
+// Request for starting a scheduled call
 message StartScheduledCallerRequest {
 
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
@@ -783,6 +793,7 @@ message StartScheduledCallerResponse {
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
+    // The scheduled caller that was created
     ScheduledCaller scheduled_caller = 2;
 
     // error message if you have any so if it's unhealthy
@@ -921,6 +932,7 @@ message TransferCallsResponse {
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
+    // The responses for each transfer call request
     repeated TransferCallResponse transfer_call_responses = 2;
 
     // overall error message if you have any so if it's unhealthy
@@ -928,7 +940,7 @@ message TransferCallsResponse {
 
 }
 
-// request to get a call instance's call logs
+// Request to get a call instance&apos;s call logs
 message GetCallRequest {
 
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
@@ -1048,7 +1060,6 @@ message Call {
 }
 
 // Definition of a CallFilter, representing filters for querying calls.
-
 message CallFilter {
 
     // Optional: Filter by call names.
@@ -1093,7 +1104,7 @@ message CallFilter {
     // Optional: Match only calls for which the duration in seconds is smaller or equal.
     optional float duration_in_s_max = 14;
 
-    // Optional: Platform responses sent to the user. Default is text: <code>Platform.PLATFORM_UNSPECIFIED</code>.
+    // Optional: Platform responses sent to the user. Default is text: <code>Platform.PLATFORM_UNSPECIFIED</code>
     repeated ondewo.nlu.Intent.Message.Platform platforms = 15;
 
 }
@@ -1120,7 +1131,7 @@ message ListCallsRequest{
 // Response to list all VoipInfos
 message ListCallsResponse{
 
-    // VoipInfos
+    // The list of calls returned in the response
     repeated Call calls = 1;
 
     // Token to retrieve the next page of results.
@@ -1130,7 +1141,7 @@ message ListCallsResponse{
 
 }
 
-// status of ondewo-sip instance
+// Status of ondewo-sip instance
 message AllServicesStatuses {
 
     // health status for sip
@@ -1149,7 +1160,7 @@ message AllServicesStatuses {
     ServiceStatus status_tts = 5;
 }
 
-// status of service
+// Status of service
 message ServiceStatus {
 
     // health status
