@@ -18,57 +18,60 @@ package ondewo.s2t;
 import "google/protobuf/empty.proto";
 import "google/protobuf/struct.proto";
 
-// Speech-to-text service
+// <p>Speech-to-text service</p>
 service Speech2Text {
 
-    // Transcribes an audio file
+    // <p>Transcribes an audio file</p>
     rpc TranscribeFile (TranscribeFileRequest) returns (TranscribeFileResponse) {};
 
-    // Transcribes an audio stream.
+    // <p>Transcribes an audio stream.</p>
     rpc TranscribeStream (stream TranscribeStreamRequest) returns (stream TranscribeStreamResponse) {};
 
-    // Gets a speech to text pipeline corresponding to the id specified in S2tPipelineId. If no corresponding id is
-    // found, raises ModuleNotFoundError in server.
+    // <p>Gets a speech to text pipeline corresponding to the id specified in <code>S2tPipelineId</code>. If no corresponding id is
+    // found, raises <code>ModuleNotFoundError</code> in server.</p>
     rpc GetS2tPipeline (S2tPipelineId) returns (Speech2TextConfig) {};
 
-    // Creates a new speech to text pipeline from a Speech2TextConfig and registers the new pipeline in the server.
+    // <p>Creates a new speech to text pipeline from a <code>Speech2TextConfig</code> and registers the new pipeline in the server.</p>
     rpc CreateS2tPipeline (Speech2TextConfig) returns (S2tPipelineId) {};
 
-    // Deletes a pipeline corresponding to the id parsed in S2TPipelineId. If no corresponding id is
-    // found, raises ModuleNotFoundError in server.
+    // <p>Deletes a pipeline corresponding to the id parsed in <code>S2tPipelineId</code>. If no corresponding id is
+    // found, raises <code>ModuleNotFoundError</code> in server.</p>
     rpc DeleteS2tPipeline (S2tPipelineId) returns (google.protobuf.Empty) {};
 
-    // Updates a pipeline with the id specified in Speech2TextConfig with the new config. If no corresponding id is
-    // found, raises ModuleNotFoundError in server.
+    // <p>Updates a pipeline with the id specified in <code>Speech2TextConfig</code> with the new config. If no corresponding id is
+    // found, raises <code>ModuleNotFoundError</code> in server.</p>
     rpc UpdateS2tPipeline (Speech2TextConfig) returns (google.protobuf.Empty) {};
 
-    // Lists all speech to text pipelines.
+    // <p>Lists all speech to text pipelines.</p>
     rpc ListS2tPipelines (ListS2tPipelinesRequest) returns (ListS2tPipelinesResponse) {};
 
-    // Returns a message containing a list of all languages for which there exist pipelines.
+    // <p>Returns a message containing a list of all languages for which there exist pipelines.</p>
     rpc ListS2tLanguages (ListS2tLanguagesRequest) returns (ListS2tLanguagesResponse) {};
 
-    // Returns a message containing a list of all domains for which there exist pipelines.
+    // <p>Returns a message containing a list of all domains for which there exist pipelines.</p>
     rpc ListS2tDomains (ListS2tDomainsRequest) returns (ListS2tDomainsResponse) {};
 
-    // Returns a message containing the version of the running speech to text server.
-    rpc GetServiceInfo (google.protobuf.Empty) returns (S2TGetServiceInfoResponse) {};
+    // <p>Returns a message containing the version of the running speech to text server.</p>
+    rpc GetServiceInfo (google.protobuf.Empty) returns (S2tGetServiceInfoResponse) {};
 
-    // Given a list of pipeline ids, returns a list of LanguageModelPipelineId messages containing the pipeline
-    // id and a list of the language models loaded in the pipeline.
+    // <p>Given a list of pipeline ids, returns a list of <code>LanguageModelPipelineId</code> messages containing the pipeline
+    // id and a list of the language models loaded in the pipeline.</p>
     rpc ListS2tLanguageModels (ListS2tLanguageModelsRequest) returns (ListS2tLanguageModelsResponse) {};
 
-    // Create a user language model.
+    // <p>Create a user language model.</p>
     rpc CreateUserLanguageModel (CreateUserLanguageModelRequest) returns (google.protobuf.Empty) {};
 
-    // Delete a user language model.
+    // <p>Delete a user language model.</p>
     rpc DeleteUserLanguageModel (DeleteUserLanguageModelRequest) returns (google.protobuf.Empty) {};
 
-    // Add data to a user language model.
+    // <p>Add data to a user language model.</p>
     rpc AddDataToUserLanguageModel (AddDataToUserLanguageModelRequest) returns (google.protobuf.Empty) {};
 
-    // Train a user language model.
+    // <p>Train a user language model.</p>
     rpc TrainUserLanguageModel (TrainUserLanguageModelRequest) returns (google.protobuf.Empty) {};
+
+    // <p>Retrieves a list of normalization pipelines based on specific requirements.</p>
+    rpc ListS2tNormalizationPipelines(ListS2tNormalizationPipelinesRequest) returns (ListS2tNormalizationPipelinesResponse);
 
 }
 
@@ -93,6 +96,7 @@ enum Decoding {
 
 }
 
+// The inference backend configuration
 enum InferenceBackend {
 
     // Not set
@@ -104,13 +108,25 @@ enum InferenceBackend {
     // Run flax model
     INFERENCE_BACKEND_FLAX = 2;
 
+    // Run Amazon S2T cloud service
+    INFERENCE_BACKEND_CLOUD_SERVICE_AMAZON = 3;
+
+    // Run Deepgram S2T cloud service
+    INFERENCE_BACKEND_CLOUD_SERVICE_DEEPGRAM = 4;
+
+    // Run Google S2T cloud service
+    INFERENCE_BACKEND_CLOUD_SERVICE_GOOGLE = 5;
+
+    // Run Microsoft Azure S2T cloud service
+    INFERENCE_BACKEND_CLOUD_SERVICE_MICROSOFT = 6;
+
 }
 
 ///////////////////////////
 // Configuration Message //
 ///////////////////////////
 
-// Configuration for a request to transcribe audio
+// <p>Configuration for a request to transcribe audio</p>
 message TranscribeRequestConfig {
 
     // Required. id of the pipeline (model setup) that will generate audio
@@ -157,20 +173,49 @@ message TranscribeRequestConfig {
     // Optional. Specify language of transcription to return
     optional string language = 9;
 
-    // Optional. Specify task of s2t model, e.g. 'transcribe' and 'translate'
+    // Optional. Specify task of s2t model, e.g. &apos;transcribe&apos; and &apos;translate&apos;
     optional string task = 10;
 
-    // Optional. s2t_service_config provides the configuration of the service such as API key, bearer tokens, JWT,
-    // and other header information as key value pairs, e.g., <pre><code>MY_API_KEY='LKJDIFe244LKJOI'</code></pre>
+    // Optional. <code>s2t_service_config</code> provides the configuration of the service such as API key, bearer tokens, JWT,
+    // and other header information as key value pairs, e.g., <pre><code>MY_API_KEY=&apos;LKJDIFe244LKJOI&apos;</code></pre>
+    // For Amazon S2T service, the following arguments should be passed in form of a dict:
+    // <ul>
+    //   <li><code>aws_access_key_id</code> (required) Access key id to access Amazon Web Service.</li>
+    //   <li><code>aws_secret_access_key</code> (required) Secret access key to access Amazon Web Service.</li>
+    //   <li><code>region</code> (required) Region name of Amazon Server.</li>
+    // </ul>
+    // Example: <code>s2t_config_service={&apos;aws_access_key_id&apos;: &apos;YOUR_AWS_ACCESS_KEY_ID&apos;, &apos;aws_secret_access_key&apos;:
+    // &apos;YOUR_AWS_SECRET_ACCESS_KEY&apos;, &apos;region&apos;: &apos;YOUR_AMAZON_SERVER_REGION_NAME&apos;}</code>
+    // For Deepgram S2T service, the following argument should be passed in form of a dict:
+    // <ul>
+    //   <li><code>api_key</code> (required) API key of Deepgram account to access Deepgram S2T service.</li>
+    // </ul>
+    // Example: <code>s2t_config_service={&apos;api_key&apos;: &apos;YOUR_DEEPGRAM_API_KEY&apos;}</code>
+    // <br>
+    // For Google cloud S2T service, the following arguments should be passed in form of a dict:
+    // <ul>
+    //   <li><code>api_key</code> (required) API key of Google cloud to access its S2T service.</li>
+    //   <li><code>api_endpoint</code> (optional) Regional API endpoint of Google cloud S2T service. (Defaults to
+    // &apos;eu-speech.googleapis.com&apos;)</li>
+    // </ul>
+    // Example: <code>s2t_config_service={&apos;api_key&apos;: &apos;YOUR_GOOGLE_CLOUD_API_KEY&apos;, &apos;api_endpoint&apos;: &apos;YOUR_GOOGLE_CLOUD_API_ENDPOINT&apos;}</code>
+    // For Microsoft Azure S2T service, the following arguments should be passed in form of a dict:
+    // <ul>
+    //   <li><code>subscription_key</code> (required) Subscription key to access Microsoft Azure Service.</li>
+    //   <li><code>region</code> (required) Region name of Microsoft Azure Server.</li>
+    // </ul>
+    // Example: <code>s2t_config_service={&apos;subscription_key&apos;: &apos;YOUR_MICROSOFT_AZURE_SUBSCRIPTION_KEY&apos;, &apos;region&apos;:
+    // &apos;YOUR_MICROSOFT_AZURE_SERVER_REGION_NAME&apos;}</code>
+    // Note: ondewo-s2t will raise an error if you don&apos;t pass any of the required arguments above.
     optional google.protobuf.Struct s2t_service_config = 11;
 
-    // Optional. Defines the cloud provider's specific configuration for using speech to text cloud services
+    // Optional. Defines the cloud provider&apos;s specific configuration for using speech to text cloud services.
     // The default value is None.
     optional S2tCloudProviderConfig s2t_cloud_provider_config = 12;
 
 }
 
-// Configuration for cloud provider settings for Speech-to-Text (S2T).
+// <p>Configuration for cloud provider settings for Speech-to-Text (S2T).</p>
 message S2tCloudProviderConfig {
 
     // Optional. Configuration for Amazon web service speech-to-text provider.
@@ -187,96 +232,97 @@ message S2tCloudProviderConfig {
 
 }
 
-// Configuration details specific to the Amazon web service speech-to-text provider.
+// <p>Configuration details specific to the Amazon web service speech-to-text provider.</p>
 message S2tCloudProviderConfigAmazon {
 
-    // Optional. Enables or disables partial_results_stabilization feature. More details at:
-    // https://docs.aws.amazon.com/transcribe/latest/dg/streaming-partial-results.html#streaming-partial-result-stabilization
+    // Optional. Enables or disables <code>partial_results_stabilization</code> feature. More details at:
+    // <a href="https://docs.aws.amazon.com/transcribe/latest/dg/streaming-partial-results.html#streaming-partial-result-stabilization">https://docs.aws.amazon.com/transcribe/latest/dg/streaming-partial-results.html#streaming-partial-result-stabilization</a>
     optional bool enable_partial_results_stabilization = 1;
 
     // Optional. You can use this field to set the stability level of the transcription results.
     // A higher stability level means that the transcription results are less likely to change.
     // Higher stability levels can come with lower overall transcription accuracy.
-    // Defaults to "high" if not set explicitly.
+    // Acceptable values: [&quot;low&quot;, &quot;medium&quot;, &quot;high&quot;]. Defaults to &quot;high&quot; if not set explicitly. More details at:
+    // <a href="https://aws.amazon.com/blogs/machine-learning/amazon-transcribe-now-supports-partial-results-stabilization-for-streaming-audio/">https://aws.amazon.com/blogs/machine-learning/amazon-transcribe-now-supports-partial-results-stabilization-for-streaming-audio/</a>
     optional string partial_results_stability = 2;
 
     // Optional. The name of your customize language model you want to use.
-    // More details at: https://docs.aws.amazon.com/transcribe/latest/dg/custom-language-models.html
+    // More details at: <a href="https://docs.aws.amazon.com/transcribe/latest/dg/custom-language-models.html">https://docs.aws.amazon.com/transcribe/latest/dg/custom-language-models.html</a>
     optional string language_model_name = 3;
 
-    // Optional. The name of your customize language model you want to use.
-    // More details at: https://docs.aws.amazon.com/transcribe/latest/dg/custom-vocabulary.html
+    // Optional. The name of your customize vocabulary you want to use.
+    // More details at: <a href="https://docs.aws.amazon.com/transcribe/latest/dg/custom-vocabulary.html">https://docs.aws.amazon.com/transcribe/latest/dg/custom-vocabulary.html</a>
     optional string vocabulary_name = 4;
 
 }
 
-// Configuration details specific to the Deepgram speech-to-text provider.
+// <p>Configuration details specific to the Deepgram speech-to-text provider.</p>
 message S2tCloudProviderConfigDeepgram {
 
-    // Optional. Enables or disables punctuate feature of Deepgram to add punctuations to the resulted transcript.
-    // More details at: https://developers.deepgram.com/docs/punctuation
+    // Optional. Enables or disables <code>punctuate</code> feature of Deepgram to add punctuations to the resulted transcript.
+    // More details at: <a href="https://developers.deepgram.com/docs/punctuation">https://developers.deepgram.com/docs/punctuation</a>
     optional bool punctuate = 1;
 
-    // Optional. Enables or disables smart_format feature of Deepgram transcription result to improve readability.
-    // More details at: https://developers.deepgram.com/docs/smart-format
+    // Optional. Enables or disables <code>smart_format</code> feature of Deepgram transcription result to improve readability.
+    // More details at: <a href="https://developers.deepgram.com/docs/smart-format">https://developers.deepgram.com/docs/smart-format</a>
     optional bool smart_format = 2;
 
-    // Optional. Enables or disables numerals feature of Deepgram to convert numbers to numeric form in the resulted
-    // transcript. More details at: https://developers.deepgram.com/docs/numerals
+    // Optional. Enables or disables <code>numerals</code> feature of Deepgram to convert numbers to numeric form in the resulted
+    // transcript. More details at: <a href="https://developers.deepgram.com/docs/numerals">https://developers.deepgram.com/docs/numerals</a>
     optional bool numerals = 3;
 
-    // Optional. Enables or disables measurements feature of Deepgram to convert measurement units (i.e. Kilogram)
+    // Optional. Enables or disables <code>measurements</code> feature of Deepgram to convert measurement units (i.e. Kilogram)
     // to abbreviated form (i.e. Kg) in the resulted transcript.
-    // More details at: https://developers.deepgram.com/docs/measurements
+    // More details at: <a href="https://developers.deepgram.com/docs/measurements">https://developers.deepgram.com/docs/measurements</a>
     optional bool measurements = 4;
 
-    // Optional. Enables or disables dictation feature of Deepgram to convert spoken dictation commands into their
-    // corresponding punctuation marks. More details at: https://developers.deepgram.com/docs/dictation
+    // Optional. Enables or disables <code>dictation</code> feature of Deepgram to convert spoken dictation commands into their
+    // corresponding punctuation marks. More details at: <a href="https://developers.deepgram.com/docs/dictation">https://developers.deepgram.com/docs/dictation</a>
     optional bool dictation = 5;
 
 }
 
-// Configuration details specific to the Google speech-to-text provider.
+// <p>Configuration details specific to the Google speech-to-text provider.</p>
 message S2tCloudProviderConfigGoogle {
 
-    // Optional. Enables or disables automatic_punctuation feature of Google s2t to add punctuations to the resulted
-    // transcript. More details at: https://cloud.google.com/speech-to-text/docs/automatic-punctuation
+    // Optional. Enables or disables <code>automatic_punctuation</code> feature of Google s2t to add punctuations to the resulted
+    // transcript. More details at: <a href="https://cloud.google.com/speech-to-text/docs/automatic-punctuation">https://cloud.google.com/speech-to-text/docs/automatic-punctuation</a>
     optional bool enable_automatic_punctuation = 1;
 
-    // Optional. Enables or disables word_time_offsets feature of Google s2t to add word-level timestamps (time-offset)
-    // to the resulted transcript. More details at: https://cloud.google.com/speech-to-text/docs/async-time-offsets
+    // Optional. Enables or disables <code>word_time_offsets</code> feature of Google s2t to add word-level timestamps (time-offset)
+    // to the resulted transcript. More details at: <a href="https://cloud.google.com/speech-to-text/docs/async-time-offsets">https://cloud.google.com/speech-to-text/docs/async-time-offsets</a>
     optional bool enable_word_time_offsets = 2;
 
-    // Optional. Enables or disables word_confidence feature of Google s2t to add word-level confidence scores
-    // to the resulted transcript. More details at: https://cloud.google.com/speech-to-text/docs/word-confidence
+    // Optional. Enables or disables <code>word_confidence</code> feature of Google s2t to add word-level confidence scores
+    // to the resulted transcript. More details at: <a href="https://cloud.google.com/speech-to-text/docs/word-confidence">https://cloud.google.com/speech-to-text/docs/word-confidence</a>
     optional bool enable_word_confidence = 3;
 
-    // Optional. Enables or disables transcript_normalization feature of Google s2t to automatically
+    // Optional. Enables or disables <code>transcript_normalization</code> feature of Google s2t to automatically
     // replace parts of the transcript with phrases of your choosing. More details at:
-    // https://cloud.google.com/speech-to-text/v2/docs/reference/rpc/google.cloud.speech.v2#transcriptnormalization
+    // <a href="https://cloud.google.com/speech-to-text/v2/docs/reference/rpc/google.cloud.speech.v2#transcriptnormalization">https://cloud.google.com/speech-to-text/v2/docs/reference/rpc/google.cloud.speech.v2#transcriptnormalization</a>
     optional bool transcript_normalization = 4;
 
-    // Optional. Maximum number of recognition hypotheses to be returned, may be returned fewer than max_alternatives.
+    // Optional. Maximum number of recognition hypotheses to be returned, may be returned fewer than <code>max_alternatives</code>.
     // Valid values are 0-30. A value of 0 or 1 will return a maximum of one. If omitted, will return a maximum of one.
     optional int32 max_alternatives = 5;
 
 }
 
-// Configuration details specific to the Microsoft Azure speech-to-text provider.
+// <p>Configuration details specific to the Microsoft Azure speech-to-text provider.</p>
 message S2tCloudProviderConfigMicrosoft {
 
     // Optional. Enables or disables the Microsoft Azure fast transcription API. It is faster than SDK but is in
     // preview version.
-    // More details at: https://learn.microsoft.com/en-us/azure/ai-services/speech-service/fast-transcription-create
+    // More details at: <a href="https://learn.microsoft.com/en-us/azure/ai-services/speech-service/fast-transcription-create">https://learn.microsoft.com/en-us/azure/ai-services/speech-service/fast-transcription-create</a>
     optional bool use_fast_transcription_api = 1;
 
-    // Optional. Enables or disables the `detailed` format for the result of Microsoft Azure s2t service
+    // Optional. Enables or disables the <code>detailed</code> format for the result of Microsoft Azure s2t service
     // to add timestamps and confidences to the resulted transcript.
     optional bool use_detailed_output_format = 2;
 
 }
 
-// Configuration of the return values of a transcribe request
+// <p>Configuration of the return values of a transcribe request</p>
 message TranscriptionReturnOptions {
 
     // should server make response indicating that the beginning of the speech was detected
@@ -305,7 +351,7 @@ message TranscriptionReturnOptions {
 
 }
 
-// Configuration of the options to detect utterances
+// <p>Configuration of the options to detect utterances</p>
 message UtteranceDetectionOptions {
 
     // Whether or not to transcribe unfinished utterances.
@@ -318,9 +364,15 @@ message UtteranceDetectionOptions {
     // if time between audio chunks exceeds next_chunk_timeout, stream will be stopped
     float next_chunk_timeout = 2;
 
+    // Optional. Configuration for the turn-detection in utterances
+    oneof oneof_turn_detection {
+
+        // The turn detection options
+        TurnDetectionOptions turn_detection = 3;
+    }
 }
 
-// Configuration of the post-processing options
+// <p>Configuration of the post-processing options</p>
 message PostProcessingOptions {
 
     // Whether to use spelling correction
@@ -333,13 +385,16 @@ message PostProcessingOptions {
     // configuration. If not set, all values are replaced by the ones in current pipeline.
     PostProcessing config = 3;
 
+    // Whether to disable LLM post-processing
+    bool llm_post_processing = 4;
+
 }
 
 ///////////////////////////
 //  TRANSCRIPTION TYPE  //
 ///////////////////////////
 
-// The transcription message
+// <p>The transcription message</p>
 message Transcription {
 
     // The transcribed text
@@ -357,6 +412,7 @@ message Transcription {
 
 }
 
+// <p>The alternative transcription message</p>
 message TranscriptionAlternative{
 
     // The alternative transcribed text
@@ -371,7 +427,7 @@ message TranscriptionAlternative{
 
 }
 
-// WordDetail provides word-specific information for recognized words.
+// <p>WordDetail provides word-specific information for recognized words.</p>
 message WordDetail {
 
     // The start time of the spoken word relative to the beginning of the audio.
@@ -393,6 +449,7 @@ message WordDetail {
 
 }
 
+// <p>The word alternative message</p>
 message WordAlternative{
 
     // The recognized word corresponding to this set of information.
@@ -407,7 +464,7 @@ message WordAlternative{
 // TRANSCRIBE STREAM //
 ///////////////////////
 
-// Request to transcribe an audio stream
+// <p>Request to transcribe an audio stream</p>
 message TranscribeStreamRequest {
 
     // wav file to transcribe
@@ -424,7 +481,7 @@ message TranscribeStreamRequest {
 
 }
 
-// The response message of a stream transcription
+// <p>The response message of a stream transcription</p>
 message TranscribeStreamResponse {
 
     // List of transcriptions with confidence level
@@ -462,7 +519,7 @@ message TranscribeStreamResponse {
 // TRANSCRIBE FILE //
 /////////////////////
 
-// A request to transcribe an audio file
+// <p>A request to transcribe an audio file</p>
 message TranscribeFileRequest {
 
     // wav file to transcribe
@@ -473,7 +530,7 @@ message TranscribeFileRequest {
 
 }
 
-// The response message for a transcribe file request
+// <p>The response message for a transcribe file request</p>
 message TranscribeFileResponse {
 
     // List of transcriptions with confidence level
@@ -491,7 +548,7 @@ message TranscribeFileResponse {
 // GET S2T PIPELINE //
 //////////////////////
 
-// The pipeline id for a specific pipeline configuration
+// <p>The pipeline id for a specific pipeline configuration</p>
 message S2tPipelineId {
 
     // id of the model that will generate audio
@@ -503,7 +560,7 @@ message S2tPipelineId {
 // LIST S2T PIPELINES //
 ////////////////////////
 
-// Request to list all speech-to-text pipelines. Optionally also filter criteria can be set
+// <p>Request to list all speech-to-text pipelines. Optionally also filter criteria can be set</p>
 message ListS2tPipelinesRequest {
 
     // Filter for languages
@@ -521,12 +578,12 @@ message ListS2tPipelinesRequest {
 
 }
 
-// ListS2tPipelinesResponse is used to return a list of all speech-to-text pipelines.
+// <p>ListS2tPipelinesResponse is used to return a list of all speech-to-text pipelines.</p>
 message ListS2tPipelinesResponse {
 
-    // A list of Speech2TextConfig message instances containing the configuration of each pipeline.
-    // Example: [{id: "pipeline_1", description: {language: "en"}, active: true, ...}, {id: "pipeline_2",
-    // description: {language: "fr"}, active: true, ...}]
+    // A list of <code>Speech2TextConfig</code> message instances containing the configuration of each pipeline.
+    // Example: [{id: &quot;pipeline_1&quot;, description: {language: &quot;en&quot;}, active: true, ...}, {id: &quot;pipeline_2&quot;,
+    // description: {language: &quot;fr&quot;}, active: true, ...}]
     repeated Speech2TextConfig pipeline_configs = 1;
 }
 
@@ -534,19 +591,19 @@ message ListS2tPipelinesResponse {
 // LIST S2T LANGUAGES //
 ////////////////////////
 
-// ListS2tLanguagesRequest is used to request a list of available languages. Optionally, filters can be set.
+// <p>ListS2tLanguagesRequest is used to request a list of available languages. Optionally, filters can be set.</p>
 message ListS2tLanguagesRequest {
 
-    // Filter for domains.  Example: ["medical", "finance"]
+    // Filter for domains.  Example: [&quot;medical&quot;, &quot;finance&quot;]
     repeated string domains = 1;
 
     // Filter for pipeline owners.
-    // Example: ["ondewo", "partner_company"]
+    // Example: [&quot;ondewo&quot;, &quot;partner_company&quot;]
     repeated string pipeline_owners = 2;
 
 }
 
-// Response message to list available languages
+// <p>Response message to list available languages</p>
 message ListS2tLanguagesResponse {
 
     // available languages
@@ -558,7 +615,7 @@ message ListS2tLanguagesResponse {
 // LIST S2T DOMAINS //
 //////////////////////
 
-// Request message to list available domains. Optionally also filters can be set.
+// <p>Request message to list available domains. Optionally also filters can be set.</p>
 message ListS2tDomainsRequest {
 
     // Filter for languages
@@ -569,10 +626,10 @@ message ListS2tDomainsRequest {
 
 }
 
-// Response message to list available domains
+// <p>Response message to list available domains</p>
 message ListS2tDomainsResponse {
 
-    // domains available. Example: ["medical", "finance"]
+    // domains available. Example: [&quot;medical&quot;, &quot;finance&quot;]
     repeated string domains = 1;
 
 }
@@ -581,10 +638,10 @@ message ListS2tDomainsResponse {
 // GET SERVICE INFO //
 //////////////////////
 
-// S2TGetServiceInfoResponse is used to return version information about the speech-to-text service.
-message S2TGetServiceInfoResponse {
+// <p>S2tGetServiceInfoResponse is used to return version information about the speech-to-text service.</p>
+message S2tGetServiceInfoResponse {
 
-    // Version number based on semantic versioning, e.g. "4.2.0".
+    // Version number based on semantic versioning, e.g. &quot;4.2.0&quot;.
     string version = 1;
 }
 
@@ -592,20 +649,20 @@ message S2TGetServiceInfoResponse {
 // SPEECH-2-TEXT PIPELINE CONFIG //
 ///////////////////////////////////
 
-// Speech2TextConfig is a configuration message for the speech-to-text pipeline
+// <p>Speech2TextConfig is a configuration message for the speech-to-text pipeline</p>
 message Speech2TextConfig {
 
     // Unique identifier for the configuration.
     string id = 1;
 
     // Description of the speech-to-text system.
-    S2TDescription description = 2;
+    S2tDescription description = 2;
 
     // Indicates if the configuration is active.
     bool active = 3;
 
     // Configuration for inference models.
-    S2TInference inference = 4;
+    S2tInference inference = 4;
 
     // Configuration for the streaming server.
     StreamingServer streaming_server = 5;
@@ -622,8 +679,8 @@ message Speech2TextConfig {
 }
 
 
-// S2TDescription contains descriptive information about the speech-to-text pipeline.
-message S2TDescription {
+// <p>S2tDescription contains descriptive information about the speech-to-text pipeline.</p>
+message S2tDescription {
 
     // Language of the speech-to-text system.
     string language = 1;
@@ -640,8 +697,8 @@ message S2TDescription {
 }
 
 
-// S2TInference contains information about inference models used in the speech-to-text pipeline.
-message S2TInference {
+// <p>S2tInference contains information about inference models used in the speech-to-text pipeline.</p>
+message S2tInference {
 
     // Configuration for the acoustic models.
     AcousticModels acoustic_models = 1;
@@ -654,7 +711,7 @@ message S2TInference {
 
 }
 
-// AcousticModels contains information about different types of acoustic models.
+// <p>AcousticModels contains information about different types of acoustic models.</p>
 message AcousticModels {
 
     // Type of the acoustic model.
@@ -686,124 +743,124 @@ message AcousticModels {
 
 }
 
-// S2tCloudServiceAmazon message contains settings for the Amazon web service Cloud service inference.
+// <p>S2tCloudServiceAmazon message contains settings for the Amazon web service Cloud service inference.</p>
 message S2tCloudServiceAmazon {
 
     // Language of the audio to transcribe by Amazon web service s2t cloud service. It should be 4-letter language code
-    // (BCP-47) e.g. 'en-US' or 'de-DE'.
+    // (BCP-47) e.g. &apos;en-US&apos; or &apos;de-DE&apos;.
     string language = 1;
 
     // Specifies if streaming mode of Amazon web service speech to text is available for the selected language,
     // otherwise batch mode transcription is used. See the list of languages and available transcription modes at:
-    // https://docs.aws.amazon.com/transcribe/latest/dg/supported-languages.html
+    // <a href="https://docs.aws.amazon.com/transcribe/latest/dg/supported-languages.html">https://docs.aws.amazon.com/transcribe/latest/dg/supported-languages.html</a>
     bool streaming_available = 2;
 
-    // Enables or disables partial_results_stabilization feature. More details at:
-    // https://docs.aws.amazon.com/transcribe/latest/dg/streaming-partial-results.html#streaming-partial-result-stabilization
+    // Enables or disables <code>partial_results_stabilization</code> feature. More details at:
+    // <a href="https://docs.aws.amazon.com/transcribe/latest/dg/streaming-partial-results.html#streaming-partial-result-stabilization">https://docs.aws.amazon.com/transcribe/latest/dg/streaming-partial-results.html#streaming-partial-result-stabilization</a>
     bool enable_partial_results_stabilization = 3;
 
     // You can use this field to set the stability level of the transcription results.
     // A higher stability level means that the transcription results are less likely to change.
     // Higher stability levels can come with lower overall transcription accuracy.
-    // Defaults to "high" if not set explicitly.
+    // Defaults to &quot;high&quot; if not set explicitly.
     string partial_results_stability = 4;
 
     // The name of your customize language model you want to use.
-    // More details at: https://docs.aws.amazon.com/transcribe/latest/dg/custom-language-models.html
+    // More details at: <a href="https://docs.aws.amazon.com/transcribe/latest/dg/custom-language-models.html">https://docs.aws.amazon.com/transcribe/latest/dg/custom-language-models.html</a>
     string language_model_name = 5;
 
-    // The name of your customize language model you want to use.
-    // More details at: https://docs.aws.amazon.com/transcribe/latest/dg/custom-vocabulary.html
+    // The name of your customize vocabulary you want to use.
+    // More details at: <a href="https://docs.aws.amazon.com/transcribe/latest/dg/custom-vocabulary.html">https://docs.aws.amazon.com/transcribe/latest/dg/custom-vocabulary.html</a>
     string vocabulary_name = 6;
 
 }
 
-// S2tCloudServiceDeepgram message contains settings for the Deepgram Cloud service inference.
+// <p>S2tCloudServiceDeepgram message contains settings for the Deepgram Cloud service inference.</p>
 message S2tCloudServiceDeepgram {
 
     // Model name from one of the speech-to-text models provided by Deepgram for the desired use-case.
-    // Provided model names and details at: https://developers.deepgram.com/docs/model
+    // Provided model names and details at: <a href="https://developers.deepgram.com/docs/model">https://developers.deepgram.com/docs/model</a>
     string model_name = 1;
 
     // Language of the audio to transcribe by Deepgram s2t cloud service. It should be 4-letter language code
-    // (BCP-47) e.g. 'en-US' or 'de-DE'.
+    // (BCP-47) e.g. &apos;en-US&apos; or &apos;de-DE&apos;.
     string language = 2;
 
-    // Enables or disables punctuate feature of Deepgram to add punctuations to the resulted transcript.
-    // More details at: https://developers.deepgram.com/docs/punctuation
+    // Enables or disables <code>punctuate</code> feature of Deepgram to add punctuations to the resulted transcript.
+    // More details at: <a href="https://developers.deepgram.com/docs/punctuation">https://developers.deepgram.com/docs/punctuation</a>
     bool punctuate = 3;
 
-    // Enables or disables smart_format feature of Deepgram transcription result to improve readability.
-    // More details at: https://developers.deepgram.com/docs/smart-format
+    // Enables or disables <code>smart_format</code> feature of Deepgram transcription result to improve readability.
+    // More details at: <a href="https://developers.deepgram.com/docs/smart-format">https://developers.deepgram.com/docs/smart-format</a>
     bool smart_format = 4;
 
-    // Enables or disables numerals feature of Deepgram to convert numbers to numeric form in the resulted transcript.
-    // More details at: https://developers.deepgram.com/docs/numerals
+    // Enables or disables <code>numerals</code> feature of Deepgram to convert numbers to numeric form in the resulted transcript.
+    // More details at: <a href="https://developers.deepgram.com/docs/numerals">https://developers.deepgram.com/docs/numerals</a>
     bool numerals = 5;
 
-    // Enables or disables measurements feature of Deepgram to convert measurement units (i.e. Kilogram)
+    // Enables or disables <code>measurements</code> feature of Deepgram to convert measurement units (i.e. Kilogram)
     // to abbreviated form (i.e. Kg) in the resulted transcript.
-    // More details at: https://developers.deepgram.com/docs/measurements
+    // More details at: <a href="https://developers.deepgram.com/docs/measurements">https://developers.deepgram.com/docs/measurements</a>
     bool measurements = 6;
 
-    // Enables or disables dictation feature of Deepgram to convert spoken dictation commands into their corresponding
-    // punctuation marks. More details at: https://developers.deepgram.com/docs/dictation
+    // Enables or disables <code>dictation</code> feature of Deepgram to convert spoken dictation commands into their corresponding
+    // punctuation marks. More details at: <a href="https://developers.deepgram.com/docs/dictation">https://developers.deepgram.com/docs/dictation</a>
     bool dictation = 7;
 
 }
 
-// S2tCloudServiceGoogle message contains settings for the Google Cloud service inference.
+// <p>S2tCloudServiceGoogle message contains settings for the Google Cloud service inference.</p>
 message S2tCloudServiceGoogle {
 
     // Model name from one of the speech-to-text models provided by Google for the desired use-case.
-    // Provided model names and details at: https://cloud.google.com/speech-to-text/docs/transcription-model
+    // Provided model names and details at: <a href="https://cloud.google.com/speech-to-text/docs/transcription-model">https://cloud.google.com/speech-to-text/docs/transcription-model</a>
     string model_name = 1;
 
     // Language of the audio to transcribe by Google s2t cloud service. It should be 4-letter language code
-    // (BCP-47) e.g. 'en-US' or 'de-DE'.
+    // (BCP-47) e.g. &apos;en-US&apos; or &apos;de-DE&apos;.
     string language = 2;
 
-    // Enables or disables automatic_punctuation feature of Google s2t to add punctuations to the resulted transcript.
-    // More details at: https://cloud.google.com/speech-to-text/docs/automatic-punctuation
+    // Enables or disables <code>automatic_punctuation</code> feature of Google s2t to add punctuations to the resulted transcript.
+    // More details at: <a href="https://cloud.google.com/speech-to-text/docs/automatic-punctuation">https://cloud.google.com/speech-to-text/docs/automatic-punctuation</a>
     bool enable_automatic_punctuation = 3;
 
-    // Enables or disables word_time_offsets feature of Google s2t to add word-level timestamps (time-offsets)
-    // to the resulted transcript. More details at: https://cloud.google.com/speech-to-text/docs/async-time-offsets
+    // Enables or disables <code>word_time_offsets</code> feature of Google s2t to add word-level timestamps (time-offsets)
+    // to the resulted transcript. More details at: <a href="https://cloud.google.com/speech-to-text/docs/async-time-offsets">https://cloud.google.com/speech-to-text/docs/async-time-offsets</a>
     bool enable_word_time_offsets = 4;
 
-    // Enables or disables word_confidence feature of Google s2t to add word-level confidence scores
-    // to the resulted transcript. More details at: https://cloud.google.com/speech-to-text/docs/word-confidence
+    // Enables or disables <code>word_confidence</code> feature of Google s2t to add word-level confidence scores
+    // to the resulted transcript. More details at: <a href="https://cloud.google.com/speech-to-text/docs/word-confidence">https://cloud.google.com/speech-to-text/docs/word-confidence</a>
     bool enable_word_confidence = 5;
 
-    // Enables or disables transcript_normalization feature of Google s2t to automatically
+    // Enables or disables <code>transcript_normalization</code> feature of Google s2t to automatically
     // replace parts of the transcript with phrases of your choosing. More details at:
-    // https://cloud.google.com/speech-to-text/v2/docs/reference/rpc/google.cloud.speech.v2#transcriptnormalization
+    // <a href="https://cloud.google.com/speech-to-text/v2/docs/reference/rpc/google.cloud.speech.v2#transcriptnormalization">https://cloud.google.com/speech-to-text/v2/docs/reference/rpc/google.cloud.speech.v2#transcriptnormalization</a>
     bool transcript_normalization = 6;
 
-    // Maximum number of recognition hypotheses to be returned. The server may return fewer than max_alternatives.
+    // Maximum number of recognition hypotheses to be returned. The server may return fewer than <code>max_alternatives</code>.
     // Valid values are 0-30. A value of 0 or 1 will return a maximum of one. If omitted, will return a maximum of one.
     int32 max_alternatives = 7;
 
 }
 
-// S2tCloudServiceMicrosoft message contains settings for the Microsoft Azure Cloud service inference.
+// <p>S2tCloudServiceMicrosoft message contains settings for the Microsoft Azure Cloud service inference.</p>
 message S2tCloudServiceMicrosoft {
 
     // Language of the audio to transcribe by Microsoft Azure s2t cloud service. It should be 4-letter language code
-    // (BCP-47) e.g. 'en-US' or 'de-DE'.
+    // (BCP-47) e.g. &apos;en-US&apos; or &apos;de-DE&apos;.
     string language = 1;
 
     // Enables or disables the Microsoft Azure fast transcription API. It is faster than SDK but is in preview version.
-    // More details at: https://learn.microsoft.com/en-us/azure/ai-services/speech-service/fast-transcription-create
+    // More details at: <a href="https://learn.microsoft.com/en-us/azure/ai-services/speech-service/fast-transcription-create">https://learn.microsoft.com/en-us/azure/ai-services/speech-service/fast-transcription-create</a>
     bool use_fast_transcription_api = 2;
 
-    // Enables or disables the `detailed` format for the result of Microsoft Azure s2t service
+    // Enables or disables the <code>detailed</code> format for the result of Microsoft Azure s2t service
     // to add timestamps and confidences to the resulted transcript.
     bool use_detailed_output_format = 3;
 
 }
 
-// Whisper contains information about the Whisper model.
+// <p>Whisper contains information about the Whisper model.</p>
 message Whisper {
 
     // Path to the model.
@@ -820,7 +877,7 @@ message Whisper {
 
 }
 
-// WhisperTriton contains information about the Whisper model using Triton.
+// <p>WhisperTriton contains information about the Whisper model using Triton.</p>
 message WhisperTriton {
 
     // Path to the processor.
@@ -849,7 +906,7 @@ message WhisperTriton {
 
 }
 
-// Wav2Vec contains information about the Wav2Vec model.
+// <p>Wav2Vec contains information about the Wav2Vec model.</p>
 message Wav2Vec {
 
     // Path to the model.
@@ -860,7 +917,7 @@ message Wav2Vec {
 
 }
 
-// Wav2VecTriton contains information about the Wav2Vec model using Triton.
+// <p>Wav2VecTriton contains information about the Wav2Vec model using Triton.</p>
 message Wav2VecTriton {
 
     // Path to the processor.
@@ -882,7 +939,7 @@ message Wav2VecTriton {
     int64 triton_server_port = 6;
 }
 
-// PtFiles contains information about PT files.
+// <p>PtFiles contains information about PT files.</p>
 message PtFiles {
 
     // Path to the PT files.
@@ -893,7 +950,7 @@ message PtFiles {
 
 }
 
-// CkptFile contains information about checkpoint files.
+// <p>CkptFile contains information about checkpoint files.</p>
 message CkptFile {
 
     // Path to the checkpoint file.
@@ -902,7 +959,7 @@ message CkptFile {
 }
 
 
-// LanguageModels contains information about language models.
+// <p>LanguageModels contains information about language models.</p>
 message LanguageModels {
 
     // Path to the directory of language models.
@@ -922,7 +979,7 @@ message LanguageModels {
 
 }
 
-// StreamingServer contains information about the streaming server.
+// <p>StreamingServer contains information about the streaming server.</p>
 message StreamingServer {
 
     // Hostname of the streaming server.
@@ -939,7 +996,7 @@ message StreamingServer {
 
 }
 
-// StreamingSpeechRecognition contains information about streaming speech recognition settings.
+// <p>StreamingSpeechRecognition contains information about streaming speech recognition settings.</p>
 message StreamingSpeechRecognition {
 
     // Indicates whether to transcribe non-final results.
@@ -957,9 +1014,228 @@ message StreamingSpeechRecognition {
     // Timeout between audio chunks; if exceeded, the stream will be stopped.
     float next_chunk_timeout = 5;
 
+    // Configuration of the options to turn-detection in utterances
+    TurnDetectionOptions turn_detection = 6;
+
 }
 
-// VoiceActivityDetection contains information about voice activity detection settings.
+
+// <p>Configuration of the options to turn-detection in utterances</p>
+message TurnDetectionOptions {
+
+    // Optional. Indicates if the turn-detection feature is active.
+    optional bool active = 1;
+
+    // Optional. Whether to transcribe the whole utterance when turn moment is detected. It is helpful to increase
+    // accuracy of transcriptions in cost of drop in speed. If deactivated, it just transcribe from last short silence
+    // period and concatenates the transcriptions of small audio chunks between tiny silences.
+    optional bool full_utterance_deployment = 2;
+
+    // Optional. System prompt used to guide the turn-detection model.
+    optional string turn_detection_system_prompt = 3;
+
+    // Optional. User prompt used as input to the turn-detection model.
+    optional string turn_detection_user_prompt = 4;
+
+    // Optional. Configuration options for the OpenAI client used for turn detection.
+    optional OpenaiLlmOptions turn_detection_llm_openai_options = 5;
+
+}
+
+// <p>Latency tier to use for processing an OpenAI request. Affects cost and throughput.</p>
+enum ServiceTier {
+
+    // Unspecified service tier.
+    SERVICE_TIER_UNSPECIFIED = 0;
+
+    // Auto service tier.
+    SERVICE_TIER_AUTO = 1;
+
+    // Default service tier.
+    SERVICE_TIER_DEFAULT = 2;
+
+    // Flex service tier.
+    SERVICE_TIER_FLEX = 3;
+
+    // Scale service tier.
+    SERVICE_TIER_SCALE = 4;
+
+    // Priority service tier.
+    SERVICE_TIER_PRIORITY = 5;
+
+}
+
+// <p>Verbosity level for the response output.</p>
+enum Verbosity {
+
+    // Unspecified verbosity.
+    VERBOSITY_UNSPECIFIED = 0;
+
+    // Low verbosity.
+    VERBOSITY_LOW = 1;
+
+    // Medium verbosity.
+    VERBOSITY_MEDIUM = 2;
+
+    // High verbosity.
+    VERBOSITY_HIGH = 3;
+
+}
+
+// <p>Effort level for reasoning models (e.g., o1, o3). Controls the trade-off between speed and quality.</p>
+enum ReasoningEffort {
+
+    // Unspecified reasoning effort.
+    REASONING_EFFORT_UNSPECIFIED = 0;
+
+    // Minimal reasoning effort.
+    REASONING_EFFORT_MINIMAL = 1;
+
+    // Low reasoning effort.
+    REASONING_EFFORT_LOW = 2;
+
+    // Medium reasoning effort.
+    REASONING_EFFORT_MEDIUM = 3;
+
+    // High reasoning effort.
+    REASONING_EFFORT_HIGH = 4;
+
+}
+
+// <p>Configuration options for OpenAI client chat completion requests used in turn detection and LLM post-processing.</p>
+message OpenaiLlmOptions {
+
+    // Optional. The API key used to authenticate with the OpenAI API.
+    optional string api_key = 1;
+
+    // Optional. The organization ID associated with the OpenAI account, used for billing and access control.
+    optional string organization = 2;
+
+    // Optional. The project ID associated with the OpenAI account.
+    optional string project = 3;
+
+    // Optional. The webhook secret used to validate incoming webhook events from OpenAI.
+    optional string webhook_secret = 4;
+
+    // Optional. The base URL for the OpenAI API. Overrides the default endpoint, useful for proxies or
+    // compatible third-party providers.
+    optional string base_url = 5;
+
+    // Optional. The base URL for OpenAI WebSocket connections. Overrides the default WebSocket endpoint.
+    optional string websocket_base_url = 6;
+
+    // Optional. The timeout in seconds for requests to the OpenAI API. Applies to the entire request
+    // lifecycle including connection, sending, and receiving.
+    optional float timeout = 7;
+
+    // Optional. The maximum number of retries to attempt when a request fails due to a transient error.
+    // Defaults to 2.
+    optional int32 max_retries = 8;
+
+    // Optional. Default HTTP headers to include with every request to the OpenAI API.
+    map<string, string> default_headers = 9;
+
+    // Optional. Default query parameters to append to every request URL sent to the OpenAI API.
+    // Values can be of any type (string, number, boolean, list), hence the use of Struct.
+    optional google.protobuf.Struct default_query = 10;
+
+    // Optional. If true, enables strict validation of response payloads returned by the OpenAI API.
+    optional bool strict_response_validation = 11;
+
+    // Required. The name or identifier of the OpenAI model to use for chat completion
+    // (e.g., "gpt-4o", "gpt-4o-mini", "o3").
+    optional string model = 12;
+
+    // Optional. A number between -2.0 and 2.0. Positive values penalize new tokens based on their
+    // existing frequency in the text so far, decreasing the likelihood of the model repeating the same
+    // line verbatim.
+    optional float frequency_penalty = 13;
+
+    // Optional. Modifies the likelihood of specified tokens appearing in the completion. Maps token IDs
+    // (as strings) to bias values from -100 to 100. Mathematically added to the logits before sampling.
+    map<string, int32> logit_bias = 14;
+
+    // Optional. Whether to return log probabilities of the output tokens. If true, returns the log
+    // probabilities of each output token in the response.
+    optional bool logprobs = 15;
+
+    // Optional. An upper bound for the number of tokens that can be generated for a completion,
+    // including visible output tokens and reasoning tokens.
+    optional int32 max_completion_tokens = 16;
+
+    // Optional. The maximum number of tokens that can be generated in the chat completion.
+    // Deprecated in favor of max_completion_tokens.
+    optional int32 max_tokens = 17;
+
+    // Optional. Developer-defined tags and values used for filtering completions in the OpenAI dashboard.
+    optional google.protobuf.Struct metadata = 18;
+
+    // Optional. The number of chat completion choices to generate for each input message. Note that
+    // costs are multiplied by the number of choices generated.
+    optional int32 n = 19;
+
+    // Optional. A number between -2.0 and 2.0. Positive values penalize new tokens based on whether
+    // they have already appeared in the text, increasing the likelihood of the model discussing new topics.
+    optional float presence_penalty = 20;
+
+    // Optional. A stable key used to enable prompt caching for identical prompt prefixes, reducing
+    // latency and cost on repeated requests.
+    optional string prompt_cache_key = 21;
+
+    // Optional. Constrains the effort level for reasoning models (e.g., o1, o3). Controls the trade-off
+    // between speed and quality.
+    optional ReasoningEffort reasoning_effort = 22;
+
+    // Optional. If specified, the system will make a best effort to sample deterministically given the
+    // same seed and parameters, enabling reproducible outputs.
+    optional int64 seed = 23;
+
+    // Optional. Specifies the latency tier to use for processing the request. Affects cost and
+    // throughput.
+    optional ServiceTier service_tier = 24;
+
+    // Optional. Up to 4 sequences where the API will stop generating further tokens. The returned text
+    // will not contain the stop sequence.
+    repeated string stop = 25;
+
+    // Optional. Whether to store the output of this chat completion request for use in model
+    // distillation, evals, or the stored completions dashboard.
+    optional bool store = 26;
+
+    // Optional. What sampling temperature to use, between 0 and 2. Higher values (e.g., 0.8) make the
+    // output more random, while lower values (e.g., 0.2) make it more focused and deterministic.
+    optional float temperature = 27;
+
+    // Optional. An integer between 0 and 20 specifying the number of most likely tokens to return at
+    // each token position, each with an associated log probability. Requires logprobs to be true.
+    optional int32 top_logprobs = 28;
+
+    // Optional. An alternative to sampling with temperature, called nucleus sampling. The model
+    // considers only the tokens with top_p probability mass. Ranges from 0 to 1.
+    optional float top_p = 29;
+
+    // Optional. A unique identifier representing the end-user, which helps OpenAI monitor and detect
+    // abuse.
+    optional string user = 30;
+
+    // Optional. The verbosity level for the response output.
+    optional Verbosity verbosity = 31;
+
+    // Optional. Additional HTTP headers to send with the request. These are merged with and override
+    // default_headers for this specific request only.
+    optional google.protobuf.Struct extra_headers = 32;
+
+    // Optional. Additional query parameters to send with the request. These are merged with and override
+    // default_query for this specific request only.
+    optional google.protobuf.Struct extra_query = 33;
+
+    // Optional. Additional JSON properties to include in the request body. Useful for accessing new or
+    // undocumented API parameters.
+    optional google.protobuf.Struct extra_body = 34;
+
+}
+
+// <p>VoiceActivityDetection contains information about voice activity detection settings.</p>
 message VoiceActivityDetection {
 
     // Indicates if voice activity detection is active.
@@ -973,8 +1249,8 @@ message VoiceActivityDetection {
 
 }
 
-// Pyannote contains configuration for the Pyannote voice activity detection model.
-// Library: [pyannote-audio](https://github.com/pyannote/pyannote-audio/blob/develop/tutorials/voice_activity_detection.ipynb)
+// <p>Pyannote contains configuration for the Pyannote voice activity detection model.</p>
+// <p>Library: <a href="https://github.com/pyannote/pyannote-audio/blob/develop/tutorials/voice_activity_detection.ipynb">pyannote-audio</a></p>
 message Pyannote {
 
     // Full name of the Pyannote model.
@@ -984,11 +1260,11 @@ message Pyannote {
     int64 min_audio_size = 2;
 
     // Fill inactive regions shorter than that many seconds.
-    // Example [notebook](https://github.com/pyannote/pyannote-audio/blob/develop/tutorials/voice_activity_detection.ipynb)
+    // Example <a href="https://github.com/pyannote/pyannote-audio/blob/develop/tutorials/voice_activity_detection.ipynb">notebook</a>
     float min_duration_off = 3;
 
-    // Remove active regions shorter than that many seconds
-    // Example [notebook](https://github.com/pyannote/pyannote-audio/blob/develop/tutorials/voice_activity_detection.ipynb)
+    // Remove active regions shorter than that many seconds.
+    // Example <a href="https://github.com/pyannote/pyannote-audio/blob/develop/tutorials/voice_activity_detection.ipynb">notebook</a>
     float min_duration_on = 4;
 
     // Host name of triton inference server that serves the Pyannote model
@@ -999,7 +1275,7 @@ message Pyannote {
 
 }
 
-// PostProcessing contains the configuration for post-processing.
+// <p>PostProcessing contains the configuration for post-processing.</p>
 message PostProcessing {
 
     // List of names of active post-processors.
@@ -1010,18 +1286,21 @@ message PostProcessing {
 
 }
 
-// PostProcessors contains configurations for post-processors.
+// <p>PostProcessors contains configurations for post-processors.</p>
 message PostProcessors {
 
     // Configuration of the SymSpell spelling correction.
     SymSpell sym_spell = 1;
 
     // Configuration of the normalization object.
-    S2TNormalization normalization = 2;
+    S2tNormalization normalization = 2;
+
+    // Configuration of the LLM post-processing.
+    S2tLlmPostProcessing llm_post_processing = 3;
 
 }
 
-// SymSpell contains configuration for the SymSpell spelling correction.
+// <p>SymSpell contains configuration for the SymSpell spelling correction.</p>
 message SymSpell {
 
     // Path to the dictionary used by symspell
@@ -1036,8 +1315,8 @@ message SymSpell {
 
 }
 
-// S2TNormalization contains configuration for the speech-to-text normalization.
-message S2TNormalization {
+// <p>S2tNormalization contains configuration for the speech-to-text normalization.</p>
+message S2tNormalization {
 
     // Language for normalization of transcriptions.
     string language = 1;
@@ -1047,7 +1326,139 @@ message S2TNormalization {
 
 }
 
-// Logging contains configuration for logging.
+// <p>S2tLlmPostProcessing contains configuration for the speech-to-text postprocessing with LLM.</p>
+message S2tLlmPostProcessing {
+
+    // Optional. Configuration options for the OpenAI client used for post-processing.
+    optional OpenaiLlmOptions s2t_llm_post_processing_openai_options = 1;
+
+    // Optional. System prompt used to guide the LLM model for post-processing.
+    optional string s2t_llm_post_processing_system_prompt = 2;
+
+    // Optional. Ending prompt appended to the accumulated prompts of the active post-processing tasks.
+    optional string s2t_llm_post_processing_ending_prompt = 3;
+
+    // Optional. Configuration of the options to casing task in LLM post-processing.
+    optional S2tLlmPostProcessingSubTaskOptions s2t_llm_post_processing_casing_options = 4;
+
+    // Optional. Configuration of the options to punctuation task in LLM post-processing.
+    optional S2tLlmPostProcessingSubTaskOptions s2t_llm_post_processing_punctuation_options = 5;
+
+    // Optional. Configuration of the options to spelling-correction task in LLM post-processing.
+    optional S2tLlmPostProcessingSubTaskOptions s2t_llm_post_processing_spelling_correction_options = 6;
+
+    // Optional. Configuration of the options to semantic-correction task in LLM post-processing.
+    optional S2tLlmPostProcessingSubTaskOptions s2t_llm_post_processing_semantic_correction_options = 7;
+
+    // Optional. Configuration of the options to translation task in LLM post-processing.
+    optional S2tLlmPostProcessingTranslationOptions s2t_llm_post_processing_translation_options = 8;
+
+    // Optional. Configuration of the options to inverse-normalization task in LLM post-processing.
+    optional S2tLlmPostProcessingInverseNormalizationOptions s2t_llm_post_processing_inverse_normalization_options = 9;
+
+    // Optional. Configuration of the options to normalization task in LLM post-processing.
+    optional S2tLlmPostProcessingNormalizationOptions s2t_llm_post_processing_normalization_options = 10;
+
+    // Optional. Configuration of the options to summarization task in LLM post-processing.
+    optional S2tLlmPostProcessingSummarizationOptions s2t_llm_post_processing_summarization_options = 11;
+
+    // Optional. Configuration of the options to user-prompt task in LLM post-processing.
+    optional S2tLlmPostProcessingSubTaskOptions s2t_llm_post_processing_user_prompt_options = 12;
+
+}
+
+// <p>Configuration of the options to translation task in LLM post-processing.</p>
+message S2tLlmPostProcessingTranslationOptions {
+
+    // Optional. Indicates if the translation task of LLM post-processing is active.
+    optional bool active = 1;
+
+    // Optional. Target language of the translation task of LLM post-processing.
+    optional string language = 2;
+
+}
+
+// <p>Configuration of the options to inverse-normalization task in LLM post-processing.</p>
+message S2tLlmPostProcessingInverseNormalizationOptions {
+
+    // Optional. Indicates if the inverse-normalization task of LLM post-processing is active.
+    optional bool active = 1;
+
+    // Optional. Configuration of the inverse-normalization of email address sub-task.
+    optional S2tLlmPostProcessingSubTaskOptions email = 2;
+
+    // Optional. Configuration of the inverse-normalization of phone number sub-task.
+    optional S2tLlmPostProcessingSubTaskOptions phone_number = 3;
+
+    // Optional. Configuration of the inverse-normalization of date and time sub-task.
+    optional S2tLlmPostProcessingSubTaskOptions date_and_time = 4;
+
+    // Optional. Configuration of the inverse-normalization of credit card number sub-task.
+    optional S2tLlmPostProcessingSubTaskOptions credit_card_number = 5;
+
+    // Optional. Configuration of the inverse-normalization of social security number sub-task.
+    optional S2tLlmPostProcessingSubTaskOptions social_security_number = 6;
+
+    // Optional. Configuration of the inverse-normalization of time zone sub-task.
+    optional S2tLlmPostProcessingSubTaskOptions time_zone = 7;
+
+}
+
+// <p>Configuration of the options to normalization task in LLM post-processing.</p>
+message S2tLlmPostProcessingNormalizationOptions {
+
+    // Optional. Indicates if the normalization task of LLM post-processing is active.
+    optional bool active = 1;
+
+    // Optional. Configuration of the normalization of email address sub-task.
+    optional S2tLlmPostProcessingSubTaskOptions email = 2;
+
+    // Optional. Configuration of the normalization of phone number sub-task.
+    optional S2tLlmPostProcessingSubTaskOptions phone_number = 3;
+
+    // Optional. Configuration of the normalization of date and time sub-task.
+    optional S2tLlmPostProcessingSubTaskOptions date_and_time = 4;
+
+    // Optional. Configuration of the normalization of credit card number sub-task.
+    optional S2tLlmPostProcessingSubTaskOptions credit_card_number = 5;
+
+    // Optional. Configuration of the normalization of social security number sub-task.
+    optional S2tLlmPostProcessingSubTaskOptions social_security_number = 6;
+
+    // Optional. Configuration of the normalization of time zone sub-task.
+    optional S2tLlmPostProcessingSubTaskOptions time_zone = 7;
+
+}
+
+// <p>Configuration of the options to summarization task in LLM post-processing.</p>
+message S2tLlmPostProcessingSummarizationOptions {
+
+    // Optional. Indicates if the summarization task of LLM post-processing is active.
+    optional bool active = 1;
+
+    // Optional. Minimum number of characters of the summary generated in summarization task of LLM post-processing.
+    optional int32 min_chars = 2;
+
+    // Optional. Maximum number of characters of the summary generated in summarization task of LLM post-processing.
+    optional int32 max_chars = 3;
+
+}
+
+// <p>Common configuration for an individual LLM post-processing sub-task (e.g. email, phone number,
+// date and time, credit card number, social security number, time zone).
+// Used by both normalization and inverse-normalization tasks.</p>
+message S2tLlmPostProcessingSubTaskOptions {
+
+    // Optional. Indicates if this sub-task is active.
+    optional bool active = 1;
+
+    // Optional. Custom prompt to guide the LLM for this sub-task. Overrides the default prompt
+    // when set.
+    optional string prompt = 2;
+
+}
+
+// <p>Logging contains configuration for logging.</p>
 message Logging {
 
     // Type of logging.
@@ -1062,33 +1473,33 @@ message Logging {
 // GET LIST OF AVAILABLE LANGUAGE MODELS //
 ///////////////////////////////////////////
 
-// ListS2tLanguageModelsRequest is used to request a list of available language models for specified pipelines.
+// <p>ListS2tLanguageModelsRequest is used to request a list of available language models for specified pipelines.</p>
 message ListS2tLanguageModelsRequest {
 
     // List of pipeline IDs to retrieve their available language models.
-    // Example: ["pipeline_1", "pipeline_2"]
+    // Example: [&quot;pipeline_1&quot;, &quot;pipeline_2&quot;]
     repeated string ids = 1;
 
 }
 
-// LanguageModelPipelineId contains information about a pipeline and its available language models.
+// <p>LanguageModelPipelineId contains information about a pipeline and its available language models.</p>
 message LanguageModelPipelineId {
 
-    // A pipeline ID. Example: "pipeline_1"
+    // A pipeline ID. Example: &quot;pipeline_1&quot;
     string pipeline_id = 1;
 
-    // A list of all available language models for the corresponding pipeline ID. Example: ["model_1", "model_2"]
+    // A list of all available language models for the corresponding pipeline ID. Example: [&quot;model_1&quot;, &quot;model_2&quot;]
     repeated string model_names = 2;
 
 }
 
-// ListS2tLanguageModelsResponse is used to return the available language models for specified pipelines.
+// <p>ListS2tLanguageModelsResponse is used to return the available language models for specified pipelines.</p>
 message ListS2tLanguageModelsResponse {
 
-    // Response is a list of LanguageModelPipelineId, where each element contains a pipeline ID and its associated
+    // Response is a list of <code>LanguageModelPipelineId</code>, where each element contains a pipeline ID and its associated
     // language models.
-    // Example: [{pipeline_id: "pipeline_1", model_names: ["model_1", "model_2"]}, {pipeline_id: "pipeline_2",
-    // model_names: ["model_3"]}]
+    // Example: [{pipeline_id: &quot;pipeline_1&quot;, model_names: [&quot;model_1&quot;, &quot;model_2&quot;]}, {pipeline_id: &quot;pipeline_2&quot;,
+    // model_names: [&quot;model_3&quot;]}]
     repeated LanguageModelPipelineId lm_pipeline_ids = 1;
 
 }
@@ -1097,26 +1508,26 @@ message ListS2tLanguageModelsResponse {
 // CUSTOM LANGUAGE MODEL FEATURES  //
 /////////////////////////////////////
 
-// CreateUserLanguageModelRequest is used to request the creation of a new user-specific language model.
+// <p>CreateUserLanguageModelRequest is used to request the creation of a new user-specific language model.</p>
 message CreateUserLanguageModelRequest {
 
-    // Name of the language model to create. Example: "user_lm_1"
+    // Name of the language model to create. Example: &quot;user_lm_1&quot;
     string language_model_name = 1;
 
 }
 
-// DeleteUserLanguageModelRequest is used to request the deletion of a user-specific language model.
+// <p>DeleteUserLanguageModelRequest is used to request the deletion of a user-specific language model.</p>
 message DeleteUserLanguageModelRequest {
 
-    // Name of the language model to delete. Example: "user_lm_1"
+    // Name of the language model to delete. Example: &quot;user_lm_1&quot;
     string language_model_name = 1;
 
 }
 
-// AddDataToUserLanguageModelRequest is used to request the addition of data to a user-specific language model.
+// <p>AddDataToUserLanguageModelRequest is used to request the addition of data to a user-specific language model.</p>
 message AddDataToUserLanguageModelRequest {
 
-    // Name of the language model to which to add data. Example: "user_lm_1"
+    // Name of the language model to which to add data. Example: &quot;user_lm_1&quot;
     string language_model_name = 1;
 
     // Zip file containing data in the form of text files.
@@ -1125,13 +1536,36 @@ message AddDataToUserLanguageModelRequest {
 
 }
 
-// TrainUserLanguageModelRequest is used to request the training of a user-specific language model.
+// <p>TrainUserLanguageModelRequest is used to request the training of a user-specific language model.</p>
 message TrainUserLanguageModelRequest {
 
-    // Name of the language model to train. Example: "user_lm_1"
+    // Name of the language model to train. Example: &quot;user_lm_1&quot;
     string language_model_name = 1;
 
     // Order n of the ngram. Example: 3 (for trigram model)
     int64 order = 2;
+
+}
+
+////////////////////////
+// LIST OF S2T NORMALIZATION PIPELINES //
+////////////////////////
+
+// <p>The request message for <code>ListS2tNormalizationPipelines</code>.</p>
+// <p>Filter pipelines by attributes in request.</p>
+message ListS2tNormalizationPipelinesRequest {
+
+    // Optional. Define the language.
+    string language = 1;
+
+}
+
+// <p>The response message for <code>ListS2tNormalizationPipelines</code>.</p>
+message ListS2tNormalizationPipelinesResponse {
+
+    // Required. Representation of a list of normalization pipelines configurations.
+    // Retrieved by <code>ListS2tNormalizationPipelines</code>, containing the configurations of
+    // normalization pipelines with the specifications received in the <code>ListS2tNormalizationPipelinesRequest</code>.
+    repeated string s2t_normalization_pipelines = 1;
 
 }
