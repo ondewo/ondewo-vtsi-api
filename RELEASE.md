@@ -1,4 +1,13 @@
 # Release History
+
+*****************
+
+## Release ONDEWO VTSI API 8.2.0
+
+### Improvements
+
+* [[OND233-373]](https://ondewo.atlassian.net/browse/OND233-373) Upgrade to ONDEWO NLU API [6.7.0](https://github.com/ondewo/ondewo-nlu-api/releases/6.7.0), ONDEWO S2T API [7.2.0](https://github.com/ondewo/ondewo-s2t-api/releases/7.2.0) and ONDEWO T2S API [6.1.0](https://github.com/ondewo/ondewo-t2s-api/releases/6.1.0)
+
 *****************
 
 ## Release ONDEWO VTSI API 8.1.0
