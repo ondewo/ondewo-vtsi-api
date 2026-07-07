@@ -1,4 +1,4 @@
-// Copyright 2020-2023 ONDEWO GmbH
+// Copyright 2020-2026 ONDEWO GmbH
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ message CcaiProject {
     string owner_name = 3;
 
     // Map of two letter language codes to lists of CcaiServiceList
-    // Two-letter language codes following ISO 639-1 (see https://en.wikipedia.org/wiki/ISO_639-1)
+    // Two-letter language codes following ISO 639-1 (see <a href="https://en.wikipedia.org/wiki/ISO_639-1">https://en.wikipedia.org/wiki/ISO_639-1</a>)
     map<string, CcaiServiceList> ccai_services_map = 4;
 
     // The status of the ccai project.
@@ -119,63 +119,138 @@ message CcaiServiceList {
     repeated CcaiService ccai_services = 1;
 }
 
+// Defines the types of CCAI (Call Center AI) services available in the system.
+//
+// Each service type represents a specific capability or module within the ONDEWO platform
+// that enables comprehensive call center and customer interaction management. Services can be
+// composed in workflows and are identified by their type, language code, and provider configuration.
 enum CcaiServiceType {
 
-    // unspecified
+    // No service type specified or unknown type
     CCAI_SERVICE_TYPE_UNSPECIFIED = 0;
 
-    // ondewo-aim service
+    // ONDEWO Agent Interaction Manager (AIM)
+    // Orchestrates multi-channel agent interactions, conversation routing, and workforce management.
+    // Handles inbound/outbound call distribution, chat routing, and agent state management.
     CCAI_SERVICE_TYPE_ONDEWO_AIM = 1;
 
-    // ondewo-bpi service
+    // ONDEWO Business Process Intelligence (BPI)
+    // Analyzes call center processes, identifies optimization opportunities, and monitors compliance.
+    // Enables workflow automation, process mining, and performance benchmarking.
     CCAI_SERVICE_TYPE_ONDEWO_BPI = 2;
 
-    // ondewo-csi service
+    // ONDEWO Customer Service Intelligence (CSI)
+    // Provides customer service analytics, sentiment analysis, and interaction quality scoring.
+    // Generates insights from call recordings, transcripts, and customer feedback.
     CCAI_SERVICE_TYPE_ONDEWO_CSI = 3;
 
-    // ondewo-nlu service
+    // ONDEWO Natural Language Understanding (NLU)
+    // Core natural language processing service for intent recognition, entity extraction, and dialogue management.
+    // Essential for conversational AI and automated customer interactions.
     CCAI_SERVICE_TYPE_ONDEWO_NLU = 4;
 
-    // ondewo-s2t service
+    // ONDEWO Speech-to-Text (S2T)
+    // Converts audio speech to written text with high accuracy and multi-language support.
+    // Integrates with voice channels for real-time transcription during calls.
     CCAI_SERVICE_TYPE_ONDEWO_S2T = 5;
 
-    // ondewo-sip service
+    // ONDEWO Session Initiation Protocol (SIP)
+    // Manages VoIP signaling, call establishment, call control, and telephony infrastructure.
+    // Handles SIP trunk integration, PBX connectivity, and call routing logic.
     CCAI_SERVICE_TYPE_ONDEWO_SIP = 6;
 
-    // ondewo-t2s service
+    // ONDEWO Text-to-Speech (T2S)
+    // Converts written text to natural-sounding audio speech with multiple voice options.
+    // Enables voice-based responses, IVR prompts, and notification delivery.
     CCAI_SERVICE_TYPE_ONDEWO_T2S = 7;
 
-    // ondewo-vtsi service
+    // ONDEWO VOIP Telephone System Integration (VTSI)
+    // Provides virtual telephony infrastructure for testing, simulation, and call management.
+    // Enables stress testing, scenario simulation, and quality assurance for voice applications.
     CCAI_SERVICE_TYPE_ONDEWO_VTSI = 8;
 
-    // ondewo-vtsi service
+    // ONDEWO VOIP Telephone System Integration (VTSI) with RabbitMQ
+    // Extended VTSI service with RabbitMQ message queue integration for asynchronous processing.
+    // Enables decoupled, scalable call handling and event streaming.
     CCAI_SERVICE_TYPE_ONDEWO_VTSI_RABBITMQ = 9;
 
-    // ondewo-nlu-qa service
+    // ONDEWO NLU Question Answering (QA)
+    // Provides intelligent question-answering capabilities for knowledge base queries.
+    // Enables automated FAQ handling and self-service customer support.
     CCAI_SERVICE_TYPE_ONDEWO_NLU_QA = 10;
 
-    // ondewo-nlu-webhook service
+    // ONDEWO NLU Webhook
+    // Enables webhook-based event integration for NLU events and external notifications.
+    // Allows real-time integration with third-party systems and custom workflows.
     CCAI_SERVICE_TYPE_ONDEWO_NLU_WEBHOOK = 11;
 
-    // ondewo-survey service
+    // ONDEWO Survey
+    // Manages survey campaigns, customer feedback collection, and satisfaction measurements.
+    // Supports post-call surveys and voice-based survey delivery.
     CCAI_SERVICE_TYPE_ONDEWO_SURVEY = 12;
 
-    // ondewo-nlu-llm service
+    // ONDEWO NLU Large Language Model (LLM)
+    // Integrates large language models for advanced NLP tasks and generative AI capabilities.
+    // Enables contextual responses, content generation, and semantic understanding.
     CCAI_SERVICE_TYPE_ONDEWO_NLU_LLM = 13;
 
-    // ondewo-nlu-websearch service
+    // ONDEWO NLU Web Search
+    // Performs real-time internet search queries and retrieves current information.
+    // Enables agents to access live data during customer interactions.
     CCAI_SERVICE_TYPE_ONDEWO_NLU_WEBSEARCH = 14;
 
-    // ondewo-aim-webchat service
+    // ONDEWO Agent Interaction Manager (AIM) WebChat
+    // Enables live chat interactions via web browsers for customer support.
+    // Manages web-based messaging channels with agent assignment and routing.
     CCAI_SERVICE_TYPE_ONDEWO_AIM_WEBCHAT = 15;
 
-    // ondewo-aim-webphone service
+    // ONDEWO Agent Interaction Manager (AIM) WebPhone
+    // Enables VoIP phone interactions directly through web browsers without additional software.
+    // Supports WebRTC-based calling for modern browser environments.
     CCAI_SERVICE_TYPE_ONDEWO_AIM_WEBPHONE = 16;
 
-    // ondewo-nlu-vectorstore service
+    // ONDEWO NLU Vector Store
+    // Manages vector embeddings and semantic search capabilities for knowledge retrieval.
+    // Enables similarity matching and context-aware information lookup.
     CCAI_SERVICE_TYPE_ONDEWO_NLU_VECTORSTORE = 17;
 
+    // ONDEWO NLU LLM Agent
+    // Autonomous agent powered by large language models with tool-calling capabilities.
+    // Enables complex, multi-step tasks and dynamic decision-making in customer interactions.
+    CCAI_SERVICE_TYPE_ONDEWO_NLU_LLM_AGENT = 18;
+
+    // ONDEWO NLU LLM Model Context Protocol (MCP)
+    // Integrates large language models with the Model Context Protocol standard for tool usage.
+    // Enables standardized integration with external tools and data sources.
+    CCAI_SERVICE_TYPE_ONDEWO_NLU_LLM_MCP = 19;
+
+    // ONDEWO NLU LLM Retrieval-Augmented Generation (RAG)
+    // Enhances large language model responses with document and knowledge base retrieval.
+    // Enables grounded, factual responses backed by organizational knowledge.
+    CCAI_SERVICE_TYPE_ONDEWO_NLU_LLM_RAG = 20;
+
+    // ONDEWO Analytics
+    // Provides comprehensive analytics and metrics for call center operations and KPI tracking.
+    // Enables real-time dashboards, historical analysis, and predictive insights.
+    CCAI_SERVICE_TYPE_ONDEWO_ANALYTICS = 21;
+
+    // ONDEWO Analytics Dashboard
+    // Visual dashboard for displaying analytics, KPIs, and performance metrics.
+    // Provides interactive reports for supervisors, managers, and executives.
+    CCAI_SERVICE_TYPE_ONDEWO_ANALYTICS_DASHBOARD = 22;
+
+    // ONDEWO VOIP Telephone System Integration (VTSI) Outbound Calling
+    // Handles outbound call campaigns and call management.
+    // Enables sales outreach, follow-ups, and proactive customer communication.
+    CCAI_SERVICE_TYPE_ONDEWO_VTSI_OUTBOUND_CAMPAIGN = 23;
+
+    // ONDEWO VOIP Telephone System Integration (VTSI) Inbound Campaign
+    // Manages inbound call campaigns and call routing for marketing or support purposes.
+    // Enables targeted call handling and customer engagement strategies.
+    CCAI_SERVICE_TYPE_ONDEWO_VTSI_INBOUND_CAMPAIGN = 24;
+
 }
+
 // Definition of a Call Center AI (CCAI service) Service.
 message CcaiService {
 
@@ -253,18 +328,22 @@ message CcaiService {
     optional CcaiServiceProvider ccai_service_provider = 24;
 
     // Index indicating the hierarchical position of a service within the service hierarchy.
-    // The index follows a tree-like structure, where each level of depth is separated by a "_".
+    // The index follows a tree-like structure, where each level of depth is separated by a &quot;_&quot;.
     // For example:
-    // - "1" represents a top-level service
-    // - "1_1" represents a sub-service under "1"
-    // - "1_1_1" represents a sub-service under "1.1"
+    // <ul>
+    //   <li>&quot;1&quot; represents a top-level service</li>
+    //   <li>&quot;1_1&quot; represents a sub-service under &quot;1&quot;</li>
+    //   <li>&quot;1_1_1&quot; represents a sub-service under &quot;1.1&quot;</li>
+    // </ul>
     // This structure allows for easy representation and organization of services in nested workflows.
     //
     // If CcaiService have the same service_hierarchy they are executed in parallel.
     // For example:
-    // - "1" Service A
-    // - "1_1" Service B
-    // - "1_1" Service C
+    // <ul>
+    //   <li>&quot;1&quot; Service A</li>
+    //   <li>&quot;1_1&quot; Service B</li>
+    //   <li>&quot;1_1&quot; Service C</li>
+    // </ul>
     //
     // Service B and C will be executed in parallel and the Service A receives both results of service B and C.
     // The variable for the return value of a service is {{OUTPUT_SERVICE_service_hierarchy}}. So in the example
@@ -279,69 +358,140 @@ enum CcaiServiceProvider {
     NO_CCAI_SERVICE_PROVIDER = 0;
 
     // ONDEWO provider for CCAI service services
+    // <a href="https://www.ondewo.com/">ONDEWO</a>
     CCAI_SERVICE_PROVIDER_ONDEWO = 1;
 
-    // Google as the CCAI service provider, utilizing Google’s conversational AI capabilities
+    // Google as the CCAI service provider, utilizing Google&apos;s conversational AI capabilities
+    // <a href="https://deepmind.google/technologies/gemini/">Google Gemini</a>
     CCAI_SERVICE_PROVIDER_GOOGLE_GEMINI = 2;
 
-    // Microsoft Azure as the CCAI service provider, using Microsoft's Azure cognitive services
+    // Microsoft Azure as the CCAI service provider, using Microsoft&apos;s Azure cognitive services
+    // <a href="https://azure.microsoft.com/en-us/products/cognitive-services/openai-service/">Azure OpenAI</a>
     CCAI_SERVICE_PROVIDER_MICROSOFT_AZURE_OPENAI = 3;
 
-    // LangChain as the CCAI service provider
+    // Microsoft AutoGen as the CCAI service provider
+    // <a href="https://github.com/microsoft/autogen">AutoGen</a>
     CCAI_SERVICE_PROVIDER_MICROSOFT_AUTOGEN = 4;
 
     // Ollama as the CCAI service provider, typically associated with specific OLLAMA AI tools
+    // <a href="https://github.com/ollama/ollama">Ollama</a>
     CCAI_SERVICE_PROVIDER_OLLAMA = 5;
 
     // OpenAI as the CCAI service provider, commonly used for models such as GPT
+    // <a href="https://openai.com/">OpenAI</a>
     CCAI_SERVICE_PROVIDER_OPENAI = 6;
 
     // Anthropic as the CCAI service provider, used with AI models from Anthropic
+    // <a href="https://www.anthropic.com/">Anthropic</a>
     CCAI_SERVICE_PROVIDER_ANTHROPIC = 7;
 
     // Hugging Face as the CCAI service provider, often used for open-source NLP models
+    // <a href="https://huggingface.co/">Hugging Face</a>
     CCAI_SERVICE_PROVIDER_HUGGINGFACE = 8;
 
     // IBM as the CCAI service provider, such as IBM Watson for conversational AI
+    // <a href="https://www.ibm.com/watson">IBM Watson</a>
     CCAI_SERVICE_PROVIDER_IBM = 9;
 
-    // Haystack as the CCAI service provider, e.g. for question and answering, conversations
+    // Haystack as the CCAI service provider, e.g., for question answering and conversations
+    // <a href="https://github.com/deepset-ai/haystack">Haystack</a>
     CCAI_SERVICE_PROVIDER_HAYSTACK = 10;
 
     // LangChain as the CCAI service provider
+    // <a href="https://github.com/langchain-ai/langchain">LangChain</a>
     CCAI_SERVICE_PROVIDER_LANGCHAIN = 11;
 
-    // Amazon AWS as the CCAI service provider, using Amazon's AI/ML services
+    // Amazon AWS as the CCAI service provider, using Amazon&apos;s AI/ML services
+    // <a href="https://aws.amazon.com/machine-learning/">AWS AI Services</a>
     CCAI_SERVICE_PROVIDER_AMAZON = 12;
 
-    // Mistral as the CCAI service provider, using Mistrals services
+    // Mistral as the CCAI service provider, using Mistral&apos;s services
+    // <a href="https://mistral.ai/">Mistral</a>
     CCAI_SERVICE_PROVIDER_MISTRAL = 13;
 
     // DuckDuckGo Websearch API
+    // <a href="https://duckduckgo.com/api">DuckDuckGo API</a>
     CCAI_SERVICE_PROVIDER_DUCKDUCKGO = 14;
 
     // Google PSE Websearch API
+    // <a href="https://programmablesearchengine.google.com/">Google Programmable Search Engine</a>
     CCAI_SERVICE_PROVIDER_GOOGLE_PSE = 15;
 
     // Jina Websearch API
+    // <a href="https://github.com/jina-ai/jina">Jina AI</a>
     CCAI_SERVICE_PROVIDER_JINA = 16;
 
     // Tavily Websearch API
+    // <a href="https://tavily.com/">Tavily API</a>
     CCAI_SERVICE_PROVIDER_TAVILY = 17;
 
-    // Elastic Search vector database service
+    // ElasticSearch vector database service
+    // <a href="https://www.elastic.co/">ElasticSearch</a>
     CCAI_SERVICE_PROVIDER_ELASTICSEARCH = 18;
 
     // Milvus vector database service
+    // <a href="https://milvus.io/">Milvus</a>
     CCAI_SERVICE_PROVIDER_MILVUS = 19;
 
     // Qdrant vector database service
+    // <a href="https://qdrant.tech/">Qdrant</a>
     CCAI_SERVICE_PROVIDER_QDRANT = 20;
 
     // Chroma vector database service
+    // <a href="https://github.com/chroma-core/chroma">ChromaDB</a>
     CCAI_SERVICE_PROVIDER_CHROMA = 21;
 
+    // Google CCAI service provider
+    // <a href="https://cloud.google.com/ai">Google Cloud AI</a>
+    CCAI_SERVICE_PROVIDER_GOOGLE = 22;
+
+    // Microsoft CCAI service provider
+    // <a href="https://www.microsoft.com/en-us/ai">Microsoft AI</a>
+    CCAI_SERVICE_PROVIDER_MICROSOFT = 23;
+
+    // Deepgram as the CCAI service provider for speech processing
+    // <a href="https://deepgram.com/">Deepgram</a>
+    CCAI_SERVICE_PROVIDER_DEEPGRAM = 24;
+
+    // ElevenLabs as the CCAI service provider for voice synthesis
+    // <a href="https://elevenlabs.io/">ElevenLabs</a>
+    CCAI_SERVICE_PROVIDER_ELEVENLABS = 25;
+
+    // Hugging Face Text Generation Inference (TGI) as the CCAI service provider
+    // <a href="https://github.com/huggingface/text-generation-inference">Text Generation Inference</a>
+    CCAI_SERVICE_PROVIDER_HUGGINGFACE_TGI = 26;
+
+    // Hugging Face Text Embedding Inference (TGE) as the CCAI service provider
+    // <a href="https://github.com/huggingface/text-embeddings-inference">Text Embeddings Inference</a>
+    CCAI_SERVICE_PROVIDER_HUGGINGFACE_TGE = 27;
+
+    // Hugging Face SmolAgents as the CCAI service provider
+    // <a href="https://github.com/huggingface/smolagents">SmolAgents</a>
+    CCAI_SERVICE_PROVIDER_HUGGINGFACE_SMOLAGENTS = 28;
+
+    // Google Agent Development Kit (ADK) as the CCAI service provider
+    // <a href="https://google.github.io/adk-docs/">Google Agent Development Kit (ADK)</a>
+    CCAI_SERVICE_PROVIDER_GOOGLE_AGENT_DEVELOPMENT_KIT = 29;
+
+    // Model Context Protocol as the CCAI service provider, enabling integration with services following
+    // the Model Context Protocol standard.
+    // <a href="https://modelcontextprotocol.io/introduction">MCP</a>
+    CCAI_SERVICE_PROVIDER_MODEL_CONTEXT_PROTOCOL = 30;
+
+    // Opensearch as the CCAI service provider, enabling integration with Opensearch vector database and search services
+    // <a href="https://opensearch.org/">Opensearch</a>
+    CCAI_SERVICE_PROVIDER_OPENSEARCH = 31;
+
+    // Grok as the CCAI service provider, commonly used for models such as Grok-1
+    // <a href="https://grok.x.ai/">Grok</a>
+    CCAI_SERVICE_PROVIDER_GROK = 32;
+
+    // PostgreSQL as the CCAI service provider, enabling integration with PostgreSQL databases
+    // <a href="https://www.postgresql.org/">PostgreSQL</a>
+    CCAI_SERVICE_PROVIDER_POSTGRES = 33;
+
 }
+
 
 
 // Request to create a Call Center AI (CCAI service) project.
@@ -384,6 +534,9 @@ message GetCcaiProjectRequest{
     // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
     string nlu_project_name = 4;
 
+    // Optional. The mask to control which fields gets returned.
+    optional google.protobuf.FieldMask field_mask = 5;
+
 }
 
 // Request to retrieve a CCAI service project
@@ -396,6 +549,9 @@ message GetCcaiServiceRequest{
     // Required. The nlu agent project of this CcaiProject.
     // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
     string nlu_project_name = 4;
+
+    // Optional. The mask to control which fields gets returned.
+    optional google.protobuf.FieldMask field_mask = 5;
 
 }
 
@@ -414,36 +570,45 @@ message ListCcaiProjectsRequest {
     optional CcaiProjectSorting ccai_project_sorting = 3;
 
     // Optional. The next_page_token value returned from a previous list request.
-    // Example: "current_index-1--page_size-20"
+    // Example: &quot;current_index-1--page_size-20&quot;
     // The page token to support pagination.
     // Pagination allows you to retrieve a large result set in smaller, more manageable portions.
     // The page token is a string representing the current index and page size.
     //
     // Valid page token strings:
-    // * "" (empty string) - Retrieves the first page.
-    // * "current_index-0--page_size-20" - Retrieves the first page with a page size of 20.
-    // * "current_index-1--page_size-20" - Retrieves the second page with a page size of 20.
+    // <ul>
+    //   <li>&quot;&quot; (empty string) - Retrieves the first page.</li>
+    //   <li>&quot;current_index-0--page_size-20&quot; - Retrieves the first page with a page size of 20.</li>
+    //   <li>&quot;current_index-1--page_size-20&quot; - Retrieves the second page with a page size of 20.</li>
+    // </ul>
     //
     // Index starts at 0.
     //
     // Examples of valid page token strings:
-    // * ""
-    // * "current_index-0--page_size-20"
-    // * "current_index-1--page_size-20"
-    // * "current_index-10--page_size-20"
+    // <ul>
+    //   <li>&quot;&quot;</li>
+    //   <li>&quot;current_index-0--page_size-20&quot;</li>
+    //   <li>&quot;current_index-1--page_size-20&quot;</li>
+    //   <li>&quot;current_index-10--page_size-20&quot;</li>
+    // </ul>
     //
     // Examples of invalid page token strings:
-    // * "1"
-    // * "current_index-0--page_size-20"
-    // * "current_index--1--page_size-20"
-    // * "current_index1--page_size-20"
-    // * "current_index-1--page_size--20"
+    // <ul>
+    //   <li>&quot;1&quot;</li>
+    //   <li>&quot;current_index-0--page_size-20&quot;</li>
+    //   <li>&quot;current_index--1--page_size-20&quot;</li>
+    //   <li>&quot;current_index1--page_size-20&quot;</li>
+    //   <li>&quot;current_index-1--page_size--20&quot;</li>
+    // </ul>
     optional string page_token = 4;
 
 
     // Required. The nlu agent project of this CcaiProject.
     // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
     string nlu_project_name = 5;
+
+    // Optional. The mask to control which fields gets returned.
+    optional google.protobuf.FieldMask field_mask = 6;
 
 }
 
@@ -460,7 +625,7 @@ message ListCcaiProjectsResponse {
 
 }
 
-// This protobuf message defines the sorting order for CCAI service (Virtual Test System Infrastructure) projects.
+// This protobuf message defines the sorting order for CCAI service (VOIP Telephone System Integration) projects.
 message CcaiProjectSorting {
 
     // Enum to specify the sorting field for CCAI service projects.
@@ -469,7 +634,7 @@ message CcaiProjectSorting {
         // No sorting
         NO_CCAI_PROJECT_SORTING = 0;
 
-        // Sort by project name such as <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>.
+        // Sort by project name such as <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
         SORT_CCAI_PROJECT_BY_NAME = 1;
 
         // Sort by display name
@@ -518,6 +683,9 @@ message CcaiServiceFilter {
     // Type of CCAI service service
     repeated CcaiServiceType ccai_service_types = 2;
 
+    // Type of CCAI service providers
+    repeated CcaiServiceProvider ccai_service_providers = 3;
+
 }
 
 // Request to updated CCAI service project
@@ -530,7 +698,6 @@ message UpdateCcaiProjectRequest{
     optional CcaiServiceFilter ccai_service_filter = 2;
 
     // Optional. The mask to control which fields get updated.
-    // Note: Not implemented yet
     optional google.protobuf.FieldMask update_mask = 3;
 
     // Required. The nlu agent project of this CcaiProject.

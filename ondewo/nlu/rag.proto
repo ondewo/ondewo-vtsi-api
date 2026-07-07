@@ -1,0 +1,2165 @@
+// Copyright 2018 Google Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// Modifications Copyright 2020-2026 ONDEWO GmbH
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// File-level comment for <code>ondewo/nlu/rag.proto</code>.
+// This file contains a single service <a href="#ondewo.nlu.Rags">Rags</a>. The Rags service provides RAG (Retrieval-Augmented Generation) and web crawler functionality.
+// All message fields that are marked as <code>optional</code> are not actually optional but marked as such to enable presence tracking so that it is possible to distinguish between null and default value fields. Without the <code>optional</code> keyword it would for instance not be possible to distinguish between an integer <code>0</code> and <code>null</code>.
+syntax = "proto3";
+
+package ondewo.nlu;
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "ondewo/nlu/common.proto";
+import "ondewo/nlu/operation_metadata.proto";
+import "ondewo/nlu/operations.proto";
+import "ondewo/nlu/session.proto";
+
+// Provides RAG and web crawler endpoints.
+// Most of the RAG related endpoints largely mirror <a href="https://github.com/ondewo/ragflow">RAGFlow's</a> HTTP API endpoints. For more information on RAGFlow refer to the <a href="https://ragflow.io/docs/dev/">official documentation</a>
+service Rags {
+
+    // ===========================================
+    // Dataset Management
+    // REST: /api/v1/datasets
+    // ===========================================
+
+    // RAGFlow endpoint: POST /api/v1/datasets
+
+    // Create a new dataset (knowledge base).<br>
+    rpc RagCreateDataset(RagCreateDatasetRequest) returns (RagDataset);
+
+    // RAGFlow endpoint: PUT /api/v1/datasets/<dataset_id>
+
+    // Update an existing dataset's configuration.<br>
+    rpc RagUpdateDataset(RagUpdateDatasetRequest) returns (RagDataset);
+
+    // RAGFlow endpoint: DELETE /api/v1/datasets
+
+    // Delete one or more datasets (batch operation).<br>
+    // If ids is null or empty, deletes all user's datasets.<br>
+    // Deletes all associated documents, files, and chunks.
+    rpc RagDeleteDatasets(RagDeleteRequest) returns (RagPartialSuccess);
+
+    // RAGFlow endpoint: GET /api/v1/datasets
+
+    // List datasets with pagination and filtering.<br>
+    // Returns datasets from all tenants the user has access to.
+    rpc RagListDatasets(RagListDatasetsRequest) returns (RagDatasetList);
+
+    // ========================================================================
+    // Document Management
+    // REST: /api/v1/datasets/<dataset_id>/documents
+    // ========================================================================
+
+    // RAGFlow endpoint: POST /api/v1/datasets/<dataset_id>/documents
+
+    // Uploads a document to a dataset and starts parsing it.<br>
+    // If the <code>run</code> field of the returned document is not <code>RAG_DOCUMENT_STATUS_RUNNING</code> this indicates a failure to start parsing the document.
+    rpc RagUploadDocument(stream RagUploadDocumentRequest) returns (RagDocument);
+
+    // RAGFlow endpoint: PUT /api/v1/datasets/<dataset_id>/documents/<document_id>
+
+    // Update document metadata and configuration.<br>
+    // If the chunk method is changed, the document is automatically re-parsed.<br>
+    // If the <code>run</code> field of the returned document is not <code>RAG_DOCUMENT_STATUS_RUNNING</code> this indicates a failure to start parsing the document.
+    rpc RagUpdateDocument(RagUpdateDocumentRequest) returns (RagDocument);
+
+    // RAGFlow endpoint: GET /api/v1/datasets/<dataset_id>/documents/<document_id>
+
+    // Download the original document file.<br>
+    // Returns binary file stream from storage.<br>
+    // First chunk contains metadata, subsequent chunks only contain data.
+    rpc RagDownloadDocument(RagDownloadDocumentRequest) returns (stream RagFileChunk);
+
+    // RAGFlow endpoint: GET /api/v1/datasets/<dataset_id>/documents
+
+    // List documents in a dataset with pagination and filtering.<br>
+    // Supports time range filtering and keyword search.
+    rpc RagListDocuments(RagListDocumentsRequest) returns (RagDocumentList);
+
+    // RAGFlow endpoint: DELETE /api/v1/datasets/<dataset_id>/documents
+
+    // Delete one or more documents from a dataset (batch operation).<br>
+    // If ids empty, deletes all documents. Removes chunks and storage files.
+    rpc RagDeleteDocuments(RagDeleteDocumentsRequest) returns (RagPartialSuccess);
+
+    // ========================================================================
+    // Chunk Management
+    // REST: /api/v1/datasets/<dataset_id>/chunks, /api/v1/datasets/<dataset_id>/documents/<document_id>/chunks, /api/v1/retrieval
+    // ========================================================================
+
+    // RAGFlow endpoint: POST /api/v1/retrieval
+
+    // Retrieve chunks using vector similarity search.<br>
+    // Supports reranking, metadata filtering, and knowledge graph retrieval.
+    rpc RagRetrieval(RagRetrievalRequest) returns (RagRetrievalResponse);
+
+    // RAGFlow endpoint: POST /api/v1/datasets/<dataset_id>/chunks
+
+    // Start parsing documents into chunks.<br>
+    // Queues documents for background processing.
+    rpc RagParseDocuments(RagDocumentIdsRequest) returns (RagPartialSuccess);
+
+    // RAGFlow endpoint: DELETE /api/v1/datasets/<dataset_id>/chunks
+
+    // Stop parsing documents.
+    rpc RagStopParsing(RagDocumentIdsRequest) returns (RagPartialSuccess);
+
+    // ========================================================================
+    // Crawler
+    // ========================================================================
+
+    // Create a rag crawler for a dataset of an agent.
+    rpc RagCreateCrawler(RagCreateCrawlerRequest) returns (RagCrawler);
+
+    // Get a rag crawler by resource name.
+    rpc RagGetCrawler(RagGetCrawlerRequest) returns (RagCrawler);
+
+    // List rag crawlers of a dataset for the specified agent.
+    rpc RagListCrawlers(RagListCrawlersRequest) returns (RagListCrawlersResponse);
+
+    // Update a rag crawler (partial update of configuration fields).
+    rpc RagUpdateCrawler(RagUpdateCrawlerRequest) returns (RagCrawler);
+
+    // Delete a rag crawler of a dataset for the specified agent.
+    rpc RagDeleteCrawler(RagDeleteCrawlerRequest) returns (RagDeleteCrawlerResponse);
+
+    // Run a crawler.
+    rpc RagStartCrawler(RagStartCrawlerRequest) returns (ondewo.nlu.Operation);
+
+    // Stop a pending or running crawler run.
+    rpc RagStopCrawler(RagStopCrawlerRequest) returns (RagStopCrawlerResponse);
+
+    // Get a crawler run by resource name.
+    rpc RagGetCrawlerRun(RagGetCrawlerRunRequest) returns (ondewo.nlu.Operation);
+
+    // List crawler runs for a crawler.
+    rpc RagListCrawlerRuns(RagListCrawlerRunsRequest) returns (RagListCrawlerRunsResponse);
+
+    // Delete crawler runs by explicit run names and/or crawler names.
+    rpc RagDeleteCrawlerRuns(RagDeleteCrawlerRunsRequest) returns (RagDeleteCrawlerRunsResponse);
+
+    // Get a single crawler result by crawler run resource name and URL.
+    rpc RagGetCrawlerResult(RagGetCrawlerResultRequest) returns (RagCrawlerResult);
+
+    // Get crawler results by crawler run resource name.
+    rpc RagGetCrawlerResults(RagGetCrawlerResultsRequest) returns (RagGetCrawlerResultsResponse);
+
+    // Add rag crawler output to one or more datasets.
+    rpc RagAddCrawlerResultsToDatasets(RagAddCrawlerResultsToDatasetsRequest) returns (ondewo.nlu.Operation);
+
+    // Remove previously imported crawler output from one or more datasets.
+    rpc RagRemoveCrawlerResultsFromDatasets(RagRemoveCrawlerResultsFromDatasetsRequest) returns (ondewo.nlu.Operation);
+
+    // Get datasets currently attached to a crawler.
+    rpc RagGetCrawlerAttachedDatasets(RagGetCrawlerAttachedDatasetsRequest) returns (RagGetCrawlerAttachedDatasetsResponse);
+
+    // Delete multiple crawlers.
+    rpc RagDeleteCrawlers(RagDeleteCrawlersRequest) returns (RagDeleteCrawlersResponse);
+
+    // Get crawler run logs.
+    rpc RagGetCrawlerRunLogs(RagGetCrawlerRunLogsRequest) returns (RagGetCrawlerRunLogsResponse);
+}
+
+// ============================================================================
+// Common Types
+// Shared types used across multiple endpoints.
+// ============================================================================
+
+// File metadata for streaming uploads/downloads.
+message RagFileMetadata {
+
+    // Required. Filename. Maximum length 255.
+    string file_name = 1;
+
+    // Optional. MIME type (e.g., <code>"application/pdf"</code>, <code>"image/png"</code>).
+    string content_type = 2;
+
+    // Optional. Minimum 0. File size in bytes (if known, 0 if unknown).
+    int64 size = 3;
+
+}
+
+// On complete success: no fields set (empty message).
+// On partial success/failure: both fields set.
+message RagPartialSuccess {
+
+    // Number of successful operations.
+    int32 success_count = 1;
+
+    // Error messages for failed operations.
+    repeated string errors = 2;
+
+}
+
+// ============================================================================
+// Dataset Management Types
+// ============================================================================
+
+
+// Request message for creating a new dataset.
+message RagCreateDatasetRequest {
+
+    // Required. The agent to create the dataset for.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the project to use.
+    string language_code = 2;
+
+    // Required. Unique name of the dataset to create. Must follow these requirements:
+    // <ul>
+    //     <li>contain only characters from the basic multilingual Unicode plane</li>
+    //     <li>maximum 128 characters</li>
+    //     <li>case-insensitive</li>
+    // </ul>
+    string name = 3;
+
+    // Optional. Dataset description. Maximum 65,535 characters.
+    string description = 4;
+
+    // Optional. Base64-encoded avatar image in the format <code>"data:image/[png|jpeg];base64,&lt;base64_string&gt;"</code>. Maximum 65,535 characters.
+    string avatar = 5;
+
+    // Optional. Default chunking method for documents in this dataset.
+    RagChunkMethod chunk_method = 6;
+
+    // Optional. Configuration settings for the dataset parser. The used fields vary depending on the selected <code>chunk_method</code>.
+    RagParserConfig parser_config = 7;
+
+}
+
+// Chunking method for documents. See <a href="https://ragflow.io/docs/dev/configure_knowledge_base#select-chunking-method">https://ragflow.io/docs/dev/configure_knowledge_base#select-chunking-method</a> for details.
+enum RagChunkMethod {
+
+    // Unspecified. Defaults to <code>RAG_CHUNK_METHOD_NAIVE</code>
+    RAG_CHUNK_METHOD_UNSPECIFIED = 0;
+
+    // General (default).
+    RAG_CHUNK_METHOD_NAIVE = 1;
+
+    // Book.
+    RAG_CHUNK_METHOD_BOOK = 2;
+
+    // Email.
+    RAG_CHUNK_METHOD_EMAIL = 3;
+
+    // Laws.
+    RAG_CHUNK_METHOD_LAWS = 4;
+
+    // Manual.
+    RAG_CHUNK_METHOD_MANUAL = 5;
+
+    // One.
+    RAG_CHUNK_METHOD_ONE = 6;
+
+    // Paper.
+    RAG_CHUNK_METHOD_PAPER = 7;
+
+    // Picture.
+    RAG_CHUNK_METHOD_PICTURE = 8;
+
+    // Presentation.
+    RAG_CHUNK_METHOD_PRESENTATION = 9;
+
+    // Q&A.
+    RAG_CHUNK_METHOD_QA = 10;
+
+    // Table.
+    RAG_CHUNK_METHOD_TABLE = 11;
+
+    // Tag.
+    RAG_CHUNK_METHOD_TAG = 12;
+
+}
+
+// Document parser configuration.
+//
+// Used fields depend on the chunking method of the document.
+// <ul>
+//     <li><code>naive</code>: uses the following fields (all optional)</li>
+//     <ul>
+//         <li><code>auto_keywords</code></li>
+//         <li><code>auto_questions</code></li>
+//         <li><code>chunk_token_num</code></li>
+//         <li><code>delimiter</code></li>
+//         <li><code>html4excel</code></li>
+//         <li><code>layout_recognize</code></li>
+//         <li><code>tag_kb_ids</code></li>
+//         <li><code>task_page_size</code></li>
+//         <li><code>raptor</code></li>
+//         <li><code>graphrag</code></li>
+//     </ul>
+//     <li><code>qa</code>, <code>manual</code>, <code>paper</code>, <code>book</code>, <code>laws</code>, <code>presentation</code>: uses only the <code>raptor</code> field</li>
+//     <li><code>table</code>, <code>picture</code>, <code>one</code>, <code>email</code>: does not use any field (expects empty message)</li>
+// </ul>
+message RagParserConfig {
+
+    // Optional. Minimum 0, maximum 32, default 0. See <a href="https://ragflow.io/docs/dev/autokeyword_autoquestion">https://ragflow.io/docs/dev/autokeyword_autoquestion</a> for details.
+    optional int32 auto_keywords = 1;
+
+    // Optional. Minimum 0, maximum 10, default 0. See <a href="https://ragflow.io/docs/dev/autokeyword_autoquestion">https://ragflow.io/docs/dev/autokeyword_autoquestion</a> for details.
+    optional int32 auto_questions = 2;
+
+    // Optional. Minimum 1, maximum 2048, default 512.
+    int32 chunk_token_num = 3;
+
+    // Optional. Default <code>"\n"</code>.
+    string delimiter = 4;
+
+    // Optional. Convert Excel documents to HTML. Default <code>false</code>.
+    optional bool html4excel = 5;
+
+    // Optional. Default <code>"DeepDOC"</code>.
+    string layout_recognize = 6;
+
+    // Optional. List of dataset IDs. See <a href="https://ragflow.io/docs/dev/use_tag_sets">https://ragflow.io/docs/dev/use_tag_sets</a> for details.
+    repeated string tag_kb_ids = 7;
+
+    // Optional. Minimum 1. Maximum 10. Default 1.
+    int32 topn_tags = 8;
+
+    // Optional. Minimum 0.0. Maximum 1.0. Default 0.1.
+    optional float filename_embd_weight = 9;
+
+    // Optional. Minimum 1, default 12. Only applies to PDFs.
+    int32 task_page_size = 10;
+
+    // Optional. RAPTOR-specific settings. Default <code>{ "use_raptor": false }</code>.
+    RagRaptorConfig raptor = 11;
+
+    // Optional. GRAPHRAG-specific settings. Default <code>{ "use_graphrag": false }</code>.
+    RagGraphRagConfig graphrag = 12;
+
+}
+
+// RAPTOR configuration. Refer to <a href="https://arxiv.org/html/2401.18059v1">RAPTOR paper</a> for more information about RAPTOR.
+message RagRaptorConfig {
+
+    // Optional. Default <code>false</code>. Whether to use RAPTOR for this dataset.
+    optional bool use_raptor = 1;
+
+    // Optional. Prompt to use for RAPTOR. Default:<br>
+    // <code>"Please summarize the following paragraphs. Be careful with the numbers, do not make things up. Paragraphs as following:\n      {cluster_content}\nThe above is the content you need to summarize."</code>
+    string prompt = 2;
+
+    // Optional. Minimum 1. Maximum 2048. Default 256.
+    int32 max_token = 3;
+
+    // Optional. Minimum 0.0. Maximum 1.0. Default 0.1.
+    optional float threshold = 4;
+
+    // Optional. Minimum 1. Maximum 1024. Default 64.
+    int32 max_cluster = 5;
+
+    // Optional. Minimum 0. Default 0.
+    optional int64 random_seed = 6;
+
+}
+
+// GraphRAG configuration.
+message RagGraphRagConfig {
+
+    // Optional. Default <code>false</code>.
+    optional bool use_graphrag = 1;
+
+    // Optional. Default <code>["organization", "person", "geo", "event", "category"]</code>.
+    repeated string entity_types = 2;
+
+    // Optional. Default <code>light</code>.
+    optional RagGraphRagMethod method = 3;
+
+    // Optional. Default <code>false</code>.
+    optional bool community = 4;
+
+    // Optional. Default <code>false</code>.
+    optional bool resolution = 5;
+
+}
+
+// Knowledge graph construction methods.
+enum RagGraphRagMethod {
+
+    // Unspecified. Defaults to <code>RAG_GRAPH_RAG_METHOD_GENERAL</code>
+    RAG_GRAPH_RAG_METHOD_UNSPECIFIED = 0;
+
+    // Use prompts provided by <a href="https://github.com/HKUDS/LightRAG">LightRAG</a>.
+    RAG_GRAPH_RAG_METHOD_LIGHT = 1;
+
+    // Use prompts provided by <a href="https://github.com/microsoft/graphrag">GraphRAG</a>.
+    RAG_GRAPH_RAG_METHOD_GENERAL = 2;
+
+}
+
+// Dataset containing documents for RAG.
+message RagDataset {
+
+    // Dataset UUID.
+    string id = 1;
+
+    // Base64-encoded avatar image.
+    string avatar = 2;
+
+    // Dataset name.
+    string name = 3;
+
+    // Dataset description.
+    string description = 4;
+
+    // Number of documents in the dataset.
+    optional int32 document_count = 5;
+
+    // Number of tokens in the dataset.
+    optional int32 token_num = 6;
+
+    // Number of chunks of all documents in the dataset.
+    optional int32 chunk_count = 7;
+
+    // Default chunking method for documents in this dataset.
+    RagChunkMethod chunk_method = 8;
+
+    // Document parser configuration (auto-generated based on chunk_method).
+    RagParserConfig parser_config = 9;
+
+    // Pagerank.
+    optional int32 pagerank = 10;
+
+    // Parsing status of all documents in the dataset. Might be empty if the system failed to get the parsing statistics.
+    RagDatasetParsingStatus parsing_status = 11;
+
+    // Creation date and time.
+    google.protobuf.Timestamp create_time = 12;
+
+    // Last update date and time.
+    google.protobuf.Timestamp update_time = 13;
+
+}
+
+// Parsing status statistics of all documents in a dataset
+message RagDatasetParsingStatus {
+
+    // number of documents that have not started processing.
+    int32 unstart = 1;
+
+    // number of documents that are currently being processed.
+    int32 running = 2;
+
+    // number of documents for which parsing was cancelled.
+    int32 cancel = 3;
+
+    // number of documents that have successfully finished parsing.
+    int32 done = 4;
+
+    // number of documents for which parsing has failed.
+    int32 fail = 5;
+
+}
+
+// Request message for updating an existing dataset.
+// The same field constraints as for <code>RagCreateDatasetRequest</code> apply here.
+message RagUpdateDatasetRequest {
+
+    // Required. The agent to update the dataset for.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the project to use.
+    string language_code = 2;
+
+    // Required. Dataset ID.
+    string dataset_id = 3;
+
+    // Optional. New dataset name.
+    string name = 4;
+
+    // Optional. New dataset description.
+    optional string description = 5;
+
+    // Optional. New avatar image.
+    optional string avatar = 6;
+
+    // Optional. New chunk method.
+    RagChunkMethod chunk_method = 7;
+
+    // Optional. New parser config (deep merged with existing).
+    RagParserConfig parser_config = 8;
+
+    // Optional. Minimum 0. Maximum 100. PageRank value.
+    optional int32 pagerank = 9;
+
+}
+
+// Request message for deleting one or more of a RAGFlow resource.
+message RagDeleteRequest {
+
+    // Required. The agent to delete datasets from.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the project to use.
+    string language_code = 2;
+
+    // Optional. IDs of resources to delete. Duplicate IDs are ignored.
+    repeated string ids = 3;
+
+    // Optional. Delete all resources if set to <code>true</code>
+    bool delete_all = 4;
+
+}
+
+// Request message for listing datasets with pagination and filtering.
+message RagListDatasetsRequest {
+
+    // Required. The agent to list all datasets from.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the project to use.
+    string language_code = 2;
+
+    // Optional. Specifies which page to return. The page token is a string of the format
+    // <pre><code>current_index-&lt;idx&gt;--page_size-&lt;size&gt;</code></pre>
+    //
+    // <ul>
+    //     <li><code>&lt;size&gt;</code> must be an integer &geq; <code>1</code>. The maximum number of results to return.</li>
+    //     <li><code>&lt;idx&gt;</code> must be an integer &geq; <code>0</code>. The start index in the requested list, starting from which a maximum of <code>&lt;size&gt;</code> elements are returned.</li>
+    // </ul>
+    //
+    // <em>Important note</em>: The <code>&lt;idx&gt;</code> is the index in the requested sequence NOT the page number. E.g. if the requested list has 100 elements then <code>current_index-5--page_size-15</code> returns the elements at index 5-19 and not the 5-th page of 15 elements.
+    // <br>
+    // Both <code>current_index-&lt;idx&gt;</code> and <code>page_size-&lt;size&gt;</code> are optional and default to <code>0</code> and <code>10</code> respectively. The following are all valid <code>page_token</code>s
+    //
+    // <ul>
+    //     <li><code> </code> (empty string/missing value) - index 0, page size 10</li>
+    //     <li><code>current_index-3</code> - index 3, page size 10</li>
+    //     <li><code>page_size-20</code> - index 0, page size 20</li>
+    //     <li><code>current_index-3--page_size-20</code> - index 3, page size 20</li>
+    // </ul>
+    string page_token = 3;
+
+    // Optional. Filter by dataset ID.
+    string id = 4;
+
+    // Optional. Filter by dataset name.
+    string name = 5;
+
+    // Optional. Sort field. Can be <code>create_time</code> or <code>update_time</code> (default: <code>create_time</code>).
+    string orderby = 6;
+
+    // Optional. Sort descending (default: <code>true</code>).
+    optional bool desc = 7;
+
+}
+
+// Response message for listing datasets.
+message RagDatasetList {
+
+    // List of datasets.
+    repeated RagDataset datasets = 1;
+
+    // Total number of datasets that match the given filters
+    int32 total = 2;
+
+    // Page token string (following the format described in <code>RagListDatasetsRequest</code>) for retrieving the next results page
+    string next_page_token = 3;
+
+}
+
+// ============================================================================
+// Document Management Types
+// ============================================================================
+
+// Request message for uploading a document to a dataset.
+message RagUploadDocumentRequest {
+
+    // Required in first chunk, ignored in later chunks. The agent to upload documents for.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required in first chunk, ignored in later chunks. The language of the project to use.
+    string language_code = 2;
+
+    // Required in first chunk, ignored in later chunks. Target dataset ID to upload documents to.
+    string dataset_id = 3;
+
+    // Required in first chunk, ignored in later chunks. File metadata.
+    RagFileMetadata metadata = 4;
+
+    // Optional. Chunk of file content.
+    bytes data = 5;
+
+}
+
+// Document uploaded to a dataset.
+message RagDocument {
+
+    // Document UUID.
+    string id = 1;
+
+    // Base64-encoded thumbnail image in the format <code>"data:image/[png|jpeg];base64,&lt;base64_string&gt;"</code>. Maximum 65,535 characters.
+    string thumbnail = 2;
+
+    // Parent dataset ID.
+    string dataset_id = 3;
+
+    // Chunking method used for this document.
+    RagChunkMethod chunk_method = 4;
+
+    // Parser configuration used for chunking this document.
+    RagParserConfig parser_config = 5;
+
+    // Broad file category
+    RagDocumentType type = 6;
+
+    // Document filename.
+    string name = 7;
+
+    // File size in bytes.
+    optional int64 size = 8;
+
+    // Number of chunks extracted from this document (initially <code>0</code> until parsed).
+    optional int32 chunk_count = 9;
+
+    // Number of tokens across all chunks in this document.
+    optional int32 token_count = 10;
+
+    // Processing progress as a decimal value between <code>0.0</code> (not started) and <code>1.0</code> (complete).
+    optional float progress = 11;
+
+    // Human-readable progress message describing current processing state.
+    string progress_msg = 12;
+
+    // Processing start date and time.
+    google.protobuf.Timestamp process_begin_at = 13;
+
+    // Total processing duration in seconds.
+    optional float process_duration = 14;
+
+    // Custom metadata fields specific to this document (arbitrary key-value pairs).
+    google.protobuf.Struct meta_fields = 15;
+
+    // Document processing status.
+    RagDocumentStatus run = 16;
+
+    // Status indicating if document is enabled (<code>"1"</code>=enabled, <code>"0"</code>=disabled).
+    string status = 17;
+
+    // Creation date and time.
+    google.protobuf.Timestamp create_time = 18;
+
+    // Last update date and time.
+    google.protobuf.Timestamp update_time = 19;
+
+}
+
+// Broad document category.
+enum RagDocumentType {
+
+    // Unspecified.
+    RAG_DOCUMENT_TYPE_UNSPECIFIED = 0;
+
+    // PDF
+    RAG_DOCUMENT_TYPE_PDF = 1;
+
+    // general documents (e.g. text, slides, spreadsheets, code, ...)
+    RAG_DOCUMENT_TYPE_DOC = 2;
+
+    // images and videos
+    RAG_DOCUMENT_TYPE_VISUAL = 3;
+
+    // audio
+    RAG_DOCUMENT_TYPE_AURAL = 4;
+
+    // empty virtual files
+    RAG_DOCUMENT_TYPE_VIRTUAL = 5;
+
+    // folders
+    RAG_DOCUMENT_TYPE_FOLDER = 6;
+
+    // unrecognized document types
+    RAG_DOCUMENT_TYPE_OTHER = 7;
+
+}
+
+// Document processing status.
+enum RagDocumentStatus {
+
+    // Unspecified.
+    RAG_DOCUMENT_STATUS_UNSPECIFIED = 0;
+
+    // Document has not started processing.
+    RAG_DOCUMENT_STATUS_UNSTART = 1;
+
+    // Document is currently being processed.
+    RAG_DOCUMENT_STATUS_RUNNING = 2;
+
+    // Document processing was cancelled.
+    RAG_DOCUMENT_STATUS_CANCEL = 3;
+
+    // Document processing completed successfully.
+    RAG_DOCUMENT_STATUS_DONE = 4;
+
+    // Document processing failed.
+    RAG_DOCUMENT_STATUS_FAIL = 5;
+
+}
+
+// Request message for updating an existing document's metadata and configuration.
+message RagUpdateDocumentRequest {
+
+    // Required. The agent to update the document for.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the project to use.
+    string language_code = 2;
+
+    // Required. Dataset ID containing the document.
+    string dataset_id = 3;
+
+    // Required. Document ID to update.
+    string document_id = 4;
+
+    // Optional. Maximum length 255. New document name (file extension must remain the same).
+    string name = 5;
+
+    // Optional. New chunking method (resets document to <code>UNSTART</code> status and deletes all existing chunks).
+    RagChunkMethod chunk_method = 6;
+
+    // Optional. New parser configuration (deep merged with existing configuration).
+    RagParserConfig parser_config = 7;
+
+    // Optional. Document enabled/disabled status.
+    optional bool enabled = 8;
+
+    // Optional. Custom metadata fields for document-specific metadata (replaces existing metadata).
+    google.protobuf.Struct meta_fields = 9;
+
+}
+
+// Request message for downloading the document file.
+message RagDownloadDocumentRequest {
+
+    // Required. The agent to download the document from.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the project to use.
+    string language_code = 2;
+
+    // Required. Dataset ID containing the document.
+    string dataset_id = 3;
+
+    // Required. Document ID to download.
+    string document_id = 4;
+
+}
+
+// File chunk for streaming downloads.<br>
+// First chunk contains metadata, subsequent chunks only contain data.
+message RagFileChunk {
+
+    // Required in first chunk, ignored in later chunks. File metadata.
+    RagFileMetadata metadata = 1;
+
+    // Optional. Chunk of file content.
+    bytes data = 2;
+
+}
+
+// Request message for listing documents in a dataset with pagination and filtering.
+message RagListDocumentsRequest {
+
+    // Required. The agent to list documents from.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the project to use.
+    string language_code = 2;
+
+    // Required. Dataset ID to list documents from.
+    string dataset_id = 3;
+
+    // Optional. Filter by specific document ID.
+    string id = 4;
+
+    // Optional. Filter by document name (exact match).
+    string name = 5;
+
+    // Optional. Specifies which page to return. The page token is a string of the format
+    // <pre><code>current_index-&lt;idx&gt;--page_size-&lt;size&gt;</code></pre>
+    //
+    // <ul>
+    //     <li><code>&lt;size&gt;</code> must be an integer &geq; <code>1</code>. The maximum number of results to return.</li>
+    //     <li><code>&lt;idx&gt;</code> must be an integer &geq; <code>0</code>. The start index in the requested list, starting from which a maximum of <code>&lt;size&gt;</code> elements are returned.</li>
+    // </ul>
+    //
+    // <em>Important note</em>: The <code>&lt;idx&gt;</code> is the index in the requested sequence NOT the page number. E.g. if the requested list has 100 elements then <code>current_index-5--page_size-15</code> returns the elements at index 5-19 and not the 5-th page of 15 elements.
+    //
+    // Both <code>current_index-&lt;idx&gt;</code> and <code>page_size-&lt;size&gt;</code> are optional and default to <code>0</code> and <code>10</code> respectively. The following are all valid <code>page_token</code>s
+    // <br>
+    // <ul>
+    //     <li><code> </code> (empty string/missing value) - index 0, page size 10</li>
+    //     <li><code>current_index-3</code> - index 3, page size 10</li>
+    //     <li><code>page_size-20</code> - index 0, page size 20</li>
+    //     <li><code>current_index-3--page_size-20</code> - index 3, page size 20</li>
+    // </ul>
+    string page_token = 6;
+
+    // Optional. Sort field (default: <code>"create_time"</code>). Accept any field of <code>RagDocument</code>.
+    string orderby = 7;
+
+    // Optional. Sort in descending order (default: <code>true</code>).
+    optional bool desc = 8;
+
+    // Optional. Filter by document names containing <code>keywords</code>.
+    string keywords = 9;
+
+    // Optional. Suffixes to filter by (e.g. <code>["pdf", "png", "docx"]</code>).
+    repeated string suffix = 10;
+
+    // Optional. Document statuses to filter by.
+    repeated RagDocumentStatus run_status = 11;
+
+    // Optional. Filter by creation time start.
+    google.protobuf.Timestamp create_time_from = 12;
+
+    // Optional. Filter by creation time end.
+    google.protobuf.Timestamp create_time_to = 13;
+
+    // Optional. Metadata filter condition to restrict results based on document metadata.<br>
+    RagMetadataConditions metadata_condition = 14;
+
+}
+
+// List of document metadata conditions.
+message RagMetadataConditions {
+
+    // Optional. Whether to apply the conditions with a logical <em>and</em> or logical <em>or</em>.
+    RagLogic logic = 1;
+
+    // Optional. List of conditions.
+    repeated RagMetadataCondition conditions = 2;
+
+}
+
+// Metadata conditions logical operators
+enum RagLogic {
+
+    // Unspecified. Must never be used.
+    RAG_LOGIC_UNSPECIFIED = 0;
+
+    // Return results that match <em>all</em> conditions.
+    RAG_LOGIC_AND = 1;
+
+    // Return results that match <em>any</em> condition.
+    RAG_LOGIC_OR = 2;
+
+}
+
+// Condition to filter document metadata on.
+// String comparison is always case-insensitive.
+message RagMetadataCondition {
+
+    // Required. Metadata field name.
+    string name = 1;
+
+    // Required. Comparison operator.
+    RagComparisonOperator comparison_operator = 2;
+
+    // Required. Value to compare to.<br>
+    // Must always be a string, but can also be the string representation of a different type, e.g. string representation of a dict <code>"{"key1": 3, "key2": "value"}"</code>.
+    string value = 3;
+
+}
+
+// Valid metadata condition comparison operators
+enum RagComparisonOperator {
+
+    // Unspecified. Must never be used.
+    RAG_COMPARISON_OPERATOR_UNSPECIFIED = 0;
+
+    // String representation of metadata field contains value.<br>
+    // If metadata field is a list, checks if the string representation of <em>any</em> field contains value.
+    RAG_COMPARISON_OPERATOR_CONTAINS = 1;
+
+    // String representation of metadata field does not contain value.<br>
+    // If metadata field is a list, checks if the string representation of <em>no</em> fields contains value.
+    RAG_COMPARISON_OPERATOR_NOT_CONTAINS = 2;
+
+    // Checks with Python's <code>in</code> operator.<br>
+    // If metadata field is a list, <em>all</em> elements must satisfy the condition.
+    RAG_COMPARISON_OPERATOR_IN = 3;
+
+    // Checks with Python's <code>not in</code> operator.<br>
+    // If metadata field is a list, <em>all</em> elements must satisfy the condition.
+    RAG_COMPARISON_OPERATOR_NOT_IN = 4;
+
+    // String representation of metadata field starts with value.<br>
+    // If metadata field is a list, checks if the joined string of the string representations of all list elements starts with the value.
+    RAG_COMPARISON_OPERATOR_START_WITH = 5;
+
+    // String representation of metadata field ends with value.<br>
+    // If metadata field is a list, checks if the joined string of the string representations of all list elements ends with the value.
+    RAG_COMPARISON_OPERATOR_END_WITH = 6;
+
+    // Is empty (Python <em>falsy</em>).
+    RAG_COMPARISON_OPERATOR_EMPTY = 7;
+
+    // Is not empty (Python <em>truthy</em>).
+    RAG_COMPARISON_OPERATOR_NOT_EMPTY = 8;
+
+    // Equals.
+    RAG_COMPARISON_OPERATOR_EQ = 9;
+
+    // Does not equal.
+    RAG_COMPARISON_OPERATOR_NEQ = 10;
+
+    // Greater than.
+    RAG_COMPARISON_OPERATOR_GT = 11;
+
+    // Less than.
+    RAG_COMPARISON_OPERATOR_LT = 12;
+
+    // Greater than or equal.
+    RAG_COMPARISON_OPERATOR_GEQ = 13;
+
+    // Less than or equal.
+    RAG_COMPARISON_OPERATOR_LEQ = 14;
+
+}
+
+// Response message for listing documents.
+message RagDocumentList {
+
+    // List of documents for the current page.
+    repeated RagDocument documents = 1;
+
+    // Total number of documents matching the filter criteria (not limited by pagination).
+    int32 total = 2;
+
+    // Page token string (following the format described in <code>RagListDocumentsRequest</code>) for retrieving the next results page
+    string next_page_token = 3;
+
+}
+
+// Request message for deleting one or more documents of a single dataset.
+message RagDeleteDocumentsRequest {
+
+    // Required. The agent to delete datasets from.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the project to use.
+    string language_code = 2;
+
+    // Required. ID of dataset containing the documents to delete.
+    string dataset_id = 3;
+
+    // Optional. IDs of documents to delete. Duplicate IDs are ignored.
+    repeated string ids = 4;
+
+    // Optional. Delete all documents of the specified dataset if set to <code>true</code>
+    bool delete_all = 5;
+
+}
+
+// Request message for any endpoints that need a list of document IDs as input, e.g. delete documents, parse documents, stop parsing documents.
+message RagDocumentIdsRequest {
+
+    // Required. The agent to delete documents from.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the project to use.
+    string language_code = 2;
+
+    // Required. Dataset ID of the dataset containing the documents in <code>document_ids</code>.
+    string dataset_id = 3;
+
+    // Optional. Document IDs for the request.
+    repeated string document_ids = 4;
+
+}
+
+// ============================================================================
+// Chunk Management Types
+// ============================================================================
+
+// Request message for retrieving chunks using vector similarity search.<br>
+// Supports hybrid search combining vector similarity with keyword matching.
+message RagRetrievalRequest {
+
+    // Required. The agent to retrieve chunks for.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the project to use.
+    string language_code = 2;
+
+    // Required. Dataset IDs to search.
+    repeated string dataset_ids = 3;
+
+    // Optional. Specifies which page to return. The page token is a string of the format
+    // <pre><code>current_index-&lt;idx&gt;--page_size-&lt;size&gt;</code></pre>
+    //
+    // <ul>
+    //     <li><code>&lt;size&gt;</code> must be an integer &geq; <code>1</code>. The maximum number of results to return.</li>
+    //     <li><code>&lt;idx&gt;</code> must be an integer &geq; <code>0</code>. The start index in the requested list, starting from which a maximum of <code>&lt;size&gt;</code> elements are returned.</li>
+    // </ul>
+    //
+    // <em>Important note</em>: The <code>&lt;idx&gt;</code> is the index in the requested sequence NOT the page number. E.g. if the requested list has 100 elements then <code>current_index-5--page_size-15</code> returns the elements at index 5-19 and not the 5-th page of 15 elements.
+    //
+    // Both <code>current_index-&lt;idx&gt;</code> and <code>page_size-&lt;size&gt;</code> are optional and default to <code>0</code> and <code>10</code> respectively. The following are all valid <code>page_token</code>s
+    // <br>
+    // <ul>
+    //     <li><code> </code> (empty string/missing value) - index 0, page size 10</li>
+    //     <li><code>current_index-3</code> - index 3, page size 10</li>
+    //     <li><code>page_size-20</code> - index 0, page size 20</li>
+    //     <li><code>current_index-3--page_size-20</code> - index 3, page size 20</li>
+    // </ul>
+    string page_token = 4;
+
+    // Required. Query string to search for.
+    string question = 5;
+
+    // Optional. Filter by specific document IDs within the datasets.
+    repeated string document_ids = 6;
+
+    // Optional. Include knowledge graph retrieval to enhance results with graph relationships.
+    optional bool use_kg = 7;
+
+    // Optional. Cross-language translation codes to enable multilingual retrieval.<br>
+    // List elements can be any form of language name/code (parsed by LLM).
+    repeated string cross_languages = 8;
+
+    // Optional. Metadata filter condition to restrict results based on document metadata.
+    RagMetadataConditions metadata_condition = 9;
+
+    // Optional. Minimum similarity score threshold between <code>0.0</code> and <code>1.0</code> (default: <code>0.2</code>).
+    optional float similarity_threshold = 10;
+
+    // Optional. Weight for vector similarity versus keyword matching between <code>0.0</code> and <code>1.0</code> (default: <code>0.3</code>).<br>
+    // Higher values favor vector similarity, lower values favor keyword matching.
+    optional float vector_similarity_weight = 11;
+
+    // Optional. Minimum 1. Maximum number of chunks to retrieve before reranking (default: <code>1024</code>).
+    int32 top_k = 12;
+
+    // Optional. Whether to highlight matched content in the returned chunks.
+    optional bool highlight = 13;
+
+    // Optional. Extract additional keywords from the query to improve retrieval.
+    optional bool keyword = 14;
+
+}
+
+// Response message for chunk retrieval.
+message RagRetrievalResponse {
+
+    // Retrieved chunks with similarity scores populated (ordered by relevance).
+    repeated RagChunk chunks = 1;
+
+    // Statistics of the matched documents.
+    repeated RagDocAgg doc_aggs = 2;
+
+    // Total number of chunks matching the query (before pagination).
+    int32 total = 3;
+
+    // Page token string (following the format described in <code>RagRetrievalRequest</code>) for retrieving the next results page
+    string next_page_token = 4;
+
+}
+
+// Chunk of text extracted from a document.<br>
+// Chunks are the basic retrieval units used for vector similarity search in RAG.
+message RagChunk {
+
+    // Chunk ID (computed as xxhash of content combined with document_id).
+    string id = 1;
+
+    // Parent dataset ID.
+    string dataset_id = 2;
+
+    // Parent document ID.
+    string document_id = 3;
+
+    // Chunk text content (the actual text segment extracted from the document).
+    string content = 4;
+
+    // Important keywords extracted from or manually assigned to this chunk.
+    repeated string important_keywords = 5;
+
+    // Associated questions for Q&amp;A chunks (used when <code>chunk_method=qa</code>).
+    repeated string questions = 6;
+
+    // Associated image ID if this chunk references an image.
+    string image_id = 7;
+
+    // Position information in the original document.<br>
+    // Each position is an array of 5 integers representing location data (format varies by document type).
+    repeated google.protobuf.ListValue positions = 8;
+
+    // Creation date and time.
+    google.protobuf.Timestamp create_time = 9;
+
+    // Document name used as a keyword for retrieval.
+    string document_keyword = 10;
+
+    // Similarity score between <code>0.0</code> and <code>1.0</code> (only populated in retrieval responses).
+    optional float similarity = 11;
+
+}
+
+// Aggregated document retrieval results containing how many chunks of the given document where retrieved
+message RagDocAgg {
+
+    // Document name
+    string doc_name = 1;
+
+    // Document ID
+    string doc_id = 2;
+
+    // Number of retrieved chunks
+    int32 count = 3;
+
+}
+
+// ============================================================================
+// Crawler Management Types
+// ============================================================================
+
+// Request message for creating a crawler for a dataset of an agent.
+message RagCreateCrawlerRequest {
+
+    // Required. The agent to create crawlers for.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the project to use.
+    string language_code = 2;
+
+    // Required. Crawler definition to create.
+    // If <code>crawler.name</code> is empty, backend will generate it.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawlers/&lt;crawler_uuid&gt;</code></pre>
+    RagCrawler crawler = 3;
+
+    // Optional. The mask to control which RagCrawler fields get returned.
+    google.protobuf.FieldMask field_mask = 4;
+
+}
+
+// Request message for deleting a crawler of a dataset for the specified agent.
+message RagDeleteCrawlerRequest {
+
+    // Resource name of the RagCrawler
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawlers/&lt;crawler_uuid&gt;</code></pre>
+    string name = 1;
+
+    // Required. The agent owning the crawler.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 2;
+
+    // Required. The language of the project to use.
+    string language_code = 3;
+
+}
+
+// Response message for deleting a crawler of a dataset for the specified agent.
+message RagDeleteCrawlerResponse {
+
+    // Resource name of the RagCrawler
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawlers/&lt;crawler_uuid&gt;</code></pre>
+    string name = 1;
+
+    // Error message if there are any.
+    string error_message = 2;
+
+}
+
+// Request message for deleting multiple crawlers of a dataset for the specified agent.
+message RagDeleteCrawlersRequest {
+
+    // Required. The agent owning the crawlers.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the project to use.
+    string language_code = 2;
+
+    // Optional. Crawler resource names to delete.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawlers/&lt;crawler_uuid&gt;</code></pre>
+    repeated string names = 3;
+}
+
+// Response message for deleting multiple crawlers of a dataset for the specified agent.
+message RagDeleteCrawlersResponse {
+
+    // responses to delete crawlers
+    repeated RagDeleteCrawlerResponse delete_crawler_responses = 1;
+
+    // error message if there are any
+    string error_message = 2;
+
+}
+
+// Request message for listing crawlers of a dataset for the specified agent.
+message RagListCrawlersRequest {
+
+    // Required. The agent to list crawlers for.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the agent of the dataset.
+    string language_code = 2;
+
+    // Optional. Specifies which page to return. The page token is a string of the format
+    // <pre><code>current_index-&lt;idx&gt;--page_size-&lt;size&gt;</code></pre>
+    //
+    // <ul>
+    //     <li><code>&lt;size&gt;</code> must be an integer &geq; <code>1</code>. The maximum number of results to return.</li>
+    //     <li><code>&lt;idx&gt;</code> must be an integer &geq; <code>0</code>. The start index in the requested list, starting from which a maximum of <code>&lt;size&gt;</code> elements are returned.</li>
+    // </ul>
+    //
+    // <em>Important note</em>: The <code>&lt;idx&gt;</code> is the index in the requested sequence NOT the page number. E.g. if the requested list has 100 elements then <code>current_index-5--page_size-15</code> returns the elements at index 5-19 and not the 5-th page of 15 elements.
+    //
+    // Both <code>current_index-&lt;idx&gt;</code> and <code>page_size-&lt;size&gt;</code> are optional and default to <code>0</code> and <code>10</code> respectively. The following are all valid <code>page_token</code>s
+    // <br>
+    // <ul>
+    //     <li><code> </code> (empty string/missing value) - index 0, page size 10</li>
+    //     <li><code>current_index-3</code> - index 3, page size 10</li>
+    //     <li><code>page_size-20</code> - index 0, page size 20</li>
+    //     <li><code>current_index-3--page_size-20</code> - index 3, page size 20</li>
+    // </ul>
+    string page_token = 3;
+
+    // Optional. Filter by dataset name.
+    string dataset_name = 4;
+
+    // Optional. Filter by crawler name.
+    string crawler_name = 5;
+
+    // Optional. Sort field (default: <code>create_time</code>).
+    string orderby = 6;
+
+    // Optional. Sort descending.
+    optional SortingMode sorting_mode = 7;
+
+}
+
+// Response message for listing crawlers.
+message RagListCrawlersResponse {
+    // List of crawlers.
+    repeated RagCrawler crawlers = 1;
+
+    // Page token string (following the format described in <code>RagListCrawlersRequest</code>) for retrieving the next results page
+    string next_page_token = 2;
+
+}
+
+// Request message for getting a crawler.
+message RagGetCrawlerRequest {
+
+    // Required. Resource name of the RagCrawler.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawlers/&lt;crawler_uuid&gt;</code></pre>
+    string name = 1;
+
+    // Required. The agent owning the crawler.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 2;
+
+    // Required. The language of the project to use.
+    string language_code = 3;
+
+    // Optional. The mask to control which RagCrawler fields get returned.
+    google.protobuf.FieldMask field_mask = 4;
+
+}
+
+// Request message for updating a crawler (partial update).
+message RagUpdateCrawlerRequest {
+
+    // Required. The crawler to update. Only configuration fields can be updated.
+    // The name field must be set and must match an existing crawler.
+    // Timestamps and audit fields are auto-managed by the service.
+    RagCrawler crawler = 1;
+
+    // Required. The agent owning the crawler.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 2;
+
+    // Required. The language of the project to use.
+    string language_code = 3;
+
+    // Optional. FieldMask to specify which fields to update.
+    // If not provided, all configuration fields in crawler are updated.
+    google.protobuf.FieldMask update_mask = 4;
+
+    // Optional. The mask to control which crawler fields get returned.
+    google.protobuf.FieldMask field_mask = 5;
+}
+
+// RagCrawler definition.
+//
+// This object represents a reusable crawler profile that can be run multiple times.
+// It is modeled after Crawl4AI concepts:
+// <ul>
+//     <li>seed/sitemap discovery (<code>RagCrawlerSources</code>)</li>
+//     <li>URL/domain constraints (<code>RagCrawlerFilters</code>)</li>
+//     <li>authentication/session bootstrap (<code>RagCrawlerAuth</code>, <code>RagCrawlerBrowserConfig</code>)</li>
+//     <li>run behavior and extraction output (<code>RagCrawlerConfig</code>)</li>
+// </ul>
+//
+// The same crawler can be executed multiple times; each execution creates
+// a separate crawler run and result set.
+message RagCrawler {
+
+    // Resource name of the RagCrawler
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawlers/&lt;crawler_uuid&gt;</code></pre>
+    // Automatically generated in backend if empty
+    string name = 1;
+
+    // Optional. Human-readable crawler name shown in UIs/logs.
+    // Should be unique per agent to simplify operational troubleshooting.
+    string display_name = 2;
+
+    // Creation date and time. Read-only field.
+    google.protobuf.Timestamp created_at = 3;
+
+    // Modification date and time. Read-only field.
+    google.protobuf.Timestamp modified_at = 4;
+
+    // User id in form of a valid UUID.
+    string created_by = 5;
+
+    // User id in form of a valid UUID.
+    string modified_by = 6;
+
+    // Optional. Crawl entry points.
+    // Configure crawl entry points: URL seeds and/or sitemap sources.
+    RagCrawlerSources crawler_sources = 7;
+
+    // Optional. Seed URL filters.
+    // Filters are applied to the seed URLs before they are crawled.
+    RagCrawlerSeedUrlFilters crawler_seed_url_filters = 8;
+
+    // Optional. Login/auth setup used before crawl requests.
+    RagCrawlerAuth crawler_auth = 9;
+
+    // Optional. Browser runtime setup (engine, viewport, cookies, proxy, headers).
+    // Roughly corresponds to Crawl4AI <code>BrowserConfig</code>.
+    // Use this when target sites require JS, custom headers, session cookies, or proxy routing.
+    RagCrawlerBrowserConfig crawler_browser_config = 10;
+
+    // Optional. Crawl execution behavior and extraction settings.
+    // Roughly corresponds to Crawl4AI <code>CrawlerRunConfig</code>.
+    RagCrawlerConfig crawler_config = 11;
+
+    // Optional. Retry configuration for crawler runs.
+    RagCrawlerRetryConfig retry_config = 12;
+
+}
+
+// Crawl entry points.
+//
+// Both inputs can be provided at the same time:
+// - Sitemaps are expanded into a crawl URL list (in discovery order)
+// - Seed URLs are appended afterwards (in the order provided)
+message RagCrawlerSources {
+
+    // Direct seed URLs to enqueue as starting points.
+    repeated string urls = 1;
+
+    // Sitemap URLs used for URL discovery.
+    // Typical values are <code>/sitemap.xml</code> or sitemap index files.
+    repeated string sitemaps = 2;
+}
+
+
+// URL and domain restrictions.
+//
+// Filters are evaluated during link discovery/scheduling and help avoid
+// crawling irrelevant, duplicate, or unsafe sections (auth/logout pages,
+// marketing subdomains, binary downloads, etc.).
+// These include domains to be excluded in the sources (e.g. through sitemaps or seed URLs)
+// and domains to be excluded in the deep crawl or extraction of pages to be crawled.
+message RagCrawlerFilters {
+
+    // Optional. Domain allow-list (host-level gating).
+    repeated string allowed_domains = 1;
+
+    // Optional. Domain block-list.
+    repeated string disallowed_domains = 2;
+
+    // Optional. Include internal links.
+    bool allow_internal_links = 3;
+
+    // Optional. Include external links.
+    bool allow_external_links = 4;
+
+    // Optional. Include social media links.
+    bool allow_social_media_links = 5;
+
+    repeated string allowed_regex = 6;
+
+    repeated string disallowed_regex = 7;
+
+    repeated string allowed_paths = 8;
+
+    repeated string disallowed_paths = 9;
+}
+
+message RagCrawlerSeedUrlFilters {
+
+    // Optional. Regex allow-list for full URLs.
+    repeated string allowed_regex = 1;
+
+    // Optional. Regex block-list for full URLs.
+    repeated string disallowed_regex = 2;
+
+    // Optional. Domain allow-list (host-level gating).
+    repeated string allowed_domains = 3;
+
+    // Optional. Domain block-list.
+    repeated string disallowed_domains = 4;
+
+}
+
+// Authentication configuration.
+//
+// Supports both browser/form login and HTTP auth patterns used by Crawl4AI pipelines when crawling protected content.
+// HTTP Auth is used on all pages of the sources, while html_auth is a separate authentication flow used in the beginning of the crawl to extract the cookies. This is done through a login screen. If HTTP Auth is set, this would ALSO be used on the HTML auth page.
+message RagCrawlerAuth {
+
+    // Optional. HTTP Basic auth settings.
+    RagCrawlerHttpAuth http_auth = 1;
+
+    // Optional. Form/HTML login selector and credential settings.
+    RagCrawlerHtmlAuth html_auth = 2;
+
+}
+
+enum RagCrawlerSelectorType {
+
+    // Unspecified.
+    RAG_CRAWLER_SELECTOR_TYPE_UNSPECIFIED = 0;
+
+    // ID selector.
+    RAG_CRAWLER_SELECTOR_TYPE_ID = 1;
+
+    // CSS class selector.
+    RAG_CRAWLER_SELECTOR_TYPE_CSS_CLASS = 2;
+
+    // XPath selector.
+    RAG_CRAWLER_SELECTOR_TYPE_XPATH = 3;
+
+}
+
+// Form/HTML login configuration.
+//
+// Selector types and selector strings identify login form fields in the page
+// DOM. Credentials are then filled before form submission.
+message RagCrawlerHtmlAuth {
+
+    // Optional. Base URL used for auth/login navigation.
+    string html_auth_base_url = 1;
+
+    // Optional. Username field selector type.
+    RagCrawlerSelectorType html_auth_username_selector_type = 2;
+
+    // Optional. Username field selector value.
+    string html_auth_username_selector = 3;
+
+    // Optional. Username credential.
+    string html_auth_username = 4;
+
+    // Optional. Password field selector type.
+    RagCrawlerSelectorType html_auth_password_selector_type = 5;
+
+    // Optional. Password field selector value.
+    string html_auth_password_selector = 6;
+
+    // Optional. Password credential.
+    string html_auth_password = 7;
+
+    // Optional. Authentication execution type
+    RagCrawlerAuthenticationExecutionType authentication_execution_type = 8;
+}
+
+enum RagCrawlerAuthenticationExecutionType {
+
+    // Authentication execution type not specified.
+    RAG_CRAWLER_AUTHENTICATION_EXECUTION_TYPE_UNSPECIFIED = 0;
+
+    // Authentication execution type is server side.
+    RAG_CRAWLER_AUTHENTICATION_EXECUTION_TYPE_SERVER_SIDE = 1;
+
+    // Authentication execution type is client side.
+    RAG_CRAWLER_AUTHENTICATION_EXECUTION_TYPE_CLIENT_SIDE = 2;
+}
+
+// HTTP Basic authentication settings.
+message RagCrawlerHttpAuth {
+
+    // HTTP Basic Authentication username.
+    string http_auth_username = 1;
+
+    // HTTP Basic Authentication password.
+    string http_auth_password = 2;
+
+}
+
+// Browser runtime configuration.
+//
+// This block maps closely to Crawl4AI BrowserConfig and controls browser
+// process setup (engine, headless mode, viewport, context, proxy, cookies,
+// user-agent behavior, and launch arguments).
+message RagCrawlerBrowserConfig {
+
+    // Optional. HTTP headers sent on page/resource requests.
+    // Repeated entries allow duplicate header names and preserve order.
+    repeated google.protobuf.Struct crawler_headers = 1;
+
+    // Optional. Initial cookies.
+    repeated RagCrawlerCookie crawler_cookies = 2;
+
+    // Optional. User-Agent sent with requests.
+    string crawler_user_agent = 3;
+
+}
+
+// Cookie representation for initial browser session state.
+message RagCrawlerCookie {
+
+    // Required. Cookie name.
+    string cookie_name = 1;
+
+    // Required. Cookie value.
+    string cookie_value = 2;
+
+    // Optional. Cookie domain.
+    string cookie_domain = 3;
+
+}
+
+// Concurrency and pacing controls for crawler runs.
+message RagCrawlerConcurrencyConfig {
+
+    // Optional. Max number of concurrent in-flight requests/pages.
+    // Increase for throughput; reduce for fragile sites/rate limits.
+    int32 max_concurrent_requests = 1;
+
+}
+
+// Crawl run behavior.
+//
+// This block controls scheduling, traversal, extraction outputs, retries,
+// diagnostics capture, and deep crawling options for each crawler run.
+message RagCrawlerConfig {
+
+    // Optional. Concurrency and pacing controls for crawler requests.
+    RagCrawlerConcurrencyConfig concurrency_config = 1;
+
+    // Optional. Deep crawler behavior (enable + depth/pages/scoring/filter chain).
+    RagCrawlerDeepCrawlerConfig deep_crawler_config = 2;
+
+    // Optional. Structured output configuration (format + metadata policy).
+    RagCrawlerResultsConfig output_config = 3;
+
+}
+
+// Deep crawler options grouped under one config node.
+message RagCrawlerDeepCrawlerConfig {
+
+    // Optional. Enable deep crawler behavior (link following beyond seeds).
+    // Default <code>false</code>. If <code>false</code>, <code>config</code> is ignored.
+    bool is_active = 1;
+
+    // Optional. Crawl traversal strategy.
+    // BFS is often best for broad site coverage; DFS for deep section traversal.
+    // Default <code>RAG_CRAWLER_CRAWL_STRATEGY_BFS</code>.
+    RagCrawlerCrawlStrategy crawl_strategy = 2;
+
+    // Optional. Maximum link depth from seed URLs.
+    // <code>0</code> usually means only seed pages.
+    int32 max_depth = 3;
+
+    // Optional. Hard cap on total processed pages for this run.
+    int32 max_pages = 4;
+
+    // Optional. URL and domain restrictions.
+    RagCrawlerFilters deep_crawler_filters = 5;
+
+}
+
+// Structured output configuration.
+//
+// Use this block to define result payload shape and metadata behavior,
+// similar to Crawl4AI markdown/output-generation toggles.
+message RagCrawlerResultsConfig {
+
+    // Optional. Inject YAML frontmatter into markdown output.
+    // If the content is HTML based, it will automatically be converted to markdown.
+    // Optionally, you can inject YAML frontmatter into the markdown output.
+    // Default <code>true</code>.
+    optional bool inject_frontmatter = 1;
+
+    // Optional. Metadata extractors.
+    repeated RagCrawlerMetaDataExtractor meta_data_extractors = 2;
+
+}
+
+enum RagCrawlerMetaDataExtractorType {
+
+    // Unspecified.
+    RAG_CRAWLER_META_DATA_EXTRACTOR_TPYE_UNSPECIFIED = 0;
+
+    // Regex pattern.
+    RAG_CRAWLER_META_DATA_EXTRACTOR_TYPE_REGEX = 1;
+
+    // Fixed value.
+    RAG_CRAWLER_META_DATA_EXTRACTOR_TYPE_FIXED_VALUE = 2;
+
+    // CSS selector.
+    RAG_CRAWLER_META_DATA_EXTRACTOR_TYPE_CSS_SELECTOR = 3;
+
+    // XPath selector.
+    RAG_CRAWLER_META_DATA_EXTRACTOR_TYPE_XPATH_SELECTOR = 4;
+
+    // ID selector.
+    RAG_CRAWLER_META_DATA_EXTRACTOR_TYPE_ID_SELECTOR = 5;
+}
+
+// Metadata extractor configuration.
+message RagCrawlerMetaDataExtractor {
+
+    // Optional. Regex pattern to match metadata field names.
+    RagCrawlerMetaDataExtractorType type = 1;
+
+    // Optional. Value to extract (e.g. regex pattern, fixed value, CSS selector, XPath selector, ID selector).
+    string value = 2;
+
+    // Optional. Metadata field name to extract (e.g. url, title, description, author, keywords, tags, created_date, modified_date, scraped_at).
+    string key = 3;
+
+}
+
+// Crawl traversal strategy.
+enum RagCrawlerCrawlStrategy {
+
+    // Unspecified
+    RAG_CRAWLER_CRAWL_STRATEGY_UNSPECIFIED = 0;
+
+    // Breadth-first traversal.
+    RAG_CRAWLER_CRAWL_STRATEGY_BFS = 1;
+
+    // Depth-first traversal.
+    RAG_CRAWLER_CRAWL_STRATEGY_DFS = 2;
+
+    // Best-first traversal based on relevance scoring.
+    RAG_CRAWLER_CRAWL_STRATEGY_BEST_FIRST = 3;
+
+}
+
+// Timeout settings for crawler operations.
+message RagCrawlerRetryConfig {
+
+    // Optional. Page load/render timeout in seconds.
+    int32 page_load_timeout_seconds = 1;
+
+    // Optional. Maximum retry attempts per page source.
+    int32 retry_max_attempts = 2;
+
+}
+
+message RagCrawlerContentResult {
+
+    // Optional. Extracted page metadata.
+    // Includes only fields configured in <code>RagCrawlerConfig.output_config.meta_data_extractors</code>.
+    google.protobuf.Struct metadata = 1;
+
+    // Optional. Extracted markdown output.
+    string markdown = 2;
+
+}
+
+// Consolidated diagnostics and HTTP execution metadata for a crawl result.
+message RagCrawlerExecutionInfo {
+
+    // Optional. SSL certificate details.
+    google.protobuf.Struct ssl_certificate = 1;
+
+    // Optional. Crawl status flag.
+    bool success = 2;
+
+    // Optional. Error details if crawl failed.
+    string error_message = 3;
+
+}
+
+// Crawler result entity.
+//
+// Each result corresponds to one crawled URL in a crawler run and includes
+// extracted content, metadata, diagnostics, and optional binary artifacts.
+message RagCrawlerResult {
+
+    // Resource name of the crawler result.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawler_results/&lt;crawler_result_uuid&gt;</code></pre>
+    string name = 1;
+
+    // Resource name of the source crawler profile.
+    string crawler_name = 2;
+
+    // Resource name of the crawler run that produced this result.
+    string operation_name = 3;
+
+    // URL this content came from.
+    string source_url = 4;
+
+    // Classified primary file resource built from source URL and detected MIME/type.
+    // If its a HTML page, it will be stored in the DocumentFileResource Bytes.
+    // See FileResource Documentation for all other file types.
+    FileResource file_resource = 5;
+
+    // Timestamp when this URL was last processed by crawler.
+    google.protobuf.Timestamp last_crawled_date = 6;
+
+    // Optional. Consolidated extracted content for this page.
+    RagCrawlerContentResult content_result = 7;
+
+    // Optional. Timestamp when source page was last updated.
+    // Source precedence: HTTP Last-Modified header, then sitemap <lastmod> fallback.
+    google.protobuf.Timestamp page_last_updated_date = 8;
+
+}
+
+// Request message for running a crawler.
+//
+// This starts a long-running operation and returns immediately.
+// Clients should poll operation status via <code>RagGetCrawlerRun</code>.
+message RagStartCrawlerRequest {
+
+    // Required. The agent that owns the crawler.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the project to use.
+    string language_code = 2;
+
+    // Required. Resource name of the crawler to run.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawlers/&lt;crawler_uuid&gt;</code></pre>
+    string crawler_name = 3;
+
+}
+
+// Request message for getting a crawler run.
+message RagGetCrawlerRunRequest {
+
+    // Required. The agent that owns the crawler run.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the project to use.
+    string language_code = 2;
+
+    // Required. Resource name of the crawler run.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawler_runs/&lt;crawler_run_uuid&gt;</code></pre>
+    string crawler_run_name = 3;
+
+}
+
+// Request message for listing crawler runs.
+message RagListCrawlerRunsRequest {
+
+    // Required. The agent that owns the crawler runs.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the project to use.
+    string language_code = 2;
+
+    // Optional. Restrict to one crawler.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawlers/&lt;crawler_uuid&gt;</code></pre>
+    string crawler_name = 3;
+
+    // Optional. Specifies which page to return. The page token is a string of the format
+    // <pre><code>current_index-&lt;idx&gt;--page_size-&lt;size&gt;</code></pre>
+    //
+    // <ul>
+    //     <li><code>&lt;size&gt;</code> must be an integer &geq; <code>1</code>. The maximum number of results to return.</li>
+    //     <li><code>&lt;idx&gt;</code> must be an integer &geq; <code>0</code>. The start index in the requested list, starting from which a maximum of <code>&lt;size&gt;</code> elements are returned.</li>
+    // </ul>
+    //
+    // <em>Important note</em>: The <code>&lt;idx&gt;</code> is the index in the requested sequence NOT the page number. E.g. if the requested list has 100 elements then <code>current_index-5--page_size-15</code> returns the elements at index 5-19 and not the 5-th page of 15 elements.
+    //
+    // Both <code>current_index-&lt;idx&gt;</code> and <code>page_size-&lt;size&gt;</code> are optional and default to <code>0</code> and <code>10</code> respectively. The following are all valid <code>page_token</code>s
+    // <br>
+    // <ul>
+    //     <li><code> </code> (empty string/missing value) - index 0, page size 10</li>
+    //     <li><code>current_index-3</code> - index 3, page size 10</li>
+    //     <li><code>page_size-20</code> - index 0, page size 20</li>
+    //     <li><code>current_index-3--page_size-20</code> - index 3, page size 20</li>
+    // </ul>
+    string page_token = 4;
+
+    // Optional. Filter by operation status.
+    OperationMetadata.Status status = 5;
+
+    // Optional. Sort field (default: <code>created_at</code>).
+    string orderby = 6;
+
+    // Optional. Sort descending.
+    optional SortingMode sorting_mode = 7;
+
+}
+
+// Response message for listing crawler runs.
+message RagListCrawlerRunsResponse {
+    // List of crawler run operations.
+    repeated ondewo.nlu.Operation crawler_runs = 1;
+
+    // Page token string (following the format described in <code>RagListCrawlerRunsRequest</code>) for retrieving the next results page
+    string next_page_token = 2;
+}
+
+// Request message for deleting crawler runs.
+//
+// Deletion candidates are the union of:
+// - explicit run names in <code>crawler_run_names</code>
+// - all runs belonging to crawlers listed in <code>crawler_names</code>
+//
+// If both lists are empty, the call is a no-op.
+message RagDeleteCrawlerRunsRequest {
+
+    // Required. The agent that owns the crawler runs.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the project to use.
+    string language_code = 2;
+
+    // Optional. Explicit crawler run names to delete.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawler_runs/&lt;crawler_run_uuid&gt;</code></pre>
+    repeated string crawler_run_names = 3;
+
+    // Optional. Crawler names whose runs should be deleted.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawlers/&lt;crawler_uuid&gt;</code></pre>
+    repeated string crawler_names = 4;
+
+}
+
+// Response message for deleting crawler runs.
+message RagDeleteCrawlerRunsResponse {
+
+    // Number of deleted crawler runs.
+    int32 deleted_count = 1;
+
+    // Resource names of deleted crawler runs.
+    repeated string deleted_run_names = 2;
+
+}
+
+// Request message for stopping a crawler run.
+message RagStopCrawlerRequest {
+
+    // Required. The agent that owns the crawler run.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the project to use.
+    string language_code = 2;
+
+    // Required. Resource name of the crawler run.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawler_runs/&lt;crawler_run_uuid&gt;</code></pre>
+    string name = 3;
+
+}
+
+// Result of stopping a crawler run
+message RagStopCrawlerResponse {
+
+    // Resource name of the crawler run that was stopped.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawler_runs/&lt;crawler_run_uuid&gt;</code></pre>
+    string name = 1;
+
+    // Error message if there are any; empty when the stop request was accepted successfully.
+    string error_message = 2;
+
+}
+
+// Request message for getting crawler results of a crawler run.
+//
+// Results are returned in pages. Request the first page with an empty
+// <code>page_token</code>, then continue with each response <code>next_page_token</code>.
+//
+// Example:
+// <pre><code>RagGetCrawlerResults(run_name, page_token="")
+// -> next_page_token="..."
+// RagGetCrawlerResults(run_name, page_token="...")
+// </code></pre>
+message RagGetCrawlerResultsRequest {
+
+    // Required. The agent that owns the crawler run.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the project to use.
+    string language_code = 2;
+
+    // Required. Resource name of the crawler run.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawler_runs/&lt;crawler_run_uuid&gt;</code></pre>
+    string operation_name = 3;
+
+    // Optional. Specifies which page to return. The page token is a string of the format
+    // <pre><code>current_index-&lt;idx&gt;--page_size-&lt;size&gt;</code></pre>
+    //
+    // <ul>
+    //     <li><code>&lt;size&gt;</code> must be an integer &geq; <code>1</code>. The maximum number of results to return.</li>
+    //     <li><code>&lt;idx&gt;</code> must be an integer &geq; <code>0</code>. The start index in the requested list, starting from which a maximum of <code>&lt;size&gt;</code> elements are returned.</li>
+    // </ul>
+    //
+    // <em>Important note</em>: The <code>&lt;idx&gt;</code> is the index in the requested sequence NOT the page number. E.g. if the requested list has 100 elements then <code>current_index-5--page_size-15</code> returns the elements at index 5-19 and not the 5-th page of 15 elements.
+    //
+    // Both <code>current_index-&lt;idx&gt;</code> and <code>page_size-&lt;size&gt;</code> are optional and default to <code>0</code> and <code>10</code> respectively. The following are all valid <code>page_token</code>s
+    // <br>
+    // <ul>
+    //     <li><code> </code> (empty string/missing value) - index 0, page size 10</li>
+    //     <li><code>current_index-3</code> - index 3, page size 10</li>
+    //     <li><code>page_size-20</code> - index 0, page size 20</li>
+    //     <li><code>current_index-3--page_size-20</code> - index 3, page size 20</li>
+    // </ul>
+    string page_token = 4;
+
+    // Optional. Filter by URL substring.
+    string url_query = 5;
+
+}
+
+// Response message for getting crawler results.
+message RagGetCrawlerResultsResponse {
+
+    // List of crawler results for the crawler run.
+    repeated RagCrawlerResult crawler_results = 1;
+
+    // Page token string (following the format described in <code>RagGetCrawlerResultsRequest</code>) for retrieving the next results page
+    string next_page_token = 2;
+
+    // Total number of crawler results available after applying request filters
+    // (for example <code>url_query</code>).
+    int32 total_size = 3;
+
+}
+
+// Request message for getting a single crawler result from a crawler run.
+message RagGetCrawlerResultRequest {
+
+    // Required. The agent that owns the crawler run.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the project to use.
+    string language_code = 2;
+
+    // Required. Resource name of the crawler run.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawler_runs/&lt;crawler_run_uuid&gt;</code></pre>
+    string operation_name = 3;
+
+    // Required. Exact URL of the crawler result to retrieve.
+    string url = 4;
+
+}
+
+// Request message for adding crawler output to one or more datasets.<br>
+// Either <code>crawler_names</code> or <code>crawler_result_names</code> (or both) must be provided.
+message RagAddCrawlerResultsToDatasetsRequest {
+
+    // Required. The agent that owns the crawler.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the project to use.
+    string language_code = 2;
+
+    // Optional. Resource names of crawlers whose results should be imported.<br>
+    // The specified crawlers must have at least one successful run. All of the results of the last completed run are uploaded to the datasets.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawlers/&lt;crawler_uuid&gt;</code></pre>
+    repeated string crawler_names = 3;
+
+    // Optional. Resource names of crawler results to upload in addition to the results of the crawlers specified in <code>crawler_names</code>.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawler_results/&lt;crawler_result_uuid&gt;</code></pre>
+    repeated string crawler_result_names = 4;
+
+    // Required. IDs of the datasets to add the crawl results to.
+    repeated string dataset_ids = 5;
+
+}
+
+// Request message for removing previously imported crawler output from one or more datasets.
+message RagRemoveCrawlerResultsFromDatasetsRequest {
+
+    // Required. The agent that owns the crawler.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the project to use.
+    string language_code = 2;
+
+    // Required. Resource name of crawler whose results should be removed.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawlers/&lt;crawler_uuid&gt;</code></pre>
+    string crawler_name = 3;
+
+    // Required. Resource names of crawler results to remove.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawler_results/&lt;crawler_result_uuid&gt;</code></pre>
+    repeated string crawler_result_names = 4;
+
+    // Required. Dataset IDs from which the crawler outputs should be removed.
+    //
+    // Example:
+    // <pre><code>crawler_names = ["projects/p/agent/crawlers/c1"]
+    // crawler_result_names = ["projects/p/agent/crawler_results/r1", "projects/p/agent/crawler_results/r2"]
+    // dataset_ids = ["dataset-a", "dataset-b"]</code></pre>
+    repeated string dataset_ids = 5;
+
+}
+
+// Request message for getting datasets attached to a crawler.
+message RagGetCrawlerAttachedDatasetsRequest {
+
+    // Required. The agent owning the crawler.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+    string parent = 1;
+
+    // Required. The language of the project to use.
+    string language_code = 2;
+
+    // Required. Resource name of the crawler.
+    // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawlers/&lt;crawler_uuid&gt;</code></pre>
+    string crawler_name = 3;
+
+    // Optional. Maximum number of datasets to return.
+    //
+    // If unset or non-positive, backend default is used.
+    int32 page_size = 4;
+
+    // Optional. Specifies which page to return. The page token is a string of the format
+    // <pre><code>current_index-&lt;idx&gt;--page_size-&lt;size&gt;</code></pre>
+    //
+    // <ul>
+    //     <li><code>&lt;size&gt;</code> must be an integer &geq; <code>1</code>. The maximum number of results to return.</li>
+    //     <li><code>&lt;idx&gt;</code> must be an integer &geq; <code>0</code>. The start index in the requested list, starting from which a maximum of <code>&lt;size&gt;</code> elements are returned.</li>
+    // </ul>
+    //
+    // <em>Important note</em>: The <code>&lt;idx&gt;</code> is the index in the requested sequence NOT the page number. E.g. if the requested list has 100 elements then <code>current_index-5--page_size-15</code> returns the elements at index 5-19 and not the 5-th page of 15 elements.
+    //
+    // Both <code>current_index-&lt;idx&gt;</code> and <code>page_size-&lt;size&gt;</code> are optional and default to <code>0</code> and <code>10</code> respectively. The following are all valid <code>page_token</code>s
+    // <br>
+    // <ul>
+    //     <li><code> </code> (empty string/missing value) - index 0, page size 10</li>
+    //     <li><code>current_index-3</code> - index 3, page size 10</li>
+    //     <li><code>page_size-20</code> - index 0, page size 20</li>
+    //     <li><code>current_index-3--page_size-20</code> - index 3, page size 20</li>
+    // </ul>
+    string page_token = 5;
+
+    // Optional. The mask to control which <code>RagDataset</code> fields get returned.
+    google.protobuf.FieldMask field_mask = 6;
+
+}
+
+// Response message for getting datasets attached to a crawler.
+message RagGetCrawlerAttachedDatasetsResponse {
+
+    // Datasets attached to the crawler.
+    repeated RagDataset datasets = 1;
+
+    // Page token string (following the format described in <code>RagGetCrawlerAttachedDatasetsRequest</code>) for retrieving the next results page
+    string next_page_token = 2;
+
+}
+
+// Request message for getting crawler run logs.
+message RagGetCrawlerRunLogsRequest {
+  // Required. The agent that owns the crawler run.
+  // Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre>
+  string parent = 1;
+
+  // Required. The language of the project to use.
+  string language_code = 2;
+
+  // Required. Resource name of the crawler run.
+  // Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawler_runs/&lt;crawler_run_uuid&gt;</code></pre>
+  string operation_name = 3;
+
+  // Optional. Specifies which page to return.
+  string page_token = 4;
+
+  // Optional. Number of logs per page.
+  int32 page_size = 5;
+
+  // --- Filtering Logic ---
+
+  // Optional. Filter by one or more log levels.
+  repeated LogSeverity level_filters = 6;
+
+  // Optional. Filter by specific phase (exact match).
+  string phase_filter = 7;
+
+  // Optional. Search string for the message or details.
+  string search_query = 8;
+
+  // Optional. Filter logs generated after this time.
+  google.protobuf.Timestamp start_time = 9;
+
+  // Optional. Filter logs generated before this time.
+  google.protobuf.Timestamp end_time = 10;
+
+  // Optional. Filter by source URL (substring match).
+  string source_url_filter = 11;
+
+}
+
+// Response message for getting crawler run logs.
+message RagGetCrawlerRunLogsResponse {
+  // Resource name of the crawler run operation.
+  string operation_name = 1;
+
+  // Resource name of the crawler profile.
+  string crawler_name = 2;
+
+  // Operation status of the run.
+  OperationMetadata.Status status = 3;
+
+  // List of log entries for the requested page.
+  repeated LogEntry entries = 4;
+
+  // Page token string for retrieving the next results page.
+  string next_page_token = 5;
+
+}

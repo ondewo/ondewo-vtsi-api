@@ -1,4 +1,4 @@
-// Copyright 2020-2023 ONDEWO GmbH
+// Copyright 2020-2026 ONDEWO GmbH
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -115,11 +115,11 @@ message GetProjectElementStatRequest {
 
     // Required. The name/path of the concept to get the statistic from.
     // Example:
-    //<pre><code>
-    // * projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;
-    // * projects/&lt;project_uuid&gt;/agent/entityTypes/&lt;entity_type_uuid&gt;
-    // * projects/&lt;project_uuid&gt;/agent/entityTypes/&lt;entity_type_uuid&gt;/entityValues&lt;entity_value_uuid&gt;
-    //</code></pre>
+    // <ul>
+    //   <li><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;</code></li>
+    //   <li><code>projects/&lt;project_uuid&gt;/agent/entityTypes/&lt;entity_type_uuid&gt;</code></li>
+    //   <li><code>projects/&lt;project_uuid&gt;/agent/entityTypes/&lt;entity_type_uuid&gt;/entityValues/&lt;entity_value_uuid&gt;</code></li>
+    // </ul>
     string name = 1;
 
     // Language code
