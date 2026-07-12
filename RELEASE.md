@@ -2,6 +2,17 @@
 
 *****************
 
+## Release ONDEWO VTSI API 8.3.0
+
+### Improvements
+
+* [[OND235-105]](https://ondewo.atlassian.net/browse/OND235-105) Added `VoiceInteractionConfig` with
+  `TurnDetectionConfig`, `InterruptionHandlingConfig`, `ResponseTimingConfig` and `SoftTimeoutConfig`
+  to `CommonServicesConfig` for fine-granular per-call configuration of turn detection,
+  interruption (barge-in) handling and response timing
+
+*****************
+
 ## Release ONDEWO VTSI API 8.2.0
 
 ### Improvements
