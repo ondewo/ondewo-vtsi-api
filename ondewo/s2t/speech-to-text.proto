@@ -184,7 +184,7 @@ message TranscribeRequestConfig {
     //   <li><code>aws_secret_access_key</code> (required) Secret access key to access Amazon Web Service.</li>
     //   <li><code>region</code> (required) Region name of Amazon Server.</li>
     // </ul>
-    // Example: <code>s2t_config_service={&apos;aws_access_key_id&apos;: &apos;YOUR_AWS_ACCESS_KEY_ID&apos;, &apos;aws_secret_access_key&apos;: 
+    // Example: <code>s2t_config_service={&apos;aws_access_key_id&apos;: &apos;YOUR_AWS_ACCESS_KEY_ID&apos;, &apos;aws_secret_access_key&apos;:
     // &apos;YOUR_AWS_SECRET_ACCESS_KEY&apos;, &apos;region&apos;: &apos;YOUR_AMAZON_SERVER_REGION_NAME&apos;}</code>
     // For Deepgram S2T service, the following argument should be passed in form of a dict:
     // <ul>
@@ -195,7 +195,7 @@ message TranscribeRequestConfig {
     // For Google cloud S2T service, the following arguments should be passed in form of a dict:
     // <ul>
     //   <li><code>api_key</code> (required) API key of Google cloud to access its S2T service.</li>
-    //   <li><code>api_endpoint</code> (optional) Regional API endpoint of Google cloud S2T service. (Defaults to 
+    //   <li><code>api_endpoint</code> (optional) Regional API endpoint of Google cloud S2T service. (Defaults to
     // &apos;eu-speech.googleapis.com&apos;)</li>
     // </ul>
     // Example: <code>s2t_config_service={&apos;api_key&apos;: &apos;YOUR_GOOGLE_CLOUD_API_KEY&apos;, &apos;api_endpoint&apos;: &apos;YOUR_GOOGLE_CLOUD_API_ENDPOINT&apos;}</code>
@@ -204,7 +204,7 @@ message TranscribeRequestConfig {
     //   <li><code>subscription_key</code> (required) Subscription key to access Microsoft Azure Service.</li>
     //   <li><code>region</code> (required) Region name of Microsoft Azure Server.</li>
     // </ul>
-    // Example: <code>s2t_config_service={&apos;subscription_key&apos;: &apos;YOUR_MICROSOFT_AZURE_SUBSCRIPTION_KEY&apos;, &apos;region&apos;: 
+    // Example: <code>s2t_config_service={&apos;subscription_key&apos;: &apos;YOUR_MICROSOFT_AZURE_SUBSCRIPTION_KEY&apos;, &apos;region&apos;:
     // &apos;YOUR_MICROSOFT_AZURE_SERVER_REGION_NAME&apos;}</code>
     // Note: ondewo-s2t will raise an error if you don&apos;t pass any of the required arguments above.
     optional google.protobuf.Struct s2t_service_config = 11;
@@ -267,7 +267,7 @@ message S2tCloudProviderConfigDeepgram {
     // More details at: <a href="https://developers.deepgram.com/docs/smart-format">https://developers.deepgram.com/docs/smart-format</a>
     optional bool smart_format = 2;
 
-    // Optional. Enables or disables <code>numerals</code> feature of Deepgram to convert numbers to numeric form in the resulted 
+    // Optional. Enables or disables <code>numerals</code> feature of Deepgram to convert numbers to numeric form in the resulted
     // transcript. More details at: <a href="https://developers.deepgram.com/docs/numerals">https://developers.deepgram.com/docs/numerals</a>
     optional bool numerals = 3;
 
@@ -276,7 +276,7 @@ message S2tCloudProviderConfigDeepgram {
     // More details at: <a href="https://developers.deepgram.com/docs/measurements">https://developers.deepgram.com/docs/measurements</a>
     optional bool measurements = 4;
 
-    // Optional. Enables or disables <code>dictation</code> feature of Deepgram to convert spoken dictation commands into their 
+    // Optional. Enables or disables <code>dictation</code> feature of Deepgram to convert spoken dictation commands into their
     // corresponding punctuation marks. More details at: <a href="https://developers.deepgram.com/docs/dictation">https://developers.deepgram.com/docs/dictation</a>
     optional bool dictation = 5;
 
@@ -285,7 +285,7 @@ message S2tCloudProviderConfigDeepgram {
 // <p>Configuration details specific to the Google speech-to-text provider.</p>
 message S2tCloudProviderConfigGoogle {
 
-    // Optional. Enables or disables <code>automatic_punctuation</code> feature of Google s2t to add punctuations to the resulted 
+    // Optional. Enables or disables <code>automatic_punctuation</code> feature of Google s2t to add punctuations to the resulted
     // transcript. More details at: <a href="https://cloud.google.com/speech-to-text/docs/automatic-punctuation">https://cloud.google.com/speech-to-text/docs/automatic-punctuation</a>
     optional bool enable_automatic_punctuation = 1;
 
@@ -311,7 +311,7 @@ message S2tCloudProviderConfigGoogle {
 // <p>Configuration details specific to the Microsoft Azure speech-to-text provider.</p>
 message S2tCloudProviderConfigMicrosoft {
 
-    // Optional. Enables or disables the Microsoft Azure fast transcription API. It is faster than SDK but is in 
+    // Optional. Enables or disables the Microsoft Azure fast transcription API. It is faster than SDK but is in
     // preview version.
     // More details at: <a href="https://learn.microsoft.com/en-us/azure/ai-services/speech-service/fast-transcription-create">https://learn.microsoft.com/en-us/azure/ai-services/speech-service/fast-transcription-create</a>
     optional bool use_fast_transcription_api = 1;
@@ -363,7 +363,7 @@ message UtteranceDetectionOptions {
 
     // if time between audio chunks exceeds next_chunk_timeout, stream will be stopped
     float next_chunk_timeout = 2;
-    
+
     // Optional. Configuration for the turn-detection in utterances
     oneof oneof_turn_detection {
 
@@ -374,17 +374,17 @@ message UtteranceDetectionOptions {
 
 // <p>Configuration of the post-processing options</p>
 message PostProcessingOptions {
-    
+
     // Whether to use spelling correction
     bool spelling_correction = 1;
-    
+
     // Whether to disable normalization
     bool normalize = 2;
-    
+
     // Post-processing configuration specifying the active post-processors in the pipeline, as well as their individual
     // configuration. If not set, all values are replaced by the ones in current pipeline.
     PostProcessing config = 3;
-    
+
     // Whether to disable LLM post-processing
     bool llm_post_processing = 4;
 
@@ -750,7 +750,7 @@ message S2tCloudServiceAmazon {
     // (BCP-47) e.g. &apos;en-US&apos; or &apos;de-DE&apos;.
     string language = 1;
 
-    // Specifies if streaming mode of Amazon web service speech to text is available for the selected language, 
+    // Specifies if streaming mode of Amazon web service speech to text is available for the selected language,
     // otherwise batch mode transcription is used. See the list of languages and available transcription modes at:
     // <a href="https://docs.aws.amazon.com/transcribe/latest/dg/supported-languages.html">https://docs.aws.amazon.com/transcribe/latest/dg/supported-languages.html</a>
     bool streaming_available = 2;
@@ -1026,8 +1026,8 @@ message TurnDetectionOptions {
     // Optional. Indicates if the turn-detection feature is active.
     optional bool active = 1;
 
-    // Optional. Whether to transcribe the whole utterance when turn moment is detected. It is helpful to increase  
-    // accuracy of transcriptions in cost of drop in speed. If deactivated, it just transcribe from last short silence 
+    // Optional. Whether to transcribe the whole utterance when turn moment is detected. It is helpful to increase
+    // accuracy of transcriptions in cost of drop in speed. If deactivated, it just transcribe from last short silence
     // period and concatenates the transcriptions of small audio chunks between tiny silences.
     optional bool full_utterance_deployment = 2;
 
@@ -1317,13 +1317,13 @@ message SymSpell {
 
 // <p>S2tNormalization contains configuration for the speech-to-text normalization.</p>
 message S2tNormalization {
-    
+
     // Language for normalization of transcriptions.
     string language = 1;
-    
+
     // List of names of active normalizations.
     repeated string pipeline = 2;
-    
+
 }
 
 // <p>S2tLlmPostProcessing contains configuration for the speech-to-text postprocessing with LLM.</p>
@@ -1375,6 +1375,9 @@ message S2tLlmPostProcessingTranslationOptions {
 
     // Optional. Target language of the translation task of LLM post-processing.
     optional string language = 2;
+
+    // Optional. Custom prompt to guide the LLM for translation. Overrides the default prompt when set.
+    optional string prompt = 3;
 
 }
 
@@ -1436,11 +1439,14 @@ message S2tLlmPostProcessingSummarizationOptions {
     // Optional. Indicates if the summarization task of LLM post-processing is active.
     optional bool active = 1;
 
+    // Optional. Custom prompt to guide the LLM for summarization. Overrides the default prompt when set.
+    optional string prompt = 2;
+
     // Optional. Minimum number of characters of the summary generated in summarization task of LLM post-processing.
-    optional int32 min_chars = 2;
+    optional int32 min_chars = 3;
 
     // Optional. Maximum number of characters of the summary generated in summarization task of LLM post-processing.
-    optional int32 max_chars = 3;
+    optional int32 max_chars = 4;
 
 }
 
@@ -1456,7 +1462,7 @@ message S2tLlmPostProcessingSubTaskOptions {
     // when set.
     optional string prompt = 2;
 
-}    
+}
 
 // <p>Logging contains configuration for logging.</p>
 message Logging {
