@@ -160,3 +160,14 @@ Pre-commit here uses only the language-agnostic hooks — **markdownlint-cli2, p
 
 - **markdownlint MD053 is disabled** (its auto-fix deletes `[comment]: <>` reference-definition markers).
 - **markdownlint RELEASE.md reformatting is content-safe**: it only strips trailing whitespace and adds blank lines around headings — the `## Release … <VERSION>` headings and `*****` separators that `ondewo_release` greps for remain intact. (Confirmed: the 6.5.0 release notes sliced correctly after the reformat.)
+
+## Jenkins — never trigger a multibranch scan or branch indexing
+
+**NEVER trigger a Jenkins multibranch scan or branch indexing.** Do not call a multibranch/folder job's
+`build`, `scan`, or reindex endpoints, click "Scan Repository Now" / "Build Now" on a folder, run
+`p4 scan`, or use any API/CLI that reindexes branches or scans the repository. A scan/reindex runs across
+**every** branch, consumes CI resources, and can kick off unintended builds and deploys.
+
+If a branch is not building — it was not discovered, or its job is marked `buildable: false` / orphaned —
+**report it and stop**. Let the user or a Jenkins admin adjust branch-discovery/config or rename the branch
+to the convention. Never force a build by scanning or reindexing.
