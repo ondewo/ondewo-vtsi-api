@@ -113,7 +113,7 @@ clean_docs_builder: ## Remove the cloned protoc-gen-doc-action repo and Docker i
 	@echo "✓ Cleanup complete"
 
 TEST:
-	@echo "----------------------------------------------\nGITHUB_GH_TOKEN\n----------------------------------------------\n${GITHUB_GH_TOKEN}\n"
+	@echo "----------------------------------------------\nGITHUB_GH_TOKEN\n----------------------------------------------\n$(if $(GITHUB_GH_TOKEN),<set>,<unset>)\n"
 	@echo "----------------------------------------------\nCURRENT_RELEASE_NOTES\n----------------------------------------------\n${CURRENT_RELEASE_NOTES}\n"
 
 githubio_logic_pre:
@@ -226,7 +226,7 @@ create_release_tag: ## Create Release Tag and push it to origin
 	git push origin ${ONDEWO_VTSI_API_VERSION}
 
 login_to_gh: ## Login to Github CLI with Access Token
-	echo $(GITHUB_GH_TOKEN) | gh auth login -p ssh --with-token
+	@echo $(GITHUB_GH_TOKEN) | gh auth login -p ssh --with-token
 
 build_gh_release: ## Generate Github Release with CLI
 	gh release create --repo $(GH_REPO) "$(ONDEWO_VTSI_API_VERSION)" -n "$(CURRENT_RELEASE_NOTES)" -t "Release ${ONDEWO_VTSI_API_VERSION}"
@@ -237,7 +237,7 @@ delete_gh_release: ## Delete GitHub Release, release branch and release tag via 
 	-gh api repos/ondewo/ondewo-vtsi-api/git/refs/tags/${ONDEWO_VTSI_API_VERSION} -X DELETE
 
 unrelease_to_github_via_docker_image: ## Unrelease from Github via docker
-	docker run --rm \
+	@docker run --rm \
 		-e GITHUB_GH_TOKEN=${GITHUB_GH_TOKEN} \
 		${IMAGE_UTILS_NAME} make login_to_gh delete_gh_release
 
@@ -247,13 +247,28 @@ unrelease: build_utils_docker_image unrelease_to_github_via_docker_image ## Undo
 	-git fetch --prune
 	@echo "Unrelease of ${ONDEWO_VTSI_API_VERSION} complete"
 
-release_all_clients:
-	@make release_python_client || (echo "Already released ${ONDEWO_VTSI_API_VERSION} of Python Client")
-	@make release_angular_client || (echo "Already released ${ONDEWO_VTSI_API_VERSION} of Angular Client")
-	@make release_nodejs_client || (echo "Already released ${ONDEWO_VTSI_API_VERSION} of Nodejs Client")
-	@make release_typescript_client || (echo "Already released ${ONDEWO_VTSI_API_VERSION} of Typescript Client")
-	@make release_js_client || (echo "Already released ${ONDEWO_VTSI_API_VERSION} of JS Client")
-	@echo "End releasing all clients"
+CLIENTS := python nodejs typescript angular js
+
+release_all_clients: ## Release all clients IN PARALLEL; one failing client does not abort the others
+	@echo "Releasing all clients in parallel for ${ONDEWO_VTSI_API_VERSION} ..."; \
+	rm -f .already_released_marker-* .client_status-*; \
+	for c in $(CLIENTS); do \
+		( if make release_$${c}_client > release_run_$${c}.log 2>&1; then echo RELEASED > .client_status-$$c; \
+		  elif [ -f .already_released_marker-$$c ]; then echo SKIP > .client_status-$$c; \
+		  else echo FAILED > .client_status-$$c; fi ) & \
+	done; \
+	wait; \
+	echo ""; echo "=============== CLIENT RELEASE SUMMARY (${ONDEWO_VTSI_API_VERSION}) ==============="; \
+	failed=0; \
+	for c in $(CLIENTS); do \
+		s=$$(cat .client_status-$$c 2>/dev/null || echo NO_STATUS); \
+		echo "  $$c : $$s"; \
+		if [ "$$s" = FAILED ] || [ "$$s" = NO_STATUS ]; then failed=1; echo "      -> see release_run_$$c.log"; fi; \
+	done; \
+	echo "==============================================================="; \
+	rm -f .already_released_marker-* .client_status-*; \
+	if [ "$$failed" = 1 ]; then echo "RESULT: one or more clients FAILED (the others released independently)."; exit 1; fi; \
+	echo "RESULT: all clients released or already up-to-date."
 
 GENERIC_CLIENT?=
 RELEASEMD?=
@@ -271,24 +286,24 @@ release_client:
 	rm -rf ${REPO_DIR} || sudo rm -rf ${REPO_DIR}
 	rm -f build_log_${REPO_NAME}.txt
 
-	@echo ${GENERIC_RELEASE_NOTES} > temp-notes && perl -i -pe 's/\\//g' temp-notes && perl -i -pe 's/REPONAME/${UPPER_REPO_NAME}/g' temp-notes
+	@echo ${GENERIC_RELEASE_NOTES} > temp-notes-${REPO_NAME} && perl -i -pe 's/\\//g' temp-notes-${REPO_NAME} && perl -i -pe 's/REPONAME/${UPPER_REPO_NAME}/g' temp-notes-${REPO_NAME}
 	git clone ${GENERIC_CLIENT}
 # Check if Client is already uptodate with API Version
-	@! git -C ${REPO_DIR} branch -a | grep -q ${ONDEWO_VTSI_API_VERSION} || (echo "Already Released ${ONDEWO_VTSI_API_VERSION} \n\n\n"  && rm -rf ${REPO_DIR} && rm -f temp-notes && exit 1)
+	@! git -C ${REPO_DIR} branch -a | grep -q ${ONDEWO_VTSI_API_VERSION} || (echo "Already Released ${ONDEWO_VTSI_API_VERSION} \n\n\n"  && touch .already_released_marker-${REPO_NAME} && rm -rf ${REPO_DIR} && rm -f temp-notes-${REPO_NAME} && exit 1)
 
 # Change Version Number and RELEASE NOTES
-	cd ${REPO_DIR} && perl -i -ne 'BEGIN{open my $$f,"<","../temp-notes" or die; @notes=<$$f>; close $$f} print; print @notes if /Release History/' ${RELEASEMD}
+	cd ${REPO_DIR} && perl -i -ne 'BEGIN{open my $$f,"<","../temp-notes-${REPO_NAME}" or die; @notes=<$$f>; close $$f} print; print @notes if /Release History/' ${RELEASEMD}
 	cd ${REPO_DIR} && head -20 ${RELEASEMD}
-	cd ${REPO_DIR} && perl -i -pe 's/ONDEWO_VTSI_VERSION.*=.*/ONDEWO_VTSI_VERSION = ${ONDEWO_VTSI_API_VERSION}/' Makefile
+	cd ${REPO_DIR} && perl -i -pe 's/ONDEWO_VTSI_VERSION.*=.*/ONDEWO_VTSI_VERSION=${ONDEWO_VTSI_API_VERSION}/' Makefile
 	cd ${REPO_DIR} && perl -i -pe 's{ONDEWO_PROTO_COMPILER_GIT_BRANCH.*=.*}{ONDEWO_PROTO_COMPILER_GIT_BRANCH=tags/${PROTO_COMPILER}}' Makefile
 	cd ${REPO_DIR} && perl -i -pe 's{VTSI_API_GIT_BRANCH.*=.*}{VTSI_API_GIT_BRANCH=tags/${ONDEWO_VTSI_API_VERSION}}' Makefile && head -30 Makefile
 
 # Build new code
-	make -C ${REPO_DIR} ondewo_release | tee build_log_${REPO_NAME}.txt
+	bash -c 'set -o pipefail; make -C ${REPO_DIR} ondewo_release | tee build_log_${REPO_NAME}.txt'
 	make -C ${REPO_DIR} TEST
 # Remove everything from Release
 	sudo rm -rf ${REPO_DIR}
-	rm -f temp-notes
+	rm -f temp-notes-${REPO_NAME}
 
 PYTHON_CLIENT="git@github.com:ondewo/ondewo-vtsi-client-python.git"
 
@@ -337,7 +352,7 @@ push_to_gh: login_to_gh build_gh_release ## Logs into GitHub CLI and Releases
 	@echo 'Released to Github'
 
 release_to_github_via_docker_image: ## Release to Github via docker
-	docker run --rm \
+	@docker run --rm \
 		-e GITHUB_GH_TOKEN=${GITHUB_GH_TOKEN} \
 		${IMAGE_UTILS_NAME} make push_to_gh
 
@@ -356,11 +371,11 @@ clone_devops_accounts: ## Clones devops-accounts repo
 
 run_release_with_devops: ## Gets Credentials from devops-repo and runs release with them
 	$(eval info:= $(shell cat ${DEVOPS_ACCOUNT_DIR}/account_github.env | grep GITHUB_GH))
-	make release $(info)
+	@make release $(info)
 
 run_unrelease_with_devops: ## Gets Credentials from devops-repo and runs unrelease with them
 	$(eval info:= $(shell cat ${DEVOPS_ACCOUNT_DIR}/account_github.env | grep GITHUB_GH))
-	make unrelease $(info)
+	@make unrelease $(info)
 
 spc: ## Checks if the Release Branch, Tag and Pypi version already exist
 	$(eval filtered_branches:= $(shell git branch --all | grep "release/${ONDEWO_VTSI_API_VERSION}"))
