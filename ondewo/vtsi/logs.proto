@@ -1,0 +1,624 @@
+// Copyright 2021 ONDEWO GmbH
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package ondewo.vtsi;
+import "google/protobuf/timestamp.proto";
+// <code>ondewo.nlu.LogSeverity</code> is reused rather than redeclared so that a log viewer written
+// against the ONDEWO NLU container-log API renders VTSI call logs without a second severity table.
+import "ondewo/nlu/common.proto";
+// <code>ondewo.vtsi.CallType</code>.
+import "ondewo/vtsi/calls.proto";
+
+// <p>ONDEWO VTSI API</p>
+service Logs {
+
+    //////////////////////////////////////////////////////////////////////////////
+    // Call log endpoints
+    //////////////////////////////////////////////////////////////////////////////
+
+    // <p>Streams the container logs of the ondewo-sip / ondewo-csi containers of a VTSI project as
+    // they are captured, in the manner of <code>docker logs --follow</code>. The stream replays
+    // <code>tail_lines</code> historical entries and then follows. It stays open until the capture
+    // of every matching log stream has terminated, until the client disconnects, or until the
+    // server-side maximum stream duration is reached.</p>
+    // <p>Entries are served from the VTSI database rather than from the docker daemon, so a
+    // container that has already been removed still streams. Secrets are redacted server-side.</p>
+    rpc StreamCallLogs (StreamCallLogsRequest) returns (stream StreamCallLogsResponse);
+
+    // <p>Returns a bounded, filtered page of captured container log entries. Supports a time window,
+    // severity filtering, a regular expression, a plain-text search and cursor paging in both
+    // directions for infinite scrolling. Secrets are redacted server-side.</p>
+    rpc ListCallLogs (ListCallLogsRequest) returns (ListCallLogsResponse);
+
+    // <p>Returns the capture state of a single log stream, i.e. of one capture generation of one
+    // container.</p>
+    rpc GetCallLogStream (GetCallLogStreamRequest) returns (CallLogStream);
+
+    // <p>Lists the log streams VTSI has captured for a project. A single container yields a new log
+    // stream every time it is recreated, because a recreated container is a new docker container
+    // whose previous logs no longer exist.</p>
+    rpc ListCallLogStreams (ListCallLogStreamsRequest) returns (ListCallLogStreamsResponse);
+
+    // <p>Permanently deletes captured log entries matching a filter. This is the erasure path for
+    // data-subject requests: retention answers &quot;delete everything older than N days&quot;, this
+    // answers &quot;delete everything for this call or this phone number&quot;.</p>
+    rpc DeleteCallLogs (DeleteCallLogsRequest) returns (DeleteCallLogsResponse);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Enums
+//////////////////////////////////////////////////////////////////////////////
+
+// Which process inside the container emitted a log entry. All of these share a single docker log
+// stream, because ondewo-csi runs as a child process of the ondewo-sip container.
+enum LogSource {
+
+    // Unspecified or unrecognised source.
+    LOG_SOURCE_UNSPECIFIED = 0;
+
+    // The ondewo-sip server, i.e. an <code>ondewo_sip.*</code> logger.
+    LOG_SOURCE_SIP = 1;
+
+    // The ondewo-csi server or its speech2speech child, i.e. an <code>ondewo_csi.*</code> logger.
+    LOG_SOURCE_CSI = 2;
+
+    // The Asterisk SIP server.
+    LOG_SOURCE_ASTERISK = 3;
+
+    // PulseAudio.
+    LOG_SOURCE_PULSEAUDIO = 4;
+
+    // Container start-up scripts, the Python standard-library logging module, the gRPC C core, and
+    // anything else that could not be attributed.
+    LOG_SOURCE_SYSTEM = 5;
+}
+
+// The docker output channel an entry arrived on.
+enum LogStreamChannel {
+
+    // The channel is not known. This is the honest value for a container started with a TTY, where
+    // the pseudo-terminal genuinely merges both channels into one unframed stream.
+    LOG_STREAM_CHANNEL_UNSPECIFIED = 0;
+
+    // Standard output.
+    LOG_STREAM_CHANNEL_STDOUT = 1;
+
+    // Standard error. The ondewo-sip and ondewo-csi loggers write here.
+    LOG_STREAM_CHANNEL_STDERR = 2;
+}
+
+// The state of VTSI&apos;s capture of one log stream. This describes the CAPTURE, not the container:
+// a healthy container whose capture lease was lost is <code>DETACHED</code>, and a container that no
+// longer exists but whose capture completed cleanly is <code>STOPPED</code>.
+enum LogCaptureState {
+
+    // Unspecified.
+    LOG_CAPTURE_STATE_UNSPECIFIED = 0;
+
+    // Capture is running.
+    LOG_CAPTURE_STATE_CAPTURING = 1;
+
+    // Capture ended cleanly; the stream is complete up to the container&apos;s removal.
+    LOG_CAPTURE_STATE_STOPPED = 2;
+
+    // Capture failed. The stored history is incomplete and <code>capture_error</code> says why.
+    LOG_CAPTURE_STATE_FAILED = 3;
+
+    // Another VTSI replica holds the capture lease for this container.
+    LOG_CAPTURE_STATE_DETACHED = 4;
+}
+
+// Identifies a field of <a href="index.html#ondewo.vtsi.CallLogFilter">CallLogFilter</a>. Used by
+// <a href="index.html#ondewo.vtsi.ListCallLogsResponse">ListCallLogsResponse.scope_limited_filters</a>
+// to declare which filters could only be applied inside the returned window.
+enum CallLogFilterField {
+
+    // Unspecified.
+    CALL_LOG_FILTER_FIELD_UNSPECIFIED = 0;
+
+    // <code>CallLogFilter.text</code>.
+    CALL_LOG_FILTER_FIELD_TEXT = 1;
+
+    // <code>CallLogFilter.regex</code>.
+    CALL_LOG_FILTER_FIELD_REGEX = 2;
+
+    // <code>CallLogFilter.log_sources</code>.
+    CALL_LOG_FILTER_FIELD_LOG_SOURCES = 3;
+
+    // <code>CallLogFilter.channels</code>.
+    CALL_LOG_FILTER_FIELD_CHANNELS = 4;
+
+    // <code>CallLogFilter.emitter_prefixes</code>.
+    CALL_LOG_FILTER_FIELD_EMITTER_PREFIXES = 5;
+
+    // <code>CallLogFilter.thread_names</code>.
+    CALL_LOG_FILTER_FIELD_THREAD_NAMES = 6;
+
+    // <code>CallLogFilter.sip_headers</code>.
+    CALL_LOG_FILTER_FIELD_SIP_HEADERS = 7;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Messages
+//////////////////////////////////////////////////////////////////////////////
+
+// A single captured container log record. One record may span several physical docker log lines: a
+// Python traceback, a protobuf <code>str()</code> dump and a multi-line configuration banner are all
+// one record, and are stored and returned as one entry.
+message CallLogEntry {
+
+    // Ordering cursor. Assigned by the database, monotonically increasing WITHIN ONE LOG STREAM.
+    // It is NOT contiguous: values are drawn from a sequence shared by every stream, are consumed by
+    // rolled-back write batches, and are removed by retention. Never compute the next cursor as
+    // <code>seq + 1</code>; use <code>resume_token</code>, or <code>before_seq</code> /
+    // <code>after_seq</code> when the filter resolves to exactly one log stream.
+    int64 seq = 1;
+
+    // The instant the docker daemon observed the first physical line of this record, in UTC. This is
+    // the authoritative clock: the timestamp the application itself prints is container-local and
+    // carries no timezone.
+    google.protobuf.Timestamp timestamp = 2;
+
+    // False when <code>timestamp</code> is the instant VTSI ingested the record rather than the
+    // instant docker observed it, which happens when the daemon&apos;s timestamp prefix could not be
+    // parsed. The entry is still stored and still ordered; only the clock is approximate.
+    bool timestamp_is_exact = 3;
+
+    // The severity of the record. <code>LOG_SEVERITY_UNSPECIFIED</code> means the emitter does not
+    // log in a recognised format and no severity heuristic matched.
+    ondewo.nlu.LogSeverity level = 4;
+
+    // The log text, with ANSI escape sequences removed, continuation lines re-joined, and secrets
+    // redacted server-side.
+    string message = 5;
+
+    // Docker container id of the container this record came from.
+    string container_id = 6;
+
+    // Docker container name of the container this record came from.
+    string container_name = 7;
+
+    // Which process inside the container emitted the record.
+    LogSource log_source = 8;
+
+    // Which docker output channel the record arrived on.
+    LogStreamChannel channel = 9;
+
+    // <code>&lt;module&gt;:&lt;function&gt;:&lt;line&gt;</code> of the emitting log statement. Empty
+    // for output that is not in the ONDEWO logging format.
+    string emitter = 10;
+
+    // Name of the thread that emitted the record. Empty when not available.
+    string thread_name = 11;
+
+    // Resource name of the log stream this entry belongs to.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/logStreams/&lt;log_stream_uuid&gt;</code></pre>
+    string log_stream = 12;
+
+    // Resource name of the call this entry was attributed to. Empty when the entry falls outside any
+    // call, which is normal and useful: a persistent listener&apos;s container start-up and its idle
+    // time between calls belong to no call.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
+    string call = 13;
+
+    // The NLU session the entry was attributed to.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code></pre>
+    string nlu_session_name = 14;
+
+    // How many physical docker log lines were folded into <code>message</code>. <code>1</code> for an
+    // ordinary single-line record.
+    int32 physical_line_count = 15;
+}
+
+// A key/value predicate over the SIP headers captured on a call.
+message SipHeaderFilter {
+
+    // The SIP header key, for example <code>Call-ID</code> or <code>X-ondewo-callrouting</code>.
+    string key = 1;
+
+    // The value the header must have. Empty matches on the presence of the key alone.
+    string value = 2;
+}
+
+// Narrows a log query. Every field is optional; an empty repeated field means &quot;do not filter on
+// this&quot;. Fields are combined with AND; the values within one repeated field are combined with OR.
+//
+// <p>Filters fall into two groups. IDENTITY filters select which containers and which calls are of
+// interest and are resolved against VTSI&apos;s own call records. CONTENT filters select which
+// entries of those containers to return.</p>
+message CallLogFilter {
+
+    //////////////////////////////////////////////////////////////////////////////
+    // Identity filters
+    //////////////////////////////////////////////////////////////////////////////
+
+    // Call resource names of the form
+    // <pre><code>projects/&lt;project_uuid&gt;/{callers|listeners}/&lt;uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
+    repeated string call_names = 1;
+
+    // Caller resource names of the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
+    repeated string caller_names = 2;
+
+    // Listener resource names of the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
+    repeated string listener_names = 3;
+
+    // Caller uuids.
+    repeated string caller_ids = 4;
+
+    // Listener uuids.
+    repeated string listener_ids = 5;
+
+    // Call uuids.
+    repeated string call_ids = 6;
+
+    // Docker container names.
+    repeated string container_names = 7;
+
+    // Docker container ids.
+    repeated string container_ids = 8;
+
+    // Log stream resource names of the form
+    // <pre><code>projects/&lt;project_uuid&gt;/logStreams/&lt;log_stream_uuid&gt;</code></pre>
+    repeated string log_stream_names = 9;
+
+    // Asterisk SIP account names, for example <code>sut@asterisk.local</code>.
+    repeated string sip_accounts = 10;
+
+    // SIP ports of the per-call container.
+    repeated string sip_ports = 11;
+
+    // ONDEWO CSI ports of the per-call container.
+    repeated string csi_ports = 12;
+
+    // Asterisk ports of the project.
+    repeated string asterisk_ports = 13;
+
+    // Phone numbers of the calls of interest.
+    repeated string phone_numbers = 14;
+
+    // Callee ids of the calls of interest.
+    repeated string callee_ids = 15;
+
+    // NLU session names of the form
+    // <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code></pre>
+    repeated string nlu_session_names = 16;
+
+    // NLU session uuids.
+    repeated string nlu_session_uuids = 17;
+
+    // NLU project uuids.
+    repeated string nlu_project_uuids = 18;
+
+    // Restrict to callers, to listeners, or to both. <code>BOTH</code> disables the filter, matching
+    // the semantics of <a href="index.html#ondewo.vtsi.CallFilter">CallFilter</a>.
+    repeated CallType call_types = 19;
+
+    // SIP header predicates. All entries must match.
+    repeated SipHeaderFilter sip_headers = 20;
+
+    //////////////////////////////////////////////////////////////////////////////
+    // Content filters
+    //////////////////////////////////////////////////////////////////////////////
+
+    // Restrict to entries emitted by these processes.
+    repeated LogSource log_sources = 21;
+
+    // Restrict to entries that arrived on these docker channels.
+    repeated LogStreamChannel channels = 22;
+
+    // Only return entries at or above this severity. <code>LOG_SEVERITY_UNSPECIFIED</code> (the
+    // default) applies no lower bound. Ignored when <code>log_levels</code> is non-empty.
+    ondewo.nlu.LogSeverity min_log_level = 23;
+
+    // Exact severities to include. When non-empty this OVERRIDES <code>min_log_level</code>.
+    repeated ondewo.nlu.LogSeverity log_levels = 24;
+
+    // Keep entries whose severity could not be determined even when a severity bound is set.
+    // Asterisk, PulseAudio, PJSIP and the gRPC C core do not log in a recognised format, so a
+    // <code>&gt;= WARNING</code> filter would otherwise hide exactly the crash output being searched
+    // for. Defaults to <code>false</code>.
+    optional bool include_unleveled_lines = 25;
+
+    // Case-insensitive substring match against the message.
+    optional string text = 26;
+
+    // Regular expression (Python <code>re</code> syntax) matched against the message. At most 512
+    // characters; an invalid or oversized pattern is rejected with <code>INVALID_ARGUMENT</code>.
+    optional string regex = 27;
+
+    // Prefix match against <code>&lt;module&gt;:&lt;function&gt;:&lt;line&gt;</code>, for example
+    // <code>ondewo_csi.servicers.conversations</code>.
+    repeated string emitter_prefixes = 28;
+
+    // Restrict to entries emitted by these threads.
+    repeated string thread_names = 29;
+
+    // Only return entries at or after this instant.
+    optional google.protobuf.Timestamp start_time = 30;
+
+    // Only return entries at or before this instant.
+    optional google.protobuf.Timestamp end_time = 31;
+}
+
+// One capture generation of one container on one docker channel. A container that is recreated
+// yields a NEW log stream, because a recreated container is a different docker container and the
+// previous container&apos;s logs no longer exist anywhere except here.
+message CallLogStream {
+
+    // Resource name of the log stream.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/logStreams/&lt;log_stream_uuid&gt;</code></pre>
+    string name = 1;
+
+    // Docker container name.
+    string container_name = 2;
+
+    // Docker container id.
+    string container_id = 3;
+
+    // The docker channel this stream captures.
+    LogStreamChannel channel = 4;
+
+    // Uuid of the VTSI project owning the container.
+    string project_id = 5;
+
+    // Resource name of the caller or listener the container serves.
+    string voip_call_name = 6;
+
+    // Whether the container serves a caller or a listener.
+    CallType call_type = 7;
+
+    // Asterisk SIP account the container registers with.
+    string sip_account = 8;
+
+    // SIP port of the container.
+    int32 sip_port = 9;
+
+    // ONDEWO CSI port of the container.
+    int32 csi_port = 10;
+
+    // Asterisk port of the project.
+    int32 asterisk_port = 11;
+
+    // Docker image the container runs.
+    string image = 12;
+
+    // State of VTSI&apos;s capture of this stream.
+    LogCaptureState capture_state = 13;
+
+    // Why capture failed, when <code>capture_state</code> is <code>LOG_CAPTURE_STATE_FAILED</code>.
+    string capture_error = 14;
+
+    // When VTSI STARTED CAPTURING this stream. This is not the container&apos;s start time: capture
+    // begins when the container is discovered, which for a container that was already running when
+    // VTSI started is later than the container&apos;s own start.
+    google.protobuf.Timestamp capture_started_at = 15;
+
+    // When VTSI STOPPED CAPTURING this stream.
+    google.protobuf.Timestamp capture_finished_at = 16;
+
+    // True when capture attached to an already-running container, so entries emitted before the
+    // attach were never captured and are not recoverable.
+    bool partial_capture = 17;
+
+    // The smallest <code>seq</code> currently stored for this stream.
+    int64 min_available_seq = 18;
+
+    // The largest <code>seq</code> currently stored for this stream.
+    int64 max_available_seq = 19;
+
+    // How many entries are currently stored for this stream.
+    int64 line_count = 20;
+
+    // How many physical log lines were deliberately not stored, summed over every reason: the ingest
+    // severity floor, the emitter denylist, the conversation-content denylist, an oversized line, and
+    // retention. A non-zero value is why a stream can be thinner than the container&apos;s own log.
+    int64 dropped_line_count = 21;
+}
+
+// The request message for
+// <a href="index.html#ondewo.vtsi.Logs.StreamCallLogs">Logs.StreamCallLogs</a>.
+message StreamCallLogsRequest {
+
+    // VTSI project name for which to stream the logs.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Optional. A filter to narrow the stream down to the entries of interest. The time-window
+    // fields and paging cursors of the filter are meaningless for a live stream and are rejected
+    // with <code>INVALID_ARGUMENT</code> rather than silently ignored.
+    optional CallLogFilter filter = 2;
+
+    // Replay at most this many of the most recent stored entries before switching to live follow.
+    // <code>0</code> (the default) starts the follow with no historical replay. Applied to the
+    // FILTERED result, so <code>tail_lines = 100</code> with a severity floor returns up to 100
+    // matching entries rather than the matches within the last 100 entries.
+    optional int32 tail_lines = 3;
+
+    // Optional. Resume exactly where a previous stream or page stopped. This is an opaque,
+    // server-encoded per-log-stream cursor and must be echoed back verbatim. Prefer it over
+    // <code>after_seq</code>: a single scalar cannot express a cursor across several containers, and
+    // using one when the filter matches more than one container SKIPS entries.
+    optional string resume_token = 4;
+
+    // Optional. Resume after this <code>seq</code>. Valid ONLY when the filter resolves to exactly
+    // one log stream; otherwise the request is rejected with <code>INVALID_ARGUMENT</code>. Ignored
+    // when <code>resume_token</code> is set.
+    optional int64 after_seq = 5;
+}
+
+// The response message for
+// <a href="index.html#ondewo.vtsi.Logs.StreamCallLogs">Logs.StreamCallLogs</a>. The stream carries an
+// envelope rather than a bare entry so that a viewer can tell a healthy quiet container from a
+// capture that has died.
+message StreamCallLogsResponse {
+
+    // The entries in this batch, oldest first. May be empty on a keep-alive message.
+    repeated CallLogEntry log_entries = 1;
+
+    // The capture state of the log streams being followed, aggregated: <code>FAILED</code> if any
+    // has failed, else <code>DETACHED</code> if any is detached, else <code>CAPTURING</code> if any
+    // is capturing, else <code>STOPPED</code>.
+    LogCaptureState capture_state = 2;
+
+    // Why capture failed, when <code>capture_state</code> is <code>LOG_CAPTURE_STATE_FAILED</code>.
+    string capture_error = 3;
+
+    // Total entries deliberately not stored across the followed streams. See
+    // <a href="index.html#ondewo.vtsi.CallLogStream">CallLogStream.dropped_line_count</a>.
+    int64 dropped_line_count = 4;
+
+    // Cursor to resume this stream. Echo it into
+    // <code>StreamCallLogsRequest.resume_token</code> after a disconnect.
+    string resume_token = 5;
+
+    // Set on the final message when the stream was ended by the server rather than by the client,
+    // for example because the maximum stream duration was reached. Empty otherwise.
+    string end_reason = 6;
+}
+
+// The request message for
+// <a href="index.html#ondewo.vtsi.Logs.ListCallLogs">Logs.ListCallLogs</a>.
+message ListCallLogsRequest {
+
+    // VTSI project name for which to list the logs.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Optional. A filter to narrow the response down to the entries of interest.
+    optional CallLogFilter filter = 2;
+
+    // Return at most this many entries. <code>0</code> (the default) applies the server default;
+    // values above the server hard cap are clamped to it.
+    optional int32 max_lines = 3;
+
+    // Optional cursor for infinite-scroll UP: return the newest entries with <code>seq</code> less
+    // than this value. Valid only when the filter resolves to exactly one log stream.
+    optional int64 before_seq = 4;
+
+    // Optional cursor for infinite-scroll DOWN: return entries with <code>seq</code> greater than
+    // this value. Valid only when the filter resolves to exactly one log stream.
+    optional int64 after_seq = 5;
+
+    // Optional. An opaque, server-encoded per-log-stream cursor from a previous response. Use this
+    // instead of <code>after_seq</code> whenever the filter can match more than one container.
+    optional string resume_token = 6;
+
+    // Walk forward from the cursor oldest-first instead of returning the most recent window. A
+    // client paging through a whole backlog must set this: the default window silently skips
+    // everything between the cursor and the newest entries.
+    optional bool oldest_first = 7;
+}
+
+// The response message for
+// <a href="index.html#ondewo.vtsi.Logs.ListCallLogs">Logs.ListCallLogs</a>.
+message ListCallLogsResponse {
+
+    // The matching entries, oldest first.
+    repeated CallLogEntry log_entries = 1;
+
+    // True when matching entries were dropped because <code>max_lines</code> was reached.
+    bool truncated = 2;
+
+    // The smallest <code>seq</code> available under the request&apos;s IDENTITY filters. Deliberately
+    // not narrowed by the content filters, so that a regex which empties one page does not make a
+    // client believe it has reached the beginning of history.
+    int64 min_available_seq = 3;
+
+    // The largest <code>seq</code> available under the request&apos;s identity filters.
+    int64 max_available_seq = 4;
+
+    // True when entries older than this window exist.
+    bool has_more_older = 5;
+
+    // True when entries newer than this window exist.
+    bool has_more_newer = 6;
+
+    // Cursor to fetch the next window, or to start a live stream that continues exactly here.
+    string next_resume_token = 7;
+
+    // Filters that could only be applied WITHIN the returned window rather than across the whole
+    // history, because they are not indexed. A client displaying a match count must qualify it when
+    // this is non-empty.
+    repeated CallLogFilterField scope_limited_filters = 8;
+}
+
+// The request message for
+// <a href="index.html#ondewo.vtsi.Logs.GetCallLogStream">Logs.GetCallLogStream</a>.
+message GetCallLogStreamRequest {
+
+    // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // The name of the log stream to retrieve of the form
+    // <pre><code>projects/&lt;project_uuid&gt;/logStreams/&lt;log_stream_uuid&gt;</code></pre>
+    string name = 2;
+}
+
+// The request message for
+// <a href="index.html#ondewo.vtsi.Logs.ListCallLogStreams">Logs.ListCallLogStreams</a>.
+message ListCallLogStreamsRequest {
+
+    // VTSI project name for which to list the log streams.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Optional. A filter to narrow the response down to the log streams of interest. Only the
+    // identity fields of the filter apply here; content fields are ignored.
+    optional CallLogFilter filter = 2;
+
+    // Optional. The next_page_token value returned from a previous list request.
+    // Example: "current_index-1--page_size-20"
+    optional string page_token = 3;
+}
+
+// The response message for
+// <a href="index.html#ondewo.vtsi.Logs.ListCallLogStreams">Logs.ListCallLogStreams</a>.
+message ListCallLogStreamsResponse {
+
+    // The list of log streams returned in the response.
+    repeated CallLogStream log_streams = 1;
+
+    // Token to retrieve the next page of results.
+    // This field is a string that holds a token for fetching the next page of results.
+    // If there are no more results in the list, this field will be empty.
+    string next_page_token = 2;
+}
+
+// The request message for
+// <a href="index.html#ondewo.vtsi.Logs.DeleteCallLogs">Logs.DeleteCallLogs</a>.
+message DeleteCallLogsRequest {
+
+    // VTSI project name for which to delete the logs.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // The entries to delete. Only the identity fields and the time window apply; content filters are
+    // rejected, because deleting by message content is not an auditable operation. At least one
+    // field must be set: an empty filter is rejected rather than treated as &quot;delete
+    // everything&quot;.
+    CallLogFilter filter = 2;
+}
+
+// The response message for
+// <a href="index.html#ondewo.vtsi.Logs.DeleteCallLogs">Logs.DeleteCallLogs</a>.
+message DeleteCallLogsResponse {
+
+    // How many log entries were deleted.
+    int64 deleted_log_entry_count = 1;
+
+    // How many log streams were deleted because no entries remained.
+    int64 deleted_log_stream_count = 2;
+}
