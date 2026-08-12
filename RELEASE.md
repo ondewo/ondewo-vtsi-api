@@ -6,6 +6,8 @@
 
 ### Improvements
 
+* [[OND211-2418]](https://ondewo.atlassian.net/browse/OND211-2418) Upgrade to ONDEWO NLU API [7.0.0](https://github.com/ondewo/ondewo-nlu-api/releases/7.0.0), ONDEWO S2T API [7.4.0](https://github.com/ondewo/ondewo-s2t-api/releases/7.4.0), ONDEWO T2S API [6.6.0](https://github.com/ondewo/ondewo-t2s-api/releases/6.6.0) and ONDEWO SIP API [5.4.0](https://github.com/ondewo/ondewo-sip-api/releases/5.4.0)
+* [[OND211-2418]](https://ondewo.atlassian.net/browse/OND211-2418) Added `ondewo/vtsi/logs.proto` for container log capture and streaming
 * [[OND235-105]](https://ondewo.atlassian.net/browse/OND235-105) Added `VoiceInteractionConfig` with
   `TurnDetectionConfig`, `InterruptionHandlingConfig`, `ResponseTimingConfig` and `SoftTimeoutConfig`
   to `CommonServicesConfig` for fine-granular per-call configuration of turn detection,
