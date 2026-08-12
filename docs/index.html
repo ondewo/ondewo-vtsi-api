@@ -4667,6 +4667,10 @@
                       </li>
                     
                       <li>
+                        <a href="#ondewo.s2t.Parakeet" class="title-badge message">Parakeet</a>
+                      </li>
+                    
+                      <li>
                         <a href="#ondewo.s2t.PostProcessing" class="title-badge message">PostProcessing</a>
                       </li>
                     
@@ -5042,6 +5046,8 @@
                       
                         <li><a href="#ondewo.t2s.Text2Speech.ListCustomPhonemizer" class="title-badge method">ListCustomPhonemizer</a></li>
                       
+                        <li><a href="#ondewo.t2s.Text2Speech.VoiceCloning" class="title-badge method">VoiceCloning</a></li>
+                      
                       </ul>
                       
                     </li>
@@ -5278,6 +5284,10 @@
                     
                       <li>
                         <a href="#ondewo.t2s.VitsTriton" class="title-badge message">VitsTriton</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.t2s.VoiceCloningRequest" class="title-badge message">VoiceCloningRequest</a>
                       </li>
                     
                       <li>
@@ -53024,6 +53034,13 @@ id and a list of the language models loaded in the pipeline.</p>
                   <td><p>Microsoft Azure cloud service inference settings. </p></td>
                 </tr>
               
+                <tr>
+                  <td>parakeet</td>
+                  <td><a href="#ondewo.s2t.Parakeet">Parakeet</a></td>
+                  <td></td>
+                  <td><p>Configuration for the Parakeet model. </p></td>
+                </tr>
+              
             </tbody>
           </table>
 
@@ -53628,7 +53645,7 @@ Values can be of any type (string, number, boolean, list), hence the use of Stru
                 <tr>
                   <td>model</td>
                   <td><a href="#string">string</a></td>
-                  <td>optional</td>
+                  <td></td>
                   <td><p>Required. The name or identifier of the OpenAI model to use for chat completion
 (e.g., "gpt-4o", "gpt-4o-mini", "o3"). </p></td>
                 </tr>
@@ -53678,7 +53695,8 @@ Deprecated in favor of max_completion_tokens. </p></td>
                   <td>metadata</td>
                   <td><a href="#google.protobuf.Struct">google.protobuf.Struct</a></td>
                   <td>optional</td>
-                  <td><p>Optional. Developer-defined tags and values used for filtering completions in the OpenAI dashboard. </p></td>
+                  <td><p>Optional. Set of 16 key-value pairs that can be attached to an object. This can be useful for storing additional
+information about the object in a structured format, and querying for objects via API or the dashboard. </p></td>
                 </tr>
               
                 <tr>
@@ -53701,16 +53719,18 @@ they have already appeared in the text, increasing the likelihood of the model d
                   <td>prompt_cache_key</td>
                   <td><a href="#string">string</a></td>
                   <td>optional</td>
-                  <td><p>Optional. A stable key used to enable prompt caching for identical prompt prefixes, reducing
-latency and cost on repeated requests. </p></td>
+                  <td><p>Optional. Used by OpenAI to cache responses for similar requests to optimize your cache hit rates. Replaces the
+`user` field. [Learn more](https://platform.openai.com/docs/guides/prompt-caching). </p></td>
                 </tr>
               
                 <tr>
                   <td>reasoning_effort</td>
                   <td><a href="#ondewo.s2t.ReasoningEffort">ReasoningEffort</a></td>
                   <td>optional</td>
-                  <td><p>Optional. Constrains the effort level for reasoning models (e.g., o1, o3). Controls the trade-off
-between speed and quality. </p></td>
+                  <td><p>Optional. Constrains effort on reasoning for
+[reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported values are `none`,
+`minimal`, `low`, `medium`, `high`, and `xhigh`. Reducing reasoning effort can result in faster responses and
+fewer tokens used on reasoning in a response. </p></td>
                 </tr>
               
                 <tr>
@@ -53725,16 +53745,26 @@ same seed and parameters, enabling reproducible outputs. </p></td>
                   <td>service_tier</td>
                   <td><a href="#ondewo.s2t.ServiceTier">ServiceTier</a></td>
                   <td>optional</td>
-                  <td><p>Optional. Specifies the latency tier to use for processing the request. Affects cost and
-throughput. </p></td>
+                  <td><p>Optional. Specifies the processing type used for serving the request.
+- If set to 'auto', then the request will be processed with the service tier configured in the Project settings.
+  Unless otherwise configured, the Project will use 'default'.
+- If set to 'default', then the request will be processed with the standard pricing and performance for the
+  selected model.
+- If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
+  '[priority](https://openai.com/api-priority-processing/)', then the request will be processed with the
+   corresponding service tier.
+- When not set, the default behavior is 'auto'.
+When the `service_tier` parameter is set, the response body will include the `service_tier` value based on the
+processing mode actually used to serve the request. This response value may be different from the value set in
+the parameter. </p></td>
                 </tr>
               
                 <tr>
                   <td>stop</td>
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
-                  <td><p>Optional. Up to 4 sequences where the API will stop generating further tokens. The returned text
-will not contain the stop sequence. </p></td>
+                  <td><p>Optional. Not supported with latest reasoning models `o3` and `o4-mini`. Up to 4 sequences where the API will
+stop generating further tokens. The returned text will not contain the stop sequence. </p></td>
                 </tr>
               
                 <tr>
@@ -53773,15 +53803,19 @@ considers only the tokens with top_p probability mass. Ranges from 0 to 1. </p><
                   <td>user</td>
                   <td><a href="#string">string</a></td>
                   <td>optional</td>
-                  <td><p>Optional. A unique identifier representing the end-user, which helps OpenAI monitor and detect
-abuse. </p></td>
+                  <td><p>Optional. This field is being replaced by `safety_identifier` and `prompt_cache_key`. Use `prompt_cache_key`
+instead to maintain caching optimizations. A stable identifier for your end-users. Used to boost cache hit rates
+ by better bucketing similar requests and to help OpenAI detect and prevent abuse.
+[Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers). </p></td>
                 </tr>
               
                 <tr>
                   <td>verbosity</td>
                   <td><a href="#ondewo.s2t.Verbosity">Verbosity</a></td>
                   <td>optional</td>
-                  <td><p>Optional. The verbosity level for the response output. </p></td>
+                  <td><p>Optional. Constrains the verbosity of the model's response. Lower values will result in more concise responses,
+while higher values will result in more verbose responses.
+Currently supported values are `low`, `medium`, and `high`. </p></td>
                 </tr>
               
                 <tr>
@@ -53868,6 +53902,58 @@ undocumented API parameters. </p></td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
                   <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.s2t.Parakeet" class="title-badge message">Parakeet</h3>
+        <p><p>Parakeet contains information about the Parakeet model.</p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>triton_model_name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>Name of the Triton model. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>triton_model_version</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>Version of the Triton model. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>check_status_timeout</td>
+                  <td><a href="#int64">int64</a></td>
+                  <td></td>
+                  <td><p>Timeout for checking model status. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>triton_server_host</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>Host name of triton inference server that serves the Parakeet model </p></td>
+                </tr>
+              
+                <tr>
+                  <td>triton_server_port</td>
+                  <td><a href="#int64">int64</a></td>
+                  <td></td>
+                  <td><p>Port number of triton inference server that serves the Parakeet model </p></td>
                 </tr>
               
             </tbody>
@@ -56471,7 +56557,7 @@ The accuracy of the time offset can vary, and this is an experimental feature. <
       
         
         <h3 id="ondewo.sip.Sip" class="title-badge service">Sip</h3>
-        <p>ONDEWO-SIP API available at <a href="https://github.com/ondewo/ondewo-sip-api>">GitHub</a></p><p>SIP LifeCycle is explained at <a href="https://thanhloi2603.wordpress.com/2017/06/10/sip-lifecycle-overview/">here</a></p>
+        <p><p>ONDEWO-SIP API available at <a href="https://github.com/ondewo/ondewo-sip-api">GitHub</a></p></p><p><p>SIP LifeCycle is explained at <a href="https://thanhloi2603.wordpress.com/2017/06/10/sip-lifecycle-overview/">here</a></p></p>
 
         
         <div id="ondewo.sip.Sip-methods" class="service-methods">Service Methods</div>
@@ -56480,68 +56566,67 @@ The accuracy of the time offset can vary, and this is an experimental feature. <
 
           <pre>rpc SipStartSession (<a href="#ondewo.sip.SipStartSessionRequest">SipStartSessionRequest</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
-          Starts a new SIP session for an account registered at a SIP server. <code>RegisterAccount</code> need to be called before.
+          <p>Starts a new SIP session for an account registered at a SIP server. <code>RegisterAccount</code> need to be called before.</p>
         
           <h4 id="ondewo.sip.Sip.SipEndSession" class="title-badge method">SipEndSession</h4>
 
           <pre>rpc SipEndSession (<a href="#google.protobuf.Empty">.google.protobuf.Empty</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
-          Ends a SIP session for an account registered at a SIP server
+          <p>Ends a SIP session for an account registered at a SIP server</p>
         
           <h4 id="ondewo.sip.Sip.SipStartCall" class="title-badge method">SipStartCall</h4>
 
           <pre>rpc SipStartCall (<a href="#ondewo.sip.SipStartCallRequest">SipStartCallRequest</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
-          Starts a call in an active SIP session for an account registered at a SIP server
+          <p>Starts a call in an active SIP session for an account registered at a SIP server</p>
         
           <h4 id="ondewo.sip.Sip.SipEndCall" class="title-badge method">SipEndCall</h4>
 
           <pre>rpc SipEndCall (<a href="#ondewo.sip.SipEndCallRequest">SipEndCallRequest</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
-          Ends a call in an active SIP session for an account registered at a SIP server
+          <p>Ends a call in an active SIP session for an account registered at a SIP server</p>
         
           <h4 id="ondewo.sip.Sip.SipTransferCall" class="title-badge method">SipTransferCall</h4>
 
           <pre>rpc SipTransferCall (<a href="#ondewo.sip.SipTransferCallRequest">SipTransferCallRequest</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
-          Transfers a call in an active SIP session for an account registered at a SIP server to
-another SIP account or phone number specified by <code>transfer_id</code>
+          <p>Transfers a call in an active SIP session for an account registered at a SIP server to another SIP account or phone number specified by <code>transfer_id</code></p>
         
           <h4 id="ondewo.sip.Sip.SipRegisterAccount" class="title-badge method">SipRegisterAccount</h4>
 
           <pre>rpc SipRegisterAccount (<a href="#ondewo.sip.SipRegisterAccountRequest">SipRegisterAccountRequest</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
-          Registers s SIP account at a SIP server
+          <p>Registers s SIP account at a SIP server</p>
         
           <h4 id="ondewo.sip.Sip.SipGetSipStatus" class="title-badge method">SipGetSipStatus</h4>
 
           <pre>rpc SipGetSipStatus (<a href="#google.protobuf.Empty">.google.protobuf.Empty</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
-          Gets the current SIP status
+          <p>Gets the current SIP status</p>
         
           <h4 id="ondewo.sip.Sip.SipGetSipStatusHistory" class="title-badge method">SipGetSipStatusHistory</h4>
 
           <pre>rpc SipGetSipStatusHistory (<a href="#google.protobuf.Empty">.google.protobuf.Empty</a>) returns (<a href="#ondewo.sip.SipStatusHistoryResponse">SipStatusHistoryResponse)</a></pre>
 
-          Gets the history of SIP status
+          <p>Gets the history of SIP status</p>
         
           <h4 id="ondewo.sip.Sip.SipPlayWavFiles" class="title-badge method">SipPlayWavFiles</h4>
 
           <pre>rpc SipPlayWavFiles (<a href="#ondewo.sip.SipPlayWavFilesRequest">SipPlayWavFilesRequest</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
-          Plays wav files during an ongoing call of an active SIP session
+          <p>Plays wav files during an ongoing call of an active SIP session</p>
         
           <h4 id="ondewo.sip.Sip.SipMute" class="title-badge method">SipMute</h4>
 
           <pre>rpc SipMute (<a href="#google.protobuf.Empty">.google.protobuf.Empty</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
-          Mutes the microphone in an ongoing call of an active SIP session
+          <p>Mutes the microphone in an ongoing call of an active SIP session</p>
         
           <h4 id="ondewo.sip.Sip.SipUnMute" class="title-badge method">SipUnMute</h4>
 
           <pre>rpc SipUnMute (<a href="#google.protobuf.Empty">.google.protobuf.Empty</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
-          Un-mutes the microphone in an ongoing call of an active SIP session
+          <p>Un-mutes the microphone in an ongoing call of an active SIP session</p>
         
 
         
@@ -56553,7 +56638,7 @@ another SIP account or phone number specified by <code>transfer_id</code>
       <div id="ondewo/sip/sip.proto-messages" class="object-category">Messages</div>
       
         <h3 id="ondewo.sip.SipEndCallRequest" class="title-badge message">SipEndCallRequest</h3>
-        <p>Ends an ongoing call of the active SIP session of the active SIP account</p>
+        <p><p>Ends an ongoing call of the active SIP session of the active SIP account</p></p>
 
         
           <table class="field-table">
@@ -56577,7 +56662,7 @@ another SIP account or phone number specified by <code>transfer_id</code>
         
       
         <h3 id="ondewo.sip.SipPlayWavFilesRequest" class="title-badge message">SipPlayWavFilesRequest</h3>
-        <p>Plays a list of wav files</p>
+        <p><p>Plays a list of wav files</p></p>
 
         
           <table class="field-table">
@@ -56601,7 +56686,7 @@ another SIP account or phone number specified by <code>transfer_id</code>
         
       
         <h3 id="ondewo.sip.SipRegisterAccountRequest" class="title-badge message">SipRegisterAccountRequest</h3>
-        <p></p>
+        <p><p>Request for registering a SIP account at a SIP server</p></p>
 
         
           <table class="field-table">
@@ -56614,10 +56699,8 @@ another SIP account or phone number specified by <code>transfer_id</code>
                   <td>account_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or
-<code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>.
-Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect
-to a SIP server running on port <code>5099</code> </p></td>
+                  <td><p>Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or <code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>.
+Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect to a SIP server running on port <code>5099</code> </p></td>
                 </tr>
               
                 <tr>
@@ -56649,7 +56732,7 @@ to a SIP server running on port <code>5099</code> </p></td>
         
       
         <h3 id="ondewo.sip.SipStartCallRequest" class="title-badge message">SipStartCallRequest</h3>
-        <p>Request to start the call with the active SIP session of the active SIP account</p>
+        <p><p>Request to start the call with the active SIP session of the active SIP account</p></p>
 
         
           <table class="field-table">
@@ -56711,7 +56794,7 @@ to a SIP server running on port <code>5099</code> </p></td>
         
       
         <h3 id="ondewo.sip.SipStartSessionRequest" class="title-badge message">SipStartSessionRequest</h3>
-        <p>Request for starting a new SIP session for a specified account</p>
+        <p><p>Request for starting a new SIP session for a specified account</p></p>
 
         
           <table class="field-table">
@@ -56724,17 +56807,15 @@ to a SIP server running on port <code>5099</code> </p></td>
                   <td>account_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or
-<code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>.
-Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect
-to a SIP server running on port <code>5099</code> </p></td>
+                  <td><p>Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or <code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>.
+Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect to a SIP server running on port <code>5099</code> </p></td>
                 </tr>
               
                 <tr>
                   <td>auto_answer_interval</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p>answer interval </p></td>
+                  <td><p>Auto-answer interval in seconds. The call will be automatically answered after this interval </p></td>
                 </tr>
               
             </tbody>
@@ -56745,7 +56826,7 @@ to a SIP server running on port <code>5099</code> </p></td>
         
       
         <h3 id="ondewo.sip.SipStatus" class="title-badge message">SipStatus</h3>
-        <p></p>
+        <p><p>Status information for a SIP account, session, or call</p></p>
 
         
           <table class="field-table">
@@ -56758,10 +56839,8 @@ to a SIP server running on port <code>5099</code> </p></td>
                   <td>account_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or
-<code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>.
-Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect
-to a SIP server running on port <code>5099</code> </p></td>
+                  <td><p>Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or <code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>.
+Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect to a SIP server running on port <code>5099</code> </p></td>
                 </tr>
               
                 <tr>
@@ -56866,7 +56945,7 @@ to a SIP server running on port <code>5099</code> </p></td>
         
       
         <h3 id="ondewo.sip.SipStatusHistoryResponse" class="title-badge message">SipStatusHistoryResponse</h3>
-        <p>History of SIP status</p>
+        <p><p>History of SIP status</p></p>
 
         
           <table class="field-table">
@@ -56890,7 +56969,7 @@ to a SIP server running on port <code>5099</code> </p></td>
         
       
         <h3 id="ondewo.sip.SipTransferCallRequest" class="title-badge message">SipTransferCallRequest</h3>
-        <p>Request for transferring a call with or without headers</p>
+        <p><p>Request for transferring a call with or without headers</p></p>
 
         
           <table class="field-table">
@@ -57231,6 +57310,13 @@ Returns an Empty response upon successful deletion.</p>
           <pre>rpc ListCustomPhonemizer (<a href="#ondewo.t2s.ListCustomPhonemizerRequest">ListCustomPhonemizerRequest</a>) returns (<a href="#ondewo.t2s.ListCustomPhonemizerResponse">ListCustomPhonemizerResponse)</a></pre>
 
           <p>Retrieves a list of custom phonemizers based on specific requirements.</p>
+        
+          <h4 id="ondewo.t2s.Text2Speech.VoiceCloning" class="title-badge method">VoiceCloning</h4>
+
+          <pre>rpc VoiceCloning (<a href="#ondewo.t2s.VoiceCloningRequest">VoiceCloningRequest</a>) returns (<a href="#google.protobuf.Empty">.google.protobuf.Empty)</a></pre>
+
+          <p>Clones a voice based on a sample audio of the speaker and its transcription.
+The cloned voice can afterwards be used for synthesis by referencing the given speaker name.</p>
         
 
         
@@ -57594,14 +57680,14 @@ Returns an Empty response upon successful deletion.</p>
                   <td>triton_server_host</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>The host of the Triton inference server which servers the model. </p></td>
+                  <td><p>The host of the Triton inference server which serves the model. </p></td>
                 </tr>
               
                 <tr>
                   <td>triton_server_port</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p>The port of the Triton inference server which servers the model. </p></td>
+                  <td><p>The port of the Triton inference server which serves the model. </p></td>
                 </tr>
               
             </tbody>
@@ -57684,14 +57770,14 @@ Returns an Empty response upon successful deletion.</p>
                   <td>triton_server_host</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>The host of the Triton inference server which servers the model. </p></td>
+                  <td><p>The host of the Triton inference server which serves the model. </p></td>
                 </tr>
               
                 <tr>
                   <td>triton_server_port</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p>The port of the Triton inference server which servers the model. </p></td>
+                  <td><p>The port of the Triton inference server which serves the model. </p></td>
                 </tr>
               
             </tbody>
@@ -58121,14 +58207,14 @@ pipelines with the specifications received in the ListT2sPipelinesRequest. </p><
                   <td>triton_server_host</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>The host of the Triton inference server which servers the model. </p></td>
+                  <td><p>The host of the Triton inference server which serves the model. </p></td>
                 </tr>
               
                 <tr>
                   <td>triton_server_port</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p>The port of the Triton inference server which servers the model. </p></td>
+                  <td><p>The port of the Triton inference server which serves the model. </p></td>
                 </tr>
               
             </tbody>
@@ -58152,7 +58238,8 @@ pipelines with the specifications received in the ListT2sPipelinesRequest. </p><
                   <td>type</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>The type of mel-to-audio inference. </p></td>
+                  <td><p>The type of mel-to-audio inference (vocoder), selecting which of the settings below is applied
+(mb_melgan_triton, hifi_gan or hifi_gan_triton). </p></td>
                 </tr>
               
                 <tr>
@@ -58455,7 +58542,7 @@ pipelines with the specifications received in the ListT2sPipelinesRequest. </p><
                   <td></td>
                   <td><p>Optional. This parameter is used for time stretching which is the process of
 changing the speed or duration of an audio.
-It should be much more than 1.0. O is not a valid number for this variable.
+It should be much more than 1.0. 0 is not a valid number for this variable.
 The default value is 1. </p></td>
                 </tr>
               
@@ -58571,7 +58658,15 @@ this specific request and will not update the pipeline. </p></td>
                   <td>instruction</td>
                   <td><a href="#string">string</a></td>
                   <td>optional</td>
-                  <td><p>Optional. Define an instruction or prompt to be passed to the TTS/LLM backend for this request. </p></td>
+                  <td><p>Optional. Define an instruction or prompt to be passed to the TTS/LLM backend for this request.
+
+<p>This field is only honored by the <b>qwen3-tts-voicedesign</b> model, where it is a
+natural-language description of the target voice to design, e.g.
+<pre><code>a calm female voice with a slight British accent</code></pre></p>
+<p>It is ignored by every other pipeline, including the qwen3-tts CustomVoice and base models and
+the local vits / glow-tts models. To control the delivery / emotion of the qwen3-tts CustomVoice
+model, embed the control tags in the request text instead (see <code>SynthesizeRequest.text</code>),
+not via this field.</p> </p></td>
                 </tr>
               
             </tbody>
@@ -58651,7 +58746,7 @@ All the properties according to the input text in SynthesizeRequest can be also 
                   <td>audio_uuid</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>Required. Represents the pipeline id of the model configuration that will be used. </p></td>
+                  <td><p>Required. The unique identifier (UUID) assigned to the generated audio. </p></td>
                 </tr>
               
                 <tr>
@@ -58665,14 +58760,14 @@ All the properties according to the input text in SynthesizeRequest can be also 
                   <td>generation_time</td>
                   <td><a href="#float">float</a></td>
                   <td></td>
-                  <td><p>Required. Time to generate audio. </p></td>
+                  <td><p>Required. Time taken to generate the audio, in seconds. </p></td>
                 </tr>
               
                 <tr>
                   <td>audio_length</td>
                   <td><a href="#float">float</a></td>
                   <td></td>
-                  <td><p>Required. Audio length. </p></td>
+                  <td><p>Required. Length (duration) of the generated audio, in seconds. </p></td>
                 </tr>
               
                 <tr>
@@ -58700,7 +58795,7 @@ All the properties according to the input text in SynthesizeRequest can be also 
                   <td>sample_rate</td>
                   <td><a href="#float">float</a></td>
                   <td></td>
-                  <td><p>Optional. Value of sampling rate </p></td>
+                  <td><p>Optional. Sampling rate of the generated audio, in Hertz (Hz). </p></td>
                 </tr>
               
             </tbody>
@@ -58725,21 +58820,129 @@ All the properties according to the input text in SynthesizeRequest can be also 
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>Required. Represents the text that will be transformed to speech.
-Synthesize text:
+
+<p>The text may be plain text, or it may embed SSML markup, phonemes and voice-control tags to
+shape how it is spoken. The sections below list every supported form with a copy-paste example.
+Which forms take effect depends on the pipeline (model) selected via
+<code>RequestConfig.t2s_pipeline_id</code>; unsupported tags are stripped and the plain text is
+still spoken.</p>
+
+<p><b>1. Plain text</b></p>
 <ul>
   <li>Simple text: <pre><code>Hello, how are you?</code></pre></li>
 </ul>
-Examples to modulate the voice based on SSML tags and Arpabet phonemes:
+
+<p><b>2. SSML <code>&lt;say-as&gt;</code> tags (local vits / qwen3-tts and cloud providers)</b></p>
+<p>Rewrites the enclosed text into its spoken form (spelled out letters, digits, symbols, ...).
+Supported by the local normalization pipeline and forwarded to the cloud providers.</p>
 <ul>
-  <li>SSML Tag Phone: <pre><code>&lt;say-as interpret-as=&quot;phone&quot;&gt;+12354321&lt;/say-as&gt;</code></pre></li>
-  <li>SSML Tag Email: <pre><code>&lt;say-as interpret-as=&quot;email&quot;&gt;voices@ondewo.com&lt;/say-as&gt;</code></pre></li>
-  <li>SSML Tag URL: <pre><code>&lt;say-as interpret-as=&quot;url&quot;&gt;ondewo.com/en/&lt;/say-as&gt;</code></pre></li>
-  <li>SSML Tag Spell: <pre><code>&lt;say-as interpret-as=&quot;spell&quot;&gt;AP732&lt;/say-as&gt;</code></pre></li>
-  <li>SSML Tag Spell With Names: <pre><code>&lt;say-as interpret-as=&quot;spell-with-names&quot;&gt;AHO32&lt;/say-as&gt;</code></pre></li>
-  <li>SSML Tag Callsigns Short: <pre><code>&lt;say-as interpret-as=&quot;callsign-short&quot;&gt;AUA439&lt;/say-as&gt;</code></pre></li>
-  <li>SSML Tag Callsigns Long: <pre><code>&lt;say-as interpret-as=&quot;callsign-long&quot;&gt;AAL439&lt;/say-as&gt;</code></pre></li>
-  <li>SSML Tag Break Tag: <pre><code>I am going to take a 2 seconds break &lt;break time=&quot;2.0&quot;/&gt; done</code></pre></li>
-  <li>Arpabet Phonemes: <pre><code>Hello I am {AE2 L EH0 G Z AE1 N D R AH0}</code></pre></li>
+  <li>Phone: <pre><code>&lt;say-as interpret-as=&quot;phone&quot;&gt;+12354321&lt;/say-as&gt;</code></pre></li>
+  <li>Email: <pre><code>&lt;say-as interpret-as=&quot;email&quot;&gt;voices@ondewo.com&lt;/say-as&gt;</code></pre></li>
+  <li>URL: <pre><code>&lt;say-as interpret-as=&quot;url&quot;&gt;ondewo.com/en/&lt;/say-as&gt;</code></pre></li>
+  <li>Spell (spell out each character): <pre><code>&lt;say-as interpret-as=&quot;spell&quot;&gt;AP732&lt;/say-as&gt;</code></pre></li>
+  <li>Spell with names (e.g. &quot;A like Anton&quot;): <pre><code>&lt;say-as interpret-as=&quot;spell-with-names&quot;&gt;AHO32&lt;/say-as&gt;</code></pre></li>
+  <li>Callsigns short: <pre><code>&lt;say-as interpret-as=&quot;callsign-short&quot;&gt;AUA439&lt;/say-as&gt;</code></pre></li>
+  <li>Callsigns long: <pre><code>&lt;say-as interpret-as=&quot;callsign-long&quot;&gt;AAL439&lt;/say-as&gt;</code></pre></li>
+</ul>
+
+<p><b>3. Pauses / breaks</b></p>
+<ul>
+  <li>Break tag (seconds): <pre><code>I am going to take a 2 seconds break &lt;break time=&quot;2.0&quot;/&gt; done</code></pre></li>
+  <li>Break tag (milliseconds, cloud providers): <pre><code>please wait &lt;break time=&quot;500ms&quot;/&gt; done</code></pre></li>
+</ul>
+
+<p><b>4. Phonemes / pronunciation control</b></p>
+<p>The phoneme alphabet depends exclusively on the model type:</p>
+<p><b>4a. IPA phonemes (vits and cloud providers only)</b> - the vits models and the cloud
+providers (Amazon Polly, Microsoft Azure and Google Cloud TTS) control pronunciation with the SSML
+<code>&lt;phoneme&gt;</code> element using the IPA alphabet (<code>alphabet=&quot;ipa&quot;</code>).
+The IPA string goes in the <code>ph</code> attribute and the written word between the tags:</p>
+<ul>
+  <li>English: <pre><code>I would like a &lt;phoneme alphabet=&quot;ipa&quot; ph=&quot;t&#601;&#712;me&#618;to&#650;&quot;&gt;tomato&lt;/phoneme&gt; please</code></pre></li>
+  <li>German: <pre><code>Ich h&auml;tte gerne ein &lt;phoneme alphabet=&quot;ipa&quot; ph=&quot;&#712;ba&#618;&#643;pi&#720;l&quot;&gt;Beispiel&lt;/phoneme&gt; bitte</code></pre></li>
+</ul>
+<p><b>4b. Arpabet phonemes (glow model only)</b> - the glow model controls pronunciation with
+Arpabet phonemes, supplied through the same SSML <code>&lt;phoneme&gt;</code> element but with
+<code>alphabet=&quot;arpabet&quot;</code>. The ARPAbet transcription goes in the <code>ph</code>
+attribute and the written word between the tags (the phonemes are <b>not</b> written in curly
+braces <code>{}</code> in the request text):</p>
+<ul>
+  <li>English: <pre><code>Please say &lt;phoneme alphabet=&quot;arpabet&quot; ph=&quot;T EH1 S T&quot;&gt;test&lt;/phoneme&gt; out loud</code></pre></li>
+  <li>German: <pre><code>Ich sage &lt;phoneme alphabet=&quot;arpabet&quot; ph=&quot;T EH1 S T&quot;&gt;test&lt;/phoneme&gt; laut</code></pre></li>
+</ul>
+<p><b>4c. qwen3-tts has no phonemes - use the verbalized form instead</b> - the qwen3-tts models
+do <b>not</b> support Arpabet or IPA phonemes; the <code>&lt;phoneme&gt;</code> element and its
+<code>ph</code> string are ignored. Instead, to have a special text (symbols, codes,
+abbreviations, ...) spoken correctly, pass its <b>verbalization</b>: the plain, written-out spoken
+form of the text in the target language. For example, to have <code>A-7+8*</code> pronounced
+correctly:</p>
+<ul>
+  <li>English: <pre><code>ai dash seven plus eight asterisk</code></pre></li>
+  <li>German: <pre><code>ah bindestrich sieben plus acht sternchen</code></pre></li>
+</ul>
+
+<p><b>5. Voice control for qwen3-tts (emotion / style / prosody)</b></p>
+<p>These ONDEWO-namespaced tags are compiled into the model instruction and stripped from the
+spoken text, so the transcription stays the plain sentence while the delivery changes. They only
+take effect on the qwen3-tts <b>CustomVoice</b> model; on the base and voicedesign models they are
+stripped and a warning is logged.</p>
+<ul>
+  <li>Style - one of the five primary styles <code>apologetic</code>, <code>calm</code>,
+    <code>empathetic</code>, <code>firm</code>, <code>lively</code>, or one of the accepted
+    synonyms <code>cheerful</code> / <code>happy</code> / <code>joyful</code>,
+    <code>sad</code> / <code>sorrowful</code>, <code>angry</code> / <code>furious</code>,
+    <code>excited</code>, <code>serious</code>, <code>tender</code> / <code>gentle</code>.
+    An unknown name falls back to <code>neutral</code> and a warning is logged:
+    <pre><code>&lt;ondewo:style name=&quot;calm&quot;&gt;please stay calm everything will be fine&lt;/ondewo:style&gt;</code></pre></li>
+  <li>Emphasis - selects the intensity tier of the chosen style: <code>strong</code> (intense),
+    <code>moderate</code> (the default when no emphasis is given) or <code>reduced</code> /
+    <code>none</code> (mild):
+    <pre><code>&lt;ondewo:style name=&quot;firm&quot;&gt;&lt;emphasis level=&quot;strong&quot;&gt;listen carefully&lt;/emphasis&gt;&lt;/ondewo:style&gt;</code></pre></li>
+  <li>Prosody - <code>rate</code> (<code>x-slow</code>/<code>slow</code>/<code>medium</code>/<code>fast</code>/<code>x-fast</code>
+    or a percentage such as <code>+20%</code>/<code>-20%</code>/<code>120%</code>),
+    <code>pitch</code> (<code>x-low</code>/<code>low</code>/<code>medium</code>/<code>high</code>/<code>x-high</code>,
+    a semitone offset such as <code>+4st</code>/<code>-4st</code> or a percentage such as
+    <code>+10%</code>/<code>-10%</code>) and
+    <code>volume</code> (<code>silent</code>/<code>x-soft</code>/<code>soft</code>/<code>medium</code>/<code>loud</code>/<code>x-loud</code>
+    or a decibel offset such as <code>+6dB</code>/<code>-6dB</code>):
+    <pre><code>&lt;prosody rate=&quot;slow&quot; pitch=&quot;+4st&quot; volume=&quot;loud&quot;&gt;hello there&lt;/prosody&gt;</code></pre></li>
+  <li>Nested combination (style + emphasis + prosody):
+    <pre><code>&lt;ondewo:style name=&quot;calm&quot;&gt;&lt;emphasis level=&quot;moderate&quot;&gt;&lt;prosody rate=&quot;slow&quot; pitch=&quot;low&quot; volume=&quot;soft&quot;&gt;hello there&lt;/prosody&gt;&lt;/emphasis&gt;&lt;/ondewo:style&gt;</code></pre></li>
+  <li>Free-form instruction (CustomVoice only) - describe the delivery in natural language in the
+    <code>instruction</code> attribute. The attribute value is used verbatim as the model
+    instruction and takes precedence over the style / emphasis / prosody tags; the wrapped inner
+    text is kept as the spoken text and it should be always in English:
+    <pre><code>&lt;ondewo:instruct instruction=&quot;speak slowly in a warm and reassuring tone&quot;&gt;hello there&lt;/ondewo:instruct&gt;</code></pre></li>
+  <li>Inline audio tags (CustomVoice only) - emotional expressions / sound effects in square
+    brackets. They are compiled into the instruction and stripped from the spoken text. The
+    supported tags are:
+    <ul>
+      <li>Voice-related: <code>[laughs]</code>, <code>[laughs harder]</code>,
+        <code>[starts laughing]</code>, <code>[wheezing]</code>, <code>[whispers]</code>,
+        <code>[sighs]</code>, <code>[exhales]</code>, <code>[sarcastic]</code>,
+        <code>[curious]</code>, <code>[excited]</code>, <code>[crying]</code>,
+        <code>[snorts]</code>, <code>[mischievously]</code></li>
+      <li>Sound effects: <code>[gunshot]</code>, <code>[applause]</code>,
+        <code>[clapping]</code>, <code>[explosion]</code>, <code>[swallows]</code>,
+        <code>[gulps]</code></li>
+      <li>Unique and special: <code>[sings]</code>, <code>[woo]</code>, <code>[fart]</code></li>
+      <li>Accent (variable form): <code>[strong &lt;accent&gt; accent]</code>, e.g.
+        <code>[strong French accent]</code></li>
+    </ul>
+    <pre><code>[whispers] hello there</code></pre></li>
+</ul>
+<p>See also <code>RequestConfig.instruction</code> for supplying the instruction / voice
+description directly instead of embedding it in the text.</p>
+
+<p><b>6. Provider-specific SSML (cloud pipelines only)</b></p>
+<p>Each cloud provider documents its own SSML vocabulary; use the elements matching the provider
+behind the selected pipeline. Standard <code>&lt;prosody&gt;</code>, <code>&lt;emphasis&gt;</code>
+and <code>&lt;break&gt;</code> are common to all three.</p>
+<ul>
+  <li>Google Cloud TTS: <pre><code>&lt;google:style name=&quot;calm&quot;&gt;please stay calm everything will be fine&lt;/google:style&gt;</code></pre></li>
+  <li>Microsoft Azure: <pre><code>&lt;mstts:express-as style=&quot;cheerful&quot;&gt;please stay calm everything will be fine&lt;/mstts:express-as&gt;</code></pre></li>
+  <li>Amazon Polly (whispered): <pre><code>&lt;amazon:effect name=&quot;whispered&quot;&gt;please stay calm everything will be fine&lt;/amazon:effect&gt;</code></pre></li>
+  <li>Amazon Polly (soft phonation): <pre><code>&lt;amazon:effect phonation=&quot;soft&quot;&gt;please stay calm everything will be fine&lt;/amazon:effect&gt;</code></pre></li>
 </ul> </p></td>
                 </tr>
               
@@ -58771,7 +58974,7 @@ Examples to modulate the voice based on SSML tags and Arpabet phonemes:
                   <td>audio_uuid</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>Required. Represents the pipeline id of the model configuration that will be used. </p></td>
+                  <td><p>Required. The unique identifier (UUID) assigned to the generated audio. </p></td>
                 </tr>
               
                 <tr>
@@ -58785,14 +58988,14 @@ Examples to modulate the voice based on SSML tags and Arpabet phonemes:
                   <td>generation_time</td>
                   <td><a href="#float">float</a></td>
                   <td></td>
-                  <td><p>Required. Time to generate audio. </p></td>
+                  <td><p>Required. Time taken to generate the audio, in seconds. </p></td>
                 </tr>
               
                 <tr>
                   <td>audio_length</td>
                   <td><a href="#float">float</a></td>
                   <td></td>
-                  <td><p>Required. Audio length. </p></td>
+                  <td><p>Required. Length (duration) of the generated audio, in seconds. </p></td>
                 </tr>
               
                 <tr>
@@ -58820,7 +59023,7 @@ Examples to modulate the voice based on SSML tags and Arpabet phonemes:
                   <td>sample_rate</td>
                   <td><a href="#float">float</a></td>
                   <td></td>
-                  <td><p>Optional. Value of sampling rate </p></td>
+                  <td><p>Optional. Sampling rate of the generated audio, in Hertz (Hz). </p></td>
                 </tr>
               
             </tbody>
@@ -58924,7 +59127,7 @@ Examples to modulate the voice based on SSML tags and Arpabet phonemes:
                   <td>speaker_sex</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The speaker's sex or gender. </p></td>
                 </tr>
               
                 <tr>
@@ -59000,21 +59203,23 @@ Examples to modulate the voice based on SSML tags and Arpabet phonemes:
                   <td>type</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>The type of inference. </p></td>
+                  <td><p>The type of inference, selecting which of the settings below is applied:
+composite_inference (two-stage text-to-mel then mel-to-audio) or
+single_inference (single-stage text-to-audio). </p></td>
                 </tr>
               
                 <tr>
                   <td>composite_inference</td>
                   <td><a href="#ondewo.t2s.CompositeInference">CompositeInference</a></td>
                   <td></td>
-                  <td><p>Composite inference settings. </p></td>
+                  <td><p>Composite (two-stage) inference settings, used when type selects composite inference. </p></td>
                 </tr>
               
                 <tr>
                   <td>single_inference</td>
                   <td><a href="#ondewo.t2s.SingleInference">SingleInference</a></td>
                   <td></td>
-                  <td><p>Single inference settings. </p></td>
+                  <td><p>Single (one-stage) inference settings, used when type selects single inference. </p></td>
                 </tr>
               
                 <tr>
@@ -59378,6 +59583,13 @@ It is in the range [0.0, 1.0]. </p></td>
                   <td><p>pitch value of the audio </p></td>
                 </tr>
               
+                <tr>
+                  <td>speaker_language</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>speaker_language indicating the speaker language code </p></td>
+                </tr>
+              
             </tbody>
           </table>
 
@@ -59454,7 +59666,10 @@ It is in the range [0.0, 1.0]. </p></td>
                   <td>type</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>The type of text-to-audio inference. </p></td>
+                  <td><p>The type of text-to-audio inference, selecting which of the settings below is applied:
+a local model (vits, vits_triton) or a cloud / neural service (t2s_cloud_service_elevenlabs,
+t2s_cloud_service_amazon, t2s_cloud_service_google, t2s_cloud_service_microsoft,
+qwen3_tts_custom_voice, qwen3_tts_base). </p></td>
                 </tr>
               
                 <tr>
@@ -59534,7 +59749,8 @@ It is in the range [0.0, 1.0]. </p></td>
                   <td>type</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>The type of text-to-mel inference. </p></td>
+                  <td><p>The type of text-to-mel inference, selecting which of the settings below is applied
+(glow_tts or glow_tts_triton). </p></td>
                 </tr>
               
                 <tr>
@@ -59593,7 +59809,7 @@ It is in the range [0.0, 1.0]. </p></td>
                   <td>inference</td>
                   <td><a href="#ondewo.t2s.T2SInference">T2SInference</a></td>
                   <td></td>
-                  <td><p>Required. Defines he inference of the pipeline representation. </p></td>
+                  <td><p>Required. Defines the inference of the pipeline representation. </p></td>
                 </tr>
               
                 <tr>
@@ -59784,14 +60000,66 @@ It is in the range [0.0, 1.0]. </p></td>
                   <td>triton_server_host</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>The host of the Triton inference server which servers the model. </p></td>
+                  <td><p>The host of the Triton inference server which serves the model. </p></td>
                 </tr>
               
                 <tr>
                   <td>triton_server_port</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p>The port of the Triton inference server which servers the model. </p></td>
+                  <td><p>The port of the Triton inference server which serves the model. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.t2s.VoiceCloningRequest" class="title-badge message">VoiceCloningRequest</h3>
+        <p><p>VoiceCloningRequest message represents the request for cloning a voice.</p></p><p><p>A VoiceCloningRequest contains a sample audio of the speaker to be cloned together with</p><p>its transcription and the information about the speaker and the model to use for cloning.</p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>sample_audio</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>Required. The sample audio of the speaker whose voice should be cloned. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>transcription</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>Required. The transcription of the sample audio. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>speaker_name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>Required. The name of the speaker to associate with the cloned voice. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>speaker_language</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>Required. The language of the speaker in the sample audio. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>model_name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>Required. The name of the model used for voice cloning. </p></td>
                 </tr>
               
             </tbody>
