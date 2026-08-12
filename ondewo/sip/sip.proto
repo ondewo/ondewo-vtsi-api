@@ -1,4 +1,4 @@
-// Copyright 2021 ONDEWO GmbH
+// Copyright 2021 - 2026 ONDEWO GmbH
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,53 +18,52 @@ package ondewo.sip;
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
-// ONDEWO-SIP API available at <a href="https://github.com/ondewo/ondewo-sip-api>">GitHub</a>
+// <p>ONDEWO-SIP API available at <a href="https://github.com/ondewo/ondewo-sip-api">GitHub</a></p>
 service Sip {
-    // SIP LifeCycle is explained at <a href="https://thanhloi2603.wordpress.com/2017/06/10/sip-lifecycle-overview/">here</a>
+    // <p>SIP LifeCycle is explained at <a href="https://thanhloi2603.wordpress.com/2017/06/10/sip-lifecycle-overview/">here</a></p>
 
-    // Starts a new SIP session for an account registered at a SIP server. <code>RegisterAccount</code> need to be called before.
+    // <p>Starts a new SIP session for an account registered at a SIP server. <code>RegisterAccount</code> need to be called before.</p>
     rpc SipStartSession (SipStartSessionRequest) returns (SipStatus) {};
 
-    // Ends a SIP session for an account registered at a SIP server
+    // <p>Ends a SIP session for an account registered at a SIP server</p>
     rpc SipEndSession (google.protobuf.Empty) returns (SipStatus) {};
 
-    // Starts a call in an active SIP session for an account registered at a SIP server
+    // <p>Starts a call in an active SIP session for an account registered at a SIP server</p>
     rpc SipStartCall (SipStartCallRequest) returns (SipStatus) {};
 
-    // Ends a call in an active SIP session for an account registered at a SIP server
+    // <p>Ends a call in an active SIP session for an account registered at a SIP server</p>
     rpc SipEndCall (SipEndCallRequest) returns (SipStatus) {};
 
-    // Transfers a call in an active SIP session for an account registered at a SIP server to
-    // another SIP account or phone number specified by <code>transfer_id</code>
+    // <p>Transfers a call in an active SIP session for an account registered at a SIP server to another SIP account or phone number specified by <code>transfer_id</code></p>
     rpc SipTransferCall (SipTransferCallRequest) returns (SipStatus) {};
 
-    // Registers s SIP account at a SIP server
+    // <p>Registers s SIP account at a SIP server</p>
     rpc SipRegisterAccount (SipRegisterAccountRequest) returns (SipStatus) {};
 
-    // Gets the current SIP status
+    // <p>Gets the current SIP status</p>
     rpc SipGetSipStatus (google.protobuf.Empty) returns (SipStatus) {};
 
-    // Gets the history of SIP status
+    // <p>Gets the history of SIP status</p>
     rpc SipGetSipStatusHistory (google.protobuf.Empty) returns (SipStatusHistoryResponse) {};
 
-    // Plays wav files during an ongoing call of an active SIP session
+    // <p>Plays wav files during an ongoing call of an active SIP session</p>
     rpc SipPlayWavFiles (SipPlayWavFilesRequest) returns (SipStatus) {};
 
-    // Mutes the microphone in an ongoing call of an active SIP session
+    // <p>Mutes the microphone in an ongoing call of an active SIP session</p>
     rpc SipMute (google.protobuf.Empty) returns (SipStatus) {};
 
-    // Un-mutes the microphone in an ongoing call of an active SIP session
+    // <p>Un-mutes the microphone in an ongoing call of an active SIP session</p>
     rpc SipUnMute (google.protobuf.Empty) returns (SipStatus) {};
 }
 
-// Ends an ongoing call of the active SIP session of the active SIP account
+// <p>Ends an ongoing call of the active SIP session of the active SIP account</p>
 message SipEndCallRequest{
 
     // Set to <code>True</code> to forcefully hang up the call
     bool hard_hangup = 1;
 }
 
-// Request to start the call with the active SIP session of the active SIP account
+// <p>Request to start the call with the active SIP session of the active SIP account</p>
 message SipStartCallRequest{
 
     // SIP account name
@@ -74,11 +73,10 @@ message SipStartCallRequest{
     map<string, string> headers = 2;
 }
 
+// <p>Request for registering a SIP account at a SIP server</p>
 message SipRegisterAccountRequest{
-    // Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or
-    // <code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>.
-    // Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect
-    // to a SIP server running on port <code>5099</code>
+    // Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or <code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>.
+    // Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect to a SIP server running on port <code>5099</code>
     string account_name = 1;
 
     // Password of the account
@@ -91,19 +89,17 @@ message SipRegisterAccountRequest{
     string outbound_proxy = 4;
 }
 
-// Request for starting a new SIP session for a specified account
+// <p>Request for starting a new SIP session for a specified account</p>
 message SipStartSessionRequest{
-    // Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or
-    // <code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>.
-    // Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect
-    // to a SIP server running on port <code>5099</code>
+    // Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or <code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>.
+    // Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect to a SIP server running on port <code>5099</code>
     string account_name = 1;
 
-    // answer interval
+    // Auto-answer interval in seconds. The call will be automatically answered after this interval
     int32 auto_answer_interval = 2;
 }
 
-// Request for transferring a call with or without headers
+// <p>Request for transferring a call with or without headers</p>
 message SipTransferCallRequest{
     // The account name or phone number to transfer the call to
     string transfer_id = 1;
@@ -112,11 +108,10 @@ message SipTransferCallRequest{
     map<string, string> headers = 2;
 }
 
+// <p>Status information for a SIP account, session, or call</p>
 message SipStatus{
-    // Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or
-    // <code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>.
-    // Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect
-    // to a SIP server running on port <code>5099</code>
+    // Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or <code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>.
+    // Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect to a SIP server running on port <code>5099</code>
     string account_name = 1;
 
     // Timestamp of the status
@@ -219,14 +214,14 @@ message SipStatus{
 
 }
 
-// History of SIP status
+// <p>History of SIP status</p>
 message SipStatusHistoryResponse{
 
     // History of SIP status
     repeated SipStatus status_history = 1;
 }
 
-// Plays a list of wav files
+// <p>Plays a list of wav files</p>
 message SipPlayWavFilesRequest{
 
     // Wav files as bytes in a list that will be played
