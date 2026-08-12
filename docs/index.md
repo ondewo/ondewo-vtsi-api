@@ -11,8 +11,11 @@
     - [AgentWithOwner](#ondewo.nlu.AgentWithOwner)
     - [BuildCacheRequest](#ondewo.nlu.BuildCacheRequest)
     - [CreateAgentRequest](#ondewo.nlu.CreateAgentRequest)
+    - [CreateProjectTechnicalUserRequest](#ondewo.nlu.CreateProjectTechnicalUserRequest)
+    - [CreateProjectTechnicalUserResponse](#ondewo.nlu.CreateProjectTechnicalUserResponse)
     - [CustomPlatformInfo](#ondewo.nlu.CustomPlatformInfo)
     - [DeleteAgentRequest](#ondewo.nlu.DeleteAgentRequest)
+    - [DeleteProjectTechnicalUserRequest](#ondewo.nlu.DeleteProjectTechnicalUserRequest)
     - [DeleteResourcesRequest](#ondewo.nlu.DeleteResourcesRequest)
     - [ExportAgentRequest](#ondewo.nlu.ExportAgentRequest)
     - [ExportAgentResponse](#ondewo.nlu.ExportAgentResponse)
@@ -51,23 +54,31 @@
     - [GetPlatformMappingRequest](#ondewo.nlu.GetPlatformMappingRequest)
     - [GetSessionsStatisticsRequest](#ondewo.nlu.GetSessionsStatisticsRequest)
     - [GetSessionsStatisticsResponse](#ondewo.nlu.GetSessionsStatisticsResponse)
+    - [GetSessionsStatisticsTimeSeriesRequest](#ondewo.nlu.GetSessionsStatisticsTimeSeriesRequest)
+    - [GetSessionsStatisticsTimeSeriesResponse](#ondewo.nlu.GetSessionsStatisticsTimeSeriesResponse)
     - [ImportAgentRequest](#ondewo.nlu.ImportAgentRequest)
     - [ListAgentsOfUserResponse](#ondewo.nlu.ListAgentsOfUserResponse)
     - [ListAgentsRequest](#ondewo.nlu.ListAgentsRequest)
     - [ListAgentsResponse](#ondewo.nlu.ListAgentsResponse)
     - [ListProjectPermissionsRequest](#ondewo.nlu.ListProjectPermissionsRequest)
     - [ListProjectPermissionsResponse](#ondewo.nlu.ListProjectPermissionsResponse)
+    - [ListProjectTechnicalUsersRequest](#ondewo.nlu.ListProjectTechnicalUsersRequest)
+    - [ListProjectTechnicalUsersResponse](#ondewo.nlu.ListProjectTechnicalUsersResponse)
     - [ListUsersInProjectRequest](#ondewo.nlu.ListUsersInProjectRequest)
     - [ListUsersInProjectResponse](#ondewo.nlu.ListUsersInProjectResponse)
+    - [LlmTelemetryTimeSeriesBucket](#ondewo.nlu.LlmTelemetryTimeSeriesBucket)
     - [MigrateAgentRequest](#ondewo.nlu.MigrateAgentRequest)
     - [ModelStatus](#ondewo.nlu.ModelStatus)
     - [OptimizeRankingMatchRequest](#ondewo.nlu.OptimizeRankingMatchRequest)
     - [OptimizeRankingMatchResponse](#ondewo.nlu.OptimizeRankingMatchResponse)
     - [PlatformMapping](#ondewo.nlu.PlatformMapping)
+    - [ProjectTechnicalUser](#ondewo.nlu.ProjectTechnicalUser)
     - [RankingMatchOptimizationConfig](#ondewo.nlu.RankingMatchOptimizationConfig)
     - [ReindexAgentRequest](#ondewo.nlu.ReindexAgentRequest)
     - [RemoveUserFromProjectRequest](#ondewo.nlu.RemoveUserFromProjectRequest)
     - [RestoreAgentRequest](#ondewo.nlu.RestoreAgentRequest)
+    - [RotateProjectTechnicalUserPasswordRequest](#ondewo.nlu.RotateProjectTechnicalUserPasswordRequest)
+    - [RotateProjectTechnicalUserPasswordResponse](#ondewo.nlu.RotateProjectTechnicalUserPasswordResponse)
     - [SetAgentStatusRequest](#ondewo.nlu.SetAgentStatusRequest)
     - [SetResourcesRequest](#ondewo.nlu.SetResourcesRequest)
     - [TrainAgentRequest](#ondewo.nlu.TrainAgentRequest)
@@ -161,6 +172,8 @@
     - [AddNotificationsRequest](#ondewo.nlu.AddNotificationsRequest)
     - [AddNotificationsResponse](#ondewo.nlu.AddNotificationsResponse)
     - [Comment](#ondewo.nlu.Comment)
+    - [DeleteNotificationsRequest](#ondewo.nlu.DeleteNotificationsRequest)
+    - [GetNotificationRequest](#ondewo.nlu.GetNotificationRequest)
     - [KeyValuePair](#ondewo.nlu.KeyValuePair)
     - [ListNotificationsRequest](#ondewo.nlu.ListNotificationsRequest)
     - [ListNotificationsResponse](#ondewo.nlu.ListNotificationsResponse)
@@ -170,6 +183,8 @@
     - [SetNotificationsFlaggedStatusRequest](#ondewo.nlu.SetNotificationsFlaggedStatusRequest)
     - [SetNotificationsReadStatusRequest](#ondewo.nlu.SetNotificationsReadStatusRequest)
     - [StatResponse](#ondewo.nlu.StatResponse)
+    - [StreamNotificationsRequest](#ondewo.nlu.StreamNotificationsRequest)
+    - [UpdateNotificationRequest](#ondewo.nlu.UpdateNotificationRequest)
   
     - [LogSeverity](#ondewo.nlu.LogSeverity)
     - [NotificationFlaggedStatus](#ondewo.nlu.NotificationFlaggedStatus)
@@ -323,6 +338,162 @@
   
     - [Intents](#ondewo.nlu.Intents)
   
+- [ondewo/nlu/llm_evaluation.proto](#ondewo/nlu/llm_evaluation.proto)
+    - [AddLlmEvaluationExampleRequest](#ondewo.nlu.AddLlmEvaluationExampleRequest)
+    - [AddLlmEvaluationExamplesRequest](#ondewo.nlu.AddLlmEvaluationExamplesRequest)
+    - [AddLlmEvaluationExamplesResponse](#ondewo.nlu.AddLlmEvaluationExamplesResponse)
+    - [ApplyLlmEvaluationAbRolloutRequest](#ondewo.nlu.ApplyLlmEvaluationAbRolloutRequest)
+    - [CancelLlmEvaluationExperimentRequest](#ondewo.nlu.CancelLlmEvaluationExperimentRequest)
+    - [CompareLlmEvaluationExperimentsRequest](#ondewo.nlu.CompareLlmEvaluationExperimentsRequest)
+    - [CreateLlmEvaluationAbExperimentRequest](#ondewo.nlu.CreateLlmEvaluationAbExperimentRequest)
+    - [CreateLlmEvaluationDatasetRequest](#ondewo.nlu.CreateLlmEvaluationDatasetRequest)
+    - [CreateLlmEvaluationExamplesFromSessionRequest](#ondewo.nlu.CreateLlmEvaluationExamplesFromSessionRequest)
+    - [CreateLlmEvaluationExamplesFromSessionResponse](#ondewo.nlu.CreateLlmEvaluationExamplesFromSessionResponse)
+    - [CreateLlmEvaluationOnlineConfigRequest](#ondewo.nlu.CreateLlmEvaluationOnlineConfigRequest)
+    - [CreateLlmEvaluationReleaseGateRequest](#ondewo.nlu.CreateLlmEvaluationReleaseGateRequest)
+    - [CreateLlmEvaluationReportRequest](#ondewo.nlu.CreateLlmEvaluationReportRequest)
+    - [CreateLlmEvaluationScheduleRequest](#ondewo.nlu.CreateLlmEvaluationScheduleRequest)
+    - [CreateLlmEvaluationScorecardRequest](#ondewo.nlu.CreateLlmEvaluationScorecardRequest)
+    - [DeleteLlmEvaluationAbExperimentRequest](#ondewo.nlu.DeleteLlmEvaluationAbExperimentRequest)
+    - [DeleteLlmEvaluationDatasetRequest](#ondewo.nlu.DeleteLlmEvaluationDatasetRequest)
+    - [DeleteLlmEvaluationExampleRequest](#ondewo.nlu.DeleteLlmEvaluationExampleRequest)
+    - [DeleteLlmEvaluationExperimentRequest](#ondewo.nlu.DeleteLlmEvaluationExperimentRequest)
+    - [DeleteLlmEvaluationFeedbackRequest](#ondewo.nlu.DeleteLlmEvaluationFeedbackRequest)
+    - [DeleteLlmEvaluationOnlineConfigRequest](#ondewo.nlu.DeleteLlmEvaluationOnlineConfigRequest)
+    - [DeleteLlmEvaluationReleaseGateRequest](#ondewo.nlu.DeleteLlmEvaluationReleaseGateRequest)
+    - [DeleteLlmEvaluationReportRequest](#ondewo.nlu.DeleteLlmEvaluationReportRequest)
+    - [DeleteLlmEvaluationScheduleRequest](#ondewo.nlu.DeleteLlmEvaluationScheduleRequest)
+    - [DeleteLlmEvaluationScorecardRequest](#ondewo.nlu.DeleteLlmEvaluationScorecardRequest)
+    - [GetLlmEvaluationAbExperimentRequest](#ondewo.nlu.GetLlmEvaluationAbExperimentRequest)
+    - [GetLlmEvaluationAbExperimentResultsRequest](#ondewo.nlu.GetLlmEvaluationAbExperimentResultsRequest)
+    - [GetLlmEvaluationAbExperimentResultsResponse](#ondewo.nlu.GetLlmEvaluationAbExperimentResultsResponse)
+    - [GetLlmEvaluationAbRolloutDecisionRequest](#ondewo.nlu.GetLlmEvaluationAbRolloutDecisionRequest)
+    - [GetLlmEvaluationAbRolloutRecommendationRequest](#ondewo.nlu.GetLlmEvaluationAbRolloutRecommendationRequest)
+    - [GetLlmEvaluationAnnotationQueueItemRequest](#ondewo.nlu.GetLlmEvaluationAnnotationQueueItemRequest)
+    - [GetLlmEvaluationDatasetRequest](#ondewo.nlu.GetLlmEvaluationDatasetRequest)
+    - [GetLlmEvaluationExampleRequest](#ondewo.nlu.GetLlmEvaluationExampleRequest)
+    - [GetLlmEvaluationExperimentRequest](#ondewo.nlu.GetLlmEvaluationExperimentRequest)
+    - [GetLlmEvaluationOnlineConfigRequest](#ondewo.nlu.GetLlmEvaluationOnlineConfigRequest)
+    - [GetLlmEvaluationOnlineResultRequest](#ondewo.nlu.GetLlmEvaluationOnlineResultRequest)
+    - [GetLlmEvaluationProjectSettingsRequest](#ondewo.nlu.GetLlmEvaluationProjectSettingsRequest)
+    - [GetLlmEvaluationReleaseGateRequest](#ondewo.nlu.GetLlmEvaluationReleaseGateRequest)
+    - [GetLlmEvaluationReleaseGateRunRequest](#ondewo.nlu.GetLlmEvaluationReleaseGateRunRequest)
+    - [GetLlmEvaluationReportRequest](#ondewo.nlu.GetLlmEvaluationReportRequest)
+    - [GetLlmEvaluationScheduleRequest](#ondewo.nlu.GetLlmEvaluationScheduleRequest)
+    - [GetLlmEvaluationScorecardRequest](#ondewo.nlu.GetLlmEvaluationScorecardRequest)
+    - [ListLlmEvaluationAbExperimentsRequest](#ondewo.nlu.ListLlmEvaluationAbExperimentsRequest)
+    - [ListLlmEvaluationAbExperimentsResponse](#ondewo.nlu.ListLlmEvaluationAbExperimentsResponse)
+    - [ListLlmEvaluationAbRolloutDecisionsRequest](#ondewo.nlu.ListLlmEvaluationAbRolloutDecisionsRequest)
+    - [ListLlmEvaluationAbRolloutDecisionsResponse](#ondewo.nlu.ListLlmEvaluationAbRolloutDecisionsResponse)
+    - [ListLlmEvaluationAnnotationQueueItemsRequest](#ondewo.nlu.ListLlmEvaluationAnnotationQueueItemsRequest)
+    - [ListLlmEvaluationAnnotationQueueItemsResponse](#ondewo.nlu.ListLlmEvaluationAnnotationQueueItemsResponse)
+    - [ListLlmEvaluationDatasetsRequest](#ondewo.nlu.ListLlmEvaluationDatasetsRequest)
+    - [ListLlmEvaluationDatasetsResponse](#ondewo.nlu.ListLlmEvaluationDatasetsResponse)
+    - [ListLlmEvaluationEvaluatorsRequest](#ondewo.nlu.ListLlmEvaluationEvaluatorsRequest)
+    - [ListLlmEvaluationEvaluatorsResponse](#ondewo.nlu.ListLlmEvaluationEvaluatorsResponse)
+    - [ListLlmEvaluationExamplesRequest](#ondewo.nlu.ListLlmEvaluationExamplesRequest)
+    - [ListLlmEvaluationExamplesResponse](#ondewo.nlu.ListLlmEvaluationExamplesResponse)
+    - [ListLlmEvaluationExperimentsRequest](#ondewo.nlu.ListLlmEvaluationExperimentsRequest)
+    - [ListLlmEvaluationExperimentsResponse](#ondewo.nlu.ListLlmEvaluationExperimentsResponse)
+    - [ListLlmEvaluationFeedbackRequest](#ondewo.nlu.ListLlmEvaluationFeedbackRequest)
+    - [ListLlmEvaluationFeedbackResponse](#ondewo.nlu.ListLlmEvaluationFeedbackResponse)
+    - [ListLlmEvaluationOnlineConfigsRequest](#ondewo.nlu.ListLlmEvaluationOnlineConfigsRequest)
+    - [ListLlmEvaluationOnlineConfigsResponse](#ondewo.nlu.ListLlmEvaluationOnlineConfigsResponse)
+    - [ListLlmEvaluationOnlineResultsRequest](#ondewo.nlu.ListLlmEvaluationOnlineResultsRequest)
+    - [ListLlmEvaluationOnlineResultsResponse](#ondewo.nlu.ListLlmEvaluationOnlineResultsResponse)
+    - [ListLlmEvaluationReleaseGateRunsRequest](#ondewo.nlu.ListLlmEvaluationReleaseGateRunsRequest)
+    - [ListLlmEvaluationReleaseGateRunsResponse](#ondewo.nlu.ListLlmEvaluationReleaseGateRunsResponse)
+    - [ListLlmEvaluationReleaseGatesRequest](#ondewo.nlu.ListLlmEvaluationReleaseGatesRequest)
+    - [ListLlmEvaluationReleaseGatesResponse](#ondewo.nlu.ListLlmEvaluationReleaseGatesResponse)
+    - [ListLlmEvaluationReportsRequest](#ondewo.nlu.ListLlmEvaluationReportsRequest)
+    - [ListLlmEvaluationReportsResponse](#ondewo.nlu.ListLlmEvaluationReportsResponse)
+    - [ListLlmEvaluationSchedulesRequest](#ondewo.nlu.ListLlmEvaluationSchedulesRequest)
+    - [ListLlmEvaluationSchedulesResponse](#ondewo.nlu.ListLlmEvaluationSchedulesResponse)
+    - [ListLlmEvaluationScorecardsRequest](#ondewo.nlu.ListLlmEvaluationScorecardsRequest)
+    - [ListLlmEvaluationScorecardsResponse](#ondewo.nlu.ListLlmEvaluationScorecardsResponse)
+    - [LlmEvaluationAbExperiment](#ondewo.nlu.LlmEvaluationAbExperiment)
+    - [LlmEvaluationAbExperimentFilter](#ondewo.nlu.LlmEvaluationAbExperimentFilter)
+    - [LlmEvaluationAbRolloutDecision](#ondewo.nlu.LlmEvaluationAbRolloutDecision)
+    - [LlmEvaluationAbRolloutDecisionFilter](#ondewo.nlu.LlmEvaluationAbRolloutDecisionFilter)
+    - [LlmEvaluationAbRolloutRecommendation](#ondewo.nlu.LlmEvaluationAbRolloutRecommendation)
+    - [LlmEvaluationAbRolloutRecommendation.SessionsPerVariantEntry](#ondewo.nlu.LlmEvaluationAbRolloutRecommendation.SessionsPerVariantEntry)
+    - [LlmEvaluationAbTrafficConfig](#ondewo.nlu.LlmEvaluationAbTrafficConfig)
+    - [LlmEvaluationAbVariant](#ondewo.nlu.LlmEvaluationAbVariant)
+    - [LlmEvaluationAbVariantResult](#ondewo.nlu.LlmEvaluationAbVariantResult)
+    - [LlmEvaluationAnnotationQueueItem](#ondewo.nlu.LlmEvaluationAnnotationQueueItem)
+    - [LlmEvaluationAnnotationQueueItemFilter](#ondewo.nlu.LlmEvaluationAnnotationQueueItemFilter)
+    - [LlmEvaluationComparison](#ondewo.nlu.LlmEvaluationComparison)
+    - [LlmEvaluationDataset](#ondewo.nlu.LlmEvaluationDataset)
+    - [LlmEvaluationDatasetFilter](#ondewo.nlu.LlmEvaluationDatasetFilter)
+    - [LlmEvaluationEvaluatorParameterSpec](#ondewo.nlu.LlmEvaluationEvaluatorParameterSpec)
+    - [LlmEvaluationEvaluatorRun](#ondewo.nlu.LlmEvaluationEvaluatorRun)
+    - [LlmEvaluationEvaluatorSpec](#ondewo.nlu.LlmEvaluationEvaluatorSpec)
+    - [LlmEvaluationExample](#ondewo.nlu.LlmEvaluationExample)
+    - [LlmEvaluationExampleFilter](#ondewo.nlu.LlmEvaluationExampleFilter)
+    - [LlmEvaluationExperiment](#ondewo.nlu.LlmEvaluationExperiment)
+    - [LlmEvaluationExperimentFilter](#ondewo.nlu.LlmEvaluationExperimentFilter)
+    - [LlmEvaluationFeedback](#ondewo.nlu.LlmEvaluationFeedback)
+    - [LlmEvaluationFeedbackFilter](#ondewo.nlu.LlmEvaluationFeedbackFilter)
+    - [LlmEvaluationJudgeConfig](#ondewo.nlu.LlmEvaluationJudgeConfig)
+    - [LlmEvaluationOnlineConfig](#ondewo.nlu.LlmEvaluationOnlineConfig)
+    - [LlmEvaluationOnlineConfigFilter](#ondewo.nlu.LlmEvaluationOnlineConfigFilter)
+    - [LlmEvaluationOnlineResult](#ondewo.nlu.LlmEvaluationOnlineResult)
+    - [LlmEvaluationOnlineResultFilter](#ondewo.nlu.LlmEvaluationOnlineResultFilter)
+    - [LlmEvaluationOnlineSessionFilter](#ondewo.nlu.LlmEvaluationOnlineSessionFilter)
+    - [LlmEvaluationPairwiseResult](#ondewo.nlu.LlmEvaluationPairwiseResult)
+    - [LlmEvaluationProjectSettings](#ondewo.nlu.LlmEvaluationProjectSettings)
+    - [LlmEvaluationReleaseGate](#ondewo.nlu.LlmEvaluationReleaseGate)
+    - [LlmEvaluationReleaseGateCheck](#ondewo.nlu.LlmEvaluationReleaseGateCheck)
+    - [LlmEvaluationReleaseGateFilter](#ondewo.nlu.LlmEvaluationReleaseGateFilter)
+    - [LlmEvaluationReleaseGateRun](#ondewo.nlu.LlmEvaluationReleaseGateRun)
+    - [LlmEvaluationReleaseGateRunFilter](#ondewo.nlu.LlmEvaluationReleaseGateRunFilter)
+    - [LlmEvaluationReleaseGateSafetyConfig](#ondewo.nlu.LlmEvaluationReleaseGateSafetyConfig)
+    - [LlmEvaluationReleaseGateThresholds](#ondewo.nlu.LlmEvaluationReleaseGateThresholds)
+    - [LlmEvaluationReport](#ondewo.nlu.LlmEvaluationReport)
+    - [LlmEvaluationReportFilter](#ondewo.nlu.LlmEvaluationReportFilter)
+    - [LlmEvaluationSchedule](#ondewo.nlu.LlmEvaluationSchedule)
+    - [LlmEvaluationScheduleFilter](#ondewo.nlu.LlmEvaluationScheduleFilter)
+    - [LlmEvaluationScorecard](#ondewo.nlu.LlmEvaluationScorecard)
+    - [LlmEvaluationScorecardComponent](#ondewo.nlu.LlmEvaluationScorecardComponent)
+    - [LlmEvaluationScorecardFilter](#ondewo.nlu.LlmEvaluationScorecardFilter)
+    - [LlmEvaluationSimulationPersona](#ondewo.nlu.LlmEvaluationSimulationPersona)
+    - [LlmEvaluationTurnResult](#ondewo.nlu.LlmEvaluationTurnResult)
+    - [PromoteLlmEvaluationAnnotationQueueItemRequest](#ondewo.nlu.PromoteLlmEvaluationAnnotationQueueItemRequest)
+    - [PromoteLlmEvaluationAnnotationQueueItemResponse](#ondewo.nlu.PromoteLlmEvaluationAnnotationQueueItemResponse)
+    - [RagVariantConfig](#ondewo.nlu.RagVariantConfig)
+    - [RunLlmEvaluationExperimentRequest](#ondewo.nlu.RunLlmEvaluationExperimentRequest)
+    - [RunLlmEvaluationReleaseGateRequest](#ondewo.nlu.RunLlmEvaluationReleaseGateRequest)
+    - [SimulateLlmEvaluationConversationsRequest](#ondewo.nlu.SimulateLlmEvaluationConversationsRequest)
+    - [StartLlmEvaluationAbExperimentRequest](#ondewo.nlu.StartLlmEvaluationAbExperimentRequest)
+    - [StopLlmEvaluationAbExperimentRequest](#ondewo.nlu.StopLlmEvaluationAbExperimentRequest)
+    - [SubmitLlmEvaluationFeedbackRequest](#ondewo.nlu.SubmitLlmEvaluationFeedbackRequest)
+    - [UpdateLlmEvaluationAbExperimentRequest](#ondewo.nlu.UpdateLlmEvaluationAbExperimentRequest)
+    - [UpdateLlmEvaluationAnnotationQueueItemRequest](#ondewo.nlu.UpdateLlmEvaluationAnnotationQueueItemRequest)
+    - [UpdateLlmEvaluationDatasetRequest](#ondewo.nlu.UpdateLlmEvaluationDatasetRequest)
+    - [UpdateLlmEvaluationExampleRequest](#ondewo.nlu.UpdateLlmEvaluationExampleRequest)
+    - [UpdateLlmEvaluationExperimentRequest](#ondewo.nlu.UpdateLlmEvaluationExperimentRequest)
+    - [UpdateLlmEvaluationFeedbackRequest](#ondewo.nlu.UpdateLlmEvaluationFeedbackRequest)
+    - [UpdateLlmEvaluationOnlineConfigRequest](#ondewo.nlu.UpdateLlmEvaluationOnlineConfigRequest)
+    - [UpdateLlmEvaluationProjectSettingsRequest](#ondewo.nlu.UpdateLlmEvaluationProjectSettingsRequest)
+    - [UpdateLlmEvaluationReleaseGateRequest](#ondewo.nlu.UpdateLlmEvaluationReleaseGateRequest)
+    - [UpdateLlmEvaluationScheduleRequest](#ondewo.nlu.UpdateLlmEvaluationScheduleRequest)
+    - [UpdateLlmEvaluationScorecardRequest](#ondewo.nlu.UpdateLlmEvaluationScorecardRequest)
+  
+    - [LlmEvaluationAbExperimentStatus](#ondewo.nlu.LlmEvaluationAbExperimentStatus)
+    - [LlmEvaluationAbOptimizeMetric](#ondewo.nlu.LlmEvaluationAbOptimizeMetric)
+    - [LlmEvaluationAnnotationStatus](#ondewo.nlu.LlmEvaluationAnnotationStatus)
+    - [LlmEvaluationDatasetType](#ondewo.nlu.LlmEvaluationDatasetType)
+    - [LlmEvaluationEvaluatorCategory](#ondewo.nlu.LlmEvaluationEvaluatorCategory)
+    - [LlmEvaluationEvaluatorType](#ondewo.nlu.LlmEvaluationEvaluatorType)
+    - [LlmEvaluationExampleExtractionMode](#ondewo.nlu.LlmEvaluationExampleExtractionMode)
+    - [LlmEvaluationExperimentKind](#ondewo.nlu.LlmEvaluationExperimentKind)
+    - [LlmEvaluationExperimentStatus](#ondewo.nlu.LlmEvaluationExperimentStatus)
+    - [LlmEvaluationReleaseGateVerdict](#ondewo.nlu.LlmEvaluationReleaseGateVerdict)
+    - [LlmEvaluationScheduleAction](#ondewo.nlu.LlmEvaluationScheduleAction)
+    - [LlmEvaluationSimulationKind](#ondewo.nlu.LlmEvaluationSimulationKind)
+  
+    - [LlmEvaluations](#ondewo.nlu.LlmEvaluations)
+  
 - [ondewo/nlu/operation_metadata.proto](#ondewo/nlu/operation_metadata.proto)
     - [OperationMetadata](#ondewo.nlu.OperationMetadata)
   
@@ -333,10 +504,23 @@
     - [CancelOperationRequest](#ondewo.nlu.CancelOperationRequest)
     - [DeleteOperationRequest](#ondewo.nlu.DeleteOperationRequest)
     - [GetOperationRequest](#ondewo.nlu.GetOperationRequest)
+    - [GetRemoteOperationContainerLogsRequest](#ondewo.nlu.GetRemoteOperationContainerLogsRequest)
+    - [GetRemoteOperationContainerLogsResponse](#ondewo.nlu.GetRemoteOperationContainerLogsResponse)
+    - [GetRemoteOperationContainerStatusRequest](#ondewo.nlu.GetRemoteOperationContainerStatusRequest)
     - [ListOperationsRequest](#ondewo.nlu.ListOperationsRequest)
     - [ListOperationsResponse](#ondewo.nlu.ListOperationsResponse)
+    - [ListRemoteOperationContainersRequest](#ondewo.nlu.ListRemoteOperationContainersRequest)
+    - [ListRemoteOperationContainersResponse](#ondewo.nlu.ListRemoteOperationContainersResponse)
     - [Operation](#ondewo.nlu.Operation)
     - [OperationFilter](#ondewo.nlu.OperationFilter)
+    - [RemoteOperationContainer](#ondewo.nlu.RemoteOperationContainer)
+    - [RemoteOperationContainer.EnvironmentVariablesEntry](#ondewo.nlu.RemoteOperationContainer.EnvironmentVariablesEntry)
+    - [RemoteOperationContainerLogLine](#ondewo.nlu.RemoteOperationContainerLogLine)
+    - [RemoteOperationContainerStatus](#ondewo.nlu.RemoteOperationContainerStatus)
+    - [RemoteOperationContainerStatus.EnvironmentVariablesEntry](#ondewo.nlu.RemoteOperationContainerStatus.EnvironmentVariablesEntry)
+    - [StreamRemoteOperationContainerLogsRequest](#ondewo.nlu.StreamRemoteOperationContainerLogsRequest)
+  
+    - [RemoteOperationContainerLifecycleState](#ondewo.nlu.RemoteOperationContainerLifecycleState)
   
     - [Operations](#ondewo.nlu.Operations)
   
@@ -371,8 +555,10 @@
     - [RagCrawlerConcurrencyConfig](#ondewo.nlu.RagCrawlerConcurrencyConfig)
     - [RagCrawlerConfig](#ondewo.nlu.RagCrawlerConfig)
     - [RagCrawlerContentResult](#ondewo.nlu.RagCrawlerContentResult)
+    - [RagCrawlerContentScope](#ondewo.nlu.RagCrawlerContentScope)
     - [RagCrawlerCookie](#ondewo.nlu.RagCrawlerCookie)
     - [RagCrawlerDeepCrawlerConfig](#ondewo.nlu.RagCrawlerDeepCrawlerConfig)
+    - [RagCrawlerDensityPruning](#ondewo.nlu.RagCrawlerDensityPruning)
     - [RagCrawlerExecutionInfo](#ondewo.nlu.RagCrawlerExecutionInfo)
     - [RagCrawlerFilters](#ondewo.nlu.RagCrawlerFilters)
     - [RagCrawlerHtmlAuth](#ondewo.nlu.RagCrawlerHtmlAuth)
@@ -383,6 +569,7 @@
     - [RagCrawlerRetryConfig](#ondewo.nlu.RagCrawlerRetryConfig)
     - [RagCrawlerSeedUrlFilters](#ondewo.nlu.RagCrawlerSeedUrlFilters)
     - [RagCrawlerSources](#ondewo.nlu.RagCrawlerSources)
+    - [RagCrawlerStatusFilter](#ondewo.nlu.RagCrawlerStatusFilter)
     - [RagCreateCrawlerRequest](#ondewo.nlu.RagCreateCrawlerRequest)
     - [RagCreateDatasetRequest](#ondewo.nlu.RagCreateDatasetRequest)
     - [RagDataset](#ondewo.nlu.RagDataset)
@@ -440,6 +627,7 @@
     - [RagCrawlerAuthenticationExecutionType](#ondewo.nlu.RagCrawlerAuthenticationExecutionType)
     - [RagCrawlerCrawlStrategy](#ondewo.nlu.RagCrawlerCrawlStrategy)
     - [RagCrawlerMetaDataExtractorType](#ondewo.nlu.RagCrawlerMetaDataExtractorType)
+    - [RagCrawlerPruningThresholdType](#ondewo.nlu.RagCrawlerPruningThresholdType)
     - [RagCrawlerSelectorType](#ondewo.nlu.RagCrawlerSelectorType)
     - [RagDocumentStatus](#ondewo.nlu.RagDocumentStatus)
     - [RagDocumentType](#ondewo.nlu.RagDocumentType)
@@ -457,7 +645,9 @@
     - [AddAudioFilesRequest](#ondewo.nlu.AddAudioFilesRequest)
     - [AddAudioFilesResponse](#ondewo.nlu.AddAudioFilesResponse)
     - [AddSessionCommentRequest](#ondewo.nlu.AddSessionCommentRequest)
+    - [AddSessionFeedbackRequest](#ondewo.nlu.AddSessionFeedbackRequest)
     - [AddSessionLabelsRequest](#ondewo.nlu.AddSessionLabelsRequest)
+    - [AddSessionStepFeedbackRequest](#ondewo.nlu.AddSessionStepFeedbackRequest)
     - [AudioFileResource](#ondewo.nlu.AudioFileResource)
     - [ContextFilter](#ondewo.nlu.ContextFilter)
     - [CreateSessionRequest](#ondewo.nlu.CreateSessionRequest)
@@ -466,6 +656,7 @@
     - [DeleteAudioFilesRequest](#ondewo.nlu.DeleteAudioFilesRequest)
     - [DeleteAudioFilesResponse](#ondewo.nlu.DeleteAudioFilesResponse)
     - [DeleteSessionCommentsRequest](#ondewo.nlu.DeleteSessionCommentsRequest)
+    - [DeleteSessionFeedbackRequest](#ondewo.nlu.DeleteSessionFeedbackRequest)
     - [DeleteSessionLabelsRequest](#ondewo.nlu.DeleteSessionLabelsRequest)
     - [DeleteSessionRequest](#ondewo.nlu.DeleteSessionRequest)
     - [DeleteSessionStepRequest](#ondewo.nlu.DeleteSessionStepRequest)
@@ -474,11 +665,20 @@
     - [DetectedIntent](#ondewo.nlu.DetectedIntent)
     - [DocumentFileResource](#ondewo.nlu.DocumentFileResource)
     - [EventInput](#ondewo.nlu.EventInput)
+    - [FeedbackBreakdownBucket](#ondewo.nlu.FeedbackBreakdownBucket)
+    - [FeedbackFilter](#ondewo.nlu.FeedbackFilter)
+    - [FeedbackStatistics](#ondewo.nlu.FeedbackStatistics)
+    - [FeedbackTimeSeriesBucket](#ondewo.nlu.FeedbackTimeSeriesBucket)
     - [FileResource](#ondewo.nlu.FileResource)
     - [GetAudioFileOfSessionRequest](#ondewo.nlu.GetAudioFileOfSessionRequest)
     - [GetAudioFilesRequest](#ondewo.nlu.GetAudioFilesRequest)
     - [GetAudioFilesResponse](#ondewo.nlu.GetAudioFilesResponse)
+    - [GetFeedbackStatisticsRequest](#ondewo.nlu.GetFeedbackStatisticsRequest)
+    - [GetFeedbackStatisticsResponse](#ondewo.nlu.GetFeedbackStatisticsResponse)
+    - [GetFeedbackStatisticsTimeSeriesRequest](#ondewo.nlu.GetFeedbackStatisticsTimeSeriesRequest)
+    - [GetFeedbackStatisticsTimeSeriesResponse](#ondewo.nlu.GetFeedbackStatisticsTimeSeriesResponse)
     - [GetLatestSessionReviewRequest](#ondewo.nlu.GetLatestSessionReviewRequest)
+    - [GetSessionFeedbackRequest](#ondewo.nlu.GetSessionFeedbackRequest)
     - [GetSessionRequest](#ondewo.nlu.GetSessionRequest)
     - [GetSessionReviewRequest](#ondewo.nlu.GetSessionReviewRequest)
     - [GetSessionStepRequest](#ondewo.nlu.GetSessionStepRequest)
@@ -508,8 +708,12 @@
     - [ListPlatformsResponse](#ondewo.nlu.ListPlatformsResponse)
     - [ListPropertyIdsOfAllSessionsRequest](#ondewo.nlu.ListPropertyIdsOfAllSessionsRequest)
     - [ListPropertyIdsResponse](#ondewo.nlu.ListPropertyIdsResponse)
+    - [ListSessionCommentsOfAllSessionsRequest](#ondewo.nlu.ListSessionCommentsOfAllSessionsRequest)
     - [ListSessionCommentsRequest](#ondewo.nlu.ListSessionCommentsRequest)
     - [ListSessionCommentsResponse](#ondewo.nlu.ListSessionCommentsResponse)
+    - [ListSessionFeedbackOfAllSessionsRequest](#ondewo.nlu.ListSessionFeedbackOfAllSessionsRequest)
+    - [ListSessionFeedbackRequest](#ondewo.nlu.ListSessionFeedbackRequest)
+    - [ListSessionFeedbackResponse](#ondewo.nlu.ListSessionFeedbackResponse)
     - [ListSessionLabelsOfAllSessionsRequest](#ondewo.nlu.ListSessionLabelsOfAllSessionsRequest)
     - [ListSessionLabelsRequest](#ondewo.nlu.ListSessionLabelsRequest)
     - [ListSessionLabelsResponse](#ondewo.nlu.ListSessionLabelsResponse)
@@ -521,11 +725,41 @@
     - [ListTagsResponse](#ondewo.nlu.ListTagsResponse)
     - [ListUserIdsOfAllSessionsRequest](#ondewo.nlu.ListUserIdsOfAllSessionsRequest)
     - [ListUserIdsResponse](#ondewo.nlu.ListUserIdsResponse)
+    - [LlmAgentUsage](#ondewo.nlu.LlmAgentUsage)
+    - [LlmCacheStats](#ondewo.nlu.LlmCacheStats)
+    - [LlmCallFinishedEvent](#ondewo.nlu.LlmCallFinishedEvent)
+    - [LlmCallStartedEvent](#ondewo.nlu.LlmCallStartedEvent)
+    - [LlmCcaiServiceUsage](#ondewo.nlu.LlmCcaiServiceUsage)
+    - [LlmErrorStat](#ondewo.nlu.LlmErrorStat)
+    - [LlmErrorStats](#ondewo.nlu.LlmErrorStats)
+    - [LlmFinishReasonStat](#ondewo.nlu.LlmFinishReasonStat)
+    - [LlmLatencyStats](#ondewo.nlu.LlmLatencyStats)
+    - [LlmModelUsage](#ondewo.nlu.LlmModelUsage)
+    - [LlmProviderUsage](#ondewo.nlu.LlmProviderUsage)
+    - [LlmReasoningEffortStat](#ondewo.nlu.LlmReasoningEffortStat)
+    - [LlmRetrievalMetadata](#ondewo.nlu.LlmRetrievalMetadata)
+    - [LlmRetrievedChunk](#ondewo.nlu.LlmRetrievedChunk)
+    - [LlmSafetyAssessment](#ondewo.nlu.LlmSafetyAssessment)
+    - [LlmSafetyCategoryStat](#ondewo.nlu.LlmSafetyCategoryStat)
+    - [LlmSafetyFinding](#ondewo.nlu.LlmSafetyFinding)
+    - [LlmSafetyStats](#ondewo.nlu.LlmSafetyStats)
+    - [LlmTelemetry](#ondewo.nlu.LlmTelemetry)
+    - [LlmTelemetryReport](#ondewo.nlu.LlmTelemetryReport)
+    - [LlmThinkingDeltaEvent](#ondewo.nlu.LlmThinkingDeltaEvent)
+    - [LlmThinkingMetadata](#ondewo.nlu.LlmThinkingMetadata)
+    - [LlmTokenUsage](#ondewo.nlu.LlmTokenUsage)
+    - [LlmTokenUsageUpdateEvent](#ondewo.nlu.LlmTokenUsageUpdateEvent)
+    - [LlmToolCallFinishedEvent](#ondewo.nlu.LlmToolCallFinishedEvent)
+    - [LlmToolCallMetadata](#ondewo.nlu.LlmToolCallMetadata)
+    - [LlmToolCallStartedEvent](#ondewo.nlu.LlmToolCallStartedEvent)
+    - [LlmToolUsage](#ondewo.nlu.LlmToolUsage)
     - [QueryInput](#ondewo.nlu.QueryInput)
     - [QueryParameters](#ondewo.nlu.QueryParameters)
     - [QueryResult](#ondewo.nlu.QueryResult)
+    - [ReferencedChunk](#ondewo.nlu.ReferencedChunk)
     - [S2tTranscription](#ondewo.nlu.S2tTranscription)
     - [Session](#ondewo.nlu.Session)
+    - [SessionFeedback](#ondewo.nlu.SessionFeedback)
     - [SessionFilter](#ondewo.nlu.SessionFilter)
     - [SessionInfo](#ondewo.nlu.SessionInfo)
     - [SessionInfo.ContextSteps](#ondewo.nlu.SessionInfo.ContextSteps)
@@ -537,12 +771,19 @@
     - [StreamingRecognitionResult](#ondewo.nlu.StreamingRecognitionResult)
     - [TextInput](#ondewo.nlu.TextInput)
     - [UpdateSessionCommentsRequest](#ondewo.nlu.UpdateSessionCommentsRequest)
+    - [UpdateSessionFeedbackRequest](#ondewo.nlu.UpdateSessionFeedbackRequest)
     - [UpdateSessionStepRequest](#ondewo.nlu.UpdateSessionStepRequest)
     - [VideoFileResource](#ondewo.nlu.VideoFileResource)
   
     - [AudioEncoding](#ondewo.nlu.AudioEncoding)
     - [AudioFileResourceType](#ondewo.nlu.AudioFileResourceType)
     - [ComparisonOperator](#ondewo.nlu.ComparisonOperator)
+    - [FeedbackAuthorType](#ondewo.nlu.FeedbackAuthorType)
+    - [FeedbackRating](#ondewo.nlu.FeedbackRating)
+    - [FeedbackScope](#ondewo.nlu.FeedbackScope)
+    - [FeedbackTimeGranularity](#ondewo.nlu.FeedbackTimeGranularity)
+    - [LlmSafetyLocation](#ondewo.nlu.LlmSafetyLocation)
+    - [ReasoningEffort](#ondewo.nlu.ReasoningEffort)
     - [ResourceView](#ondewo.nlu.ResourceView)
     - [Session.View](#ondewo.nlu.Session.View)
     - [SessionReview.View](#ondewo.nlu.SessionReview.View)
@@ -572,8 +813,6 @@
     - [ListUserPreferencesResponse](#ondewo.nlu.ListUserPreferencesResponse)
     - [ListUsersRequest](#ondewo.nlu.ListUsersRequest)
     - [ListUsersResponse](#ondewo.nlu.ListUsersResponse)
-    - [LoginRequest](#ondewo.nlu.LoginRequest)
-    - [LoginResponse](#ondewo.nlu.LoginResponse)
     - [ServerRole](#ondewo.nlu.ServerRole)
     - [SetUserPreferencesRequest](#ondewo.nlu.SetUserPreferencesRequest)
     - [SetUserPreferencesResponse](#ondewo.nlu.SetUserPreferencesResponse)
@@ -835,6 +1074,7 @@
     - [GetCallRequest](#ondewo.vtsi.GetCallRequest)
     - [GetCallerRequest](#ondewo.vtsi.GetCallerRequest)
     - [GetListenerRequest](#ondewo.vtsi.GetListenerRequest)
+    - [InterruptionHandlingConfig](#ondewo.vtsi.InterruptionHandlingConfig)
     - [ListCallersRequest](#ondewo.vtsi.ListCallersRequest)
     - [ListCallersResponse](#ondewo.vtsi.ListCallersResponse)
     - [ListCallsRequest](#ondewo.vtsi.ListCallsRequest)
@@ -847,6 +1087,7 @@
     - [NluVtsiCallbacks](#ondewo.vtsi.NluVtsiCallbacks)
     - [NluVtsiConfig](#ondewo.vtsi.NluVtsiConfig)
     - [RabbitMqConfig](#ondewo.vtsi.RabbitMqConfig)
+    - [ResponseTimingConfig](#ondewo.vtsi.ResponseTimingConfig)
     - [S2tVtsiCallbacks](#ondewo.vtsi.S2tVtsiCallbacks)
     - [S2tVtsiConfig](#ondewo.vtsi.S2tVtsiConfig)
     - [ScheduledCaller](#ondewo.vtsi.ScheduledCaller)
@@ -854,6 +1095,7 @@
     - [SipBaseConfig](#ondewo.vtsi.SipBaseConfig)
     - [SipCallerConfig](#ondewo.vtsi.SipCallerConfig)
     - [SipCallerConfig.SipHeadersEntry](#ondewo.vtsi.SipCallerConfig.SipHeadersEntry)
+    - [SoftTimeoutConfig](#ondewo.vtsi.SoftTimeoutConfig)
     - [StartCallerRequest](#ondewo.vtsi.StartCallerRequest)
     - [StartCallerResponse](#ondewo.vtsi.StartCallerResponse)
     - [StartCallersRequest](#ondewo.vtsi.StartCallersRequest)
@@ -885,12 +1127,38 @@
     - [TransferCallResponse](#ondewo.vtsi.TransferCallResponse)
     - [TransferCallsRequest](#ondewo.vtsi.TransferCallsRequest)
     - [TransferCallsResponse](#ondewo.vtsi.TransferCallsResponse)
+    - [TurnDetectionConfig](#ondewo.vtsi.TurnDetectionConfig)
+    - [VoiceInteractionConfig](#ondewo.vtsi.VoiceInteractionConfig)
   
     - [CallStatus](#ondewo.vtsi.CallStatus)
     - [CallType](#ondewo.vtsi.CallType)
     - [CallView](#ondewo.vtsi.CallView)
+    - [TurnDetectionConfig.TurnDetectionMode](#ondewo.vtsi.TurnDetectionConfig.TurnDetectionMode)
+    - [TurnDetectionConfig.TurnEagerness](#ondewo.vtsi.TurnDetectionConfig.TurnEagerness)
   
     - [Calls](#ondewo.vtsi.Calls)
+  
+- [ondewo/vtsi/logs.proto](#ondewo/vtsi/logs.proto)
+    - [CallLogEntry](#ondewo.vtsi.CallLogEntry)
+    - [CallLogFilter](#ondewo.vtsi.CallLogFilter)
+    - [CallLogStream](#ondewo.vtsi.CallLogStream)
+    - [DeleteCallLogsRequest](#ondewo.vtsi.DeleteCallLogsRequest)
+    - [DeleteCallLogsResponse](#ondewo.vtsi.DeleteCallLogsResponse)
+    - [GetCallLogStreamRequest](#ondewo.vtsi.GetCallLogStreamRequest)
+    - [ListCallLogStreamsRequest](#ondewo.vtsi.ListCallLogStreamsRequest)
+    - [ListCallLogStreamsResponse](#ondewo.vtsi.ListCallLogStreamsResponse)
+    - [ListCallLogsRequest](#ondewo.vtsi.ListCallLogsRequest)
+    - [ListCallLogsResponse](#ondewo.vtsi.ListCallLogsResponse)
+    - [SipHeaderFilter](#ondewo.vtsi.SipHeaderFilter)
+    - [StreamCallLogsRequest](#ondewo.vtsi.StreamCallLogsRequest)
+    - [StreamCallLogsResponse](#ondewo.vtsi.StreamCallLogsResponse)
+  
+    - [CallLogFilterField](#ondewo.vtsi.CallLogFilterField)
+    - [LogCaptureState](#ondewo.vtsi.LogCaptureState)
+    - [LogSource](#ondewo.vtsi.LogSource)
+    - [LogStreamChannel](#ondewo.vtsi.LogStreamChannel)
+  
+    - [Logs](#ondewo.vtsi.Logs)
   
 - [ondewo/vtsi/projects.proto](#ondewo/vtsi/projects.proto)
     - [AsteriskConfigs](#ondewo.vtsi.AsteriskConfigs)
@@ -1059,6 +1327,40 @@ Request to create an agent
 
 
 
+<a name="ondewo.nlu.CreateProjectTechnicalUserRequest"></a>
+
+### CreateProjectTechnicalUserRequest
+Request to create a project-scoped technical user (PROJECT_EXECUTOR, 2FA-exempt).
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Required. The project (agent) that the technical user is scoped to. Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
+| name | [string](#string) |  | Optional. A human-readable name used to derive the technical user's Keycloak username/email (e.g. ondewo-nlu-cai-tech-&lt;project&gt;-&lt;name&gt;). If empty, the server generates one. |
+
+
+
+
+
+
+<a name="ondewo.nlu.CreateProjectTechnicalUserResponse"></a>
+
+### CreateProjectTechnicalUserResponse
+Response with the freshly minted technical user's credentials.
+The password is returned ONCE and cannot be retrieved later.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| user_id | [string](#string) |  | The technical user's id (Keycloak sub / UUID). |
+| username | [string](#string) |  | The technical user's login username / email. |
+| password | [string](#string) |  | The generated password. Shown ONCE; not retrievable afterwards. |
+
+
+
+
+
+
 <a name="ondewo.nlu.CustomPlatformInfo"></a>
 
 ### CustomPlatformInfo
@@ -1089,6 +1391,22 @@ Request to delete the agent
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | parent | [string](#string) |  | Required. The project that the agent to fetch is associated with. Format: <pre><code>projects/&lt;project_uuid&gt;/agents</code></pre> |
+
+
+
+
+
+
+<a name="ondewo.nlu.DeleteProjectTechnicalUserRequest"></a>
+
+### DeleteProjectTechnicalUserRequest
+Request to delete a project-scoped technical user.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Required. The project (agent) that the technical user is scoped to. Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
+| user_id | [string](#string) |  | Required. The id of the technical user to delete. |
 
 
 
@@ -1747,6 +2065,12 @@ Request statistics of the agent
 | format | [ReportFormat](#ondewo.nlu.ReportFormat) |  | File formats for reports |
 | language_code | [string](#string) |  | Language code specifies the language of the request in IETF BCP 47 language tag format, e.g. de-DE, en-US, etc. the language to calculate statistics about |
 | type | [ReportType](#ondewo.nlu.ReportType) |  | Type of reports about the domain of the agent |
+| llm_model_filter | [string](#string) | repeated | Optional. Restrict LLM aggregations to specific models (e.g. <code>"claude-3-5-sonnet-20241022"</code>). Empty list = all models. |
+| llm_provider_filter | [string](#string) | repeated | Optional. Restrict LLM aggregations to specific providers (e.g. <code>"anthropic"</code>, <code>"openai"</code>). Empty list = all providers. |
+| llm_agent_name_filter | [string](#string) | repeated | Optional. Restrict LLM aggregations to specific intent-agent names. |
+| llm_group_bys | [string](#string) | repeated | Optional. Group LLM aggregations by named dimensions (e.g. <code>["model_name", "provider"]</code>). Empty list = no grouping. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data on the response (e.g. paths=["llm_telemetry_report"]). |
+| llm_ccai_service_provider_filter | [CcaiServiceProvider](#ondewo.nlu.CcaiServiceProvider) | repeated | Optional. Restrict LLM aggregations to specific CCAI service providers. Empty = all. |
 
 
 
@@ -1764,6 +2088,7 @@ Response to get statistics of the agent
 | reports | [bytes](#bytes) |  | Statistic info. |
 | format | [ReportFormat](#ondewo.nlu.ReportFormat) |  | File formats for reports |
 | type | [ReportType](#ondewo.nlu.ReportType) |  | Type of reports about the domain of the agent |
+| llm_telemetry_report | [LlmTelemetryReport](#ondewo.nlu.LlmTelemetryReport) |  | Optional aggregate LLM telemetry across all sessions / steps in scope (subject to the LLM filters in the request). Populated only when the request field_mask includes <code>llm_telemetry_report</code>. |
 
 
 
@@ -1852,6 +2177,11 @@ Request of the report of the statistics about sessions
 | order_bys | [string](#string) | repeated | Optional. Order based on named properties |
 | field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which data fields will be added to the returned data. <br> Example: paths=[&quot;duration_in_s_min&quot;, &quot;id&quot;, &quot;session_id&quot;, &quot;project_id&quot;] <br> |
 | sql_query | [string](#string) |  | SQL Query - only usable with specific SessionsReportType such as SessionsReportType.SESSION_SQL_QUERY |
+| llm_model_filter | [string](#string) | repeated | Optional. Restrict LLM-typed reports to specific models. Empty = all models. |
+| llm_provider_filter | [string](#string) | repeated | Optional. Restrict LLM-typed reports to specific providers. Empty = all providers. |
+| llm_agent_name_filter | [string](#string) | repeated | Optional. Restrict LLM-typed reports to specific intent-agent names. Empty = all. |
+| llm_tool_name_filter | [string](#string) | repeated | Optional. Restrict LLM-typed reports to specific tool names. Empty = all. |
+| llm_ccai_service_provider_filter | [CcaiServiceProvider](#ondewo.nlu.CcaiServiceProvider) | repeated | Optional. Restrict LLM-typed reports to specific CCAI service providers. Empty = all. |
 
 
 
@@ -1869,6 +2199,48 @@ Report of the statistics about sessions
 | reports | [bytes](#bytes) |  | Statistic info. |
 | format | [ReportFormat](#ondewo.nlu.ReportFormat) |  | File formats for reports |
 | type | [SessionsReportType](#ondewo.nlu.SessionsReportType) |  | Type of reports about the domain of the agent |
+| llm_telemetry_report | [LlmTelemetryReport](#ondewo.nlu.LlmTelemetryReport) |  | Optional aggregate LLM telemetry summarizing the report (tokens, tool calls, thinking) across all sessions matched by the request. Populated only for LLM-typed report types (SESSION_LLM_*). |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetSessionsStatisticsTimeSeriesRequest"></a>
+
+### GetSessionsStatisticsTimeSeriesRequest
+Request for time-bucketed LLM telemetry statistics about sessions.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Required. The project to get statistics from. Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
+| type | [SessionsReportType](#ondewo.nlu.SessionsReportType) |  | Type of report. Only LLM-typed report types (SESSION_LLM_*) are supported. |
+| session_filter | [SessionFilter](#ondewo.nlu.SessionFilter) |  | Required. A filter narrowing the sessions; <code>earliest</code> / <code>latest</code> define the time range that is bucketed. |
+| bucket_width_seconds | [int32](#int32) |  | Optional. Width of one bucket in seconds. 0 = the server picks (time range divided by <code>max_buckets</code>). |
+| max_buckets | [int32](#int32) |  | Optional. Maximum number of buckets (default 50, server-side cap 200). |
+| llm_model_filter | [string](#string) | repeated | Optional. Restrict to specific models. Empty = all models. |
+| llm_provider_filter | [string](#string) | repeated | Optional. Restrict to specific providers. Empty = all providers. |
+| llm_agent_name_filter | [string](#string) | repeated | Optional. Restrict to specific intent-agent names. Empty = all. |
+| llm_tool_name_filter | [string](#string) | repeated | Optional. Restrict to specific tool names. Empty = all. |
+| llm_ccai_service_provider_filter | [CcaiServiceProvider](#ondewo.nlu.CcaiServiceProvider) | repeated | Optional. Restrict to specific CCAI service providers. Empty = all. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which data fields will be added to the returned data (e.g. paths=["llm_telemetry_time_series_buckets.llm_telemetry_report.llm_token_usage"]). |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetSessionsStatisticsTimeSeriesResponse"></a>
+
+### GetSessionsStatisticsTimeSeriesResponse
+Response with time-bucketed LLM telemetry statistics.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_telemetry_time_series_buckets | [LlmTelemetryTimeSeriesBucket](#ondewo.nlu.LlmTelemetryTimeSeriesBucket) | repeated | Buckets in ascending time order. Buckets without any matching telemetry carry an empty report (llm_call_count == 0). |
+| bucket_width_seconds | [int32](#int32) |  | Effective bucket width in seconds the server used. |
 
 
 
@@ -1919,7 +2291,7 @@ Request to get the list of agents
 | agent_view | [AgentView](#ondewo.nlu.AgentView) |  | Optional. Specify the view of the returned agent (full view by default) |
 | page_token | [string](#string) |  | Optional. The next_page_token value returned from a previous list request. |
 | sort_by_field | [AgentSorting](#ondewo.nlu.AgentSorting) |  | Optional. Defines the sorting of the list. Default, no sorting. |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -1959,7 +2331,7 @@ Index starts at 0.
 Examples of valid page token strings: <ul> <li>&quot;&quot;</li> <li>&quot;current_index-0--page_size-20&quot;</li> <li>&quot;current_index-1--page_size-20&quot;</li> <li>&quot;current_index-10--page_size-20&quot;</li> </ul>
 
 Examples of invalid page token strings: <ul> <li>&quot;1&quot;</li> <li>&quot;current_index-0--page_size-20&quot;</li> <li>&quot;current_index--1--page_size-20&quot;</li> <li>&quot;current_index1--page_size-20&quot;</li> <li>&quot;current_index-1--page_size--20&quot;</li> </ul> |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -1976,6 +2348,38 @@ List project permissions
 | ----- | ---- | ----- | ----------- |
 | permissions | [string](#string) | repeated | The list of project permissions. There will be a maximum number of items returned based on the page_token field in the request. |
 | next_page_token | [string](#string) |  | The next_page_token is used to retrieve the next page of a returned result, e.g. next_page_token is current_index-2 |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListProjectTechnicalUsersRequest"></a>
+
+### ListProjectTechnicalUsersRequest
+Request to list the project-scoped technical users of a project (agent).
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Required. The project (agent) whose technical users are listed. Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
+| page_token | [string](#string) |  | Optional. The next_page_token value returned from a previous list request. The page token to support pagination. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListProjectTechnicalUsersResponse"></a>
+
+### ListProjectTechnicalUsersResponse
+Response listing the project-scoped technical users of a project (agent).
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| technical_users | [ProjectTechnicalUser](#ondewo.nlu.ProjectTechnicalUser) | repeated | The technical users scoped to the project. |
+| next_page_token | [string](#string) |  | The next_page_token is used to retrieve the next page of a returned result. |
 
 
 
@@ -2000,7 +2404,7 @@ Index starts at 0.
 Examples of valid page token strings: <ul> <li>&quot;&quot;</li> <li>&quot;current_index-0--page_size-20&quot;</li> <li>&quot;current_index-1--page_size-20&quot;</li> <li>&quot;current_index-10--page_size-20&quot;</li> </ul>
 
 Examples of invalid page token strings: <ul> <li>&quot;1&quot;</li> <li>&quot;current_index-0--page_size-20&quot;</li> <li>&quot;current_index--1--page_size-20&quot;</li> <li>&quot;current_index1--page_size-20&quot;</li> <li>&quot;current_index-1--page_size--20&quot;</li> </ul> |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. <br> |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. <br> |
 
 
 
@@ -2017,6 +2421,23 @@ List the users in a project
 | ----- | ---- | ----- | ----------- |
 | users | [UserInProject](#ondewo.nlu.UserInProject) | repeated | The list of users in a project. There will be a maximum number of items returned based on the page_token field in the request. |
 | next_page_token | [string](#string) |  | The next_page_token is used to retrieve the next page of a returned result, e.g. next_page_token is current_index-2 |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmTelemetryTimeSeriesBucket"></a>
+
+### LlmTelemetryTimeSeriesBucket
+One time bucket of aggregated LLM telemetry.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| bucket_start | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Inclusive start of the bucket. |
+| bucket_end | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Exclusive end of the bucket. |
+| llm_telemetry_report | [LlmTelemetryReport](#ondewo.nlu.LlmTelemetryReport) |  | Aggregated LLM telemetry of all matched sessions inside the bucket. |
 
 
 
@@ -2108,6 +2529,24 @@ This message contains the mapping of platform
 
 
 
+<a name="ondewo.nlu.ProjectTechnicalUser"></a>
+
+### ProjectTechnicalUser
+A single project-scoped technical user entry.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| user_id | [string](#string) |  | The technical user's id (Keycloak sub / UUID). |
+| username | [string](#string) |  | The technical user's login username / email. |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | The time the technical user was created (Keycloak createdTimestamp). |
+| created_by | [string](#string) |  | The id of the user that created this technical user. |
+
+
+
+
+
+
 <a name="ondewo.nlu.RankingMatchOptimizationConfig"></a>
 
 ### RankingMatchOptimizationConfig
@@ -2170,6 +2609,40 @@ The request message for <a href="index.html#ondewo.nlu.Agents.RestoreAgent">Agen
 | parent | [string](#string) |  | Required. The project that the agent to restore is associated with. Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> |
 | agent_uri | [string](#string) |  | The URI to a Google Cloud Storage file containing the agent to restore. Note: The URI must start with "gs://". |
 | agent_content | [bytes](#bytes) |  | The agent to restore. <br> Example for how to restore an agent via the command line: <pre><code>curl \ 'https://dialogflow.googleapis.com/v2/projects/<project_name>/agent:restore\ -X POST \ -H 'Authorization: Bearer '$(gcloud auth print-access-token) \ -H 'Accept: application/json' \ -H 'Content-Type: application/json' \ --compressed \ --data-binary "{ 'agentContent': '$(cat <agent zip file> | base64 -w 0)' }" \ </code></pre> |
+
+
+
+
+
+
+<a name="ondewo.nlu.RotateProjectTechnicalUserPasswordRequest"></a>
+
+### RotateProjectTechnicalUserPasswordRequest
+Request to rotate the password of a project-scoped technical user.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Required. The project (agent) that the technical user is scoped to. Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
+| user_id | [string](#string) |  | Required. The id of the technical user whose password is rotated. |
+
+
+
+
+
+
+<a name="ondewo.nlu.RotateProjectTechnicalUserPasswordResponse"></a>
+
+### RotateProjectTechnicalUserPasswordResponse
+Response with the rotated password.
+The password is returned ONCE and cannot be retrieved later.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| user_id | [string](#string) |  | The technical user's id (Keycloak sub / UUID). |
+| username | [string](#string) |  | The technical user's login username / email. |
+| password | [string](#string) |  | The new generated password. Shown ONCE; not retrievable afterwards. |
 
 
 
@@ -2382,6 +2855,27 @@ Type of reports about the domain of the agent
 | ENTITY_PER_LANGUAGE | 2 | statistics of the language specific part of the entity database |
 | ENTITY_COLLISION | 3 | report on collision of the entity synonyms |
 | INTENT_GENERAL | 4 | report of statistics of the general (relevant to all supported languages) part of intent database |
+| AGENT_LLM_TOKEN_USAGE | 5 | Aggregate LLM token usage (input / output / cache) over the agent domain. |
+| AGENT_LLM_MODELS_USED | 6 | Per-model usage rollup (calls, tokens, latency) over the agent domain. |
+| AGENT_LLM_PROVIDERS_USED | 7 | Per-provider usage rollup over the agent domain. |
+| AGENT_LLM_CCAI_SERVICES_USED | 8 | Per-CCAI-service usage rollup (keyed by CcaiServiceProvider) over the agent domain. |
+| AGENT_LLM_AGENTS_USED | 9 | Per-intent-agent usage rollup over the agent domain. |
+| AGENT_LLM_ERRORS | 10 | LLM error breakdown (counts and rate per error_class) over the agent domain. |
+| AGENT_LLM_CACHE_EFFICIENCY | 11 | Prompt-cache efficiency over the agent domain. |
+| AGENT_LLM_REASONING_EFFORT | 12 | Reasoning-effort distribution (keyed by ReasoningEffort) over the agent domain. |
+| AGENT_LLM_TOP_X_TOOLS | 13 | Top X most-invoked tools over the agent domain. |
+| AGENT_LLM_LEAST_X_TOOLS | 14 | Least X invoked tools over the agent domain. |
+| AGENT_LLM_LATENCY | 15 | LLM latency aggregates (p50 / p95 / p99, time-to-first-token) over the agent domain. |
+| AGENT_LLM_FINISH_REASONS | 16 | Finish-reason distribution over the agent domain. |
+| AGENT_LLM_TOTAL_STATISTICS | 17 | Single rolled-up LLM statistics summary (totals + all breakdowns) over the agent domain. |
+| AGENT_LLM_INPUT_TOKEN_USAGE | 18 | Aggregate LLM input / prompt token usage over the agent domain. |
+| AGENT_LLM_OUTPUT_TOKEN_USAGE | 19 | Aggregate LLM output / completion token usage over the agent domain. |
+| AGENT_LLM_THINKING_TOKEN_USAGE | 20 | Aggregate LLM thinking / reasoning token usage over the agent domain. |
+| AGENT_LLM_TOOL_CALL_TOKEN_USAGE | 21 | Aggregate LLM tool-call token usage over the agent domain. |
+| AGENT_LLM_TOP_X_MODELS | 22 | Top X most-used models (by calls / tokens) over the agent domain. |
+| AGENT_LLM_TOP_X_CCAI_SERVICE_PROVIDERS | 23 | Top X most-used CCAI service providers over the agent domain. |
+| AGENT_LLM_TOP_X_AGENT_NAMES | 24 | Top X most-used agent name of agentic AI team |
+| AGENT_LLM_SAFETY | 25 | Native-safety breakdown (flagged counts / rates per category, mean safety score) over the agent domain. |
 
 
 
@@ -2414,6 +2908,30 @@ Example: <pre><code>SELECT ... FROM session</code></pre> <pre><code>SELECT ... F
 | SESSION_LEAST_X_LABELS | 15 | report least x labels. Supports SessionFilter to filter |
 | SESSION_LEAST_X_TAGS | 16 | report least x tags. Supports SessionFilter to filter |
 | TOTAL_STATISTICS | 17 | report total numbers of e.g. sessions, session steps, etc. |
+| SESSION_LLM_TOKEN_USAGE | 18 | Aggregate LLM token usage (input / output / cache) across sessions in scope. Supports SessionFilter to filter and the request's <code>llm_*_filter</code> fields to restrict to specific models / providers / agents. |
+| SESSION_LLM_TOOL_CALLS | 19 | Tool-call breakdown across sessions in scope (counts, durations, error rate). |
+| SESSION_LLM_THINKING | 20 | Thinking-token / duration aggregates across sessions in scope (where the provider surfaces extended thinking). |
+| SESSION_LLM_FINISH_REASONS | 21 | Finish-reason distribution across sessions in scope (<code>stop</code>, <code>length</code>, <code>tool_calls</code>, <code>content_filter</code>, <code>error</code>, ...). |
+| SESSION_LLM_LATENCY | 22 | LLM call latency aggregates (p50 / p95 / p99, time-to-first-token). |
+| SESSION_LLM_RAG_METRICS | 23 | RAG-specific metrics (retrieval hit-rate, context precision, citation overlap) aggregated across sessions in scope. |
+| SESSION_LLM_MODELS_USED | 24 | Per-model usage rollup (calls, tokens, latency) across sessions in scope. |
+| SESSION_LLM_PROVIDERS_USED | 25 | Per-provider usage rollup across sessions in scope. |
+| SESSION_LLM_CCAI_SERVICES_USED | 26 | Per-CCAI-service usage rollup (keyed by CcaiServiceProvider) across sessions in scope. |
+| SESSION_LLM_AGENTS_USED | 27 | Per-intent-agent usage rollup across sessions in scope. |
+| SESSION_LLM_ERRORS | 28 | LLM error breakdown (counts and rate per error_class) across sessions in scope. |
+| SESSION_LLM_CACHE_EFFICIENCY | 29 | Prompt-cache efficiency (cache read / creation tokens, hit-rate, savings). |
+| SESSION_LLM_REASONING_EFFORT | 30 | Reasoning-effort distribution (keyed by ReasoningEffort) across sessions in scope. |
+| SESSION_LLM_TOP_X_TOOLS | 31 | Top X most-invoked tools (count, duration, error-rate) across sessions in scope. |
+| SESSION_LLM_LEAST_X_TOOLS | 32 | Least X invoked tools across sessions in scope. |
+| SESSION_LLM_TOTAL_STATISTICS | 33 | Single rolled-up LLM statistics summary (totals + all breakdowns) across sessions in scope. |
+| SESSION_LLM_INPUT_TOKEN_USAGE | 34 | Aggregate LLM input / prompt token usage across sessions in scope. |
+| SESSION_LLM_OUTPUT_TOKEN_USAGE | 35 | Aggregate LLM output / completion token usage across sessions in scope. |
+| SESSION_LLM_THINKING_TOKEN_USAGE | 36 | Aggregate LLM thinking / reasoning token usage across sessions in scope. |
+| SESSION_LLM_TOOL_CALL_TOKEN_USAGE | 37 | Aggregate LLM tool-call token usage across sessions in scope. |
+| SESSION_LLM_TOP_X_MODELS | 38 | Top X most-used models (by calls / tokens) across sessions in scope. |
+| SESSION_LLM_TOP_X_CCAI_SERVICE_PROVIDERS | 39 | Top X most-used CCAI service providers across sessions in scope. |
+| SESSION_LLM_TOP_X_AGENT_NAMES | 40 | Top X most-used agent name of agentic AI team |
+| SESSION_LLM_SAFETY | 41 | Native-safety breakdown (flagged counts / rates per category, mean safety score) across sessions in scope. |
 
 
  <!-- end enums -->
@@ -2442,46 +2960,46 @@ For more information about agents, see the <a href="https://dialogflow.com/docs/
 
 Examples:
 
-<pre> grpcurl -plaintext -H 'cai-token: aimp' -d '{ "agent": { "display_name": "My Pizza Bot", "default_language_code": "en", "supported_language_codes": ["en"], "time_zone": "Europe/Vienna", "nlu_platform": "ONDEWO" } }' localhost:50055 ondewo.nlu.Agents.CreateAgent </pre>
+<pre> grpcurl -plaintext -H 'Authorization: Bearer <jwt>' -d '{ "agent": { "display_name": "My Pizza Bot", "default_language_code": "en", "supported_language_codes": ["en"], "time_zone": "Europe/Vienna", "nlu_platform": "ONDEWO" } }' localhost:50055 ondewo.nlu.Agents.CreateAgent </pre>
 
 <samp>{ "parent": "projects/76aaf4f3-a1f6-4fda-b4b3-351c64e65bc4/agent", "display_name": "Pizza Bot", "default_language_code": "en", "supported_language_codes": [ "en" ], "time_zone": "Europe/Vienna", "nlu_platform": "ONDEWO", "owner_id": "5aac51b8-668f-49dd-913f-cc683e56af34" } </samp> |
 | UpdateAgent | [UpdateAgentRequest](#ondewo.nlu.UpdateAgentRequest) | [Agent](#ondewo.nlu.Agent) | Updates the specified agent.
 
 Examples:
 
-<pre> grpcurl -plaintext -H 'cai-token: aimp' -d '{ "agent": { "parent": "projects/76aaf4f3-a1f6-4fda-b4b3-351c64e65bc4/agent", "display_name": "Pizza Bot 2", "supported_language_codes": ["en", "de"] }, "update_mask": { "paths": [ "agent.display_name", "agent.supported_language_codes" ] } }' localhost:50055 ondewo.nlu.Agents.UpdateAgent </pre>
+<pre> grpcurl -plaintext -H 'Authorization: Bearer <jwt>' -d '{ "agent": { "parent": "projects/76aaf4f3-a1f6-4fda-b4b3-351c64e65bc4/agent", "display_name": "Pizza Bot 2", "supported_language_codes": ["en", "de"] }, "update_mask": { "paths": [ "agent.display_name", "agent.supported_language_codes" ] } }' localhost:50055 ondewo.nlu.Agents.UpdateAgent </pre>
 
 <samp>{ "parent": "projects/76aaf4f3-a1f6-4fda-b4b3-351c64e65bc4/agent", "display_name": "Pizza Bot 2", "default_language_code": "en", "supported_language_codes": [ "en", "de" ], "time_zone": "Europe/Vienna", "nlu_platform": "ONDEWO", "owner_id": "5aac51b8-668f-49dd-913f-cc683e56af34" } </samp> |
 | GetAgent | [GetAgentRequest](#ondewo.nlu.GetAgentRequest) | [Agent](#ondewo.nlu.Agent) | Retrieves the specified agent.
 
 Examples:
 
-<pre> grpcurl -plaintext -H 'cai-token: aimp' -d '{ "parent": "projects/76aaf4f3-a1f6-4fda-b4b3-351c64e65bc4/agent" }' localhost:50055 ondewo.nlu.Agents.GetAgent </pre> <samp>{ "parent": "projects/76aaf4f3-a1f6-4fda-b4b3-351c64e65bc4/agent", "display_name": "Pizza Bot 2", "default_language_code": "en", "supported_language_codes": [ "en", "de" ], "time_zone": "Europe/Vienna", "nlu_platform": "ONDEWO", "configs": {...}, "owner_id": "5aac51b8-668f-49dd-913f-cc683e56af34" } </samp> |
+<pre> grpcurl -plaintext -H 'Authorization: Bearer <jwt>' -d '{ "parent": "projects/76aaf4f3-a1f6-4fda-b4b3-351c64e65bc4/agent" }' localhost:50055 ondewo.nlu.Agents.GetAgent </pre> <samp>{ "parent": "projects/76aaf4f3-a1f6-4fda-b4b3-351c64e65bc4/agent", "display_name": "Pizza Bot 2", "default_language_code": "en", "supported_language_codes": [ "en", "de" ], "time_zone": "Europe/Vienna", "nlu_platform": "ONDEWO", "configs": {...}, "owner_id": "5aac51b8-668f-49dd-913f-cc683e56af34" } </samp> |
 | DeleteAgent | [DeleteAgentRequest](#ondewo.nlu.DeleteAgentRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Deletes the specified agent.
 
 Examples:
 
-<pre> grpcurl -plaintext -H 'cai-token: aimp' -d '{ "parent": "projects/76aaf4f3-a1f6-4fda-b4b3-351c64e65bc4/agent" }' localhost:50055 ondewo.nlu.Agents.DeleteAgent </pre> <samp>{}</samp> |
+<pre> grpcurl -plaintext -H 'Authorization: Bearer <jwt>' -d '{ "parent": "projects/76aaf4f3-a1f6-4fda-b4b3-351c64e65bc4/agent" }' localhost:50055 ondewo.nlu.Agents.DeleteAgent </pre> <samp>{}</samp> |
 | DeleteAllAgents | [.google.protobuf.Empty](#google.protobuf.Empty) | [.google.protobuf.Empty](#google.protobuf.Empty) | Deletes all agents in the server (for development purposes only).
 
 Examples:
 
-<pre> grpcurl -plaintext -H 'cai-token: aimp' localhost:50055 ondewo.nlu.Agents.DeleteAllAgents </pre> <samp>{}</samp> |
+<pre> grpcurl -plaintext -H 'Authorization: Bearer <jwt>' localhost:50055 ondewo.nlu.Agents.DeleteAllAgents </pre> <samp>{}</samp> |
 | ListAgents | [ListAgentsRequest](#ondewo.nlu.ListAgentsRequest) | [ListAgentsResponse](#ondewo.nlu.ListAgentsResponse) | Lists agents in the server associated to the current user
 
 Examples:
 
-<pre> grpcurl -plaintext -H 'cai-token: aimp' localhost:50055 ondewo.nlu.Agents.ListAgents </pre> <samp>{ "agents_with_owners": [ { "agent": { "parent": "projects/76aaf4f3-a1f6-4fda-b4b3-351c64e65bc4/agent", "display_name": "Pizza Bot 2", "owner_id": "5aac51b8-668f-49dd-913f-cc683e56af34" }, "owner": { "user_id": "5aac51b8-668f-49dd-913f-cc683e56af34", "display_name": "admin", "server_role_id": 3, "user_email": "admin@ondewo.com" } } ], "next_page_token": "current_index-1" } </samp> |
+<pre> grpcurl -plaintext -H 'Authorization: Bearer <jwt>' localhost:50055 ondewo.nlu.Agents.ListAgents </pre> <samp>{ "agents_with_owners": [ { "agent": { "parent": "projects/76aaf4f3-a1f6-4fda-b4b3-351c64e65bc4/agent", "display_name": "Pizza Bot 2", "owner_id": "5aac51b8-668f-49dd-913f-cc683e56af34" }, "owner": { "user_id": "5aac51b8-668f-49dd-913f-cc683e56af34", "display_name": "admin", "server_role_id": 3, "user_email": "admin@ondewo.com" } } ], "next_page_token": "current_index-1" } </samp> |
 | ListAgentsOfUser | [ListAgentsRequest](#ondewo.nlu.ListAgentsRequest) | [ListAgentsOfUserResponse](#ondewo.nlu.ListAgentsOfUserResponse) | Lists agents in the server associated to the given user
 
 Examples:
 
-<pre> grpcurl -plaintext -H 'cai-token: aimp' localhost:50055 ondewo.nlu.Agents.ListAgentsOfUser </pre> <samp>{ "agents_of_user_with_owners": [ { "agent_with_owner": { "agent": { "parent": "projects/76aaf4f3-a1f6-4fda-b4b3-351c64e65bc4/agent", "display_name": "Pizza Bot 2", "owner_id": "5aac51b8-668f-49dd-913f-cc683e56af34" }, "owner": { "user_id": "5aac51b8-668f-49dd-913f-cc683e56af34", "display_name": "admin", "server_role_id": 3, "user_email": "admin@ondewo.com" } }, "project_role": { "role_id": 4, "name": "ADMIN" } } ], "next_page_token": "current_index-1" } </samp> |
+<pre> grpcurl -plaintext -H 'Authorization: Bearer <jwt>' localhost:50055 ondewo.nlu.Agents.ListAgentsOfUser </pre> <samp>{ "agents_of_user_with_owners": [ { "agent_with_owner": { "agent": { "parent": "projects/76aaf4f3-a1f6-4fda-b4b3-351c64e65bc4/agent", "display_name": "Pizza Bot 2", "owner_id": "5aac51b8-668f-49dd-913f-cc683e56af34" }, "owner": { "user_id": "5aac51b8-668f-49dd-913f-cc683e56af34", "display_name": "admin", "server_role_id": 3, "user_email": "admin@ondewo.com" } }, "project_role": { "role_id": 4, "name": "ADMIN" } } ], "next_page_token": "current_index-1" } </samp> |
 | ListAllAgents | [ListAgentsRequest](#ondewo.nlu.ListAgentsRequest) | [ListAgentsResponse](#ondewo.nlu.ListAgentsResponse) | Lists all agents in the server
 
 Examples:
 
-<pre> grpcurl -plaintext -H 'cai-token: aimp' localhost:50055 ondewo.nlu.Agents.ListAllAgents </pre> <samp>{ "agents_with_owners": [ { "agent": { "parent": "projects/76aaf4f3-a1f6-4fda-b4b3-351c64e65bc4/agent", "display_name": "Pizza Bot 2", "owner_id": "5aac51b8-668f-49dd-913f-cc683e56af34" }, "owner": { "user_id": "5aac51b8-668f-49dd-913f-cc683e56af34", "display_name": "admin", "server_role_id": 3, "user_email": "admin@ondewo.com" } } ], "next_page_token": "current_index-1" } </samp> |
+<pre> grpcurl -plaintext -H 'Authorization: Bearer <jwt>' localhost:50055 ondewo.nlu.Agents.ListAllAgents </pre> <samp>{ "agents_with_owners": [ { "agent": { "parent": "projects/76aaf4f3-a1f6-4fda-b4b3-351c64e65bc4/agent", "display_name": "Pizza Bot 2", "owner_id": "5aac51b8-668f-49dd-913f-cc683e56af34" }, "owner": { "user_id": "5aac51b8-668f-49dd-913f-cc683e56af34", "display_name": "admin", "server_role_id": 3, "user_email": "admin@ondewo.com" } } ], "next_page_token": "current_index-1" } </samp> |
 | AddUserToProject | [AddUserToProjectRequest](#ondewo.nlu.AddUserToProjectRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Adds a user with specified id to the project (agent) |
 | RemoveUserFromProject | [RemoveUserFromProjectRequest](#ondewo.nlu.RemoveUserFromProjectRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Removes a user with specified id from the project (agent) |
 | ListUsersInProject | [ListUsersInProjectRequest](#ondewo.nlu.ListUsersInProjectRequest) | [ListUsersInProjectResponse](#ondewo.nlu.ListUsersInProjectResponse) | Lists users in the project (agent) |
@@ -2501,6 +3019,7 @@ Operation &lt;response: <a href="https://protobuf.dev/reference/protobuf/google.
 | RestoreAgent | [RestoreAgentRequest](#ondewo.nlu.RestoreAgentRequest) | [Operation](#ondewo.nlu.Operation) | Restores the specified agent from a ZIP file. <br> Replaces the current agent version with a new one. All the intents and entity types in the older version are deleted. <br> Operation &lt;response: <a href="https://protobuf.dev/reference/protobuf/google.protobuf/#empty">google.protobuf.Empty</a>, metadata: <a href="https://protobuf.dev/reference/protobuf/google.protobuf/#struct">google.protobuf.Struct</a>&gt; |
 | GetAgentStatistics | [GetAgentStatisticsRequest](#ondewo.nlu.GetAgentStatisticsRequest) | [GetAgentStatisticsResponse](#ondewo.nlu.GetAgentStatisticsResponse) | Gets statistics for the agent |
 | GetSessionsStatistics | [GetSessionsStatisticsRequest](#ondewo.nlu.GetSessionsStatisticsRequest) | [GetSessionsStatisticsResponse](#ondewo.nlu.GetSessionsStatisticsResponse) |  |
+| GetSessionsStatisticsTimeSeries | [GetSessionsStatisticsTimeSeriesRequest](#ondewo.nlu.GetSessionsStatisticsTimeSeriesRequest) | [GetSessionsStatisticsTimeSeriesResponse](#ondewo.nlu.GetSessionsStatisticsTimeSeriesResponse) | Gets LLM telemetry statistics for sessions bucketed over time (time series). Supports LLM-typed report types (SESSION_LLM_*) only. |
 | SetAgentStatus | [SetAgentStatusRequest](#ondewo.nlu.SetAgentStatusRequest) | [Agent](#ondewo.nlu.Agent) | Sets status for the agent |
 | SetResources | [SetResourcesRequest](#ondewo.nlu.SetResourcesRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Sets resources |
 | DeleteResources | [DeleteResourcesRequest](#ondewo.nlu.DeleteResourcesRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Deletes resources |
@@ -2519,6 +3038,10 @@ Operation &lt;response: <a href="https://protobuf.dev/reference/protobuf/google.
 | GetFullTextSearchIntentResponse | [FullTextSearchRequest](#ondewo.nlu.FullTextSearchRequest) | [FullTextSearchResponseIntentResponse](#ondewo.nlu.FullTextSearchResponseIntentResponse) | Full text search endpoint in responses of intents |
 | GetFullTextSearchIntentParameters | [FullTextSearchRequest](#ondewo.nlu.FullTextSearchRequest) | [FullTextSearchResponseIntentParameters](#ondewo.nlu.FullTextSearchResponseIntentParameters) | Full text search endpoint in parameters of intents |
 | ReindexAgent | [ReindexAgentRequest](#ondewo.nlu.ReindexAgentRequest) | [Operation](#ondewo.nlu.Operation) | Force reindexing Intent and Entity data of Agent |
+| CreateProjectTechnicalUser | [CreateProjectTechnicalUserRequest](#ondewo.nlu.CreateProjectTechnicalUserRequest) | [CreateProjectTechnicalUserResponse](#ondewo.nlu.CreateProjectTechnicalUserResponse) | Creates a project-scoped technical user (a normal, 2FA-exempt account holding PROJECT_EXECUTOR on this one project) for headless/machine access (e.g. ondewo-sip/csi/vtsi) via the ROPC login bridge. The generated password is returned ONCE in the response and is not retrievable afterwards. |
+| ListProjectTechnicalUsers | [ListProjectTechnicalUsersRequest](#ondewo.nlu.ListProjectTechnicalUsersRequest) | [ListProjectTechnicalUsersResponse](#ondewo.nlu.ListProjectTechnicalUsersResponse) | Lists the project-scoped technical users of the project (agent). |
+| DeleteProjectTechnicalUser | [DeleteProjectTechnicalUserRequest](#ondewo.nlu.DeleteProjectTechnicalUserRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Deletes a project-scoped technical user (removes the Keycloak user and the project membership/projection rows). |
+| RotateProjectTechnicalUserPassword | [RotateProjectTechnicalUserPasswordRequest](#ondewo.nlu.RotateProjectTechnicalUserPasswordRequest) | [RotateProjectTechnicalUserPasswordResponse](#ondewo.nlu.RotateProjectTechnicalUserPasswordResponse) | Rotates the password of a project-scoped technical user. Invalidates the old password and returns the new generated password ONCE in the response. |
 
  <!-- end services -->
 
@@ -2595,7 +3118,7 @@ The request for intent classification.
 | context_names | [string](#string) | repeated | Optional: names of the input contexts to restrict the classification result with. Intents can only be classified if the intent's input context set is the subset of the given context set. |
 | mode | [Mode](#ondewo.nlu.Mode) |  | Optional: Which mode to use: <ul> <li>EXCLUSIVE - skip algorithms listed in <code>algorithms</code> field,</li> <li>INCLUSIVE - run ONLY algorithms listed in <code>algorithms</code> field,</li> <li>UNSPECIFIED - default mode, described in agent config</li> </ul> |
 | algorithms | [IntentAlgorithms](#ondewo.nlu.IntentAlgorithms) | repeated | Optional: Algorithm list |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -2709,7 +3232,7 @@ This message is a request to extract entities with Fuzzy Entity Recognizer
 | potential_entities | [EntityTypeFuzzyNerConfig](#ondewo.nlu.EntityTypeFuzzyNerConfig) | repeated | Potential entities to be extracted from the text with entity-specific configs |
 | minimal_score | [float](#float) |  | Minimal similarity score to consider entity as "matched" |
 | allow_overlaps | [bool](#bool) |  | Optional. Whether or not entities are allowed to overlap. |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -2728,7 +3251,7 @@ The request to detect parameters.
 | text | [string](#string) |  | the input text |
 | language_code | [string](#string) |  | the input language |
 | intent_name | [string](#string) |  | Optional. The name of the relevant intent. Used to establish preference hierarchy for entities that correspond to intent parameters Format: <pre><code>projects/&lt;project_uuid&gt;/agent/intents/&lt;intent_uuid&gt;</code></pre> |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -2781,7 +3304,7 @@ Request to generate responses
 | n_repeat_synonym | [int32](#int32) |  | The number of synonyms desired |
 | branch | [string](#string) |  | Git branch |
 | drop_unknown_parameters | [bool](#bool) |  | Optional. Whether to drop unknown parameters from the generated responses |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -2815,7 +3338,7 @@ Request to generate user sentences
 | parent | [string](#string) |  | the parent of the request Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> |
 | n_repeat_synonym | [int32](#int32) |  | The number of synonyms desired |
 | branch | [string](#string) |  | Git branch |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -2851,7 +3374,7 @@ Request to get alternative sentences
 | parent | [string](#string) |  | the parent of the request Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> |
 | protected_words | [string](#string) | repeated | Protected words in the augmentation process |
 | words_to_change | [string](#string) | repeated | Words to be changed in the augmentation process |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -2891,7 +3414,7 @@ Request to get alternative training phrases
 | protected_words | [string](#string) | repeated | Protected words in the augmentation process |
 | words_to_change | [string](#string) | repeated | Words to be changed in the augmentation process |
 | branch | [string](#string) |  | Git branch |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -2925,7 +3448,7 @@ Request to get synonyms
 | word | [string](#string) |  | Word from which a synonym is got |
 | language_code | [string](#string) |  | language code specifies the language of the request in IETF BCP 47 language tag format, e.g. de-DE, en-US, etc. |
 | parent | [string](#string) |  | the parent of the request Format: <pre><code>projects/&lt;project_uuid&gt;</code></pre> |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -2991,7 +3514,7 @@ The request message to list available LLM models for a specified CCAI service.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | ccai_service_name | [string](#string) |  | The CCAI service for which to list models. Format: <pre><code>projects/&lt;project_uuid&gt;/ccai/services/&lt;service_uuid&gt;</code></pre> |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -3042,7 +3565,7 @@ The request message to generate a response from a Large Language Model (LLM).
 | llm_generation_request | [google.protobuf.Struct](#google.protobuf.Struct) |  | The request payload for the LLM, structured according to the specific requirements of the large language model provider. <br> The payload must fit the format expected by the specified LLM provider, as defined by <pre><code>CcaiServiceProvider</code></pre> |
 | ccai_service_name | [string](#string) |  | The CCAI service to be used for processing the request. This specifies which large language model provider and model settings will handle the request. Format: <pre><code>projects/&lt;project_uuid&gt;/ccai/services/&lt;service_uuid&gt;</code></pre> |
 | file_resources | [FileResource](#ondewo.nlu.FileResource) | repeated | Files as input for the generation request |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -3314,8 +3837,8 @@ This protobuf message defines the sorting order for CCAI service (VOIP Telephone
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| sorting_field | [CcaiProjectSorting.CcaiProjectSortingField](#ondewo.nlu.CcaiProjectSorting.CcaiProjectSortingField) | optional | sorting field for ccai projects sorting |
-| sorting_mode | [SortingMode](#ondewo.nlu.SortingMode) | optional | Sorting mode |
+| sorting_field | [CcaiProjectSorting.CcaiProjectSortingField](#ondewo.nlu.CcaiProjectSorting.CcaiProjectSortingField) |  | sorting field for ccai projects sorting |
+| sorting_mode | [SortingMode](#ondewo.nlu.SortingMode) |  | Sorting mode |
 
 
 
@@ -3352,9 +3875,9 @@ Definition of a Call Center AI (CCAI service) Service.
 | modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time of the service. Read-only field. |
 | created_by | [string](#string) |  | User ID of the creator in the form of a valid UUID. Read-only field. |
 | modified_by | [string](#string) |  | User ID of the last modifier in the form of a valid UUID. Read-only field. |
-| headers | [google.protobuf.Struct](#google.protobuf.Struct) | optional | Optional. The headers of the request message |
-| ccai_service_provider | [CcaiServiceProvider](#ondewo.nlu.CcaiServiceProvider) | optional | Provider of the ccai service |
-| service_hierarchy | [string](#string) | optional | Index indicating the hierarchical position of a service within the service hierarchy. The index follows a tree-like structure, where each level of depth is separated by a &quot;_&quot;. For example: <ul> <li>&quot;1&quot; represents a top-level service</li> <li>&quot;1_1&quot; represents a sub-service under &quot;1&quot;</li> <li>&quot;1_1_1&quot; represents a sub-service under &quot;1.1&quot;</li> </ul> This structure allows for easy representation and organization of services in nested workflows.
+| headers | [google.protobuf.Struct](#google.protobuf.Struct) |  | Optional. The headers of the request message |
+| ccai_service_provider | [CcaiServiceProvider](#ondewo.nlu.CcaiServiceProvider) |  | Provider of the ccai service |
+| service_hierarchy | [string](#string) |  | Index indicating the hierarchical position of a service within the service hierarchy. The index follows a tree-like structure, where each level of depth is separated by a &quot;_&quot;. For example: <ul> <li>&quot;1&quot; represents a top-level service</li> <li>&quot;1_1&quot; represents a sub-service under &quot;1&quot;</li> <li>&quot;1_1_1&quot; represents a sub-service under &quot;1.1&quot;</li> </ul> This structure allows for easy representation and organization of services in nested workflows.
 
 If CcaiService have the same service_hierarchy they are executed in parallel. For example: <ul> <li>&quot;1&quot; Service A</li> <li>&quot;1_1&quot; Service B</li> <li>&quot;1_1&quot; Service C</li> </ul>
 
@@ -3473,10 +3996,10 @@ Request to retrieve a CCAI service project
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | CCAI service project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
-| ccai_project_view | [CcaiProjectView](#ondewo.nlu.CcaiProjectView) | optional | Optional. Specify the view of the returned CcaiProject (full view by default) |
-| ccai_service_filter | [CcaiServiceFilter](#ondewo.nlu.CcaiServiceFilter) | optional | Filter which services should be included in the returned CcaiProject |
+| ccai_project_view | [CcaiProjectView](#ondewo.nlu.CcaiProjectView) |  | Optional. Specify the view of the returned CcaiProject (full view by default) |
+| ccai_service_filter | [CcaiServiceFilter](#ondewo.nlu.CcaiServiceFilter) |  | Filter which services should be included in the returned CcaiProject |
 | nlu_project_name | [string](#string) |  | Required. The nlu agent project of this CcaiProject. Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -3493,7 +4016,7 @@ Request to retrieve a CCAI service project
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | CCAI service project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/ccai/services/&lt;service_uuid&gt;</code></pre> |
 | nlu_project_name | [string](#string) |  | Required. The nlu agent project of this CcaiProject. Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -3509,9 +4032,9 @@ Request to get the list of agents
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | ccai_project_view | [CcaiProjectView](#ondewo.nlu.CcaiProjectView) |  | Optional. Specify the view of the returned CcaiProject (full view by default) |
-| ccai_service_filter | [CcaiServiceFilter](#ondewo.nlu.CcaiServiceFilter) | optional | Filter which services should be included in the CcaiProject |
-| ccai_project_sorting | [CcaiProjectSorting](#ondewo.nlu.CcaiProjectSorting) | optional | Optional. Field to define the sorting of the list of CCAI service projects in the response. If not specified, the default behavior is to have no sorting. |
-| page_token | [string](#string) | optional | Optional. The next_page_token value returned from a previous list request. Example: &quot;current_index-1--page_size-20&quot; The page token to support pagination. Pagination allows you to retrieve a large result set in smaller, more manageable portions. The page token is a string representing the current index and page size.
+| ccai_service_filter | [CcaiServiceFilter](#ondewo.nlu.CcaiServiceFilter) |  | Filter which services should be included in the CcaiProject |
+| ccai_project_sorting | [CcaiProjectSorting](#ondewo.nlu.CcaiProjectSorting) |  | Optional. Field to define the sorting of the list of CCAI service projects in the response. If not specified, the default behavior is to have no sorting. |
+| page_token | [string](#string) |  | Optional. The next_page_token value returned from a previous list request. Example: &quot;current_index-1--page_size-20&quot; The page token to support pagination. Pagination allows you to retrieve a large result set in smaller, more manageable portions. The page token is a string representing the current index and page size.
 
 Valid page token strings: <ul> <li>&quot;&quot; (empty string) - Retrieves the first page.</li> <li>&quot;current_index-0--page_size-20&quot; - Retrieves the first page with a page size of 20.</li> <li>&quot;current_index-1--page_size-20&quot; - Retrieves the second page with a page size of 20.</li> </ul>
 
@@ -3521,7 +4044,7 @@ Examples of valid page token strings: <ul> <li>&quot;&quot;</li> <li>&quot;curre
 
 Examples of invalid page token strings: <ul> <li>&quot;1&quot;</li> <li>&quot;current_index-0--page_size-20&quot;</li> <li>&quot;current_index--1--page_size-20&quot;</li> <li>&quot;current_index1--page_size-20&quot;</li> <li>&quot;current_index-1--page_size--20&quot;</li> </ul> |
 | nlu_project_name | [string](#string) |  | Required. The nlu agent project of this CcaiProject. Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -3553,8 +4076,8 @@ Request to updated CCAI service project
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | ccai_project | [CcaiProject](#ondewo.nlu.CcaiProject) |  | The CcaiProject that should be updated |
-| ccai_service_filter | [CcaiServiceFilter](#ondewo.nlu.CcaiServiceFilter) | optional | Filter which services should be updated in the CcaiProject |
-| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields get updated. |
+| ccai_service_filter | [CcaiServiceFilter](#ondewo.nlu.CcaiServiceFilter) |  | Filter which services should be updated in the CcaiProject |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields get updated. |
 | nlu_project_name | [string](#string) |  | Required. The nlu agent project of this CcaiProject. Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
 
 
@@ -3668,6 +4191,7 @@ CcaiProjectView defines what the CcaiProject message contains
 | CCAI_SERVICE_PROVIDER_OPENSEARCH | 31 | Opensearch as the CCAI service provider, enabling integration with Opensearch vector database and search services <a href="https://opensearch.org/">Opensearch</a> |
 | CCAI_SERVICE_PROVIDER_GROK | 32 | Grok as the CCAI service provider, commonly used for models such as Grok-1 <a href="https://grok.x.ai/">Grok</a> |
 | CCAI_SERVICE_PROVIDER_POSTGRES | 33 | PostgreSQL as the CCAI service provider, enabling integration with PostgreSQL databases <a href="https://www.postgresql.org/">PostgreSQL</a> |
+| CCAI_SERVICE_PROVIDER_MICROSOFT_AGENT_FRAMEWORK | 34 | Microsoft Agent Framework as the CCAI service provider <a href="https://github.com/microsoft/agent-framework">Microsoft Agent Framework</a> |
 
 
 
@@ -3748,6 +4272,7 @@ Message for adding notifications in a batch.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | notifications | [Notification](#ondewo.nlu.Notification) | repeated | List of notifications to be added. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Mask to control which fields of the returned notifications are filled with data. |
 
 
 
@@ -3786,6 +4311,38 @@ Comment message
 | modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
 | created_by | [string](#string) |  | User id in form of a valid UUID. |
 | modified_by | [string](#string) |  | User id in form of a valid UUID. |
+| is_resolved | [bool](#bool) | optional | Whether the comment has been resolved. Defaults to false. Declared `optional` so field presence is tracked: on UpdateSessionComments an unset value leaves the stored resolved status unchanged, so editing a comment's text never clobbers its resolved flag. |
+
+
+
+
+
+
+<a name="ondewo.nlu.DeleteNotificationsRequest"></a>
+
+### DeleteNotificationsRequest
+Message for deleting one or more notifications by their resource names.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| notification_names | [string](#string) | repeated | Resource names of the notifications to delete. |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetNotificationRequest"></a>
+
+### GetNotificationRequest
+Message for retrieving a single notification by its resource name.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the notification to retrieve. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Mask to control which fields of the notification are returned. |
 
 
 
@@ -3902,6 +4459,7 @@ Notification message
 | modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
 | created_by | [string](#string) |  | User id in form of a valid UUID. |
 | modified_by | [string](#string) |  | User id in form of a valid UUID. |
+| link | [string](#string) |  | Optional deep-link / route target the notification navigates to when clicked, e.g. a relative AIM route to the referenced intent or entity. Empty when the notification is not clickable. |
 
 
 
@@ -3925,6 +4483,7 @@ Message for filtering notifications based on various criteria.
 | latest | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Filter notifications with a time range ending at the specified latest time. |
 | user_names | [string](#string) | repeated | Resource names of users to filter notifications for. |
 | origin_names | [string](#string) | repeated | Resource names of the origin of the notification to filter notifications. |
+| notification_types | [NotificationType](#ondewo.nlu.NotificationType) | repeated | Types of the notifications to filter. |
 
 
 
@@ -3941,6 +4500,7 @@ Message for setting the flagged status of notifications.
 | ----- | ---- | ----- | ----------- |
 | notification_names | [string](#string) | repeated | Names of notifications to set the flagged status for. |
 | flagged | [bool](#bool) | repeated | Flagged status to set for the specified notifications. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Mask to control which fields of the returned notifications are filled with data. |
 
 
 
@@ -3957,6 +4517,7 @@ Message for setting the read status of notifications.
 | ----- | ---- | ----- | ----------- |
 | notification_names | [string](#string) | repeated | Names of notifications to set the read status for. |
 | flagged | [bool](#bool) | repeated | Read status to set for the specified notifications. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Mask to control which fields of the returned notifications are filled with data. |
 
 
 
@@ -3972,6 +4533,40 @@ statistic response
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | value | [uint32](#uint32) |  | Response wrapper for the &quot;Get&lt;Stat&gt;&quot; endpoints |
+
+
+
+
+
+
+<a name="ondewo.nlu.StreamNotificationsRequest"></a>
+
+### StreamNotificationsRequest
+Message for streaming notifications in real time via
+<a href="index.html#ondewo.nlu.Users.StreamNotifications">Users.StreamNotifications</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| notification_filter | [NotificationFilter](#ondewo.nlu.NotificationFilter) |  | Optional filter to narrow the stream down to specific notifications (same semantics as <a href="index.html#ondewo.nlu.NotificationFilter">NotificationFilter</a> used by ListNotifications). The caller is always additionally scoped to their own notifications server-side. |
+| include_existing | [bool](#bool) |  | When true, the currently-stored matching notifications are replayed first (oldest first) before the stream switches to pushing only newly-created notifications. When false (the default) only notifications created after the stream opened are pushed. |
+
+
+
+
+
+
+<a name="ondewo.nlu.UpdateNotificationRequest"></a>
+
+### UpdateNotificationRequest
+Message for updating a single notification.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| notification | [Notification](#ondewo.nlu.Notification) |  | The notification to update, identified by its resource name. |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Mask controlling which fields of the notification are updated. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Mask to control which fields of the returned notification are filled with data. |
 
 
 
@@ -4028,6 +4623,7 @@ Enumerates the possible origins for a notification.
 | NOTIFICATION_ORIGIN_ONDEWO_T2S | 7 | ondewo-t2s service |
 | NOTIFICATION_ORIGIN_ONDEWO_VTSI | 8 | ondewo-vtsi service |
 | NOTIFICATION_ORIGIN_ONDEWO_VTSI_RABBITMQ | 9 | ondewo-vtsi-rabbitmq service |
+| NOTIFICATION_ORIGIN_ONDEWO_SURVEY | 10 | ondewo-survey service |
 
 
 
@@ -4124,7 +4720,7 @@ Note: we are deviating from the dialogflow format <code>projects/&lt;project_uui
 <ul> <li>DetectIntent only returns <ul> <li>the short display name in the &quot;name&quot; field in query_result.output_contexts</li> <li>only expects the short display name in the &quot;name&quot; field in query_parameters.contexts</li> </ul> </li> <li>Also inside the persisted session object only the short display name is used. <ul> <li>SessionStep.contexts only contains the short display name</li> <li>SessionReviewStep.contexts only contains the short display name</li> </ul> </li> </ul> |
 | lifespan_count | [int32](#int32) |  | Optional. The number of conversational query requests after which the context expires. If set to <code>0</code> (the default) the context expires immediately. Contexts expire automatically after 10 minutes even if there are no matching queries. |
 | parameters | [Context.ParametersEntry](#ondewo.nlu.Context.ParametersEntry) | repeated | Optional. The collection of parameters associated with this context. Refer to <a href="https://dialogflow.com/docs/actions-and-parameters">this doc</a> for syntax. Keys are the display names of context parameters. |
-| lifespan_time | [float](#float) |  | Optional. The time span in seconds after which the context expires. By default it does not expire. |
+| lifespan_time | [float](#float) | optional | Optional. The time span in seconds after which the context expires. By default it does not expire. |
 | created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Creation date and time. Read-only field. |
 | modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
 | created_by | [string](#string) |  | User id in form of a valid UUID. |
@@ -4524,8 +5120,8 @@ This message contains the status of an entity deletion
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| successfully_deleted | [google.protobuf.Empty](#google.protobuf.Empty) |  |  |
-| error_message | [string](#string) |  |  |
+| successfully_deleted | [google.protobuf.Empty](#google.protobuf.Empty) |  | Set when the entity was successfully deleted |
+| error_message | [string](#string) |  | The error message when deleting the entity failed |
 
 
 
@@ -4651,8 +5247,8 @@ This message contains Entity type sorting
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| sorting_field | [EntityTypeSorting.EntityTypeSortingField](#ondewo.nlu.EntityTypeSorting.EntityTypeSortingField) |  |  |
-| sorting_mode | [SortingMode](#ondewo.nlu.SortingMode) |  |  |
+| sorting_field | [EntityTypeSorting.EntityTypeSortingField](#ondewo.nlu.EntityTypeSorting.EntityTypeSortingField) |  | The field to sort the entity types by |
+| sorting_mode | [SortingMode](#ondewo.nlu.SortingMode) |  | The sorting mode: ascending or descending |
 
 
 
@@ -4667,8 +5263,8 @@ This message contains entity value sorting
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| sorting_field | [EntityValueSorting.EntityValueSortingField](#ondewo.nlu.EntityValueSorting.EntityValueSortingField) |  |  |
-| sorting_mode | [SortingMode](#ondewo.nlu.SortingMode) |  |  |
+| sorting_field | [EntityValueSorting.EntityValueSortingField](#ondewo.nlu.EntityValueSorting.EntityValueSortingField) |  | The field to sort the entity values by |
+| sorting_mode | [SortingMode](#ondewo.nlu.SortingMode) |  | The sorting mode: ascending or descending |
 
 
 
@@ -5033,7 +5629,7 @@ Request to create a list of new response messages and adds it to an intent
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| response_message_requests | [BatchCreateResponseMessagesRequest.CreateResponseMessageRequest](#ondewo.nlu.BatchCreateResponseMessagesRequest.CreateResponseMessageRequest) | repeated |  |
+| response_message_requests | [BatchCreateResponseMessagesRequest.CreateResponseMessageRequest](#ondewo.nlu.BatchCreateResponseMessagesRequest.CreateResponseMessageRequest) | repeated | The list of response messages to create |
 
 
 
@@ -5064,7 +5660,7 @@ This message is a request of a creation of a batch of training phrases
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| training_phrase_requests | [BatchCreateTrainingPhrasesRequest.CreateTrainingPhraseRequest](#ondewo.nlu.BatchCreateTrainingPhrasesRequest.CreateTrainingPhraseRequest) | repeated |  |
+| training_phrase_requests | [BatchCreateTrainingPhrasesRequest.CreateTrainingPhraseRequest](#ondewo.nlu.BatchCreateTrainingPhrasesRequest.CreateTrainingPhraseRequest) | repeated | The list of training phrases to create |
 
 
 
@@ -5126,8 +5722,8 @@ This message contains response of deleted parameters
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| delete_statuses | [BatchDeleteParametersResponse.DeleteParameterStatus](#ondewo.nlu.BatchDeleteParametersResponse.DeleteParameterStatus) | repeated |  |
-| has_errors | [bool](#bool) |  |  |
+| delete_statuses | [BatchDeleteParametersResponse.DeleteParameterStatus](#ondewo.nlu.BatchDeleteParametersResponse.DeleteParameterStatus) | repeated | The deletion status for each requested parameter |
+| has_errors | [bool](#bool) |  | Indicates if some of the parameter deletions have errors |
 
 
 
@@ -5142,8 +5738,8 @@ Status of a parameter deletion operation
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| successfully_deleted | [google.protobuf.Empty](#google.protobuf.Empty) |  |  |
-| error_message | [string](#string) |  |  |
+| successfully_deleted | [google.protobuf.Empty](#google.protobuf.Empty) |  | Set when the parameter was successfully deleted |
+| error_message | [string](#string) |  | The error message when deleting this parameter failed |
 
 
 
@@ -5173,8 +5769,8 @@ Response containing list with deleted response messages
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| delete_statuses | [BatchDeleteResponseMessagesResponse.DeleteResponseMessageStatus](#ondewo.nlu.BatchDeleteResponseMessagesResponse.DeleteResponseMessageStatus) | repeated |  |
-| has_errors | [bool](#bool) |  |  |
+| delete_statuses | [BatchDeleteResponseMessagesResponse.DeleteResponseMessageStatus](#ondewo.nlu.BatchDeleteResponseMessagesResponse.DeleteResponseMessageStatus) | repeated | The deletion status for each requested response message |
+| has_errors | [bool](#bool) |  | Indicates if some of the response message deletions have errors |
 
 
 
@@ -5189,8 +5785,8 @@ Status of a response message deletion operation
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| successfully_deleted | [google.protobuf.Empty](#google.protobuf.Empty) |  |  |
-| error_message | [string](#string) |  |  |
+| successfully_deleted | [google.protobuf.Empty](#google.protobuf.Empty) |  | Set when the response message was successfully deleted |
+| error_message | [string](#string) |  | The error message when deleting this response message failed |
 
 
 
@@ -5220,8 +5816,8 @@ This message is a response of deleting a batch of training phrases
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| delete_statuses | [BatchDeleteTrainingPhrasesResponse.DeleteTrainingPhraseStatus](#ondewo.nlu.BatchDeleteTrainingPhrasesResponse.DeleteTrainingPhraseStatus) | repeated |  |
-| has_errors | [bool](#bool) |  |  |
+| delete_statuses | [BatchDeleteTrainingPhrasesResponse.DeleteTrainingPhraseStatus](#ondewo.nlu.BatchDeleteTrainingPhrasesResponse.DeleteTrainingPhraseStatus) | repeated | The deletion status for each requested training phrase |
+| has_errors | [bool](#bool) |  | Indicates if some of the training phrase deletions have errors |
 
 
 
@@ -5236,8 +5832,8 @@ Status of a training phrase deletion operation
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| successfully_deleted | [google.protobuf.Empty](#google.protobuf.Empty) |  |  |
-| error_message | [string](#string) |  |  |
+| successfully_deleted | [google.protobuf.Empty](#google.protobuf.Empty) |  | Set when the training phrase was successfully deleted |
+| error_message | [string](#string) |  | The error message when deleting this training phrase failed |
 
 
 
@@ -5297,7 +5893,7 @@ Response containing a batch of parameters in the specified intent
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| parameter_statuses | [BatchParametersStatusResponse.ParameterStatus](#ondewo.nlu.BatchParametersStatusResponse.ParameterStatus) | repeated |  |
+| parameter_statuses | [BatchParametersStatusResponse.ParameterStatus](#ondewo.nlu.BatchParametersStatusResponse.ParameterStatus) | repeated | The status for each parameter in the batch |
 | has_errors | [bool](#bool) |  | indicates if statuses of some of the parameters have errors |
 
 
@@ -5313,8 +5909,8 @@ Status of a parameter operation
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| parameter | [Intent.Parameter](#ondewo.nlu.Intent.Parameter) |  |  |
-| error_message | [string](#string) |  |  |
+| parameter | [Intent.Parameter](#ondewo.nlu.Intent.Parameter) |  | The successfully processed parameter |
+| error_message | [string](#string) |  | The error message when processing this parameter failed |
 
 
 
@@ -5329,7 +5925,7 @@ This message is a response of a batch responses of message status
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| response_message_statuses | [BatchResponseMessagesStatusResponse.ResponseMessageStatus](#ondewo.nlu.BatchResponseMessagesStatusResponse.ResponseMessageStatus) | repeated |  |
+| response_message_statuses | [BatchResponseMessagesStatusResponse.ResponseMessageStatus](#ondewo.nlu.BatchResponseMessagesStatusResponse.ResponseMessageStatus) | repeated | The status for each response message in the batch |
 | has_errors | [bool](#bool) |  | indicates if statuses of some of the response messages have errors |
 
 
@@ -5345,8 +5941,8 @@ Status of a response message operation
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| response_message | [Intent.Message](#ondewo.nlu.Intent.Message) |  |  |
-| error_message | [string](#string) |  |  |
+| response_message | [Intent.Message](#ondewo.nlu.Intent.Message) |  | The successfully processed response message |
+| error_message | [string](#string) |  | The error message when processing this response message failed |
 
 
 
@@ -6112,8 +6708,8 @@ This message contains sorting of an intent
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| sorting_field | [IntentSorting.IntentSortingField](#ondewo.nlu.IntentSorting.IntentSortingField) |  |  |
-| sorting_mode | [SortingMode](#ondewo.nlu.SortingMode) |  |  |
+| sorting_field | [IntentSorting.IntentSortingField](#ondewo.nlu.IntentSorting.IntentSortingField) |  | The field to sort the intents by |
+| sorting_mode | [SortingMode](#ondewo.nlu.SortingMode) |  | The sorting mode: ascending or descending |
 
 
 
@@ -6354,8 +6950,8 @@ This message containing the training phrases status
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| training_phrase | [Intent.TrainingPhrase](#ondewo.nlu.Intent.TrainingPhrase) |  |  |
-| error_message | [string](#string) |  |  |
+| training_phrase | [Intent.TrainingPhrase](#ondewo.nlu.Intent.TrainingPhrase) |  | The successfully processed training phrase |
+| error_message | [string](#string) |  | The error message when processing this training phrase failed |
 
 
 
@@ -6566,6 +7162,3085 @@ Operation &lt;response: <a href="index.html#ondewo.nlu.BatchUpdateIntentsRespons
 
 
 
+<a name="ondewo/nlu/llm_evaluation.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## ondewo/nlu/llm_evaluation.proto
+
+
+
+<a name="ondewo.nlu.AddLlmEvaluationExampleRequest"></a>
+
+### AddLlmEvaluationExampleRequest
+Request to append a single example to an existing dataset.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_dataset_name | [string](#string) |  | Resource name of the dataset to extend. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;</code>. |
+| llm_evaluation_example | [LlmEvaluationExample](#ondewo.nlu.LlmEvaluationExample) |  | Example payload to append. |
+| parent | [string](#string) |  | Project owning the dataset. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required, must match the dataset's). |
+
+
+
+
+
+
+<a name="ondewo.nlu.AddLlmEvaluationExamplesRequest"></a>
+
+### AddLlmEvaluationExamplesRequest
+Request to append multiple examples to an existing dataset.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_dataset_name | [string](#string) |  | Resource name of the dataset to extend. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;</code>. |
+| llm_evaluation_examples | [LlmEvaluationExample](#ondewo.nlu.LlmEvaluationExample) | repeated | Examples to append. |
+| parent | [string](#string) |  | Project owning the dataset. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required, must match the dataset's). |
+
+
+
+
+
+
+<a name="ondewo.nlu.AddLlmEvaluationExamplesResponse"></a>
+
+### AddLlmEvaluationExamplesResponse
+Response for AddExamples.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_examples | [LlmEvaluationExample](#ondewo.nlu.LlmEvaluationExample) | repeated | Example records created. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ApplyLlmEvaluationAbRolloutRequest"></a>
+
+### ApplyLlmEvaluationAbRolloutRequest
+Request to apply an A/B rollout: promotes the chosen variant's config to the
+project's classifier default, stops the experiment and writes the audit
+decision. Idempotent — re-applying the same already-applied experiment returns
+the existing decision rather than promoting twice.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the experiment to roll out. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationAbExperiments/&lt;experiment_uuid&gt;</code>. |
+| variant_id | [string](#string) |  | Required. Variant slug whose config to promote to the project classifier default. The operator's explicit choice; the server applies exactly this variant. |
+| optimize_metric | [LlmEvaluationAbOptimizeMetric](#ondewo.nlu.LlmEvaluationAbOptimizeMetric) |  | The metric the decision was made on, recorded on the audit decision. |
+| parent | [string](#string) |  | Project owning the experiment. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.CancelLlmEvaluationExperimentRequest"></a>
+
+### CancelLlmEvaluationExperimentRequest
+Request to cancel a running experiment.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the experiment to cancel. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;</code>. |
+| parent | [string](#string) |  | Project owning the experiment. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.CompareLlmEvaluationExperimentsRequest"></a>
+
+### CompareLlmEvaluationExperimentsRequest
+Request to compare two-or-more experiments.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_experiment_names | [string](#string) | repeated | Resource names of the experiments to compare (two-or-more). Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;</code>. |
+| llm_evaluation_baseline_experiment_name | [string](#string) |  | Optional. Resource name of the baseline experiment used for delta computation. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;</code>. |
+| parent | [string](#string) |  | Project owning the experiments. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required, all experiments must share the same). |
+
+
+
+
+
+
+<a name="ondewo.nlu.CreateLlmEvaluationAbExperimentRequest"></a>
+
+### CreateLlmEvaluationAbExperimentRequest
+Request to create a new A/B experiment.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_ab_experiment | [LlmEvaluationAbExperiment](#ondewo.nlu.LlmEvaluationAbExperiment) |  | A/B experiment payload (name / status / audit fields are server-populated). |
+| parent | [string](#string) |  | Project owning the experiment. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.CreateLlmEvaluationDatasetRequest"></a>
+
+### CreateLlmEvaluationDatasetRequest
+Request to create a new evaluation dataset.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Project owning the dataset. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| display_name | [string](#string) |  | Required. Human-readable display name (unique within the (project, language_code) tuple). |
+| description | [string](#string) |  | Free-form description. |
+| llm_evaluation_examples | [LlmEvaluationExample](#ondewo.nlu.LlmEvaluationExample) | repeated | Optional initial set of examples. |
+| tags | [string](#string) | repeated | Free-form tags for grouping / filtering. |
+| language_code | [string](#string) |  | BCP-47 language code the dataset is authored for. Required — the same dataset name may coexist across different languages. |
+
+
+
+
+
+
+<a name="ondewo.nlu.CreateLlmEvaluationExamplesFromSessionRequest"></a>
+
+### CreateLlmEvaluationExamplesFromSessionRequest
+Request to convert a recorded session into evaluation examples ("golden transcripts").
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Project owning the session and the dataset. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| session_name | [string](#string) |  | Resource name of the recorded session to convert. Format: <code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code>. |
+| llm_evaluation_dataset_name | [string](#string) |  | Resource name of the dataset receiving the created examples. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;</code>. |
+| session_step_names | [string](#string) | repeated | Optional. Session steps to convert (resource names). Empty = all steps, in session order. |
+| llm_evaluation_example_extraction_mode | [LlmEvaluationExampleExtractionMode](#ondewo.nlu.LlmEvaluationExampleExtractionMode) |  | How the selected steps are turned into examples. |
+| display_name | [string](#string) |  | Optional. Display-name prefix for the created example(s); the server appends a per-example suffix. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required, must match the dataset's). |
+| include_tool_calls | [bool](#bool) |  | When true, tool calls recorded in the session's telemetry are captured as expected tool calls on the created examples. |
+| include_retrieval_context | [bool](#bool) |  | When true, retrieved chunks recorded by retriever spans are captured as frozen retrieval context on the created examples. |
+
+
+
+
+
+
+<a name="ondewo.nlu.CreateLlmEvaluationExamplesFromSessionResponse"></a>
+
+### CreateLlmEvaluationExamplesFromSessionResponse
+Response for CreateExamplesFromSession.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_examples | [LlmEvaluationExample](#ondewo.nlu.LlmEvaluationExample) | repeated | Example records created. |
+
+
+
+
+
+
+<a name="ondewo.nlu.CreateLlmEvaluationOnlineConfigRequest"></a>
+
+### CreateLlmEvaluationOnlineConfigRequest
+Request to create a new online-evaluation config.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_online_config | [LlmEvaluationOnlineConfig](#ondewo.nlu.LlmEvaluationOnlineConfig) |  | Config payload (name / audit / last-evaluated fields are server-populated). |
+| parent | [string](#string) |  | Project owning the config. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.CreateLlmEvaluationReleaseGateRequest"></a>
+
+### CreateLlmEvaluationReleaseGateRequest
+Request to create a new release gate.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_release_gate | [LlmEvaluationReleaseGate](#ondewo.nlu.LlmEvaluationReleaseGate) |  | Release gate payload (name / revision / audit fields are server-populated). |
+| parent | [string](#string) |  | Project owning the gate. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.CreateLlmEvaluationReportRequest"></a>
+
+### CreateLlmEvaluationReportRequest
+Request to persist a generated report.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_report | [LlmEvaluationReport](#ondewo.nlu.LlmEvaluationReport) |  | Report payload (name / audit fields are server-populated). |
+| parent | [string](#string) |  | Project owning the report. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.CreateLlmEvaluationScheduleRequest"></a>
+
+### CreateLlmEvaluationScheduleRequest
+Request to create a new schedule.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_schedule | [LlmEvaluationSchedule](#ondewo.nlu.LlmEvaluationSchedule) |  | Schedule payload (name / audit / last-next-run fields are server-populated). |
+| parent | [string](#string) |  | Project owning the schedule. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.CreateLlmEvaluationScorecardRequest"></a>
+
+### CreateLlmEvaluationScorecardRequest
+Request to create a new scorecard.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_scorecard | [LlmEvaluationScorecard](#ondewo.nlu.LlmEvaluationScorecard) |  | Scorecard payload (name / audit fields are server-populated). |
+| parent | [string](#string) |  | Project owning the scorecard. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.DeleteLlmEvaluationAbExperimentRequest"></a>
+
+### DeleteLlmEvaluationAbExperimentRequest
+Request to delete an A/B experiment and all owned sticky-assignment rows.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the experiment to delete. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationAbExperiments/&lt;experiment_uuid&gt;</code>. |
+| parent | [string](#string) |  | Project owning the experiment. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.DeleteLlmEvaluationDatasetRequest"></a>
+
+### DeleteLlmEvaluationDatasetRequest
+Request to delete a dataset and all owned examples.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the dataset to delete. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;</code>. |
+| parent | [string](#string) |  | Project owning the dataset. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.DeleteLlmEvaluationExampleRequest"></a>
+
+### DeleteLlmEvaluationExampleRequest
+Request to delete an example.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the example to delete. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;/examples/&lt;example_uuid&gt;</code>. |
+| parent | [string](#string) |  | Project owning the example. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.DeleteLlmEvaluationExperimentRequest"></a>
+
+### DeleteLlmEvaluationExperimentRequest
+Request to delete an experiment.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the experiment to delete. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;</code>. |
+| parent | [string](#string) |  | Project owning the experiment. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.DeleteLlmEvaluationFeedbackRequest"></a>
+
+### DeleteLlmEvaluationFeedbackRequest
+Request to delete a single feedback record.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the feedback record to delete. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;/evaluatorRuns/&lt;evaluator_run_uuid&gt;/feedbacks/&lt;feedback_uuid&gt;</code>. |
+| parent | [string](#string) |  | Project owning the feedback. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.DeleteLlmEvaluationOnlineConfigRequest"></a>
+
+### DeleteLlmEvaluationOnlineConfigRequest
+Request to delete an online-evaluation config.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the config to delete. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationOnlineConfigs/&lt;config_uuid&gt;</code>. |
+| parent | [string](#string) |  | Project owning the config. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.DeleteLlmEvaluationReleaseGateRequest"></a>
+
+### DeleteLlmEvaluationReleaseGateRequest
+Request to delete a release gate and all owned gate runs.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the gate to delete. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationReleaseGates/&lt;gate_uuid&gt;</code>. |
+| parent | [string](#string) |  | Project owning the gate. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.DeleteLlmEvaluationReportRequest"></a>
+
+### DeleteLlmEvaluationReportRequest
+Request to delete a report.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the report to delete. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationReports/&lt;report_uuid&gt;</code>. |
+| parent | [string](#string) |  | Project owning the report. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.DeleteLlmEvaluationScheduleRequest"></a>
+
+### DeleteLlmEvaluationScheduleRequest
+Request to delete a schedule.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the schedule to delete. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationSchedules/&lt;schedule_uuid&gt;</code>. |
+| parent | [string](#string) |  | Project owning the schedule. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.DeleteLlmEvaluationScorecardRequest"></a>
+
+### DeleteLlmEvaluationScorecardRequest
+Request to delete a scorecard.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the scorecard to delete. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationScorecards/&lt;scorecard_uuid&gt;</code>. |
+| parent | [string](#string) |  | Project owning the scorecard. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetLlmEvaluationAbExperimentRequest"></a>
+
+### GetLlmEvaluationAbExperimentRequest
+Request to get a single A/B experiment.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the experiment to fetch. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationAbExperiments/&lt;experiment_uuid&gt;</code>. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. |
+| parent | [string](#string) |  | Project owning the experiment. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetLlmEvaluationAbExperimentResultsRequest"></a>
+
+### GetLlmEvaluationAbExperimentResultsRequest
+Request to compute per-variant telemetry rollups for an A/B experiment.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the experiment whose results to compute. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationAbExperiments/&lt;experiment_uuid&gt;</code>. |
+| parent | [string](#string) |  | Project owning the experiment. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetLlmEvaluationAbExperimentResultsResponse"></a>
+
+### GetLlmEvaluationAbExperimentResultsResponse
+Response for GetAbExperimentResults: one rollup per variant.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_ab_experiment_name | [string](#string) |  | Resource name of the experiment these results belong to. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationAbExperiments/&lt;experiment_uuid&gt;</code>. |
+| variant_results | [LlmEvaluationAbVariantResult](#ondewo.nlu.LlmEvaluationAbVariantResult) | repeated | Per-variant telemetry rollups (one entry per variant). |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetLlmEvaluationAbRolloutDecisionRequest"></a>
+
+### GetLlmEvaluationAbRolloutDecisionRequest
+Request to get a single A/B rollout decision (the applied audit record) for an
+experiment.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the rollout decision to fetch. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationAbRolloutDecisions/&lt;decision_uuid&gt;</code>. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. |
+| parent | [string](#string) |  | Project owning the decision. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetLlmEvaluationAbRolloutRecommendationRequest"></a>
+
+### GetLlmEvaluationAbRolloutRecommendationRequest
+Request to compute a rollout recommendation for an A/B experiment. Read-only /
+stateless — computes the winner-vs-control statistics on demand under the
+supplied guard-rails and returns a LlmEvaluationAbRolloutRecommendation
+without mutating anything.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the experiment to evaluate. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationAbExperiments/&lt;experiment_uuid&gt;</code>. |
+| optimize_metric | [LlmEvaluationAbOptimizeMetric](#ondewo.nlu.LlmEvaluationAbOptimizeMetric) |  | Required. The metric to optimize when picking the winner. |
+| confidence_level | [double](#double) |  | Optional. Confidence level for the significance test in <code>(0.0, 1.0)</code> (e.g. <code>0.95</code> for 95%). Unset / 0 defaults to <code>0.95</code>. |
+| min_sessions_per_variant | [int32](#int32) |  | Optional. Minimum number of sessions required per variant before a winner may be called; below it the recommendation reports <code>needs_more_data</code>. Unset / 0 applies the server default. |
+| min_effect_size | [double](#double) |  | Optional. Minimum absolute effect size required to call a winner; guards against statistically-significant-but-trivial differences. Unset / 0 applies the server default. |
+| parent | [string](#string) |  | Project owning the experiment. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetLlmEvaluationAnnotationQueueItemRequest"></a>
+
+### GetLlmEvaluationAnnotationQueueItemRequest
+Request to get a single annotation-queue item.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the item to fetch. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationAnnotationQueueItems/&lt;item_uuid&gt;</code>. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. |
+| parent | [string](#string) |  | Project owning the item. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetLlmEvaluationDatasetRequest"></a>
+
+### GetLlmEvaluationDatasetRequest
+Request to get a single evaluation dataset.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the dataset to fetch. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;</code>. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. Example: paths=["name", "llm_evaluation_examples"] |
+| parent | [string](#string) |  | Project owning the dataset. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetLlmEvaluationExampleRequest"></a>
+
+### GetLlmEvaluationExampleRequest
+Request to get a single example.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the example to fetch. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;/examples/&lt;example_uuid&gt;</code>. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. Example: paths=["name", "inputs", "expected_outputs"] |
+| parent | [string](#string) |  | Project owning the example. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetLlmEvaluationExperimentRequest"></a>
+
+### GetLlmEvaluationExperimentRequest
+Request to fetch a previously-run experiment.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the experiment to fetch. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;</code>. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. Example: paths=["display_name", "status", "llm_evaluation_evaluator_runs"] |
+| parent | [string](#string) |  | Project owning the experiment. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetLlmEvaluationOnlineConfigRequest"></a>
+
+### GetLlmEvaluationOnlineConfigRequest
+Request to get a single online-evaluation config.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the config to fetch. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationOnlineConfigs/&lt;config_uuid&gt;</code>. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. |
+| parent | [string](#string) |  | Project owning the config. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetLlmEvaluationOnlineResultRequest"></a>
+
+### GetLlmEvaluationOnlineResultRequest
+Request to get a single online-evaluation result.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the result to fetch. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationOnlineResults/&lt;result_uuid&gt;</code>. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. |
+| parent | [string](#string) |  | Project owning the result. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetLlmEvaluationProjectSettingsRequest"></a>
+
+### GetLlmEvaluationProjectSettingsRequest
+Request to get the evaluation settings singleton.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Project owning the settings. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetLlmEvaluationReleaseGateRequest"></a>
+
+### GetLlmEvaluationReleaseGateRequest
+Request to get a single release gate.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the gate to fetch. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationReleaseGates/&lt;gate_uuid&gt;</code>. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. |
+| parent | [string](#string) |  | Project owning the gate. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetLlmEvaluationReleaseGateRunRequest"></a>
+
+### GetLlmEvaluationReleaseGateRunRequest
+Request to get a single release gate run.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the gate run to fetch. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationReleaseGates/&lt;gate_uuid&gt;/runs/&lt;run_uuid&gt;</code>. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. |
+| parent | [string](#string) |  | Project owning the gate run. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetLlmEvaluationReportRequest"></a>
+
+### GetLlmEvaluationReportRequest
+Request to get a single report (incl. payload bytes).
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the report to fetch. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationReports/&lt;report_uuid&gt;</code>. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. |
+| parent | [string](#string) |  | Project owning the report. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetLlmEvaluationScheduleRequest"></a>
+
+### GetLlmEvaluationScheduleRequest
+Request to get a single schedule.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the schedule to fetch. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationSchedules/&lt;schedule_uuid&gt;</code>. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. |
+| parent | [string](#string) |  | Project owning the schedule. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetLlmEvaluationScorecardRequest"></a>
+
+### GetLlmEvaluationScorecardRequest
+Request to get a single scorecard.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the scorecard to fetch. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationScorecards/&lt;scorecard_uuid&gt;</code>. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. |
+| parent | [string](#string) |  | Project owning the scorecard. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationAbExperimentsRequest"></a>
+
+### ListLlmEvaluationAbExperimentsRequest
+Request to list A/B experiments within a project.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Project owning the experiments. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| page_token | [string](#string) |  | Optional. Page token for pagination. Retrieves a large result set in smaller, more manageable portions. The token encodes the current index and the page size.
+
+Valid page token strings: <ul> <li><code>&quot;&quot;</code> (empty string) - Retrieves the first page.</li> <li><code>&quot;current_index-0--page_size-20&quot;</code> - First page, page size 20.</li> <li><code>&quot;current_index-1--page_size-20&quot;</code> - Second page, page size 20.</li> </ul> Index starts at 0. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+| llm_evaluation_ab_experiment_filter | [LlmEvaluationAbExperimentFilter](#ondewo.nlu.LlmEvaluationAbExperimentFilter) |  | Optional. Filter conditions to narrow the returned experiments. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationAbExperimentsResponse"></a>
+
+### ListLlmEvaluationAbExperimentsResponse
+Response for ListAbExperiments.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_ab_experiments | [LlmEvaluationAbExperiment](#ondewo.nlu.LlmEvaluationAbExperiment) | repeated | A/B experiments matching the request. |
+| next_page_token | [string](#string) |  | Pagination token for the next page (empty if this is the last page). |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationAbRolloutDecisionsRequest"></a>
+
+### ListLlmEvaluationAbRolloutDecisionsRequest
+Request to list A/B rollout decisions within a project, optionally narrowed by
+filter (typically by experiment).
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Project owning the decisions. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| page_token | [string](#string) |  | Optional. Page token for pagination. Retrieves a large result set in smaller, more manageable portions. The token encodes the current index and the page size.
+
+Valid page token strings: <ul> <li><code>&quot;&quot;</code> (empty string) - Retrieves the first page.</li> <li><code>&quot;current_index-0--page_size-20&quot;</code> - First page, page size 20.</li> <li><code>&quot;current_index-1--page_size-20&quot;</code> - Second page, page size 20.</li> </ul> Index starts at 0. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+| llm_evaluation_ab_rollout_decision_filter | [LlmEvaluationAbRolloutDecisionFilter](#ondewo.nlu.LlmEvaluationAbRolloutDecisionFilter) |  | Optional. Filter conditions to narrow the returned decisions. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationAbRolloutDecisionsResponse"></a>
+
+### ListLlmEvaluationAbRolloutDecisionsResponse
+Response for ListAbRolloutDecisions.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_ab_rollout_decisions | [LlmEvaluationAbRolloutDecision](#ondewo.nlu.LlmEvaluationAbRolloutDecision) | repeated | Rollout decisions matching the request. |
+| next_page_token | [string](#string) |  | Pagination token for the next page (empty if this is the last page). |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationAnnotationQueueItemsRequest"></a>
+
+### ListLlmEvaluationAnnotationQueueItemsRequest
+Request to list annotation-queue items within a project.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Project owning the items. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| page_token | [string](#string) |  | Optional. Page token for pagination. Retrieves a large result set in smaller, more manageable portions. The token encodes the current index and the page size.
+
+Valid page token strings: <ul> <li><code>&quot;&quot;</code> (empty string) - Retrieves the first page.</li> <li><code>&quot;current_index-0--page_size-20&quot;</code> - First page, page size 20.</li> <li><code>&quot;current_index-1--page_size-20&quot;</code> - Second page, page size 20.</li> </ul> Index starts at 0. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+| llm_evaluation_annotation_queue_item_filter | [LlmEvaluationAnnotationQueueItemFilter](#ondewo.nlu.LlmEvaluationAnnotationQueueItemFilter) |  | Optional. Filter conditions to narrow the returned items. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationAnnotationQueueItemsResponse"></a>
+
+### ListLlmEvaluationAnnotationQueueItemsResponse
+Response for ListAnnotationQueueItems.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_annotation_queue_items | [LlmEvaluationAnnotationQueueItem](#ondewo.nlu.LlmEvaluationAnnotationQueueItem) | repeated | Items matching the request. |
+| next_page_token | [string](#string) |  | Pagination token for the next page (empty if this is the last page). |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationDatasetsRequest"></a>
+
+### ListLlmEvaluationDatasetsRequest
+Request to list evaluation datasets within a project.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Project owning the datasets. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| page_token | [string](#string) |  | Optional. Page token for pagination. Retrieves a large result set in smaller, more manageable portions. The token encodes the current index and the page size.
+
+Valid page token strings: <ul> <li><code>&quot;&quot;</code> (empty string) - Retrieves the first page.</li> <li><code>&quot;current_index-0--page_size-20&quot;</code> - First page, page size 20.</li> <li><code>&quot;current_index-1--page_size-20&quot;</code> - Second page, page size 20.</li> </ul> Index starts at 0. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. Example: paths=["llm_evaluation_datasets.display_name", "llm_evaluation_datasets.tags"] |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+| llm_evaluation_dataset_filter | [LlmEvaluationDatasetFilter](#ondewo.nlu.LlmEvaluationDatasetFilter) |  | Optional. Filter conditions to narrow the returned datasets. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationDatasetsResponse"></a>
+
+### ListLlmEvaluationDatasetsResponse
+Response for ListDatasets.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_datasets | [LlmEvaluationDataset](#ondewo.nlu.LlmEvaluationDataset) | repeated | Datasets matching the request. |
+| next_page_token | [string](#string) |  | Pagination token for the next page (empty if this is the last page). |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationEvaluatorsRequest"></a>
+
+### ListLlmEvaluationEvaluatorsRequest
+Request to list available evaluators.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Project scope (registry may be filtered by project capabilities). Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationEvaluatorsResponse"></a>
+
+### ListLlmEvaluationEvaluatorsResponse
+Response for ListEvaluators.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_evaluator_specs | [LlmEvaluationEvaluatorSpec](#ondewo.nlu.LlmEvaluationEvaluatorSpec) | repeated | Available evaluators with metadata. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationExamplesRequest"></a>
+
+### ListLlmEvaluationExamplesRequest
+Request to list examples in a dataset.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_dataset_name | [string](#string) |  | Resource name of the dataset to enumerate examples from. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;</code>. |
+| page_token | [string](#string) |  | Optional. Page token for pagination. Retrieves a large result set in smaller, more manageable portions. The token encodes the current index and the page size.
+
+Valid page token strings: <ul> <li><code>&quot;&quot;</code> (empty string) - Retrieves the first page.</li> <li><code>&quot;current_index-0--page_size-20&quot;</code> - First page, page size 20.</li> <li><code>&quot;current_index-1--page_size-20&quot;</code> - Second page, page size 20.</li> </ul> Index starts at 0. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. Example: paths=["llm_evaluation_examples.display_name", "llm_evaluation_examples.inputs"] |
+| parent | [string](#string) |  | Project owning the dataset. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+| llm_evaluation_example_filter | [LlmEvaluationExampleFilter](#ondewo.nlu.LlmEvaluationExampleFilter) |  | Optional. Filter conditions to narrow the returned examples. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationExamplesResponse"></a>
+
+### ListLlmEvaluationExamplesResponse
+Response for ListExamples.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_examples | [LlmEvaluationExample](#ondewo.nlu.LlmEvaluationExample) | repeated | Examples in the dataset matching the request. |
+| next_page_token | [string](#string) |  | Pagination token for the next page (empty if this is the last page). |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationExperimentsRequest"></a>
+
+### ListLlmEvaluationExperimentsRequest
+Request to list experiments in a project, optionally narrowed by filter.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Project owning the experiments. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| page_token | [string](#string) |  | Optional. Page token for pagination. Retrieves a large result set in smaller, more manageable portions. The token encodes the current index and the page size.
+
+Valid page token strings: <ul> <li><code>&quot;&quot;</code> (empty string) - Retrieves the first page.</li> <li><code>&quot;current_index-0--page_size-20&quot;</code> - First page, page size 20.</li> <li><code>&quot;current_index-1--page_size-20&quot;</code> - Second page, page size 20.</li> </ul> Index starts at 0. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. Example: paths=["llm_evaluation_experiments.display_name", "llm_evaluation_experiments.status"] |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+| llm_evaluation_experiment_filter | [LlmEvaluationExperimentFilter](#ondewo.nlu.LlmEvaluationExperimentFilter) |  | Optional. Filter conditions to narrow the returned experiments. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationExperimentsResponse"></a>
+
+### ListLlmEvaluationExperimentsResponse
+Response for ListExperiments.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_experiments | [LlmEvaluationExperiment](#ondewo.nlu.LlmEvaluationExperiment) | repeated | Experiments matching the request. |
+| next_page_token | [string](#string) |  | Pagination token for the next page (empty if this is the last page). |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationFeedbackRequest"></a>
+
+### ListLlmEvaluationFeedbackRequest
+Request to list feedback records, optionally narrowed by filter.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| page_token | [string](#string) |  | Optional. Page token for pagination. Retrieves a large result set in smaller, more manageable portions. The token encodes the current index and the page size.
+
+Valid page token strings: <ul> <li><code>&quot;&quot;</code> (empty string) - Retrieves the first page.</li> <li><code>&quot;current_index-0--page_size-20&quot;</code> - First page, page size 20.</li> <li><code>&quot;current_index-1--page_size-20&quot;</code> - Second page, page size 20.</li> </ul> Index starts at 0. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. Example: paths=["llm_evaluation_feedbacks.score", "llm_evaluation_feedbacks.categorical_value"] |
+| parent | [string](#string) |  | Project owning the feedback records. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+| llm_evaluation_feedback_filter | [LlmEvaluationFeedbackFilter](#ondewo.nlu.LlmEvaluationFeedbackFilter) |  | Optional. Filter conditions to narrow the returned feedback records. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationFeedbackResponse"></a>
+
+### ListLlmEvaluationFeedbackResponse
+Response for ListFeedback.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_feedbacks | [LlmEvaluationFeedback](#ondewo.nlu.LlmEvaluationFeedback) | repeated | Feedback records matching the request. |
+| next_page_token | [string](#string) |  | Pagination token for the next page (empty if this is the last page). |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationOnlineConfigsRequest"></a>
+
+### ListLlmEvaluationOnlineConfigsRequest
+Request to list online-evaluation configs within a project.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Project owning the configs. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| page_token | [string](#string) |  | Optional. Page token for pagination. Retrieves a large result set in smaller, more manageable portions. The token encodes the current index and the page size.
+
+Valid page token strings: <ul> <li><code>&quot;&quot;</code> (empty string) - Retrieves the first page.</li> <li><code>&quot;current_index-0--page_size-20&quot;</code> - First page, page size 20.</li> <li><code>&quot;current_index-1--page_size-20&quot;</code> - Second page, page size 20.</li> </ul> Index starts at 0. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+| llm_evaluation_online_config_filter | [LlmEvaluationOnlineConfigFilter](#ondewo.nlu.LlmEvaluationOnlineConfigFilter) |  | Optional. Filter conditions to narrow the returned configs. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationOnlineConfigsResponse"></a>
+
+### ListLlmEvaluationOnlineConfigsResponse
+Response for ListOnlineConfigs.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_online_configs | [LlmEvaluationOnlineConfig](#ondewo.nlu.LlmEvaluationOnlineConfig) | repeated | Configs matching the request. |
+| next_page_token | [string](#string) |  | Pagination token for the next page (empty if this is the last page). |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationOnlineResultsRequest"></a>
+
+### ListLlmEvaluationOnlineResultsRequest
+Request to list online-evaluation results within a project.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Project owning the results. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| page_token | [string](#string) |  | Optional. Page token for pagination. Retrieves a large result set in smaller, more manageable portions. The token encodes the current index and the page size.
+
+Valid page token strings: <ul> <li><code>&quot;&quot;</code> (empty string) - Retrieves the first page.</li> <li><code>&quot;current_index-0--page_size-20&quot;</code> - First page, page size 20.</li> <li><code>&quot;current_index-1--page_size-20&quot;</code> - Second page, page size 20.</li> </ul> Index starts at 0. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+| llm_evaluation_online_result_filter | [LlmEvaluationOnlineResultFilter](#ondewo.nlu.LlmEvaluationOnlineResultFilter) |  | Optional. Filter conditions to narrow the returned results. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationOnlineResultsResponse"></a>
+
+### ListLlmEvaluationOnlineResultsResponse
+Response for ListOnlineResults.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_online_results | [LlmEvaluationOnlineResult](#ondewo.nlu.LlmEvaluationOnlineResult) | repeated | Results matching the request. |
+| next_page_token | [string](#string) |  | Pagination token for the next page (empty if this is the last page). |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationReleaseGateRunsRequest"></a>
+
+### ListLlmEvaluationReleaseGateRunsRequest
+Request to list release gate runs within a project.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Project owning the gate runs. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| page_token | [string](#string) |  | Optional. Page token for pagination. Retrieves a large result set in smaller, more manageable portions. The token encodes the current index and the page size.
+
+Valid page token strings: <ul> <li><code>&quot;&quot;</code> (empty string) - Retrieves the first page.</li> <li><code>&quot;current_index-0--page_size-20&quot;</code> - First page, page size 20.</li> <li><code>&quot;current_index-1--page_size-20&quot;</code> - Second page, page size 20.</li> </ul> Index starts at 0. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+| llm_evaluation_release_gate_run_filter | [LlmEvaluationReleaseGateRunFilter](#ondewo.nlu.LlmEvaluationReleaseGateRunFilter) |  | Optional. Filter conditions to narrow the returned gate runs. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationReleaseGateRunsResponse"></a>
+
+### ListLlmEvaluationReleaseGateRunsResponse
+Response for ListReleaseGateRuns.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_release_gate_runs | [LlmEvaluationReleaseGateRun](#ondewo.nlu.LlmEvaluationReleaseGateRun) | repeated | Gate runs matching the request, newest first. |
+| next_page_token | [string](#string) |  | Pagination token for the next page (empty if this is the last page). |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationReleaseGatesRequest"></a>
+
+### ListLlmEvaluationReleaseGatesRequest
+Request to list release gates within a project.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Project owning the gates. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| page_token | [string](#string) |  | Optional. Page token for pagination. Retrieves a large result set in smaller, more manageable portions. The token encodes the current index and the page size.
+
+Valid page token strings: <ul> <li><code>&quot;&quot;</code> (empty string) - Retrieves the first page.</li> <li><code>&quot;current_index-0--page_size-20&quot;</code> - First page, page size 20.</li> <li><code>&quot;current_index-1--page_size-20&quot;</code> - Second page, page size 20.</li> </ul> Index starts at 0. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+| llm_evaluation_release_gate_filter | [LlmEvaluationReleaseGateFilter](#ondewo.nlu.LlmEvaluationReleaseGateFilter) |  | Optional. Filter conditions to narrow the returned gates. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationReleaseGatesResponse"></a>
+
+### ListLlmEvaluationReleaseGatesResponse
+Response for ListReleaseGates.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_release_gates | [LlmEvaluationReleaseGate](#ondewo.nlu.LlmEvaluationReleaseGate) | repeated | Release gates matching the request. |
+| next_page_token | [string](#string) |  | Pagination token for the next page (empty if this is the last page). |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationReportsRequest"></a>
+
+### ListLlmEvaluationReportsRequest
+Request to list reports within a project.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Project owning the reports. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| page_token | [string](#string) |  | Optional. Page token for pagination. Retrieves a large result set in smaller, more manageable portions. The token encodes the current index and the page size.
+
+Valid page token strings: <ul> <li><code>&quot;&quot;</code> (empty string) - Retrieves the first page.</li> <li><code>&quot;current_index-0--page_size-20&quot;</code> - First page, page size 20.</li> <li><code>&quot;current_index-1--page_size-20&quot;</code> - Second page, page size 20.</li> </ul> Index starts at 0. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. Payload bytes are omitted unless paths include <code>llm_evaluation_reports.payload</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+| llm_evaluation_report_filter | [LlmEvaluationReportFilter](#ondewo.nlu.LlmEvaluationReportFilter) |  | Optional. Filter conditions to narrow the returned reports. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationReportsResponse"></a>
+
+### ListLlmEvaluationReportsResponse
+Response for ListReports.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_reports | [LlmEvaluationReport](#ondewo.nlu.LlmEvaluationReport) | repeated | Reports matching the request (payload omitted unless requested via field_mask). |
+| next_page_token | [string](#string) |  | Pagination token for the next page (empty if this is the last page). |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationSchedulesRequest"></a>
+
+### ListLlmEvaluationSchedulesRequest
+Request to list schedules within a project.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Project owning the schedules. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| page_token | [string](#string) |  | Optional. Page token for pagination. Retrieves a large result set in smaller, more manageable portions. The token encodes the current index and the page size.
+
+Valid page token strings: <ul> <li><code>&quot;&quot;</code> (empty string) - Retrieves the first page.</li> <li><code>&quot;current_index-0--page_size-20&quot;</code> - First page, page size 20.</li> <li><code>&quot;current_index-1--page_size-20&quot;</code> - Second page, page size 20.</li> </ul> Index starts at 0. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+| llm_evaluation_schedule_filter | [LlmEvaluationScheduleFilter](#ondewo.nlu.LlmEvaluationScheduleFilter) |  | Optional. Filter conditions to narrow the returned schedules. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationSchedulesResponse"></a>
+
+### ListLlmEvaluationSchedulesResponse
+Response for ListSchedules.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_schedules | [LlmEvaluationSchedule](#ondewo.nlu.LlmEvaluationSchedule) | repeated | Schedules matching the request. |
+| next_page_token | [string](#string) |  | Pagination token for the next page (empty if this is the last page). |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationScorecardsRequest"></a>
+
+### ListLlmEvaluationScorecardsRequest
+Request to list scorecards within a project.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Project owning the scorecards. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| page_token | [string](#string) |  | Optional. Page token for pagination. Retrieves a large result set in smaller, more manageable portions. The token encodes the current index and the page size.
+
+Valid page token strings: <ul> <li><code>&quot;&quot;</code> (empty string) - Retrieves the first page.</li> <li><code>&quot;current_index-0--page_size-20&quot;</code> - First page, page size 20.</li> <li><code>&quot;current_index-1--page_size-20&quot;</code> - Second page, page size 20.</li> </ul> Index starts at 0. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+| llm_evaluation_scorecard_filter | [LlmEvaluationScorecardFilter](#ondewo.nlu.LlmEvaluationScorecardFilter) |  | Optional. Filter conditions to narrow the returned scorecards. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLlmEvaluationScorecardsResponse"></a>
+
+### ListLlmEvaluationScorecardsResponse
+Response for ListScorecards.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_scorecards | [LlmEvaluationScorecard](#ondewo.nlu.LlmEvaluationScorecard) | repeated | Scorecards matching the request. |
+| next_page_token | [string](#string) |  | Pagination token for the next page (empty if this is the last page). |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationAbExperiment"></a>
+
+### LlmEvaluationAbExperiment
+An A/B experiment: a set of routing variants split over live DetectIntent
+traffic for a (project, language_code) scope.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The unique resource name of the A/B experiment. Read-only; populated by the server. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationAbExperiments/&lt;experiment_uuid&gt;</code>. |
+| display_name | [string](#string) |  | Required. Human-readable display name (unique within the (project, language_code) tuple). |
+| description | [string](#string) |  | Free-form description. |
+| status | [LlmEvaluationAbExperimentStatus](#ondewo.nlu.LlmEvaluationAbExperimentStatus) |  | Lifecycle status. Read-only; transitioned via Start / Stop RPCs. |
+| variants | [LlmEvaluationAbVariant](#ondewo.nlu.LlmEvaluationAbVariant) | repeated | The routing variants of this experiment. |
+| traffic_config | [LlmEvaluationAbTrafficConfig](#ondewo.nlu.LlmEvaluationAbTrafficConfig) |  | Traffic-splitting configuration (enrollment rate, assignment salt). |
+| started_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock time the experiment was started (set by Start). Read-only. |
+| stopped_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock time the experiment was stopped (set by Stop). Read-only. |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Creation date and time. Read-only field. |
+| created_by | [string](#string) |  | User id in form of a valid UUID. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
+| modified_by | [string](#string) |  | User id in form of a valid UUID. |
+| parent | [string](#string) |  | Project owning the experiment. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope. |
+| llm_evaluation_ab_rollout_decision_name | [string](#string) |  | Optional. Resource name of the rollout decision that was applied to this experiment (set once an operator explicitly applies a variant via <code>LlmEvaluationApplyAbRollout</code>; empty while no rollout has been applied). Lets a results view link straight to the applied audit record. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationAbRolloutDecisions/&lt;decision_uuid&gt;</code>. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationAbExperimentFilter"></a>
+
+### LlmEvaluationAbExperimentFilter
+Filter conditions for ListAbExperiments. All fields are optional; multiple
+fields set at the same time are combined via logical AND.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| display_name | [string](#string) |  | Optional. Match only experiments whose display name contains this substring (case-insensitive). |
+| status | [LlmEvaluationAbExperimentStatus](#ondewo.nlu.LlmEvaluationAbExperimentStatus) |  | Optional. Match only experiments with this status. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationAbRolloutDecision"></a>
+
+### LlmEvaluationAbRolloutDecision
+The persisted audit record of an A/B rollout that an operator explicitly
+applied: it captures which variant's config was promoted to the project's
+classifier default, on which metric, and the statistics at the moment of
+application. Written + returned by <code>LlmEvaluationApplyAbRollout</code>;
+read back via <code>LlmEvaluationGetAbRolloutDecision</code> /
+<code>LlmEvaluationListAbRolloutDecisions</code>. There is no auto-rollout —
+every decision row corresponds to an explicit operator action.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The unique resource name of the rollout decision. Read-only; populated by the server. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationAbRolloutDecisions/&lt;decision_uuid&gt;</code>. |
+| llm_evaluation_ab_experiment_name | [string](#string) |  | Resource name of the A/B experiment this decision was applied to. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationAbExperiments/&lt;experiment_uuid&gt;</code>. |
+| applied_variant_id | [string](#string) |  | Variant slug whose config was promoted to the project classifier default. |
+| optimize_metric | [LlmEvaluationAbOptimizeMetric](#ondewo.nlu.LlmEvaluationAbOptimizeMetric) |  | The metric the rollout was decided on (recorded for the audit trail). |
+| p_value | [double](#double) |  | Two-sided p-value of the applied-variant-vs-control test at application time. |
+| effect_size | [double](#double) |  | Observed effect size (applied variant vs. control) at application time. |
+| applied_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock time the rollout was applied. Read-only. |
+| applied_by | [string](#string) |  | User id (in form of a valid UUID) of the operator who applied the rollout. |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Creation date and time. Read-only field. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
+| created_by | [string](#string) |  | User id in form of a valid UUID. |
+| modified_by | [string](#string) |  | User id in form of a valid UUID. |
+| parent | [string](#string) |  | Project owning the decision. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationAbRolloutDecisionFilter"></a>
+
+### LlmEvaluationAbRolloutDecisionFilter
+Filter conditions for ListAbRolloutDecisions. All fields are optional;
+multiple fields set at the same time are combined via logical AND.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_ab_experiment_name | [string](#string) |  | Optional. Match only decisions applied to this A/B experiment (resource name). Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationAbExperiments/&lt;experiment_uuid&gt;</code>. |
+| applied_by | [string](#string) |  | Optional. Match only decisions applied by this user id (UUID). |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationAbRolloutRecommendation"></a>
+
+### LlmEvaluationAbRolloutRecommendation
+A computed, read-only rollout recommendation for an A/B experiment: which
+variant currently wins against the control on the chosen optimize metric,
+under the requested statistical guard-rails. Stateless — recomputed on demand
+by <code>LlmEvaluationGetAbRolloutRecommendation</code> from the per-variant
+results rollup; nothing is persisted and no traffic / config changes. The
+operator decides whether to apply it via <code>LlmEvaluationApplyAbRollout</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| optimize_metric | [LlmEvaluationAbOptimizeMetric](#ondewo.nlu.LlmEvaluationAbOptimizeMetric) |  | The metric the recommendation was computed against (echoed from the request). |
+| winner_variant_id | [string](#string) |  | Variant slug that currently wins against the control on this metric, once the guard-rails (significance, effect size, minimum sessions) are met. Empty while <code>needs_more_data</code> is true or no variant beats the control. |
+| control_variant_id | [string](#string) |  | Variant slug of the control (baseline) arm the winner was compared against. |
+| p_value | [double](#double) |  | Two-sided p-value of the winner-vs-control test on the optimize metric. |
+| effect_size | [double](#double) |  | Observed effect size between winner and control (absolute risk difference for rate metrics, standardized / raw mean difference for continuous metrics). |
+| is_significant | [bool](#bool) |  | Whether the result is statistically significant at the requested confidence level AND clears the requested minimum effect size. |
+| sessions_per_variant | [LlmEvaluationAbRolloutRecommendation.SessionsPerVariantEntry](#ondewo.nlu.LlmEvaluationAbRolloutRecommendation.SessionsPerVariantEntry) | repeated | Number of sessions observed per variant in scope, keyed by variant slug. Used to surface the guard-rail check against the requested minimum. |
+| needs_more_data | [bool](#bool) |  | True when at least one arm has not yet reached the requested minimum number of sessions, so no winner can be called yet (collect more traffic). |
+| reason | [string](#string) |  | Human-readable rationale for the recommendation (e.g. the winner and its margin, or "needs N more sessions on variant X", or "no variant beats control"). |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationAbRolloutRecommendation.SessionsPerVariantEntry"></a>
+
+### LlmEvaluationAbRolloutRecommendation.SessionsPerVariantEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [int64](#int64) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationAbTrafficConfig"></a>
+
+### LlmEvaluationAbTrafficConfig
+Traffic-splitting configuration for an A/B experiment.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| enrollment_rate | [double](#double) |  | Fraction of eligible sessions (0.0-1.0) actually enrolled into the experiment; the remainder use the project default path. <code>1.0</code> enrolls every eligible session. |
+| assignment_salt | [string](#string) |  | Optional. Salt mixed into the deterministic session-bucketing hash so that re-running the same experiment id re-randomizes the assignment. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationAbVariant"></a>
+
+### LlmEvaluationAbVariant
+One routing variant of an A/B experiment. The variant overrides the model used
+for the sessions assigned to it. A variant is one of two shapes depending on
+the project's classifier:
+<ul>
+  <li><b>IntentAgent projects</b> — the variant overrides the LLM connection
+      via <code>ccai_service_names</code> (+ optional <code>model_name</code> /
+      <code>prompt_version</code>).</li>
+  <li><b>RAG projects</b> (<code>IntentRagflowClassifier</code>) — the variant
+      overrides the chat-assistant LLM CcaiService and retrieval parameters via
+      <code>rag_variant_config</code>.</li>
+</ul>
+The two override shapes are mutually exclusive per variant; the server applies
+whichever matches the project's classifier type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| variant_id | [string](#string) |  | Required. Stable slug identifying the variant within its experiment (e.g. "control", "qwen3-fp8"). Lower-case, used as the assignment key. |
+| display_name | [string](#string) |  | Required. Human-readable display name. |
+| ccai_service_names | [string](#string) | repeated | CcaiService name(s) defining this variant's LLM connection (IntentAgent projects). Mutually exclusive with <code>rag_variant_config</code>. Format: <code>projects/&lt;project_uuid&gt;/agent/ccaiServices/&lt;ccai_service_uuid&gt;</code>. |
+| traffic_weight | [double](#double) |  | Traffic weight for this variant. Expressed as a percentage in the <code>[0.0, 100.0]</code> range; the variant weights of a started experiment must sum to <code>100.0</code>. |
+| is_control | [bool](#bool) |  | Whether this variant is the control (baseline) arm. |
+| model_name | [string](#string) |  | Optional. Concrete model identifier override (e.g. "Qwen/Qwen3-27b-fp8"). |
+| prompt_version | [string](#string) |  | Optional. Logical prompt version recorded for this variant. |
+| config | [google.protobuf.Struct](#google.protobuf.Struct) |  | Optional. Free-form target descriptor (the serialized CcaiServiceList / routing override applied for sessions assigned to this variant). |
+| rag_variant_config | [RagVariantConfig](#ondewo.nlu.RagVariantConfig) |  | Optional. RAGFlow override for a RAG-classifier project: the chat-assistant LLM CcaiService + retrieval parameters applied to sessions assigned to this variant. Used instead of <code>ccai_service_names</code> when the project's classifier is <code>IntentRagflowClassifier</code>; empty / zero fields inside it inherit the project's base config. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationAbVariantResult"></a>
+
+### LlmEvaluationAbVariantResult
+Per-variant rollup returned by GetAbExperimentResults. Stateless / computed.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| variant_id | [string](#string) |  | Variant slug these results belong to. |
+| session_count | [int64](#int64) |  | Number of distinct sessions assigned to this variant in scope. |
+| telemetry | [google.protobuf.Struct](#google.protobuf.Struct) |  | Aggregated LLM telemetry over this variant's sessions, as a JSON-encoded <code>ondewo.nlu.LlmTelemetryReport</code> (see <code>session.proto</code>). Carried as a Struct rather than the typed message because <code>session.proto</code> already imports this file (for <code>LlmEvaluationFeedback</code> on <code>LlmTelemetry</code>), so a typed import back would form an illegal proto import cycle; the report is produced by the same server-side aggregator that fills the typed <code>LlmTelemetryReport</code> on the statistics RPCs. |
+| derived_metrics | [google.protobuf.Struct](#google.protobuf.Struct) |  | Optional. Derived comparison metrics (e.g. token / latency / error / cost deltas versus the control variant), keyed by metric name. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationAnnotationQueueItem"></a>
+
+### LlmEvaluationAnnotationQueueItem
+A human-review annotation-queue item: one per failing session step enqueued by
+the online-evaluation worker. The reviewer annotates (status / reason) and may
+promote the offending session into a regression dataset.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The unique resource name of the queue item. Read-only; populated by the server. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationAnnotationQueueItems/&lt;item_uuid&gt;</code>. |
+| session_name | [string](#string) |  | Resource name of the offending session. Format: <code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code>. |
+| session_step_name | [string](#string) |  | Resource name of the offending session step. Format: <code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/sessionSteps/&lt;step_uuid&gt;</code>. |
+| llm_evaluation_online_result_name | [string](#string) |  | Resource name of the online result that triggered the enqueue. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationOnlineResults/&lt;result_uuid&gt;</code>. |
+| status | [LlmEvaluationAnnotationStatus](#ondewo.nlu.LlmEvaluationAnnotationStatus) |  | Current lifecycle status. |
+| assigned_to | [string](#string) |  | Optional. User id (UUID) the item is assigned to for review. |
+| reason | [string](#string) |  | Human-readable reason / rationale (e.g. <code>"faithfulness=0.2 &lt; 0.5"</code>). |
+| llm_evaluation_dataset_name | [string](#string) |  | Resource name of the dataset the item was promoted into. Set when the item reaches PROMOTED status. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;</code>. |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Creation date and time. Read-only field. |
+| created_by | [string](#string) |  | User id in form of a valid UUID. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
+| modified_by | [string](#string) |  | User id in form of a valid UUID. |
+| parent | [string](#string) |  | Project owning the item. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationAnnotationQueueItemFilter"></a>
+
+### LlmEvaluationAnnotationQueueItemFilter
+Filter conditions for ListAnnotationQueueItems. All fields are optional;
+multiple fields set at the same time are combined via logical AND.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| status | [LlmEvaluationAnnotationStatus](#ondewo.nlu.LlmEvaluationAnnotationStatus) |  | Optional. Match only items with this status. |
+| assigned_to | [string](#string) |  | Optional. Match only items assigned to this user id (UUID). |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationComparison"></a>
+
+### LlmEvaluationComparison
+Pairwise comparison report across multiple experiments.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The unique resource name of the comparison. Read-only; populated by the server. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationComparisons/&lt;comparison_uuid&gt;</code>. |
+| display_name | [string](#string) |  | Human-readable display name. |
+| llm_evaluation_experiment_names | [string](#string) | repeated | Resource names of the experiments being compared (two-or-more). Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;</code>. |
+| llm_evaluation_baseline_experiment_name | [string](#string) |  | Optional. Resource name of the baseline experiment used for delta computation. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;</code>. |
+| llm_evaluation_pairwise_results | [LlmEvaluationPairwiseResult](#ondewo.nlu.LlmEvaluationPairwiseResult) | repeated | One entry per example. |
+| aggregate | [google.protobuf.Struct](#google.protobuf.Struct) |  | Aggregate stats: win-rate, mean-delta, ... |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Creation date and time. Read-only field. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
+| created_by | [string](#string) |  | User id in form of a valid UUID. |
+| modified_by | [string](#string) |  | User id in form of a valid UUID. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationDataset"></a>
+
+### LlmEvaluationDataset
+A dataset is a named collection of evaluation examples plus optional metadata.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The unique resource name of the dataset. Read-only; populated by the server. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;</code>. |
+| display_name | [string](#string) |  | Required. Human-readable display name (unique within the (project, language_code) tuple). |
+| description | [string](#string) |  | Free-form description. |
+| llm_evaluation_examples | [LlmEvaluationExample](#ondewo.nlu.LlmEvaluationExample) | repeated | Examples contained in this dataset. May be returned empty by List endpoints; use ListExamples for paginated retrieval. |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Creation date and time. Read-only field. |
+| created_by | [string](#string) |  | User id in form of a valid UUID. |
+| tags | [string](#string) | repeated | Free-form tags for grouping / filtering. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
+| modified_by | [string](#string) |  | User id in form of a valid UUID. |
+| parent | [string](#string) |  | Project owning the dataset. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language code (e.g. <code>"en"</code>, <code>"de"</code>, <code>"en-US"</code>) identifying which language the dataset was authored for. Datasets are scoped per (project, language_code) — the same dataset name may exist independently per language. |
+| llm_evaluation_dataset_type | [LlmEvaluationDatasetType](#ondewo.nlu.LlmEvaluationDatasetType) |  | Kind of examples the dataset holds (single-turn, multi-turn conversation flow, RAG question-answering, adversarial red-team probes, simulated). |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationDatasetFilter"></a>
+
+### LlmEvaluationDatasetFilter
+Filter conditions for ListDatasets. All fields are optional; multiple fields
+set at the same time are combined via logical AND.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| display_name | [string](#string) |  | Optional. Match only datasets whose display name contains this substring (case-insensitive). |
+| tags | [string](#string) | repeated | Optional. Match only datasets carrying every tag in this list. |
+| llm_evaluation_dataset_type | [LlmEvaluationDatasetType](#ondewo.nlu.LlmEvaluationDatasetType) |  | Optional. Match only datasets of this type. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationEvaluatorParameterSpec"></a>
+
+### LlmEvaluationEvaluatorParameterSpec
+Specification of one configurable evaluator parameter.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Parameter key (e.g. "criteria", "threshold", "expected_output_key"). |
+| display_name | [string](#string) |  | Human-readable display name. |
+| description | [string](#string) |  | Free-form description. |
+| value_type | [string](#string) |  | Value type: "string" | "double" | "bool" | "string_list" | "json". |
+| default_value | [string](#string) |  | JSON-encoded default value. |
+| required | [bool](#bool) |  | Whether the parameter must be supplied. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationEvaluatorRun"></a>
+
+### LlmEvaluationEvaluatorRun
+Result of running one evaluator against one example.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The unique resource name of the evaluator run. Read-only; populated by the server. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;/evaluatorRuns/&lt;evaluator_run_uuid&gt;</code>. |
+| display_name | [string](#string) |  | Human-readable display name. |
+| llm_evaluation_example_name | [string](#string) |  | Resource name of the example the evaluator was run against. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;/examples/&lt;example_uuid&gt;</code>. |
+| llm_telemetry_run_id | [string](#string) |  | Ties this evaluator run back to the LlmTelemetry produced when running the target. |
+| llm_evaluation_evaluator_type | [LlmEvaluationEvaluatorType](#ondewo.nlu.LlmEvaluationEvaluatorType) |  | Family of evaluator implementations. |
+| evaluator_name | [string](#string) |  | Logical name of the evaluator (e.g. "faithfulness", "exact_match"). |
+| llm_evaluation_feedbacks | [LlmEvaluationFeedback](#ondewo.nlu.LlmEvaluationFeedback) | repeated | One or more feedback records produced by the evaluator. |
+| llm_evaluation_experiment_name | [string](#string) |  | Resource name of the owning experiment. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;</code>. |
+| started_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock start of the evaluator run. |
+| finished_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock end of the evaluator run. |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Creation date and time. Read-only field. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
+| created_by | [string](#string) |  | User id in form of a valid UUID. |
+| modified_by | [string](#string) |  | User id in form of a valid UUID. |
+| llm_evaluation_turn_results | [LlmEvaluationTurnResult](#ondewo.nlu.LlmEvaluationTurnResult) | repeated | Per-turn results for multi-turn (conversation-flow) runs: one entry per executed conversation turn, carrying expected vs. actual outputs and the per-turn telemetry join key. Empty for single-turn runs. |
+| repetition_index | [int32](#int32) |  | Zero-based repetition index when the experiment ran with repetitions > 1. |
+| actual_output | [google.protobuf.Struct](#google.protobuf.Struct) |  | Actual output produced by the target for this run (answer text, tool calls, final state) — first-class so result views need not parse feedback <code>raw</code> payloads. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationEvaluatorSpec"></a>
+
+### LlmEvaluationEvaluatorSpec
+Server-side metadata describing one available evaluator.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| evaluator_name | [string](#string) |  | Logical evaluator name used in RunExperiment requests (e.g. "faithfulness"). |
+| display_name | [string](#string) |  | Human-readable display name. |
+| description | [string](#string) |  | Free-form description of what the evaluator measures. |
+| llm_evaluation_evaluator_type | [LlmEvaluationEvaluatorType](#ondewo.nlu.LlmEvaluationEvaluatorType) |  | Family of evaluator implementations. |
+| llm_evaluation_evaluator_category | [LlmEvaluationEvaluatorCategory](#ondewo.nlu.LlmEvaluationEvaluatorCategory) |  | Category the evaluator belongs to. |
+| required_example_fields | [string](#string) | repeated | Dotted paths of example fields the evaluator requires (e.g. "inputs.question", "expected_outputs.answer", "inputs.turns"). |
+| multi_turn | [bool](#bool) |  | True when the evaluator consumes multi-turn conversations. |
+| default_threshold | [double](#double) |  | Default pass threshold (0.0-1.0). |
+| requires_judge | [bool](#bool) |  | True when the evaluator requires a judge LLM. |
+| llm_evaluation_evaluator_parameter_specs | [LlmEvaluationEvaluatorParameterSpec](#ondewo.nlu.LlmEvaluationEvaluatorParameterSpec) | repeated | Configurable parameters accepted via evaluator_configs / evaluator_overrides. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationExample"></a>
+
+### LlmEvaluationExample
+A single example in an evaluation dataset.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The unique resource name of the example. Read-only; populated by the server. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;/examples/&lt;example_uuid&gt;</code>. |
+| display_name | [string](#string) |  | Human-readable display name. |
+| description | [string](#string) |  | Free-form description. |
+| inputs | [google.protobuf.Struct](#google.protobuf.Struct) |  | Structured inputs payload — agent inputs, prompt vars, retrieval context, ... |
+| expected_outputs | [google.protobuf.Struct](#google.protobuf.Struct) |  | Structured expected outputs — gold answer, expected tool sequence, ... |
+| metadata | [google.protobuf.Struct](#google.protobuf.Struct) |  | Free-form metadata. |
+| llm_evaluation_dataset_name | [string](#string) |  | Resource name of the owning dataset. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;</code>. |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Creation date and time. Read-only field. |
+| created_by | [string](#string) |  | User id in form of a valid UUID. |
+| parent | [string](#string) |  | Project owning the example (denormalized from parent dataset for cheap per-project filtering). Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language code (denormalized from parent dataset for cheap filtering). |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
+| modified_by | [string](#string) |  | User id in form of a valid UUID. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationExampleFilter"></a>
+
+### LlmEvaluationExampleFilter
+Filter conditions for ListExamples. All fields are optional; multiple fields
+set at the same time are combined via logical AND.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| display_name | [string](#string) |  | Optional. Match only examples whose display name contains this substring (case-insensitive). |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationExperiment"></a>
+
+### LlmEvaluationExperiment
+A single experiment run over a dataset.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The unique resource name of the experiment. Read-only; populated by the server. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;</code>. |
+| llm_evaluation_dataset_name | [string](#string) |  | Resource name of the source dataset. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;</code>. |
+| display_name | [string](#string) |  | Required. Human-readable display name. |
+| description | [string](#string) |  | Free-form description. |
+| git_sha | [string](#string) |  | Pin the experiment to a source-tree revision for reproducibility. |
+| prompt_version | [string](#string) |  | Logical version identifier of the prompt under test. |
+| model_name | [string](#string) |  | Concrete model identifier exercised by the experiment. |
+| config | [google.protobuf.Struct](#google.protobuf.Struct) |  | Arbitrary configuration captured at run time. |
+| llm_evaluation_evaluator_runs | [LlmEvaluationEvaluatorRun](#ondewo.nlu.LlmEvaluationEvaluatorRun) | repeated | One entry per evaluator x example combination. |
+| started_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock start of the experiment run. |
+| finished_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock end of the experiment run. |
+| duration_in_s | [double](#double) |  | Convenience duration (finished_at - started_at). |
+| n_examples | [int32](#int32) |  | Number of dataset examples consumed. |
+| n_passed | [int32](#int32) |  | Number of evaluator runs that produced a passing score. |
+| n_failed | [int32](#int32) |  | Number of evaluator runs that produced a failing score. |
+| llm_evaluation_baseline_experiment_name | [string](#string) |  | Optional. Resource name of a baseline experiment for regression detection. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;</code>. |
+| parent | [string](#string) |  | Project owning the experiment. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| llm_evaluation_experiment_status | [LlmEvaluationExperimentStatus](#ondewo.nlu.LlmEvaluationExperimentStatus) |  | Current lifecycle status of the experiment (pending / running / succeeded / failed / cancelled). |
+| created_by | [string](#string) |  | User id in form of a valid UUID. |
+| language_code | [string](#string) |  | BCP-47 language code (denormalized from parent dataset). Experiments are scoped per (project, language_code); experiment name uniqueness is enforced per (project, language_code) tuple. |
+| ccai_service_names | [string](#string) | repeated | CcaiService name(s) whose LLM connection details defined the model(s) evaluated in this run (echoed from RunLlmEvaluationExperimentRequest for audit / reproducibility). |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Creation date and time. Read-only field. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
+| modified_by | [string](#string) |  | User id in form of a valid UUID. |
+| repetitions | [int32](#int32) |  | Number of repetitions each (example, evaluator) pair was executed with (echoed from RunLlmEvaluationExperimentRequest; 0 is treated as 1). |
+| llm_evaluation_schedule_name | [string](#string) |  | Optional. Resource name of the schedule that created this experiment (empty for manually-triggered experiments). Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationSchedules/&lt;schedule_uuid&gt;</code>. |
+| llm_evaluation_experiment_kind | [LlmEvaluationExperimentKind](#ondewo.nlu.LlmEvaluationExperimentKind) |  | Kind of experiment (standard single-turn, multi-turn flow, red-team, gate candidate, gate safety, scheduled). |
+| llm_evaluation_release_gate_run_name | [string](#string) |  | Optional. Resource name of the release gate run this experiment belongs to (set for gate-candidate and gate-safety experiments). Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationReleaseGates/&lt;gate_uuid&gt;/runs/&lt;run_uuid&gt;</code>. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationExperimentFilter"></a>
+
+### LlmEvaluationExperimentFilter
+Filter conditions for ListExperiments. All fields are optional; multiple
+fields set at the same time are combined via logical AND.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| display_name | [string](#string) |  | Optional. Match only experiments whose display name contains this substring (case-insensitive). |
+| llm_evaluation_experiment_status | [LlmEvaluationExperimentStatus](#ondewo.nlu.LlmEvaluationExperimentStatus) |  | Optional. Match only experiments with this lifecycle status. |
+| llm_evaluation_dataset_name | [string](#string) |  | Optional. Match only experiments tied to this dataset (resource name). Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;</code>. |
+| model_name | [string](#string) |  | Optional. Match only experiments exercising this concrete model identifier. |
+| llm_evaluation_schedule_name | [string](#string) |  | Optional. Match only experiments created by this schedule (resource name). Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationSchedules/&lt;schedule_uuid&gt;</code>. |
+| llm_evaluation_experiment_kind | [LlmEvaluationExperimentKind](#ondewo.nlu.LlmEvaluationExperimentKind) |  | Optional. Match only experiments of this kind. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationFeedback"></a>
+
+### LlmEvaluationFeedback
+A single feedback record (score + optional categorical + comment + raw payload).
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The unique resource name of the feedback record. Read-only; populated by the server. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;/evaluatorRuns/&lt;evaluator_run_uuid&gt;/feedbacks/&lt;feedback_uuid&gt;</code>. |
+| display_name | [string](#string) |  | Human-readable display name. |
+| criterion | [string](#string) |  | Free-form criterion label: "correctness", "faithfulness", "hallucination", "context_precision", "tool_trajectory", "format", "groundedness", "tone", "exact_match", "embedding_distance", "bleu", "rouge", "regression", ... |
+| score | [double](#double) | optional | Numeric score (0.0-1.0 by convention). Defaults to 0.0 (proto3 has no field presence on this scalar, so an unset score and a genuine 0.0 are indistinguishable); for purely categorical feedback, rely on categorical_value rather than this field. |
+| categorical_value | [string](#string) |  | Categorical value when applicable ("pass" | "fail" | "yes" | "no" | tier). |
+| comment | [string](#string) |  | Human-readable comment / rationale. |
+| annotator_user_id | [string](#string) |  | Human reviewer id or "evaluator:&lt;name&gt;". |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Creation date and time. Read-only field. |
+| raw | [google.protobuf.Struct](#google.protobuf.Struct) |  | Verbatim evaluator JSON output kept for forensic replay. |
+| llm_evaluation_evaluator_run_name | [string](#string) |  | Resource name of the owning evaluator run (may be empty for top-level experiment-scoped feedback submitted via SubmitFeedback). Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;/evaluatorRuns/&lt;evaluator_run_uuid&gt;</code>. |
+| llm_evaluation_experiment_name | [string](#string) |  | Resource name of the owning experiment. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;</code>. |
+| llm_evaluation_example_name | [string](#string) |  | Resource name of the example the feedback targets. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;/examples/&lt;example_uuid&gt;</code>. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
+| created_by | [string](#string) |  | User id in form of a valid UUID. |
+| modified_by | [string](#string) |  | User id in form of a valid UUID. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationFeedbackFilter"></a>
+
+### LlmEvaluationFeedbackFilter
+Filter conditions for ListFeedback. All fields are optional; multiple fields
+set at the same time are combined via logical AND.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_experiment_name | [string](#string) |  | Optional. Match only feedback attached to this experiment (resource name). Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;</code>. |
+| llm_evaluation_example_name | [string](#string) |  | Optional. Match only feedback targeting this example (resource name). Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;/examples/&lt;example_uuid&gt;</code>. |
+| llm_evaluation_evaluator_run_name | [string](#string) |  | Optional. Match only feedback produced by this evaluator run (resource name). Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;/evaluatorRuns/&lt;evaluator_run_uuid&gt;</code>. |
+| criterion | [string](#string) |  | Optional. Match only feedback with this criterion label (e.g. "correctness", "faithfulness"). |
+| categorical_value | [string](#string) |  | Optional. Match only feedback with this categorical value ("pass" | "fail" | "yes" | "no" | tier). |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationJudgeConfig"></a>
+
+### LlmEvaluationJudgeConfig
+Judge-LLM configuration used by LLM-as-judge evaluators.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ccai_service_name | [string](#string) |  | Resource name of the CcaiService whose LLM connection details (host / port / model / auth) the judge uses. Preferred over free-form model_name. |
+| model_name | [string](#string) |  | Free-form judge model label (fallback / display). |
+| temperature | [double](#double) |  | Sampling temperature for the judge model. |
+| verbose_reasoning | [bool](#bool) |  | When true, the judge's full reasoning is kept in feedback <code>comment</code> / <code>raw</code> payloads. |
+| evaluator_overrides | [google.protobuf.Struct](#google.protobuf.Struct) |  | Per-evaluator overrides keyed by evaluator name. Values are objects matching the evaluator's parameter specs from LlmEvaluationListEvaluators (e.g. <code>{"geeval": {"criteria": "...", "threshold": 0.7}}</code>). |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationOnlineConfig"></a>
+
+### LlmEvaluationOnlineConfig
+An online-evaluation config: a per-(project, language_code) definition that a
+swarm-safe background worker uses to sample already-persisted live session
+steps, score the recorded answer with a reference-free evaluator set, and
+enqueue failing steps into the annotation queue. Mirrors the LlmEvaluationSchedule
+scoping / audit / enabled-flag shape.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The unique resource name of the online config. Read-only; populated by the server. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationOnlineConfigs/&lt;config_uuid&gt;</code>. |
+| display_name | [string](#string) |  | Required. Human-readable display name (unique within the (project, language_code) tuple). |
+| description | [string](#string) |  | Free-form description. |
+| evaluator_names | [string](#string) | repeated | Reference-free evaluator names the worker runs on each sampled step (e.g. <code>"answer_relevancy"</code>, <code>"faithfulness"</code>, <code>"toxicity"</code>). AIM restricts the picker to reference-free evaluators via LlmEvaluationListEvaluators. |
+| sample_rate | [double](#double) |  | Fraction of candidate steps to score, in the range 0.0-1.0. Applied deterministically per step. |
+| enabled | [bool](#bool) |  | Whether the worker samples for this config. Disabled configs keep their configuration. |
+| target_dataset_name | [string](#string) |  | Optional. Default promotion target dataset for steps enqueued by this config. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;</code>. |
+| fail_threshold | [double](#double) | optional | Score cutoff (0.0-1.0). Scored steps whose aggregate score is below this threshold are enqueued into the annotation queue. Defaults to 0.5. |
+| settle_seconds | [int32](#int32) |  | Settle window in seconds: the worker only considers steps older than this, so per-step telemetry has landed before scoring. Defaults to 30. |
+| require_telemetry | [bool](#bool) |  | When true, only steps with recorded LLM telemetry are sampled (shorthand for the session-filter flag of the same name). |
+| llm_evaluation_online_session_filter | [LlmEvaluationOnlineSessionFilter](#ondewo.nlu.LlmEvaluationOnlineSessionFilter) |  | Optional. Filter narrowing which session steps are sampled. |
+| last_evaluated_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock time of the worker's most recent evaluation pass for this config. Read-only; set by the worker. |
+| n_sessions_evaluated | [int64](#int64) |  | Running count of session steps this config has scored. Read-only; set by the worker. |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Creation date and time. Read-only field. |
+| created_by | [string](#string) |  | User id in form of a valid UUID. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
+| modified_by | [string](#string) |  | User id in form of a valid UUID. |
+| parent | [string](#string) |  | Project owning the config. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationOnlineConfigFilter"></a>
+
+### LlmEvaluationOnlineConfigFilter
+Filter conditions for ListOnlineConfigs. All fields are optional; multiple
+fields set at the same time are combined via logical AND.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| display_name | [string](#string) |  | Optional. Match only configs whose display name contains this substring (case-insensitive). |
+| enabled_only | [bool](#bool) |  | Optional. When true, match only enabled configs. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationOnlineResult"></a>
+
+### LlmEvaluationOnlineResult
+A self-contained online-evaluation result: one row per scored session step.
+Per-criterion feedbacks are stored as an embedded repeated LlmEvaluationFeedback
+list (exactly like LlmEvaluationTurnResult.feedbacks — NOT persisted into the
+experiment-scoped llm_feedback table). Produced by the online-evaluation worker;
+read-only over the API.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The unique resource name of the result. Read-only; populated by the server. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationOnlineResults/&lt;result_uuid&gt;</code>. |
+| llm_evaluation_online_config_name | [string](#string) |  | Resource name of the online config that produced this result. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationOnlineConfigs/&lt;config_uuid&gt;</code>. |
+| session_name | [string](#string) |  | Resource name of the scored session. Format: <code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code>. |
+| session_step_name | [string](#string) |  | Resource name of the scored session step. Format: <code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/sessionSteps/&lt;step_uuid&gt;</code>. |
+| llm_evaluation_feedbacks | [LlmEvaluationFeedback](#ondewo.nlu.LlmEvaluationFeedback) | repeated | Per-criterion feedback records, one per configured evaluator (embedded list; the same LlmEvaluationFeedback message reused as the per-criterion result element). |
+| passed | [bool](#bool) |  | Whether the step passed every criterion (aggregate_score >= the config's fail_threshold and no criterion failed). |
+| aggregate_score | [double](#double) |  | Aggregate roll-up score across the criteria (0.0-1.0). |
+| evaluated_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock time the worker scored this step. Read-only. |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Creation date and time. Read-only field. |
+| created_by | [string](#string) |  | User id in form of a valid UUID (the worker / system identity). |
+| parent | [string](#string) |  | Project owning the result. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationOnlineResultFilter"></a>
+
+### LlmEvaluationOnlineResultFilter
+Filter conditions for ListOnlineResults. All fields are optional; multiple
+fields set at the same time are combined via logical AND.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_online_config_name | [string](#string) |  | Optional. Match only results produced by this online config. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationOnlineConfigs/&lt;config_uuid&gt;</code>. |
+| passed | [bool](#bool) |  | Optional. Match only results with this pass-state. |
+| filter_by_passed | [bool](#bool) |  | Optional. When true, the <code>passed</code> field is applied as a filter; when false the <code>passed</code> field is ignored (so unset means "any"). |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationOnlineSessionFilter"></a>
+
+### LlmEvaluationOnlineSessionFilter
+Optional filter narrowing which already-persisted live session steps an
+online-evaluation config samples. All fields are optional; multiple fields set
+at the same time are combined via logical AND.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| labels | [string](#string) | repeated | Optional. Match only session steps whose session carries every one of these labels (e.g. <code>"AI_FLAGGED"</code>). |
+| language_codes | [string](#string) | repeated | Optional. Restrict sampling to these BCP-47 language codes. Empty = the owning config's language_code only. |
+| platforms | [string](#string) | repeated | Optional. Restrict sampling to these integration platforms. |
+| require_telemetry | [bool](#bool) |  | Optional. When true, only sample steps that have recorded LLM telemetry (a <code>session_step_llm_telemetry</code> row), so reference-free judges requiring the trace can run. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationPairwiseResult"></a>
+
+### LlmEvaluationPairwiseResult
+Per-example pairwise comparison entry.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_example_name | [string](#string) |  | Resource name of the example being compared. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;/examples/&lt;example_uuid&gt;</code>. |
+| llm_evaluation_winner_experiment_name | [string](#string) |  | Resource name of the winning experiment. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;</code>. |
+| score_delta | [double](#double) |  | Score delta against the baseline (positive means winner improved). |
+| reason | [string](#string) |  | Free-form reason / rationale. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationProjectSettings"></a>
+
+### LlmEvaluationProjectSettings
+Per-(project, language_code) evaluation settings singleton.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The unique resource name of the settings singleton. Read-only. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationProjectSettings</code>. |
+| llm_evaluation_judge_config | [LlmEvaluationJudgeConfig](#ondewo.nlu.LlmEvaluationJudgeConfig) |  | Judge-LLM configuration for LLM-as-judge evaluators. |
+| default_weights | [google.protobuf.Struct](#google.protobuf.Struct) |  | Default per-criterion weights (criterion name -> numeric weight) applied by comparison / scorecard views when no explicit weights are configured. |
+| default_pass_cutoff_score | [double](#double) |  | Default score cutoff (0.0-1.0) above which an evaluator run counts as passed. |
+| default_scorecard_name | [string](#string) |  | Optional. Resource name of the default scorecard. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationScorecards/&lt;scorecard_uuid&gt;</code>. |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Creation date and time. Read-only field. |
+| created_by | [string](#string) |  | User id in form of a valid UUID. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
+| modified_by | [string](#string) |  | User id in form of a valid UUID. |
+| parent | [string](#string) |  | Project owning the settings. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationReleaseGate"></a>
+
+### LlmEvaluationReleaseGate
+A release gate: a named set of thresholds over evaluator scores, regression
+deltas and telemetry that decides whether a candidate configuration ships.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The unique resource name of the release gate. Read-only; populated by the server. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationReleaseGates/&lt;gate_uuid&gt;</code>. |
+| display_name | [string](#string) |  | Required. Human-readable display name (unique within the (project, language_code) tuple). |
+| description | [string](#string) |  | Free-form description. |
+| revision | [int32](#int32) |  | Server-managed revision counter, incremented on semantic updates (suite, baseline, evaluators, thresholds, weights, safety). Read-only. |
+| llm_evaluation_dataset_name | [string](#string) |  | Resource name of the benchmark suite (dataset) the gate runs. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;</code>. |
+| llm_evaluation_baseline_experiment_name | [string](#string) |  | Optional. Resource name of the baseline experiment for regression checks. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;</code>. |
+| llm_evaluation_evaluator_names | [string](#string) | repeated | Logical names of the evaluators the gate runs against the suite. |
+| thresholds | [LlmEvaluationReleaseGateThresholds](#ondewo.nlu.LlmEvaluationReleaseGateThresholds) |  | Threshold set evaluated against the candidate experiment. |
+| safety | [LlmEvaluationReleaseGateSafetyConfig](#ondewo.nlu.LlmEvaluationReleaseGateSafetyConfig) |  | Optional safety section (separate adversarial experiment). |
+| weights | [google.protobuf.Struct](#google.protobuf.Struct) |  | Per-criterion weights used for the weighted composite score (criterion name -> numeric weight; normalized server-side). |
+| pass_cutoff_score | [double](#double) |  | Score cutoff (0.0-1.0) above which an evaluator run counts as passed. |
+| staleness_window_days | [int32](#int32) |  | Number of days after which a gate verdict is considered stale. |
+| ccai_service_names | [string](#string) | repeated | Default CcaiService name(s) defining the candidate target's LLM connection (can be overridden per run). |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Creation date and time. Read-only field. |
+| created_by | [string](#string) |  | User id in form of a valid UUID. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
+| modified_by | [string](#string) |  | User id in form of a valid UUID. |
+| parent | [string](#string) |  | Project owning the release gate. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationReleaseGateCheck"></a>
+
+### LlmEvaluationReleaseGateCheck
+One evaluated check inside a release gate run verdict.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [string](#string) |  | Stable check identifier, e.g. "pass_rate", "criterion.&lt;name&gt;", "regression.&lt;name&gt;", "latency_p95_seconds", "safety.&lt;name&gt;", "acceptance_must_pass". |
+| threshold | [double](#double) |  | Threshold the check compared against. |
+| actual | [double](#double) |  | Actual value observed. |
+| actual_available | [bool](#bool) |  | False when the input needed for the check was unavailable (e.g. telemetry not recorded); <code>actual</code> is meaningless in that case. |
+| passed | [bool](#bool) |  | Whether the check passed. |
+| partial | [bool](#bool) |  | True when the actual value was only window-attributed (partial telemetry). |
+| provenance | [string](#string) |  | Where the actual value came from: "LIVE" | "DERIVED" | "TELEMETRY". |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationReleaseGateFilter"></a>
+
+### LlmEvaluationReleaseGateFilter
+Filter conditions for ListReleaseGates. All fields are optional; multiple
+fields set at the same time are combined via logical AND.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| display_name | [string](#string) |  | Optional. Match only gates whose display name contains this substring (case-insensitive). |
+| llm_evaluation_dataset_name | [string](#string) |  | Optional. Match only gates running this suite (dataset resource name). Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;</code>. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationReleaseGateRun"></a>
+
+### LlmEvaluationReleaseGateRun
+One persisted execution of a release gate: experiments + computed verdict.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The unique resource name of the gate run. Read-only; populated by the server. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationReleaseGates/&lt;gate_uuid&gt;/runs/&lt;run_uuid&gt;</code>. |
+| llm_evaluation_release_gate_name | [string](#string) |  | Resource name of the gate this run belongs to. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationReleaseGates/&lt;gate_uuid&gt;</code>. |
+| gate_revision | [int32](#int32) |  | Gate revision at run time. |
+| gate_snapshot | [google.protobuf.Struct](#google.protobuf.Struct) |  | Full gate document snapshot taken at run time, so the verdict stays interpretable after later gate edits. |
+| llm_evaluation_experiment_name | [string](#string) |  | Resource name of the candidate experiment. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;</code>. |
+| llm_evaluation_safety_experiment_name | [string](#string) |  | Optional. Resource name of the safety (adversarial) experiment. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;</code>. |
+| llm_evaluation_baseline_experiment_name | [string](#string) |  | Optional. Resource name of the baseline experiment used for regression checks. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;</code>. |
+| llm_evaluation_release_gate_verdict | [LlmEvaluationReleaseGateVerdict](#ondewo.nlu.LlmEvaluationReleaseGateVerdict) |  | Computed verdict. Read-only; persisted server-side. |
+| checks | [LlmEvaluationReleaseGateCheck](#ondewo.nlu.LlmEvaluationReleaseGateCheck) | repeated | Individual checks the verdict was derived from. Read-only. |
+| started_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock start of the gate run. |
+| finished_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock end of the gate run (verdict computation finished). |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Creation date and time. Read-only field. |
+| created_by | [string](#string) |  | User id in form of a valid UUID. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
+| modified_by | [string](#string) |  | User id in form of a valid UUID. |
+| parent | [string](#string) |  | Project owning the gate run. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationReleaseGateRunFilter"></a>
+
+### LlmEvaluationReleaseGateRunFilter
+Filter conditions for ListReleaseGateRuns. All fields are optional; multiple
+fields set at the same time are combined via logical AND.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_release_gate_name | [string](#string) |  | Optional. Match only runs of this gate (resource name). Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationReleaseGates/&lt;gate_uuid&gt;</code>. |
+| llm_evaluation_release_gate_verdict | [LlmEvaluationReleaseGateVerdict](#ondewo.nlu.LlmEvaluationReleaseGateVerdict) |  | Optional. Match only runs with this verdict. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationReleaseGateSafetyConfig"></a>
+
+### LlmEvaluationReleaseGateSafetyConfig
+Safety section of a release gate: a separate adversarial experiment scored
+with safety evaluators.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| enabled | [bool](#bool) |  | Whether the safety section is evaluated as part of gate runs. |
+| adversarial_dataset_name | [string](#string) |  | Resource name of the adversarial (red-team) dataset to run. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;</code>. |
+| evaluator_names | [string](#string) | repeated | Logical names of safety evaluators to run (e.g. "toxicity", "bias", "pii_leakage"). |
+| max_toxicity | [double](#double) | optional | Maximum tolerated mean toxicity score (0.0-1.0). |
+| max_bias | [double](#double) | optional | Maximum tolerated mean bias score (0.0-1.0). |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationReleaseGateThresholds"></a>
+
+### LlmEvaluationReleaseGateThresholds
+Threshold set evaluated by a release gate. Nested in a dedicated message so
+presence can be detected at the message level (proto3 scalars carry no presence).
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| min_pass_rate | [double](#double) |  | Minimum pass rate (0.0-1.0) the candidate experiment must reach. |
+| max_regression_per_criterion | [double](#double) | optional | Maximum tolerated per-criterion mean-score regression (0.0-1.0) versus the baseline experiment. |
+| max_p95_latency_seconds | [double](#double) |  | Maximum tolerated p95 latency in seconds (requires telemetry join). |
+| acceptance_must_pass | [bool](#bool) |  | If true, every example tagged "acceptance" must pass for the gate to pass. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationReport"></a>
+
+### LlmEvaluationReport
+An immutable persisted report artifact (release summaries, gate sign-offs,
+exported evaluation snapshots).
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The unique resource name of the report. Read-only; populated by the server. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationReports/&lt;report_uuid&gt;</code>. |
+| display_name | [string](#string) |  | Required. Human-readable display name. |
+| description | [string](#string) |  | Free-form description. |
+| report_type | [string](#string) |  | Logical report type identifier (e.g. <code>"release-summary.v1"</code>). |
+| mime_type | [string](#string) |  | MIME type of the payload (e.g. <code>"text/markdown"</code>, <code>"text/csv"</code>, <code>"application/pdf"</code>). |
+| payload | [bytes](#bytes) |  | Report payload. Omitted from List responses unless explicitly requested via field_mask. |
+| metadata | [google.protobuf.Struct](#google.protobuf.Struct) |  | Source references (gate runs, experiments, filters) captured at creation time. |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Creation date and time. Read-only field. |
+| created_by | [string](#string) |  | User id in form of a valid UUID. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
+| modified_by | [string](#string) |  | User id in form of a valid UUID. |
+| parent | [string](#string) |  | Project owning the report. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationReportFilter"></a>
+
+### LlmEvaluationReportFilter
+Filter conditions for ListReports. All fields are optional; multiple fields
+set at the same time are combined via logical AND.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| display_name | [string](#string) |  | Optional. Match only reports whose display name contains this substring (case-insensitive). |
+| report_type | [string](#string) |  | Optional. Match only reports of this logical type. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationSchedule"></a>
+
+### LlmEvaluationSchedule
+A schedule for recurring experiment / release gate runs.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The unique resource name of the schedule. Read-only; populated by the server. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationSchedules/&lt;schedule_uuid&gt;</code>. |
+| display_name | [string](#string) |  | Required. Human-readable display name (unique within the (project, language_code) tuple). |
+| description | [string](#string) |  | Free-form description. |
+| cron_expression | [string](#string) |  | 5-field cron expression in UTC (e.g. <code>"0 2 * * *"</code>). Exactly one of <code>cron_expression</code> / <code>interval_seconds</code> must be set. |
+| interval_seconds | [int32](#int32) |  | Fixed interval between runs in seconds. Exactly one of <code>cron_expression</code> / <code>interval_seconds</code> must be set. |
+| enabled | [bool](#bool) |  | Whether the schedule fires. Disabled schedules keep their configuration. |
+| llm_evaluation_schedule_action | [LlmEvaluationScheduleAction](#ondewo.nlu.LlmEvaluationScheduleAction) |  | What the schedule executes when it fires. |
+| run_llm_evaluation_experiment_request | [RunLlmEvaluationExperimentRequest](#ondewo.nlu.RunLlmEvaluationExperimentRequest) |  | RUN_EXPERIMENT only. Template request dispatched on every firing (display_name is suffixed with the firing timestamp). |
+| llm_evaluation_release_gate_name | [string](#string) |  | RUN_RELEASE_GATE only. Resource name of the gate to run. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationReleaseGates/&lt;gate_uuid&gt;</code>. |
+| last_run_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock time of the most recent firing. Read-only. |
+| next_run_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock time of the next planned firing. Read-only. |
+| last_run_resource_name | [string](#string) |  | Resource name created by the most recent firing (experiment or gate run). Read-only. |
+| last_run_status | [LlmEvaluationExperimentStatus](#ondewo.nlu.LlmEvaluationExperimentStatus) |  | Status of the experiment created by the most recent firing. Read-only. |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Creation date and time. Read-only field. |
+| created_by | [string](#string) |  | User id in form of a valid UUID. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
+| modified_by | [string](#string) |  | User id in form of a valid UUID. |
+| parent | [string](#string) |  | Project owning the schedule. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationScheduleFilter"></a>
+
+### LlmEvaluationScheduleFilter
+Filter conditions for ListSchedules. All fields are optional; multiple fields
+set at the same time are combined via logical AND.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| display_name | [string](#string) |  | Optional. Match only schedules whose display name contains this substring (case-insensitive). |
+| enabled_only | [bool](#bool) |  | Optional. When true, match only enabled schedules. |
+| llm_evaluation_schedule_action | [LlmEvaluationScheduleAction](#ondewo.nlu.LlmEvaluationScheduleAction) |  | Optional. Match only schedules with this action. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationScorecard"></a>
+
+### LlmEvaluationScorecard
+A scorecard: a named weighted multi-criteria roll-up definition applied to
+experiments for release reporting.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The unique resource name of the scorecard. Read-only; populated by the server. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationScorecards/&lt;scorecard_uuid&gt;</code>. |
+| display_name | [string](#string) |  | Required. Human-readable display name (unique within the (project, language_code) tuple). |
+| description | [string](#string) |  | Free-form description. |
+| llm_evaluation_scorecard_components | [LlmEvaluationScorecardComponent](#ondewo.nlu.LlmEvaluationScorecardComponent) | repeated | Weighted criterion components. |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Creation date and time. Read-only field. |
+| created_by | [string](#string) |  | User id in form of a valid UUID. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
+| modified_by | [string](#string) |  | User id in form of a valid UUID. |
+| parent | [string](#string) |  | Project owning the scorecard. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationScorecardComponent"></a>
+
+### LlmEvaluationScorecardComponent
+One weighted criterion row of a scorecard.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| criterion | [string](#string) |  | Criterion label the component aggregates (e.g. "faithfulness"). |
+| weight | [double](#double) |  | Relative weight of the component (normalized server-side). |
+| target_score | [double](#double) |  | Target score (0.0-1.0) the criterion should reach. |
+| evaluator_name | [string](#string) |  | Optional. Logical evaluator name backing the criterion. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationScorecardFilter"></a>
+
+### LlmEvaluationScorecardFilter
+Filter conditions for ListScorecards. All fields are optional; multiple
+fields set at the same time are combined via logical AND.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| display_name | [string](#string) |  | Optional. Match only scorecards whose display name contains this substring (case-insensitive). |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationSimulationPersona"></a>
+
+### LlmEvaluationSimulationPersona
+One simulated user persona.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| persona | [string](#string) |  | Short persona label (e.g. "impatient customer"). |
+| scenario | [string](#string) |  | Scenario the simulated user pursues (e.g. "wants a refund for a double charge"). |
+| expected_outcome | [string](#string) |  | Expected outcome of a successful conversation (used as expected output on generated examples). |
+| user_description | [string](#string) |  | Free-form additional description of the simulated user's behavior. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmEvaluationTurnResult"></a>
+
+### LlmEvaluationTurnResult
+Result of executing one conversation turn of a multi-turn (flow) example.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| turn_index | [int32](#int32) |  | Zero-based index of the turn within the example's scripted conversation. |
+| user_input | [google.protobuf.Struct](#google.protobuf.Struct) |  | The user input that was sent for this turn (text, contexts, parameters). |
+| expected_output | [google.protobuf.Struct](#google.protobuf.Struct) |  | Expected output for this turn as authored in the example (expected tool calls, final state, answer). |
+| actual_output | [google.protobuf.Struct](#google.protobuf.Struct) |  | Actual output produced by the target for this turn (answer text, tool calls, final state). |
+| llm_telemetry_run_id | [string](#string) |  | Ties this turn back to the LlmTelemetry produced when running the target for this turn (per-turn telemetry join key). |
+| session_step_name | [string](#string) |  | Optional. Resource name of the session step created by executing this turn against the live target (deep link into trace views). |
+| llm_evaluation_feedbacks | [LlmEvaluationFeedback](#ondewo.nlu.LlmEvaluationFeedback) | repeated | Per-turn feedback records produced by turn-aware evaluators. |
+| duration_in_s | [double](#double) |  | Wall-clock duration of this turn in seconds. |
+
+
+
+
+
+
+<a name="ondewo.nlu.PromoteLlmEvaluationAnnotationQueueItemRequest"></a>
+
+### PromoteLlmEvaluationAnnotationQueueItemRequest
+Request to promote an annotation-queue item into a regression dataset. Thin
+server-side composition over LlmEvaluationCreateExamplesFromSession; the item
+status is flipped to PROMOTED and the dataset name stamped on success.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the item to promote. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationAnnotationQueueItems/&lt;item_uuid&gt;</code>. |
+| target_dataset_name | [string](#string) |  | Resource name of the dataset receiving the created example(s). Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;</code>. |
+| llm_evaluation_example_extraction_mode | [LlmEvaluationExampleExtractionMode](#ondewo.nlu.LlmEvaluationExampleExtractionMode) |  | How the item's session steps are turned into examples (reused mode enum). |
+| include_tool_calls | [bool](#bool) |  | When true, tool calls recorded in the session's telemetry are captured as expected tool calls on the created examples. |
+| include_retrieval_context | [bool](#bool) |  | When true, retrieved chunks recorded by retriever spans are captured as frozen retrieval context on the created examples. |
+| parent | [string](#string) |  | Project owning the item and the dataset. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.PromoteLlmEvaluationAnnotationQueueItemResponse"></a>
+
+### PromoteLlmEvaluationAnnotationQueueItemResponse
+Response for PromoteAnnotationQueueItem.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_examples | [LlmEvaluationExample](#ondewo.nlu.LlmEvaluationExample) | repeated | Example record(s) created in the target dataset. |
+| llm_evaluation_annotation_queue_item | [LlmEvaluationAnnotationQueueItem](#ondewo.nlu.LlmEvaluationAnnotationQueueItem) |  | The promoted queue item (status flipped to PROMOTED, dataset name stamped). |
+
+
+
+
+
+
+<a name="ondewo.nlu.RagVariantConfig"></a>
+
+### RagVariantConfig
+RAGFlow variant override for an A/B experiment running on a RAG-classifier
+project (<code>IntentRagflowClassifier</code>). Where an IntentAgent variant
+overrides the LLM via <code>ccai_service_names</code>, a RAG variant overrides
+the project's chat-assistant LLM CcaiService and the retrieval parameters used
+when answering the assigned sessions. Override-or-inherit semantics apply per
+field: an empty / zero value means "inherit the project's base
+IntentRagflowClassifier config for this field".
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| chat_assistant_llm_ccai_service_name | [string](#string) |  | CcaiService name whose LLM connection details back the chat-assistant LLM for sessions assigned to this variant (overrides the project's <code>chat_assistant_llm_ccai_service_name</code>). Empty = inherit. Format: <code>projects/&lt;project_uuid&gt;/agent/ccaiServices/&lt;ccai_service_uuid&gt;</code>. |
+| top_k | [int32](#int32) |  | Retrieval top_k: the maximum number of chunks retrieved per turn (overrides the project's <code>retrieval_max_retrieval_chunks</code>). 0 = inherit. |
+| similarity_threshold | [double](#double) |  | Retrieval similarity threshold in <code>[0.0, 1.0]</code>: chunks scoring below it are dropped (overrides the project's <code>chat_assistant_similarity_threshold</code>). 0.0 = inherit. |
+| vector_similarity_weight | [double](#double) |  | Vector-vs-keyword similarity weight in <code>[0.0, 1.0]</code> (overrides the project's <code>retrieval_vector_similarity_weight</code>, surfaced to RAGFlow as the chat assistant's keywords-similarity weight). 0.0 = inherit. |
+| rerank_model_ccai_service_name | [string](#string) |  | Optional. CcaiService name backing the rerank model for sessions assigned to this variant (overrides the project's <code>chat_assistant_rerank_ccai_service_name</code>). Empty = inherit (or no reranking when the project itself configures none). Format: <code>projects/&lt;project_uuid&gt;/agent/ccaiServices/&lt;ccai_service_uuid&gt;</code>. |
+
+
+
+
+
+
+<a name="ondewo.nlu.RunLlmEvaluationExperimentRequest"></a>
+
+### RunLlmEvaluationExperimentRequest
+Request to run a fresh experiment.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Project owning the experiment. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| llm_evaluation_dataset_name | [string](#string) |  | Resource name of the dataset to evaluate against. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;</code>. |
+| display_name | [string](#string) |  | Required. Human-readable display name. |
+| git_sha | [string](#string) |  | Source-tree revision pin for reproducibility. |
+| prompt_version | [string](#string) |  | Logical prompt version identifier. |
+| model_name | [string](#string) |  | Concrete model identifier under test. |
+| config | [google.protobuf.Struct](#google.protobuf.Struct) |  | Arbitrary run-time configuration. |
+| llm_evaluation_evaluator_names | [string](#string) | repeated | Logical names of evaluators to run (resolved server-side to evaluator implementations). |
+| llm_evaluation_baseline_experiment_name | [string](#string) |  | Optional. Resource name of a baseline experiment for regression detection. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;</code>. |
+| language_code | [string](#string) |  | BCP-47 language code the experiment runs against. Required — selects which language-scoped dataset is loaded. |
+| ccai_service_names | [string](#string) | repeated | Logical names of the CcaiService(s) that carry the LLM connection details (host/port/model/ auth) of the model(s) under evaluation, resolved server-side — mirroring the IntentRagflowClassifier / IntentAgent <code>ccai_service_names</code> pattern. Each named service defines one LLM to evaluate; supplying several evaluates and compares multiple LLMs in a single run. Takes precedence over the free-form <code>model_name</code> label. |
+| repetitions | [int32](#int32) |  | Optional. Number of repetitions per (example, evaluator) pair for consistency / dispersion analysis. 0 is treated as 1. |
+| llm_evaluation_experiment_kind | [LlmEvaluationExperimentKind](#ondewo.nlu.LlmEvaluationExperimentKind) |  | Optional. Kind of experiment to run. Unspecified defaults to STANDARD (or FLOW when the dataset type is FLOW). |
+| evaluator_configs | [google.protobuf.Struct](#google.protobuf.Struct) |  | Optional. Per-evaluator parameter overrides for this run, keyed by evaluator name. Values are objects matching the evaluator's parameter specs from LlmEvaluationListEvaluators (e.g. <code>{"geeval": {"criteria": "...", "threshold": 0.7}}</code>). |
+
+
+
+
+
+
+<a name="ondewo.nlu.RunLlmEvaluationReleaseGateRequest"></a>
+
+### RunLlmEvaluationReleaseGateRequest
+Request to run a release gate against a candidate target.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the gate to run. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationReleaseGates/&lt;gate_uuid&gt;</code>. |
+| parent | [string](#string) |  | Project owning the gate. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+| ccai_service_names | [string](#string) | repeated | Optional. CcaiService name(s) defining the candidate target's LLM connection; overrides the gate's default <code>ccai_service_names</code>. |
+| git_sha | [string](#string) |  | Optional. Source-tree revision pin recorded on the candidate experiment. |
+| prompt_version | [string](#string) |  | Optional. Logical prompt version recorded on the candidate experiment. |
+
+
+
+
+
+
+<a name="ondewo.nlu.SimulateLlmEvaluationConversationsRequest"></a>
+
+### SimulateLlmEvaluationConversationsRequest
+Request to generate synthetic multi-turn evaluation conversations.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | Project owning the dataset. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| llm_evaluation_dataset_name | [string](#string) |  | Resource name of the dataset receiving the generated examples. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationDatasets/&lt;dataset_uuid&gt;</code>. |
+| llm_evaluation_simulation_personas | [LlmEvaluationSimulationPersona](#ondewo.nlu.LlmEvaluationSimulationPersona) | repeated | Personas to simulate. At least one is required for STANDARD simulations. |
+| num_conversations | [int32](#int32) |  | Number of conversations to generate (across all personas). |
+| max_turns | [int32](#int32) |  | Maximum number of user turns per generated conversation. |
+| ccai_service_names | [string](#string) | repeated | CcaiService name(s) defining the LLM connection used to simulate the user side of the conversations. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required, must match the dataset's). |
+| config | [google.protobuf.Struct](#google.protobuf.Struct) |  | Arbitrary simulator configuration captured for reproducibility. |
+| llm_evaluation_simulation_kind | [LlmEvaluationSimulationKind](#ondewo.nlu.LlmEvaluationSimulationKind) |  | Kind of simulation (standard persona-driven vs adversarial red-teaming). |
+| attack_types | [string](#string) | repeated | ADVERSARIAL only. Attack types to probe (e.g. "prompt_injection", "pii_extraction", "jailbreak", "off_topic_drift"). Empty = all built-in types. |
+
+
+
+
+
+
+<a name="ondewo.nlu.StartLlmEvaluationAbExperimentRequest"></a>
+
+### StartLlmEvaluationAbExperimentRequest
+Request to start an A/B experiment (validates weights, sets RUNNING).
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the experiment to start. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationAbExperiments/&lt;experiment_uuid&gt;</code>. |
+| parent | [string](#string) |  | Project owning the experiment. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.StopLlmEvaluationAbExperimentRequest"></a>
+
+### StopLlmEvaluationAbExperimentRequest
+Request to stop a running A/B experiment (sets STOPPED).
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the experiment to stop. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationAbExperiments/&lt;experiment_uuid&gt;</code>. |
+| parent | [string](#string) |  | Project owning the experiment. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.SubmitLlmEvaluationFeedbackRequest"></a>
+
+### SubmitLlmEvaluationFeedbackRequest
+Request to submit a single feedback record.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_experiment_name | [string](#string) |  | Resource name of the experiment the feedback applies to. Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;</code>. |
+| llm_evaluation_evaluator_run_name | [string](#string) |  | Optional. Resource name of the evaluator run the feedback attaches to. Empty for top-level experiment-scoped feedback (e.g. human review at experiment granularity). Format: <code>projects/&lt;project_uuid&gt;/agent/llmEvaluationExperiments/&lt;experiment_uuid&gt;/evaluatorRuns/&lt;evaluator_run_uuid&gt;</code>. |
+| llm_evaluation_feedback | [LlmEvaluationFeedback](#ondewo.nlu.LlmEvaluationFeedback) |  | Feedback payload. |
+| parent | [string](#string) |  | Project owning the experiment. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.UpdateLlmEvaluationAbExperimentRequest"></a>
+
+### UpdateLlmEvaluationAbExperimentRequest
+Request to update an existing A/B experiment.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_ab_experiment | [LlmEvaluationAbExperiment](#ondewo.nlu.LlmEvaluationAbExperiment) |  | Experiment payload (only fields covered by <code>update_mask</code> are applied). |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Mask of fields to update on the experiment record. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data on the returned experiment. |
+| parent | [string](#string) |  | Project owning the experiment. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.UpdateLlmEvaluationAnnotationQueueItemRequest"></a>
+
+### UpdateLlmEvaluationAnnotationQueueItemRequest
+Request to update an annotation-queue item (status / assignee / reason transitions).
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_annotation_queue_item | [LlmEvaluationAnnotationQueueItem](#ondewo.nlu.LlmEvaluationAnnotationQueueItem) |  | Item payload (only fields covered by <code>update_mask</code> are applied). |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Mask of fields to update on the item record. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data on the returned item. |
+| parent | [string](#string) |  | Project owning the item. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.UpdateLlmEvaluationDatasetRequest"></a>
+
+### UpdateLlmEvaluationDatasetRequest
+Request to update an existing dataset.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_dataset | [LlmEvaluationDataset](#ondewo.nlu.LlmEvaluationDataset) |  | Dataset payload (only fields covered by <code>update_mask</code> are applied). |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Mask of fields to update on the dataset record. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data on the returned dataset. |
+| parent | [string](#string) |  | Project owning the dataset. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.UpdateLlmEvaluationExampleRequest"></a>
+
+### UpdateLlmEvaluationExampleRequest
+Request to update an existing example.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_example | [LlmEvaluationExample](#ondewo.nlu.LlmEvaluationExample) |  | Example payload (only fields covered by <code>update_mask</code> are applied). |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Mask of fields to update on the example record. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data on the returned example. |
+| parent | [string](#string) |  | Project owning the example. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.UpdateLlmEvaluationExperimentRequest"></a>
+
+### UpdateLlmEvaluationExperimentRequest
+Request to update an experiment's metadata.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_experiment | [LlmEvaluationExperiment](#ondewo.nlu.LlmEvaluationExperiment) |  | Experiment payload (only fields covered by <code>update_mask</code> are applied). |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Mask of fields to update on the experiment record. Evaluator runs and feedback are immutable and ignored here. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data on the returned experiment. |
+| parent | [string](#string) |  | Project owning the experiment. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.UpdateLlmEvaluationFeedbackRequest"></a>
+
+### UpdateLlmEvaluationFeedbackRequest
+Request to update an existing feedback record.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_feedback | [LlmEvaluationFeedback](#ondewo.nlu.LlmEvaluationFeedback) |  | Feedback payload (only fields covered by <code>update_mask</code> are applied; typically <code>score</code>, <code>categorical_value</code> and / or <code>comment</code>). |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Mask of fields to update on the feedback record. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data on the returned feedback record. |
+| parent | [string](#string) |  | Project owning the feedback. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.UpdateLlmEvaluationOnlineConfigRequest"></a>
+
+### UpdateLlmEvaluationOnlineConfigRequest
+Request to update an existing online-evaluation config.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_online_config | [LlmEvaluationOnlineConfig](#ondewo.nlu.LlmEvaluationOnlineConfig) |  | Config payload (only fields covered by <code>update_mask</code> are applied). |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Mask of fields to update on the config record. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data on the returned config. |
+| parent | [string](#string) |  | Project owning the config. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.UpdateLlmEvaluationProjectSettingsRequest"></a>
+
+### UpdateLlmEvaluationProjectSettingsRequest
+Request to update the evaluation settings singleton.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_project_settings | [LlmEvaluationProjectSettings](#ondewo.nlu.LlmEvaluationProjectSettings) |  | Settings payload (only fields covered by <code>update_mask</code> are applied). |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Mask of fields to update on the settings record. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data on the returned settings. |
+| parent | [string](#string) |  | Project owning the settings. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.UpdateLlmEvaluationReleaseGateRequest"></a>
+
+### UpdateLlmEvaluationReleaseGateRequest
+Request to update an existing release gate.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_release_gate | [LlmEvaluationReleaseGate](#ondewo.nlu.LlmEvaluationReleaseGate) |  | Gate payload (only fields covered by <code>update_mask</code> are applied). |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Mask of fields to update on the gate record. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data on the returned gate. |
+| parent | [string](#string) |  | Project owning the gate. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.UpdateLlmEvaluationScheduleRequest"></a>
+
+### UpdateLlmEvaluationScheduleRequest
+Request to update an existing schedule.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_schedule | [LlmEvaluationSchedule](#ondewo.nlu.LlmEvaluationSchedule) |  | Schedule payload (only fields covered by <code>update_mask</code> are applied). |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Mask of fields to update on the schedule record. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data on the returned schedule. |
+| parent | [string](#string) |  | Project owning the schedule. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+
+<a name="ondewo.nlu.UpdateLlmEvaluationScorecardRequest"></a>
+
+### UpdateLlmEvaluationScorecardRequest
+Request to update an existing scorecard.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_evaluation_scorecard | [LlmEvaluationScorecard](#ondewo.nlu.LlmEvaluationScorecard) |  | Scorecard payload (only fields covered by <code>update_mask</code> are applied). |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Mask of fields to update on the scorecard record. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data on the returned scorecard. |
+| parent | [string](#string) |  | Project owning the scorecard. Format: <code>projects/&lt;project_uuid&gt;/agent</code>. |
+| language_code | [string](#string) |  | BCP-47 language-code scope (required). |
+
+
+
+
+
+ <!-- end messages -->
+
+
+<a name="ondewo.nlu.LlmEvaluationAbExperimentStatus"></a>
+
+### LlmEvaluationAbExperimentStatus
+Lifecycle status of an A/B experiment.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| LLM_EVALUATION_AB_EXPERIMENT_STATUS_UNSPECIFIED | 0 | Default / unset. |
+| LLM_EVALUATION_AB_EXPERIMENT_STATUS_DRAFT | 1 | Defined but not yet started; no traffic is split. |
+| LLM_EVALUATION_AB_EXPERIMENT_STATUS_RUNNING | 2 | Started; live DetectIntent traffic is being split across the variants. |
+| LLM_EVALUATION_AB_EXPERIMENT_STATUS_STOPPED | 3 | Stopped; traffic split has ended. Sticky assignments and results are retained. |
+| LLM_EVALUATION_AB_EXPERIMENT_STATUS_ARCHIVED | 4 | Archived; read-only, hidden from the default list. |
+
+
+
+<a name="ondewo.nlu.LlmEvaluationAbOptimizeMetric"></a>
+
+### LlmEvaluationAbOptimizeMetric
+The metric an A/B rollout optimizes when comparing each variant against the
+control. Each value maps to a quantity already produced by the per-variant
+results rollup (see GetAbExperimentResults). Higher-is-better vs.
+lower-is-better is implied by the metric (e.g. PASS_RATE / CRITERION_SCORE /
+SAFETY_SCORE are higher-is-better; ERROR_RATE / MEAN_LATENCY are
+lower-is-better) and applied server-side when picking the winner.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| LLM_EVALUATION_AB_OPTIMIZE_METRIC_UNSPECIFIED | 0 | Default / unset. |
+| LLM_EVALUATION_AB_OPTIMIZE_METRIC_PASS_RATE | 1 | Fraction of sessions that passed (1 - error_rate). Higher is better. |
+| LLM_EVALUATION_AB_OPTIMIZE_METRIC_ERROR_RATE | 2 | Fraction of sessions that errored. Lower is better. |
+| LLM_EVALUATION_AB_OPTIMIZE_METRIC_MEAN_LATENCY | 3 | Mean first-token / response latency in seconds. Lower is better. |
+| LLM_EVALUATION_AB_OPTIMIZE_METRIC_CRITERION_SCORE | 4 | Mean offline-criterion score in <code>[0.0, 1.0]</code>. Higher is better. |
+| LLM_EVALUATION_AB_OPTIMIZE_METRIC_SAFETY_SCORE | 5 | Mean native-safety score in <code>[0.0, 1.0]</code>. Higher is better. |
+
+
+
+<a name="ondewo.nlu.LlmEvaluationAnnotationStatus"></a>
+
+### LlmEvaluationAnnotationStatus
+Lifecycle status of an annotation-queue item.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| LLM_EVALUATION_ANNOTATION_STATUS_UNSPECIFIED | 0 | Default / unset. |
+| LLM_EVALUATION_ANNOTATION_STATUS_PENDING | 1 | Enqueued, awaiting human review. |
+| LLM_EVALUATION_ANNOTATION_STATUS_REVIEWED | 2 | Reviewed by a human (verdict / reason recorded), not yet promoted or dismissed. |
+| LLM_EVALUATION_ANNOTATION_STATUS_PROMOTED | 3 | Promoted into a regression dataset (promoted_dataset_name stamped). |
+| LLM_EVALUATION_ANNOTATION_STATUS_DISMISSED | 4 | Dismissed (not a genuine failure; will not be promoted). |
+
+
+
+<a name="ondewo.nlu.LlmEvaluationDatasetType"></a>
+
+### LlmEvaluationDatasetType
+Kind of examples an evaluation dataset holds.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| LLM_EVALUATION_DATASET_TYPE_UNSPECIFIED | 0 | Default / unset (treated as SINGLE_TURN). |
+| LLM_EVALUATION_DATASET_TYPE_SINGLE_TURN | 1 | Single-turn examples (one input, one expected output). |
+| LLM_EVALUATION_DATASET_TYPE_FLOW | 2 | Multi-turn conversation-flow examples (scripted user turns with expected tool calls / final state / answers per turn). |
+| LLM_EVALUATION_DATASET_TYPE_RAG | 3 | RAG question-answering examples (question, gold answer, expected sources). |
+| LLM_EVALUATION_DATASET_TYPE_RED_TEAM | 4 | Adversarial red-team probes (prompt injection, PII extraction, jailbreaks, ...). |
+| LLM_EVALUATION_DATASET_TYPE_SIMULATED | 5 | Synthetically generated examples (conversation simulator output). |
+
+
+
+<a name="ondewo.nlu.LlmEvaluationEvaluatorCategory"></a>
+
+### LlmEvaluationEvaluatorCategory
+Category an evaluator belongs to.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| LLM_EVALUATION_EVALUATOR_CATEGORY_UNSPECIFIED | 0 | Default / unset. |
+| LLM_EVALUATION_EVALUATOR_CATEGORY_RAG | 1 | Retrieval-augmented-generation quality (faithfulness, contextual precision, ...). |
+| LLM_EVALUATION_EVALUATOR_CATEGORY_AGENTIC | 2 | Agentic behavior (tool correctness, task completion, MCP usage, ...). |
+| LLM_EVALUATION_EVALUATOR_CATEGORY_CONVERSATIONAL | 3 | Multi-turn conversational quality (knowledge retention, role adherence, ...). |
+| LLM_EVALUATION_EVALUATOR_CATEGORY_SAFETY | 4 | Safety (toxicity, bias, PII leakage, hallucination, ...). |
+| LLM_EVALUATION_EVALUATOR_CATEGORY_HEURISTIC | 5 | Deterministic heuristics (exact match, embedding distance, JSON validity, ...). |
+| LLM_EVALUATION_EVALUATOR_CATEGORY_CUSTOM | 6 | User-configurable custom metrics (G-Eval rubrics, DAG metrics, ...). |
+
+
+
+<a name="ondewo.nlu.LlmEvaluationEvaluatorType"></a>
+
+### LlmEvaluationEvaluatorType
+Family of evaluator implementations.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| LLM_EVALUATION_EVALUATOR_TYPE_UNSPECIFIED | 0 | Default / unset. |
+| LLM_EVALUATION_EVALUATOR_TYPE_LLM_AS_JUDGE | 1 | LLM acting as a judge (LangSmith-style). |
+| LLM_EVALUATION_EVALUATOR_TYPE_HUMAN | 2 | Human reviewer. |
+| LLM_EVALUATION_EVALUATOR_TYPE_HEURISTIC | 3 | Deterministic heuristic (regex, exact match, ...). |
+| LLM_EVALUATION_EVALUATOR_TYPE_CUSTOM_CODE | 4 | Custom Python code provided by the user. |
+| LLM_EVALUATION_EVALUATOR_TYPE_PAIRWISE | 5 | Pairwise comparison evaluator. |
+
+
+
+<a name="ondewo.nlu.LlmEvaluationExampleExtractionMode"></a>
+
+### LlmEvaluationExampleExtractionMode
+How session steps are converted into evaluation examples.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| LLM_EVALUATION_EXAMPLE_EXTRACTION_MODE_UNSPECIFIED | 0 | Default / unset (treated as SINGLE_TURN). |
+| LLM_EVALUATION_EXAMPLE_EXTRACTION_MODE_SINGLE_TURN | 1 | One single-turn example per selected session step. |
+| LLM_EVALUATION_EXAMPLE_EXTRACTION_MODE_MULTI_TURN_FLOW | 2 | One multi-turn (conversation-flow) example with one turn per selected session step, in session order. |
+
+
+
+<a name="ondewo.nlu.LlmEvaluationExperimentKind"></a>
+
+### LlmEvaluationExperimentKind
+Kind of an experiment run.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| LLM_EVALUATION_EXPERIMENT_KIND_UNSPECIFIED | 0 | Default / unset (treated as STANDARD). |
+| LLM_EVALUATION_EXPERIMENT_KIND_STANDARD | 1 | Standard single-turn evaluation run. |
+| LLM_EVALUATION_EXPERIMENT_KIND_FLOW | 2 | Multi-turn conversation-flow run (per-turn results populated). |
+| LLM_EVALUATION_EXPERIMENT_KIND_RED_TEAM | 3 | Red-team / adversarial safety run. |
+| LLM_EVALUATION_EXPERIMENT_KIND_GATE_CANDIDATE | 4 | Candidate experiment dispatched by a release gate run. |
+| LLM_EVALUATION_EXPERIMENT_KIND_GATE_SAFETY | 5 | Safety experiment dispatched by a release gate run. |
+| LLM_EVALUATION_EXPERIMENT_KIND_SCHEDULED | 6 | Experiment dispatched by a recurring schedule. |
+
+
+
+<a name="ondewo.nlu.LlmEvaluationExperimentStatus"></a>
+
+### LlmEvaluationExperimentStatus
+Lifecycle status of an experiment.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| LLM_EVALUATION_EXPERIMENT_STATUS_UNSPECIFIED | 0 | Default / unset. |
+| LLM_EVALUATION_EXPERIMENT_STATUS_PENDING | 1 | Queued, not yet started. |
+| LLM_EVALUATION_EXPERIMENT_STATUS_RUNNING | 2 | Currently running. |
+| LLM_EVALUATION_EXPERIMENT_STATUS_SUCCEEDED | 3 | Finished successfully. |
+| LLM_EVALUATION_EXPERIMENT_STATUS_FAILED | 4 | Finished with errors. |
+| LLM_EVALUATION_EXPERIMENT_STATUS_CANCELLED | 5 | Cancelled by user request. |
+
+
+
+<a name="ondewo.nlu.LlmEvaluationReleaseGateVerdict"></a>
+
+### LlmEvaluationReleaseGateVerdict
+Verdict of a release gate run.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| LLM_EVALUATION_RELEASE_GATE_VERDICT_UNSPECIFIED | 0 | Default / unset. |
+| LLM_EVALUATION_RELEASE_GATE_VERDICT_PENDING | 1 | Experiments still running; verdict not yet computed. |
+| LLM_EVALUATION_RELEASE_GATE_VERDICT_PASS | 2 | All checks passed. |
+| LLM_EVALUATION_RELEASE_GATE_VERDICT_FAIL | 3 | At least one check failed. |
+| LLM_EVALUATION_RELEASE_GATE_VERDICT_STALE | 4 | Verdict is older than the gate's staleness window. |
+
+
+
+<a name="ondewo.nlu.LlmEvaluationScheduleAction"></a>
+
+### LlmEvaluationScheduleAction
+What a schedule executes when it fires.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| LLM_EVALUATION_SCHEDULE_ACTION_UNSPECIFIED | 0 | Default / unset. |
+| LLM_EVALUATION_SCHEDULE_ACTION_RUN_EXPERIMENT | 1 | Run the experiment template (recurring regression run). |
+| LLM_EVALUATION_SCHEDULE_ACTION_RUN_RELEASE_GATE | 2 | Run the referenced release gate. |
+
+
+
+<a name="ondewo.nlu.LlmEvaluationSimulationKind"></a>
+
+### LlmEvaluationSimulationKind
+Kind of conversation simulation.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| LLM_EVALUATION_SIMULATION_KIND_UNSPECIFIED | 0 | Default / unset (treated as STANDARD). |
+| LLM_EVALUATION_SIMULATION_KIND_STANDARD | 1 | Persona-driven user simulation for coverage / stress testing. |
+| LLM_EVALUATION_SIMULATION_KIND_ADVERSARIAL | 2 | Adversarial (red-team) simulation probing safety weaknesses. |
+
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="ondewo.nlu.LlmEvaluations"></a>
+
+### LlmEvaluations
+LangSmith-style evaluation surface: datasets, examples, experiments, evaluator
+runs, feedback (LLM-as-judge / human / heuristic / custom code / pairwise),
+pairwise comparisons, release gates + persisted gate runs, scorecards,
+per-project evaluation settings (judge configuration), the evaluator registry,
+golden-transcript recording from sessions, conversation simulation
+(standard + adversarial red-teaming), recurring schedules and report artifacts.
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| LlmEvaluationCreateDataset | [CreateLlmEvaluationDatasetRequest](#ondewo.nlu.CreateLlmEvaluationDatasetRequest) | [LlmEvaluationDataset](#ondewo.nlu.LlmEvaluationDataset) | Create a new evaluation dataset. |
+| LlmEvaluationGetDataset | [GetLlmEvaluationDatasetRequest](#ondewo.nlu.GetLlmEvaluationDatasetRequest) | [LlmEvaluationDataset](#ondewo.nlu.LlmEvaluationDataset) | Get an evaluation dataset by resource name. |
+| LlmEvaluationListDatasets | [ListLlmEvaluationDatasetsRequest](#ondewo.nlu.ListLlmEvaluationDatasetsRequest) | [ListLlmEvaluationDatasetsResponse](#ondewo.nlu.ListLlmEvaluationDatasetsResponse) | List evaluation datasets in the project, optionally filtered + paginated. |
+| LlmEvaluationUpdateDataset | [UpdateLlmEvaluationDatasetRequest](#ondewo.nlu.UpdateLlmEvaluationDatasetRequest) | [LlmEvaluationDataset](#ondewo.nlu.LlmEvaluationDataset) | Update metadata of an existing evaluation dataset (examples managed via Add/Update/Delete RPCs). |
+| LlmEvaluationDeleteDataset | [DeleteLlmEvaluationDatasetRequest](#ondewo.nlu.DeleteLlmEvaluationDatasetRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Delete an evaluation dataset and all owned examples. |
+| LlmEvaluationAddExample | [AddLlmEvaluationExampleRequest](#ondewo.nlu.AddLlmEvaluationExampleRequest) | [LlmEvaluationExample](#ondewo.nlu.LlmEvaluationExample) | Add a single example to an existing dataset. |
+| LlmEvaluationAddExamples | [AddLlmEvaluationExamplesRequest](#ondewo.nlu.AddLlmEvaluationExamplesRequest) | [AddLlmEvaluationExamplesResponse](#ondewo.nlu.AddLlmEvaluationExamplesResponse) | Add multiple examples to an existing dataset in one call. |
+| LlmEvaluationGetExample | [GetLlmEvaluationExampleRequest](#ondewo.nlu.GetLlmEvaluationExampleRequest) | [LlmEvaluationExample](#ondewo.nlu.LlmEvaluationExample) | Get a single evaluation example by resource name. |
+| LlmEvaluationListExamples | [ListLlmEvaluationExamplesRequest](#ondewo.nlu.ListLlmEvaluationExamplesRequest) | [ListLlmEvaluationExamplesResponse](#ondewo.nlu.ListLlmEvaluationExamplesResponse) | List examples in a dataset, optionally filtered + paginated. |
+| LlmEvaluationUpdateExample | [UpdateLlmEvaluationExampleRequest](#ondewo.nlu.UpdateLlmEvaluationExampleRequest) | [LlmEvaluationExample](#ondewo.nlu.LlmEvaluationExample) | Update fields of an existing evaluation example. |
+| LlmEvaluationDeleteExample | [DeleteLlmEvaluationExampleRequest](#ondewo.nlu.DeleteLlmEvaluationExampleRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Delete an evaluation example. |
+| LlmEvaluationRunExperiment | [RunLlmEvaluationExperimentRequest](#ondewo.nlu.RunLlmEvaluationExperimentRequest) | [Operation](#ondewo.nlu.Operation) | Run a fresh experiment over a dataset. Long-running operation: the returned Operation resolves to the completed LlmEvaluationExperiment once all evaluators have produced feedback. |
+| LlmEvaluationGetExperiment | [GetLlmEvaluationExperimentRequest](#ondewo.nlu.GetLlmEvaluationExperimentRequest) | [LlmEvaluationExperiment](#ondewo.nlu.LlmEvaluationExperiment) | Retrieve a previously-run experiment by resource name. |
+| LlmEvaluationListExperiments | [ListLlmEvaluationExperimentsRequest](#ondewo.nlu.ListLlmEvaluationExperimentsRequest) | [ListLlmEvaluationExperimentsResponse](#ondewo.nlu.ListLlmEvaluationExperimentsResponse) | List experiments in a project, optionally filtered + paginated. |
+| LlmEvaluationUpdateExperiment | [UpdateLlmEvaluationExperimentRequest](#ondewo.nlu.UpdateLlmEvaluationExperimentRequest) | [LlmEvaluationExperiment](#ondewo.nlu.LlmEvaluationExperiment) | Update metadata of an experiment (e.g. baseline pointer, display_name). Evaluator runs and feedback are immutable; use LlmEvaluationSubmitFeedback / LlmEvaluationDeleteFeedback for downstream annotations. |
+| LlmEvaluationDeleteExperiment | [DeleteLlmEvaluationExperimentRequest](#ondewo.nlu.DeleteLlmEvaluationExperimentRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Delete an experiment and all owned evaluator runs + feedbacks. |
+| LlmEvaluationCancelExperiment | [CancelLlmEvaluationExperimentRequest](#ondewo.nlu.CancelLlmEvaluationExperimentRequest) | [LlmEvaluationExperiment](#ondewo.nlu.LlmEvaluationExperiment) | Cancel a still-running experiment. No-op if already finished. |
+| LlmEvaluationCompareExperiments | [CompareLlmEvaluationExperimentsRequest](#ondewo.nlu.CompareLlmEvaluationExperimentsRequest) | [LlmEvaluationComparison](#ondewo.nlu.LlmEvaluationComparison) | Compare two-or-more experiments and emit a pairwise comparison report. |
+| LlmEvaluationSubmitFeedback | [SubmitLlmEvaluationFeedbackRequest](#ondewo.nlu.SubmitLlmEvaluationFeedbackRequest) | [LlmEvaluationFeedback](#ondewo.nlu.LlmEvaluationFeedback) | Submit a single feedback record (used by human reviewers / external evaluators). |
+| LlmEvaluationListFeedback | [ListLlmEvaluationFeedbackRequest](#ondewo.nlu.ListLlmEvaluationFeedbackRequest) | [ListLlmEvaluationFeedbackResponse](#ondewo.nlu.ListLlmEvaluationFeedbackResponse) | List feedback records, optionally filtered + paginated. |
+| LlmEvaluationDeleteFeedback | [DeleteLlmEvaluationFeedbackRequest](#ondewo.nlu.DeleteLlmEvaluationFeedbackRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Delete a single feedback record. |
+| LlmEvaluationUpdateFeedback | [UpdateLlmEvaluationFeedbackRequest](#ondewo.nlu.UpdateLlmEvaluationFeedbackRequest) | [LlmEvaluationFeedback](#ondewo.nlu.LlmEvaluationFeedback) | Update a single feedback record (e.g. correct a human review score or comment). |
+| LlmEvaluationCreateReleaseGate | [CreateLlmEvaluationReleaseGateRequest](#ondewo.nlu.CreateLlmEvaluationReleaseGateRequest) | [LlmEvaluationReleaseGate](#ondewo.nlu.LlmEvaluationReleaseGate) | Create a new release gate (a named set of thresholds over evaluator scores, regression deltas and telemetry that decides whether a candidate configuration ships). |
+| LlmEvaluationGetReleaseGate | [GetLlmEvaluationReleaseGateRequest](#ondewo.nlu.GetLlmEvaluationReleaseGateRequest) | [LlmEvaluationReleaseGate](#ondewo.nlu.LlmEvaluationReleaseGate) | Get a release gate by resource name. |
+| LlmEvaluationListReleaseGates | [ListLlmEvaluationReleaseGatesRequest](#ondewo.nlu.ListLlmEvaluationReleaseGatesRequest) | [ListLlmEvaluationReleaseGatesResponse](#ondewo.nlu.ListLlmEvaluationReleaseGatesResponse) | List release gates in the project, optionally filtered + paginated. |
+| LlmEvaluationUpdateReleaseGate | [UpdateLlmEvaluationReleaseGateRequest](#ondewo.nlu.UpdateLlmEvaluationReleaseGateRequest) | [LlmEvaluationReleaseGate](#ondewo.nlu.LlmEvaluationReleaseGate) | Update an existing release gate. Semantic changes (suite, baseline, evaluators, thresholds, weights, safety) increment the server-managed revision. |
+| LlmEvaluationDeleteReleaseGate | [DeleteLlmEvaluationReleaseGateRequest](#ondewo.nlu.DeleteLlmEvaluationReleaseGateRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Delete a release gate and all owned gate runs. |
+| LlmEvaluationRunReleaseGate | [RunLlmEvaluationReleaseGateRequest](#ondewo.nlu.RunLlmEvaluationReleaseGateRequest) | [Operation](#ondewo.nlu.Operation) | Run a release gate against a candidate target. Long-running operation: the returned Operation resolves to the completed LlmEvaluationReleaseGateRun once the candidate (and optional safety) experiments finished and the verdict has been computed and persisted server-side. |
+| LlmEvaluationGetReleaseGateRun | [GetLlmEvaluationReleaseGateRunRequest](#ondewo.nlu.GetLlmEvaluationReleaseGateRunRequest) | [LlmEvaluationReleaseGateRun](#ondewo.nlu.LlmEvaluationReleaseGateRun) | Get a single release gate run (persisted verdict + checks) by resource name. |
+| LlmEvaluationListReleaseGateRuns | [ListLlmEvaluationReleaseGateRunsRequest](#ondewo.nlu.ListLlmEvaluationReleaseGateRunsRequest) | [ListLlmEvaluationReleaseGateRunsResponse](#ondewo.nlu.ListLlmEvaluationReleaseGateRunsResponse) | List release gate runs, optionally filtered + paginated. |
+| LlmEvaluationCreateScorecard | [CreateLlmEvaluationScorecardRequest](#ondewo.nlu.CreateLlmEvaluationScorecardRequest) | [LlmEvaluationScorecard](#ondewo.nlu.LlmEvaluationScorecard) | Create a new scorecard (weighted multi-criteria roll-up definition). |
+| LlmEvaluationGetScorecard | [GetLlmEvaluationScorecardRequest](#ondewo.nlu.GetLlmEvaluationScorecardRequest) | [LlmEvaluationScorecard](#ondewo.nlu.LlmEvaluationScorecard) | Get a scorecard by resource name. |
+| LlmEvaluationListScorecards | [ListLlmEvaluationScorecardsRequest](#ondewo.nlu.ListLlmEvaluationScorecardsRequest) | [ListLlmEvaluationScorecardsResponse](#ondewo.nlu.ListLlmEvaluationScorecardsResponse) | List scorecards in the project, optionally filtered + paginated. |
+| LlmEvaluationUpdateScorecard | [UpdateLlmEvaluationScorecardRequest](#ondewo.nlu.UpdateLlmEvaluationScorecardRequest) | [LlmEvaluationScorecard](#ondewo.nlu.LlmEvaluationScorecard) | Update an existing scorecard. |
+| LlmEvaluationDeleteScorecard | [DeleteLlmEvaluationScorecardRequest](#ondewo.nlu.DeleteLlmEvaluationScorecardRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Delete a scorecard. |
+| LlmEvaluationGetProjectSettings | [GetLlmEvaluationProjectSettingsRequest](#ondewo.nlu.GetLlmEvaluationProjectSettingsRequest) | [LlmEvaluationProjectSettings](#ondewo.nlu.LlmEvaluationProjectSettings) | Get the per-(project, language_code) evaluation settings singleton (judge configuration, default weights, pass cutoffs). The server auto-creates default settings on first access. |
+| LlmEvaluationUpdateProjectSettings | [UpdateLlmEvaluationProjectSettingsRequest](#ondewo.nlu.UpdateLlmEvaluationProjectSettingsRequest) | [LlmEvaluationProjectSettings](#ondewo.nlu.LlmEvaluationProjectSettings) | Update the per-(project, language_code) evaluation settings singleton. |
+| LlmEvaluationListEvaluators | [ListLlmEvaluationEvaluatorsRequest](#ondewo.nlu.ListLlmEvaluationEvaluatorsRequest) | [ListLlmEvaluationEvaluatorsResponse](#ondewo.nlu.ListLlmEvaluationEvaluatorsResponse) | List the evaluators available on this server, with metadata describing the category, required example fields, multi-turn support, default threshold, judge requirement and configurable parameters of each evaluator. |
+| LlmEvaluationCreateExamplesFromSession | [CreateLlmEvaluationExamplesFromSessionRequest](#ondewo.nlu.CreateLlmEvaluationExamplesFromSessionRequest) | [CreateLlmEvaluationExamplesFromSessionResponse](#ondewo.nlu.CreateLlmEvaluationExamplesFromSessionResponse) | Convert a recorded session (or a selection of its session steps) into evaluation examples ("golden transcripts") inside an existing dataset. |
+| LlmEvaluationSimulateConversations | [SimulateLlmEvaluationConversationsRequest](#ondewo.nlu.SimulateLlmEvaluationConversationsRequest) | [Operation](#ondewo.nlu.Operation) | Generate synthetic multi-turn evaluation conversations by simulating users (persona-driven; STANDARD kind) or attackers (red-teaming; ADVERSARIAL kind) against the live target. Long-running operation: the returned Operation resolves once the generated examples have been persisted into the receiving dataset. |
+| LlmEvaluationCreateSchedule | [CreateLlmEvaluationScheduleRequest](#ondewo.nlu.CreateLlmEvaluationScheduleRequest) | [LlmEvaluationSchedule](#ondewo.nlu.LlmEvaluationSchedule) | Create a new schedule for recurring experiment / release gate runs. |
+| LlmEvaluationGetSchedule | [GetLlmEvaluationScheduleRequest](#ondewo.nlu.GetLlmEvaluationScheduleRequest) | [LlmEvaluationSchedule](#ondewo.nlu.LlmEvaluationSchedule) | Get a schedule by resource name. |
+| LlmEvaluationListSchedules | [ListLlmEvaluationSchedulesRequest](#ondewo.nlu.ListLlmEvaluationSchedulesRequest) | [ListLlmEvaluationSchedulesResponse](#ondewo.nlu.ListLlmEvaluationSchedulesResponse) | List schedules in the project, optionally filtered + paginated. |
+| LlmEvaluationUpdateSchedule | [UpdateLlmEvaluationScheduleRequest](#ondewo.nlu.UpdateLlmEvaluationScheduleRequest) | [LlmEvaluationSchedule](#ondewo.nlu.LlmEvaluationSchedule) | Update an existing schedule (cron / interval, enabled flag, request template). |
+| LlmEvaluationDeleteSchedule | [DeleteLlmEvaluationScheduleRequest](#ondewo.nlu.DeleteLlmEvaluationScheduleRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Delete a schedule. Experiments / gate runs already created by it are kept. |
+| LlmEvaluationCreateReport | [CreateLlmEvaluationReportRequest](#ondewo.nlu.CreateLlmEvaluationReportRequest) | [LlmEvaluationReport](#ondewo.nlu.LlmEvaluationReport) | Persist a generated report as an immutable artifact (incl. payload bytes). |
+| LlmEvaluationGetReport | [GetLlmEvaluationReportRequest](#ondewo.nlu.GetLlmEvaluationReportRequest) | [LlmEvaluationReport](#ondewo.nlu.LlmEvaluationReport) | Get a report by resource name (incl. payload bytes). |
+| LlmEvaluationListReports | [ListLlmEvaluationReportsRequest](#ondewo.nlu.ListLlmEvaluationReportsRequest) | [ListLlmEvaluationReportsResponse](#ondewo.nlu.ListLlmEvaluationReportsResponse) | List reports, optionally filtered + paginated. Payload bytes are omitted unless explicitly requested via field_mask. |
+| LlmEvaluationDeleteReport | [DeleteLlmEvaluationReportRequest](#ondewo.nlu.DeleteLlmEvaluationReportRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Delete a report. |
+| LlmEvaluationCreateAbExperiment | [CreateLlmEvaluationAbExperimentRequest](#ondewo.nlu.CreateLlmEvaluationAbExperimentRequest) | [LlmEvaluationAbExperiment](#ondewo.nlu.LlmEvaluationAbExperiment) | Create a new A/B experiment (a set of routing variants over live DetectIntent traffic). Created in DRAFT status; traffic is only split once it is started via LlmEvaluationStartAbExperiment. |
+| LlmEvaluationGetAbExperiment | [GetLlmEvaluationAbExperimentRequest](#ondewo.nlu.GetLlmEvaluationAbExperimentRequest) | [LlmEvaluationAbExperiment](#ondewo.nlu.LlmEvaluationAbExperiment) | Get an A/B experiment by resource name. |
+| LlmEvaluationListAbExperiments | [ListLlmEvaluationAbExperimentsRequest](#ondewo.nlu.ListLlmEvaluationAbExperimentsRequest) | [ListLlmEvaluationAbExperimentsResponse](#ondewo.nlu.ListLlmEvaluationAbExperimentsResponse) | List A/B experiments in the project, optionally filtered + paginated. |
+| LlmEvaluationUpdateAbExperiment | [UpdateLlmEvaluationAbExperimentRequest](#ondewo.nlu.UpdateLlmEvaluationAbExperimentRequest) | [LlmEvaluationAbExperiment](#ondewo.nlu.LlmEvaluationAbExperiment) | Update an existing A/B experiment (variants, traffic config, metadata). Only allowed in DRAFT / STOPPED status; running experiments must be stopped first. |
+| LlmEvaluationDeleteAbExperiment | [DeleteLlmEvaluationAbExperimentRequest](#ondewo.nlu.DeleteLlmEvaluationAbExperimentRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Delete an A/B experiment and all owned sticky-assignment rows. |
+| LlmEvaluationStartAbExperiment | [StartLlmEvaluationAbExperimentRequest](#ondewo.nlu.StartLlmEvaluationAbExperimentRequest) | [LlmEvaluationAbExperiment](#ondewo.nlu.LlmEvaluationAbExperiment) | Start an A/B experiment: validates that the variant traffic weights are well-formed (sum to the configured total), stamps started_at and transitions the experiment to RUNNING so live traffic begins to be split. |
+| LlmEvaluationStopAbExperiment | [StopLlmEvaluationAbExperimentRequest](#ondewo.nlu.StopLlmEvaluationAbExperimentRequest) | [LlmEvaluationAbExperiment](#ondewo.nlu.LlmEvaluationAbExperiment) | Stop a running A/B experiment: stamps stopped_at and transitions to STOPPED. Existing sticky assignments are retained for results computation. |
+| LlmEvaluationGetAbExperimentResults | [GetLlmEvaluationAbExperimentResultsRequest](#ondewo.nlu.GetLlmEvaluationAbExperimentResultsRequest) | [GetLlmEvaluationAbExperimentResultsResponse](#ondewo.nlu.GetLlmEvaluationAbExperimentResultsResponse) | Compute per-variant telemetry rollups for an A/B experiment. Stateless / computed on demand: gathers each variant's sessions and aggregates their LlmTelemetry into a per-variant LlmTelemetryReport. There is no auto-rollout. |
+| LlmEvaluationGetAbRolloutRecommendation | [GetLlmEvaluationAbRolloutRecommendationRequest](#ondewo.nlu.GetLlmEvaluationAbRolloutRecommendationRequest) | [LlmEvaluationAbRolloutRecommendation](#ondewo.nlu.LlmEvaluationAbRolloutRecommendation) | Compute a rollout recommendation for an A/B experiment: which variant wins against the control on the chosen optimize metric under the supplied statistical guard-rails (confidence level, minimum sessions per variant, minimum effect size). Stateless / read-only — computed on demand from the per-variant results; nothing is persisted and no traffic / config changes. |
+| LlmEvaluationApplyAbRollout | [ApplyLlmEvaluationAbRolloutRequest](#ondewo.nlu.ApplyLlmEvaluationAbRolloutRequest) | [LlmEvaluationAbRolloutDecision](#ondewo.nlu.LlmEvaluationAbRolloutDecision) | Apply a rollout for an A/B experiment: promotes the chosen variant's config as the project's classifier default, stops the experiment, and writes + returns the LlmEvaluationAbRolloutDecision audit record. The operator picks the variant explicitly (there is no auto-rollout). Idempotent: re-applying an already-rolled-out experiment returns the existing decision. |
+| LlmEvaluationGetAbRolloutDecision | [GetLlmEvaluationAbRolloutDecisionRequest](#ondewo.nlu.GetLlmEvaluationAbRolloutDecisionRequest) | [LlmEvaluationAbRolloutDecision](#ondewo.nlu.LlmEvaluationAbRolloutDecision) | Get the applied rollout decision (audit record) by resource name. |
+| LlmEvaluationListAbRolloutDecisions | [ListLlmEvaluationAbRolloutDecisionsRequest](#ondewo.nlu.ListLlmEvaluationAbRolloutDecisionsRequest) | [ListLlmEvaluationAbRolloutDecisionsResponse](#ondewo.nlu.ListLlmEvaluationAbRolloutDecisionsResponse) | List applied rollout decisions in the project, optionally filtered (e.g. by experiment) + paginated. |
+| LlmEvaluationCreateOnlineConfig | [CreateLlmEvaluationOnlineConfigRequest](#ondewo.nlu.CreateLlmEvaluationOnlineConfigRequest) | [LlmEvaluationOnlineConfig](#ondewo.nlu.LlmEvaluationOnlineConfig) | Create a new online-evaluation config: a per-(project, language_code) definition selecting a reference-free evaluator set + a sample rate. A swarm-safe background worker samples already-persisted live session steps, scores the recorded answer with these evaluators and enqueues failing steps into the annotation queue. |
+| LlmEvaluationGetOnlineConfig | [GetLlmEvaluationOnlineConfigRequest](#ondewo.nlu.GetLlmEvaluationOnlineConfigRequest) | [LlmEvaluationOnlineConfig](#ondewo.nlu.LlmEvaluationOnlineConfig) | Get an online-evaluation config by resource name. |
+| LlmEvaluationListOnlineConfigs | [ListLlmEvaluationOnlineConfigsRequest](#ondewo.nlu.ListLlmEvaluationOnlineConfigsRequest) | [ListLlmEvaluationOnlineConfigsResponse](#ondewo.nlu.ListLlmEvaluationOnlineConfigsResponse) | List online-evaluation configs in the project, optionally filtered + paginated. |
+| LlmEvaluationUpdateOnlineConfig | [UpdateLlmEvaluationOnlineConfigRequest](#ondewo.nlu.UpdateLlmEvaluationOnlineConfigRequest) | [LlmEvaluationOnlineConfig](#ondewo.nlu.LlmEvaluationOnlineConfig) | Update an existing online-evaluation config (enabled flag, evaluator set, sample rate, thresholds, session filter). |
+| LlmEvaluationDeleteOnlineConfig | [DeleteLlmEvaluationOnlineConfigRequest](#ondewo.nlu.DeleteLlmEvaluationOnlineConfigRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Delete an online-evaluation config. Already-produced online results and annotation-queue items are kept. |
+| LlmEvaluationGetOnlineResult | [GetLlmEvaluationOnlineResultRequest](#ondewo.nlu.GetLlmEvaluationOnlineResultRequest) | [LlmEvaluationOnlineResult](#ondewo.nlu.LlmEvaluationOnlineResult) | Get a single online-evaluation result (per scored session step) by resource name. |
+| LlmEvaluationListOnlineResults | [ListLlmEvaluationOnlineResultsRequest](#ondewo.nlu.ListLlmEvaluationOnlineResultsRequest) | [ListLlmEvaluationOnlineResultsResponse](#ondewo.nlu.ListLlmEvaluationOnlineResultsResponse) | List online-evaluation results, optionally filtered by config / pass-state + paginated. Read-only: result rows are produced by the online-evaluation worker (no Create RPC). |
+| LlmEvaluationGetAnnotationQueueItem | [GetLlmEvaluationAnnotationQueueItemRequest](#ondewo.nlu.GetLlmEvaluationAnnotationQueueItemRequest) | [LlmEvaluationAnnotationQueueItem](#ondewo.nlu.LlmEvaluationAnnotationQueueItem) | Get a single annotation-queue item by resource name. |
+| LlmEvaluationListAnnotationQueueItems | [ListLlmEvaluationAnnotationQueueItemsRequest](#ondewo.nlu.ListLlmEvaluationAnnotationQueueItemsRequest) | [ListLlmEvaluationAnnotationQueueItemsResponse](#ondewo.nlu.ListLlmEvaluationAnnotationQueueItemsResponse) | List annotation-queue items, optionally filtered by status / assignee + paginated. Items are enqueued by the online-evaluation worker (no Create RPC). |
+| LlmEvaluationUpdateAnnotationQueueItem | [UpdateLlmEvaluationAnnotationQueueItemRequest](#ondewo.nlu.UpdateLlmEvaluationAnnotationQueueItemRequest) | [LlmEvaluationAnnotationQueueItem](#ondewo.nlu.LlmEvaluationAnnotationQueueItem) | Update an annotation-queue item (status / assignee / reason transitions: PENDING -> REVIEWED / DISMISSED). |
+| LlmEvaluationPromoteAnnotationQueueItem | [PromoteLlmEvaluationAnnotationQueueItemRequest](#ondewo.nlu.PromoteLlmEvaluationAnnotationQueueItemRequest) | [PromoteLlmEvaluationAnnotationQueueItemResponse](#ondewo.nlu.PromoteLlmEvaluationAnnotationQueueItemResponse) | Promote an annotation-queue item into a regression dataset. Thin server-side composition: delegates to LlmEvaluationCreateExamplesFromSession with the item's session (+ selected steps), flips the item status to PROMOTED and stamps the promoted dataset name. Returns the created example(s). |
+
+ <!-- end services -->
+
+
+
 <a name="ondewo/nlu/operation_metadata.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
@@ -6633,6 +10308,7 @@ It can be creating, importing, exporting, deleting, restoring, building cache, t
 | RUN_RAG_CRAWLER | 10 | run a rag crawler |
 | ADD_RAG_CRAWLER_RESULT_TO_DATASET | 11 | add a rag crawler result to a dataset |
 | REMOVE_RAG_CRAWLER_RESULT_FROM_DATASET | 12 | remove a rag crawler result from a dataset |
+| CHANGE_DATASET_EMBEDDING_MODEL | 13 | change the embedding model of dataset that already contains parsed documents |
 
 
 
@@ -6706,7 +10382,65 @@ The request message for <a href="index.html#ondewo.nlu.Operations.GetOperation">
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | The name of the operation resource. |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetRemoteOperationContainerLogsRequest"></a>
+
+### GetRemoteOperationContainerLogsRequest
+The request message for <a href="index.html#ondewo.nlu.Operations.GetRemoteOperationContainerLogs">Operations.GetRemoteOperationContainerLogs</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the operation resource whose container logs should be returned. |
+| min_log_level | [LogSeverity](#ondewo.nlu.LogSeverity) |  | Only return lines at or above this loguru severity. <code>LOG_SEVERITY_UNSPECIFIED</code> (the default) returns every line regardless of level. |
+| start_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Only return lines whose timestamp is at or after this instant. Unset returns from the start of the available logs. |
+| end_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Only return lines whose timestamp is at or before this instant. Unset returns up to the latest available log line. |
+| max_lines | [int32](#int32) |  | Return at most this many lines, keeping the most recent matches. <code>0</code> (the default) applies a server-side safety cap. |
+| regex | [string](#string) |  | Only return lines whose message matches this regular expression (Python <code>re</code> syntax). Empty (the default) disables regex filtering. |
+| container_id | [string](#string) |  | Optional. Scope the query to a single container of the operation, identified by its docker container id. Empty (the default) queries the operation&apos;s currently-registered container, preserving the legacy single-container behavior. When the container has finished and been removed, its persisted logs are served from the server-side log archive. |
+| before_seq | [int64](#int64) |  | Optional cursor for infinite-scroll-UP paging: return the newest lines with <a href="index.html#ondewo.nlu.RemoteOperationContainerLogLine">seq</a> &lt; <code>before_seq</code> (older window). <code>0</code> (the default) disables backward paging. |
+| after_seq | [int64](#int64) |  | Optional cursor for infinite-scroll-DOWN paging: return lines with <code>seq</code> &gt; <code>after_seq</code> (newer window). <code>0</code> (the default) disables forward paging. |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetRemoteOperationContainerLogsResponse"></a>
+
+### GetRemoteOperationContainerLogsResponse
+The response message for <a href="index.html#ondewo.nlu.Operations.GetRemoteOperationContainerLogs">Operations.GetRemoteOperationContainerLogs</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| log_lines | [RemoteOperationContainerLogLine](#ondewo.nlu.RemoteOperationContainerLogLine) | repeated | The matching log lines, oldest first. Secrets are redacted server-side. |
+| truncated | [bool](#bool) |  | True when older matching lines were dropped because <code>max_lines</code> was reached. |
+| min_available_seq | [int64](#int64) |  | The smallest <code>seq</code> currently available for this container (its oldest captured line). A client paging up has reached the beginning when the returned lines start at this value. |
+| max_available_seq | [int64](#int64) |  | The largest <code>seq</code> currently available for this container (its newest captured line). |
+| has_more_older | [bool](#bool) |  | True when older lines than the returned window still exist (i.e. the window&apos;s first <code>seq</code> &gt; <code>min_available_seq</code>) — the client may keep scrolling up. |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetRemoteOperationContainerStatusRequest"></a>
+
+### GetRemoteOperationContainerStatusRequest
+The request message for <a href="index.html#ondewo.nlu.Operations.GetRemoteOperationContainerStatus">Operations.GetRemoteOperationContainerStatus</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the operation resource whose container status should be returned. |
+| container_id | [string](#string) |  | Optional. Scope the status to a single container of the operation, identified by its docker container id. Empty (the default) returns the status of the operation&apos;s currently-registered container, preserving the legacy single-container behavior. |
 
 
 
@@ -6734,7 +10468,7 @@ Examples of valid page token strings: <ul> <li>&quot;&quot;</li> <li>&quot;curre
 
 Examples of invalid page token strings: <ul> <li>&quot;1&quot;</li> <li>&quot;current_index-0--page_size-20&quot;</li> <li>&quot;current_index--1--page_size-20&quot;</li> <li>&quot;current_index1--page_size-20&quot;</li> <li>&quot;current_index-1--page_size--20&quot;</li> </ul> |
 | operation_filter | [OperationFilter](#ondewo.nlu.OperationFilter) |  | Optional. A filter to narrow the response down to operations of interest. |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -6751,6 +10485,37 @@ The response message for <a href="index.html#ondewo.nlu.Operations.ListOperation
 | ----- | ---- | ----- | ----------- |
 | operations | [Operation](#ondewo.nlu.Operation) | repeated | A list of operations that matches the specified filter in the request. |
 | next_page_token | [string](#string) |  | The next_page_token is used to retrieve the next page of a returned result, e.g. next_page_token is current_index-2 |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListRemoteOperationContainersRequest"></a>
+
+### ListRemoteOperationContainersRequest
+The request message for <a href="index.html#ondewo.nlu.Operations.ListRemoteOperationContainers">Operations.ListRemoteOperationContainers</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the operation resource whose containers should be listed. |
+| include_sub_operations | [bool](#bool) |  | When true, also include the containers of the operation&apos;s sub-operations (<a href="index.html#ondewo.nlu.OperationMetadata">OperationMetadata.sub_operation_names</a>). |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListRemoteOperationContainersResponse"></a>
+
+### ListRemoteOperationContainersResponse
+The response message for <a href="index.html#ondewo.nlu.Operations.ListRemoteOperationContainers">Operations.ListRemoteOperationContainers</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| containers | [RemoteOperationContainer](#ondewo.nlu.RemoteOperationContainer) | repeated | The containers started by the operation (and, when requested, its sub-operations), oldest first. |
 
 
 
@@ -6797,7 +10562,164 @@ All fields below are optional. Multiple fields specified at the same time are ch
 
 
 
+
+<a name="ondewo.nlu.RemoteOperationContainer"></a>
+
+### RemoteOperationContainer
+Describes one docker container started by a remote operation. A single operation may start several
+containers sequentially (hardware-check, GPU pre-allocation, build-cache, and one training container
+per algorithm), so containers are enumerated by
+<a href="index.html#ondewo.nlu.Operations.ListRemoteOperationContainers">Operations.ListRemoteOperationContainers</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| container_id | [string](#string) |  | The docker container id (64-hex). Empty until captured at launch. |
+| container_name | [string](#string) |  | The deterministic docker container name (the <code>--name</code>). |
+| host_name | [string](#string) |  | The host the container runs (or ran) on. |
+| lifecycle_state | [RemoteOperationContainerLifecycleState](#ondewo.nlu.RemoteOperationContainerLifecycleState) |  | The last-known lifecycle state of the container. |
+| operation_name | [string](#string) |  | The operation resource that started this container. May be a sub-operation of the queried operation when <code>include_sub_operations</code> was set. |
+| image | [string](#string) |  | The docker image reference the container was started from. |
+| phase | [string](#string) |  | A human-readable phase label for the container within the operation, e.g. <code>hw_check</code>, <code>gpu_prealloc</code>, <code>build_cache</code>, <code>train</code>, <code>rag_crawl</code>. |
+| exit_code | [int32](#int32) |  | The container exit code. Only meaningful once the container has exited. |
+| oom_killed | [bool](#bool) |  | True when the container was killed by the out-of-memory killer. |
+| started_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the container started, if known. |
+| finished_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the container finished, if it has exited. |
+| logs_available | [bool](#bool) |  | True when logs for this container can still be fetched — either the container is live, or its logs were persisted to the server-side archive after it finished. |
+| environment_variables | [RemoteOperationContainer.EnvironmentVariablesEntry](#ondewo.nlu.RemoteOperationContainer.EnvironmentVariablesEntry) | repeated | The container&apos;s environment variables (docker <code>Config.Env</code>), as a name→value map. Secret values (passwords, tokens, private keys, certificates) are redacted server-side; plain non-secret values such as numeric limits remain visible. Persisted at launch so it is available even after the container is removed. |
+| command | [string](#string) | repeated | The container&apos;s command/args (docker <code>Config.Cmd</code>). |
+| memory_limit_bytes | [int64](#int64) |  | The container&apos;s hard memory limit in bytes (docker <code>HostConfig.Memory</code>). <code>0</code> means unlimited. |
+| nano_cpus | [int64](#int64) |  | The container&apos;s CPU limit in billionths of a CPU (docker <code>HostConfig.NanoCpus</code>); cores = <code>nano_cpus</code> / 1e9. <code>0</code> means unset (see <code>cpu_quota</code>). |
+| cpuset_cpus | [string](#string) |  | The CPUs the container is pinned to (docker <code>HostConfig.CpusetCpus</code>), empty when unset. |
+| cpu_quota | [int64](#int64) |  | The CFS CPU quota (docker <code>HostConfig.CpuQuota</code>); cores = <code>cpu_quota</code> / <code>cpu_period</code> when both are &gt; 0. |
+| cpu_period | [int64](#int64) |  | The CFS CPU period (docker <code>HostConfig.CpuPeriod</code>). |
+
+
+
+
+
+
+<a name="ondewo.nlu.RemoteOperationContainer.EnvironmentVariablesEntry"></a>
+
+### RemoteOperationContainer.EnvironmentVariablesEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.RemoteOperationContainerLogLine"></a>
+
+### RemoteOperationContainerLogLine
+A single parsed container log line, emitted by both the streaming and the query RPCs.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | The timestamp parsed from the loguru line prefix, if present. |
+| level | [LogSeverity](#ondewo.nlu.LogSeverity) |  | The loguru severity parsed from the line, or <code>LOG_SEVERITY_UNSPECIFIED</code> if the line carried no recognizable level (e.g. a continuation / traceback line). |
+| message | [string](#string) |  | The log message text, with ANSI colour codes stripped and secrets redacted. |
+| container_id | [string](#string) |  | The docker container id this line was produced by. Lets a client attribute or group lines when an operation ran several containers. Empty when the id was not captured. |
+| container_name | [string](#string) |  | The docker container name this line was produced by. Empty when unavailable. |
+| seq | [int64](#int64) |  | The monotonically-increasing sequence number of this line within its container&apos;s captured log (assigned by the server-side capture). Used as the cursor for infinite-scroll paging. <code>0</code> when the line was produced by a legacy path that did not assign a sequence. |
+
+
+
+
+
+
+<a name="ondewo.nlu.RemoteOperationContainerStatus"></a>
+
+### RemoteOperationContainerStatus
+The response message for <a href="index.html#ondewo.nlu.Operations.GetRemoteOperationContainerStatus">Operations.GetRemoteOperationContainerStatus</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the operation resource this status describes. |
+| lifecycle_state | [RemoteOperationContainerLifecycleState](#ondewo.nlu.RemoteOperationContainerLifecycleState) |  | The lifecycle state of the container. |
+| host_name | [string](#string) |  | The host the container was dispatched to (empty when the dispatch record is unavailable). |
+| container_name | [string](#string) |  | The container name (empty when the dispatch record is unavailable). |
+| container_id | [string](#string) |  | The docker container id (64-hex), empty when it was not captured or the record is unavailable. |
+| exit_code | [int32](#int32) |  | The container exit code. Only meaningful when <code>lifecycle_state</code> is <code>EXITED</code> or <code>DEAD</code>. |
+| oom_killed | [bool](#bool) |  | True when the container was killed by the out-of-memory killer. |
+| health_status | [string](#string) |  | The Docker healthcheck status (<code>healthy</code> / <code>unhealthy</code> / <code>starting</code>), empty when the container declares no healthcheck. |
+| started_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the container started, if known. |
+| finished_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the container finished, if it has exited. |
+| observed_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When this status was observed by the server. |
+| environment_variables | [RemoteOperationContainerStatus.EnvironmentVariablesEntry](#ondewo.nlu.RemoteOperationContainerStatus.EnvironmentVariablesEntry) | repeated | The container&apos;s environment variables (docker <code>Config.Env</code>), as a name→value map. Secret values (passwords, tokens, private keys, certificates) are redacted server-side; plain non-secret values such as numeric limits remain visible. |
+| command | [string](#string) | repeated | The container&apos;s command/args (docker <code>Config.Cmd</code>). |
+| memory_limit_bytes | [int64](#int64) |  | The container&apos;s hard memory limit in bytes (docker <code>HostConfig.Memory</code>). <code>0</code> means unlimited. |
+| nano_cpus | [int64](#int64) |  | The container&apos;s CPU limit in billionths of a CPU (docker <code>HostConfig.NanoCpus</code>); cores = <code>nano_cpus</code> / 1e9. <code>0</code> means unset (see <code>cpu_quota</code>). |
+| cpuset_cpus | [string](#string) |  | The CPUs the container is pinned to (docker <code>HostConfig.CpusetCpus</code>), empty when unset. |
+| cpu_quota | [int64](#int64) |  | The CFS CPU quota (docker <code>HostConfig.CpuQuota</code>), the older cpu-limit form; cores = <code>cpu_quota</code> / <code>cpu_period</code> when both are &gt; 0. |
+| cpu_period | [int64](#int64) |  | The CFS CPU period (docker <code>HostConfig.CpuPeriod</code>). |
+| image | [string](#string) |  | The docker image reference the container was started from (docker <code>Config.Image</code>). |
+
+
+
+
+
+
+<a name="ondewo.nlu.RemoteOperationContainerStatus.EnvironmentVariablesEntry"></a>
+
+### RemoteOperationContainerStatus.EnvironmentVariablesEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.StreamRemoteOperationContainerLogsRequest"></a>
+
+### StreamRemoteOperationContainerLogsRequest
+The request message for <a href="index.html#ondewo.nlu.Operations.StreamRemoteOperationContainerLogs">Operations.StreamRemoteOperationContainerLogs</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the operation resource whose container logs should be streamed. |
+| min_log_level | [LogSeverity](#ondewo.nlu.LogSeverity) |  | Only stream lines at or above this loguru severity. <code>LOG_SEVERITY_UNSPECIFIED</code> (the default) streams every line regardless of level. |
+| tail_lines | [int32](#int32) |  | Replay at most this many of the most recent existing log lines before switching to live follow. <code>0</code> (the default) starts the follow with no historical replay. |
+| container_id | [string](#string) |  | Optional. Scope the stream to a single container of the operation, identified by its docker container id (as returned by <a href="index.html#ondewo.nlu.RemoteOperationContainer">RemoteOperationContainer</a>). Empty (the default) streams the operation&apos;s currently-registered container, preserving the legacy single-container behavior. |
+
+
+
+
+
  <!-- end messages -->
+
+
+<a name="ondewo.nlu.RemoteOperationContainerLifecycleState"></a>
+
+### RemoteOperationContainerLifecycleState
+The lifecycle state of a remote-operation container, mirroring the Docker container lifecycle.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| REMOTE_OPERATION_CONTAINER_LIFECYCLE_STATE_UNSPECIFIED | 0 | The lifecycle state could not be determined. |
+| REMOTE_OPERATION_CONTAINER_LIFECYCLE_STATE_NOT_FOUND | 1 | No container with the recorded name exists on the recorded host (never started, already reaped, or the dispatch record was garbage-collected after completion). |
+| REMOTE_OPERATION_CONTAINER_LIFECYCLE_STATE_CREATED | 2 | The container has been created but is not yet running. |
+| REMOTE_OPERATION_CONTAINER_LIFECYCLE_STATE_RUNNING | 3 | The container is running. |
+| REMOTE_OPERATION_CONTAINER_LIFECYCLE_STATE_PAUSED | 4 | The container is paused. |
+| REMOTE_OPERATION_CONTAINER_LIFECYCLE_STATE_RESTARTING | 5 | The container is in the process of restarting. |
+| REMOTE_OPERATION_CONTAINER_LIFECYCLE_STATE_EXITED | 6 | The container has exited (successfully or with an error — see <code>exit_code</code>). |
+| REMOTE_OPERATION_CONTAINER_LIFECYCLE_STATE_DEAD | 7 | The container is dead (Docker could not stop/remove it cleanly). |
+
 
  <!-- end enums -->
 
@@ -6817,6 +10739,10 @@ When an API method normally takes long time to complete, it can be designed to r
 | GetOperation | [GetOperationRequest](#ondewo.nlu.GetOperationRequest) | [Operation](#ondewo.nlu.Operation) | Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service. |
 | DeleteOperation | [DeleteOperationRequest](#ondewo.nlu.DeleteOperationRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn&apos;t support this method, it returns <code>google.rpc.Code.UNIMPLEMENTED</code> |
 | CancelOperation | [CancelOperationRequest](#ondewo.nlu.CancelOperationRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn&apos;t support this method, it returns <code>google.rpc.Code.UNIMPLEMENTED</code>. Clients can use <a href="index.html#ondewo.nlu.Operations.GetOperation">Operations.GetOperation</a> or other methods to verify whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an <a href="index.html#ondewo.nlu.Operation">Operation.error</a> value with a <a href="https://developers.google.com/actions-center/reference/grpc-api/status_codes">google.rpc.Status.code</a> of 1, corresponding to <code>Code.CANCELLED</code>. |
+| StreamRemoteOperationContainerLogs | [StreamRemoteOperationContainerLogsRequest](#ondewo.nlu.StreamRemoteOperationContainerLogsRequest) | [RemoteOperationContainerLogLine](#ondewo.nlu.RemoteOperationContainerLogLine) stream | Streams the live container logs of a remote-operation container (LLM evaluation, simulation, crawl, training) as they are produced, in the manner of <code>docker logs --follow</code>. The stream stays open until the container exits or the client disconnects. Each message is a single parsed log line. Secrets in the log text are redacted server-side before streaming. |
+| GetRemoteOperationContainerLogs | [GetRemoteOperationContainerLogsRequest](#ondewo.nlu.GetRemoteOperationContainerLogsRequest) | [GetRemoteOperationContainerLogsResponse](#ondewo.nlu.GetRemoteOperationContainerLogsResponse) | Returns a bounded, filtered snapshot of a remote-operation container&apos;s logs. Supports a time window (<code>start_time</code> / <code>end_time</code>), a minimum loguru log level, a regular-expression match on the message, and a cap on the number of returned lines. Secrets in the log text are redacted server-side before the response is returned. |
+| GetRemoteOperationContainerStatus | [GetRemoteOperationContainerStatusRequest](#ondewo.nlu.GetRemoteOperationContainerStatusRequest) | [RemoteOperationContainerStatus](#ondewo.nlu.RemoteOperationContainerStatus) | Returns the health and lifecycle status of a remote-operation container: whether it still exists, whether it is running/exited, its exit code, OOM-kill flag and Docker health status. |
+| ListRemoteOperationContainers | [ListRemoteOperationContainersRequest](#ondewo.nlu.ListRemoteOperationContainersRequest) | [ListRemoteOperationContainersResponse](#ondewo.nlu.ListRemoteOperationContainersResponse) | Lists every docker container that a remote operation started (a single operation may run several containers sequentially, e.g. hardware-check, GPU pre-allocation, build-cache and one training container per algorithm). When <code>include_sub_operations</code> is set, the containers of the operation&apos;s sub-operations are included as well. Each entry carries the container id + name, its host, lifecycle state and whether logs are still available (live or persisted). |
 
  <!-- end services -->
 
@@ -6874,7 +10800,7 @@ This message is a request to get project role
 | role_id | [uint32](#uint32) |  | role is identified by role id |
 | role_name | [string](#string) |  | role can also be uniquely identified by its name |
 | project_role_view | [ProjectRoleView](#ondewo.nlu.ProjectRoleView) |  | Optional. specify the view of the project role, PROJECT_ROLE_VIEW_FULL by default |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -6900,7 +10826,7 @@ Examples of valid page token strings: <ul> <li>&quot;&quot;</li> <li>&quot;curre
 
 Examples of invalid page token strings: <ul> <li>&quot;1&quot;</li> <li>&quot;current_index-0--page_size-20&quot;</li> <li>&quot;current_index--1--page_size-20&quot;</li> <li>&quot;current_index1--page_size-20&quot;</li> <li>&quot;current_index-1--page_size--20&quot;</li> </ul> |
 | project_role_view | [ProjectRoleView](#ondewo.nlu.ProjectRoleView) |  | Optional. specify the view of the project roles, PROJECT_ROLE_VIEW_FULL by default |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -7116,7 +11042,8 @@ Project Root Statistics
 ## ondewo/nlu/rag.proto
 File-level comment for <code>ondewo/nlu/rag.proto</code>.
 This file contains a single service <a href="#ondewo.nlu.Rags">Rags</a>. The Rags service provides RAG (Retrieval-Augmented Generation) and web crawler functionality.
-All message fields that are marked as <code>optional</code> are not actually optional but marked as such to enable presence tracking so that it is possible to distinguish between null and default value fields. Without the <code>optional</code> keyword it would for instance not be possible to distinguish between an integer <code>0</code> and <code>null</code>.
+Fields marked as <code>optional</code> carry explicit presence, so that an explicitly set default value (<code>0</code>, <code>false</code>, <code>""</code>) can be distinguished from a field that was never set. Without the <code>optional</code> keyword it would for instance not be possible to distinguish between an integer <code>0</code> and <code>null</code>.
+The marker is applied where that distinction is actually consumed — the partial-update inputs (an unset field leaves the stored value untouched, an explicit default clears it) and the retrieval overrides that are forwarded to RAGFlow (an explicit <code>0.0</code> or <code>false</code> must override the server-side default rather than fall back to it). Fields that carry no such distinction are deliberately left without the keyword, and for message-typed fields it is omitted because proto3 gives them explicit presence anyway.
 
 
 <a name="ondewo.nlu.RagAddCrawlerResultsToDatasetsRequest"></a>
@@ -7236,7 +11163,7 @@ user-agent behavior, and launch arguments).
 | ----- | ---- | ----- | ----------- |
 | crawler_headers | [google.protobuf.Struct](#google.protobuf.Struct) | repeated | Optional. HTTP headers sent on page/resource requests. Repeated entries allow duplicate header names and preserve order. |
 | crawler_cookies | [RagCrawlerCookie](#ondewo.nlu.RagCrawlerCookie) | repeated | Optional. Initial cookies. |
-| crawler_user_agent | [string](#string) |  | Optional. User-Agent sent with requests. |
+| crawler_user_agent | [string](#string) | optional | Optional. User-Agent sent with requests. |
 
 
 
@@ -7252,6 +11179,7 @@ Concurrency and pacing controls for crawler runs.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | max_concurrent_requests | [int32](#int32) |  | Optional. Max number of concurrent in-flight requests/pages. Increase for throughput; reduce for fragile sites/rate limits. |
+| slow_crawl | [bool](#bool) |  | Optional. Enable slow crawl mode with fixed delays between requests to avoid rate limits. |
 
 
 
@@ -7272,6 +11200,7 @@ diagnostics capture, and deep crawling options for each crawler run.
 | concurrency_config | [RagCrawlerConcurrencyConfig](#ondewo.nlu.RagCrawlerConcurrencyConfig) |  | Optional. Concurrency and pacing controls for crawler requests. |
 | deep_crawler_config | [RagCrawlerDeepCrawlerConfig](#ondewo.nlu.RagCrawlerDeepCrawlerConfig) |  | Optional. Deep crawler behavior (enable + depth/pages/scoring/filter chain). |
 | output_config | [RagCrawlerResultsConfig](#ondewo.nlu.RagCrawlerResultsConfig) |  | Optional. Structured output configuration (format + metadata policy). |
+| status_filter | [RagCrawlerStatusFilter](#ondewo.nlu.RagCrawlerStatusFilter) |  | Optional. HTTP status filtering: which fetched pages become result documents. |
 
 
 
@@ -7287,7 +11216,25 @@ diagnostics capture, and deep crawling options for each crawler run.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | metadata | [google.protobuf.Struct](#google.protobuf.Struct) |  | Optional. Extracted page metadata. Includes only fields configured in <code>RagCrawlerConfig.output_config.meta_data_extractors</code>. |
-| markdown | [string](#string) |  | Optional. Extracted markdown output. |
+| markdown | [string](#string) | optional | Optional. Extracted markdown output. |
+
+
+
+
+
+
+<a name="ondewo.nlu.RagCrawlerContentScope"></a>
+
+### RagCrawlerContentScope
+CSS-selector based content scoping for markdown extraction.
+
+When set, Markdown is generated only from the elements matched by <code>include_selectors</code> (if any), after removing elements matched by <code>exclude_selectors</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| include_selectors | [string](#string) | repeated | Optional. CSS selectors to scope extraction to (keep only matching subtrees). Empty means the whole page is used. |
+| exclude_selectors | [string](#string) | repeated | Optional. CSS selectors whose matching elements are removed before extraction (e.g. navigation, footer, sidebars, internal-only blocks). |
 
 
 
@@ -7321,9 +11268,30 @@ Deep crawler options grouped under one config node.
 | ----- | ---- | ----- | ----------- |
 | is_active | [bool](#bool) |  | Optional. Enable deep crawler behavior (link following beyond seeds). Default <code>false</code>. If <code>false</code>, <code>config</code> is ignored. |
 | crawl_strategy | [RagCrawlerCrawlStrategy](#ondewo.nlu.RagCrawlerCrawlStrategy) |  | Optional. Crawl traversal strategy. BFS is often best for broad site coverage; DFS for deep section traversal. Default <code>RAG_CRAWLER_CRAWL_STRATEGY_BFS</code>. |
-| max_depth | [int32](#int32) |  | Optional. Maximum link depth from seed URLs. <code>0</code> usually means only seed pages. |
+| max_depth | [int32](#int32) | optional | Optional. Maximum link depth from seed URLs. <code>0</code> usually means only seed pages. |
 | max_pages | [int32](#int32) |  | Optional. Hard cap on total processed pages for this run. |
 | deep_crawler_filters | [RagCrawlerFilters](#ondewo.nlu.RagCrawlerFilters) |  | Optional. URL and domain restrictions. |
+| normalize_url_case | [bool](#bool) | optional | Optional. Normalize URL case (lowercase the path) during link discovery/deduplication. |
+
+
+
+
+
+
+<a name="ondewo.nlu.RagCrawlerDensityPruning"></a>
+
+### RagCrawlerDensityPruning
+Density-based content pruning (Crawl4AI PruningContentFilter).
+
+Removes low-text-density and very short nodes by a composite density score.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| is_active | [bool](#bool) | optional | Optional. Enable density pruning. Default <code>true</code>. |
+| threshold | [float](#float) | optional | Optional. Density score threshold. Default <code>0.5</code>. |
+| threshold_type | [RagCrawlerPruningThresholdType](#ondewo.nlu.RagCrawlerPruningThresholdType) | optional | Optional. Threshold interpretation. Default <code>RAG_CRAWLER_PRUNING_THRESHOLD_TYPE_FIXED</code>. |
+| min_word_threshold | [int32](#int32) | optional | Optional. Nodes with fewer than this many words are removed. Default <code>10</code>. |
 
 
 
@@ -7339,8 +11307,8 @@ Consolidated diagnostics and HTTP execution metadata for a crawl result.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | ssl_certificate | [google.protobuf.Struct](#google.protobuf.Struct) |  | Optional. SSL certificate details. |
-| success | [bool](#bool) |  | Optional. Crawl status flag. |
-| error_message | [string](#string) |  | Optional. Error details if crawl failed. |
+| success | [bool](#bool) | optional | Optional. Crawl status flag. |
+| error_message | [string](#string) | optional | Optional. Error details if crawl failed. |
 
 
 
@@ -7366,10 +11334,10 @@ and domains to be excluded in the deep crawl or extraction of pages to be crawle
 | allow_internal_links | [bool](#bool) |  | Optional. Include internal links. |
 | allow_external_links | [bool](#bool) |  | Optional. Include external links. |
 | allow_social_media_links | [bool](#bool) |  | Optional. Include social media links. |
-| allowed_regex | [string](#string) | repeated |  |
-| disallowed_regex | [string](#string) | repeated |  |
-| allowed_paths | [string](#string) | repeated |  |
-| disallowed_paths | [string](#string) | repeated |  |
+| allowed_regex | [string](#string) | repeated | Optional. Path allow-list by regular expression. |
+| disallowed_regex | [string](#string) | repeated | Optional. Path block-list by regular expression. |
+| allowed_paths | [string](#string) | repeated | Optional. Explicit path allow-list. |
+| disallowed_paths | [string](#string) | repeated | Optional. Explicit path block-list. |
 
 
 
@@ -7472,6 +11440,8 @@ similar to Crawl4AI markdown/output-generation toggles.
 | ----- | ---- | ----- | ----------- |
 | inject_frontmatter | [bool](#bool) | optional | Optional. Inject YAML frontmatter into markdown output. If the content is HTML based, it will automatically be converted to markdown. Optionally, you can inject YAML frontmatter into the markdown output. Default <code>true</code>. |
 | meta_data_extractors | [RagCrawlerMetaDataExtractor](#ondewo.nlu.RagCrawlerMetaDataExtractor) | repeated | Optional. Metadata extractors. |
+| content_scope | [RagCrawlerContentScope](#ondewo.nlu.RagCrawlerContentScope) |  | Optional. CSS-selector based content scoping for markdown extraction. |
+| density_pruning | [RagCrawlerDensityPruning](#ondewo.nlu.RagCrawlerDensityPruning) |  | Optional. Density-based content pruning (Crawl4AI PruningContentFilter). If not set the <code>RagCrawlerDensityPruning</code> defaults are used. |
 
 
 
@@ -7486,8 +11456,8 @@ Timeout settings for crawler operations.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| page_load_timeout_seconds | [int32](#int32) |  | Optional. Page load/render timeout in seconds. |
-| retry_max_attempts | [int32](#int32) |  | Optional. Maximum retry attempts per page source. |
+| page_load_timeout_seconds | [int32](#int32) | optional | Optional. Page load/render timeout in seconds. |
+| retry_max_attempts | [int32](#int32) | optional | Optional. Maximum retry attempts per page source. |
 
 
 
@@ -7532,6 +11502,24 @@ Both inputs can be provided at the same time:
 
 
 
+<a name="ondewo.nlu.RagCrawlerStatusFilter"></a>
+
+### RagCrawlerStatusFilter
+HTTP status filtering for crawled pages.
+
+When active, a fetched page becomes a result document only if its HTTP status is accepted.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| is_active | [bool](#bool) | optional | Optional. Enable HTTP status filtering. Default <code>false</code>. |
+| accepted_status_codes | [int32](#int32) | repeated | Optional. Accepted HTTP status codes. If empty while active, only the 2xx range (<code>200</code>-<code>299</code>) is accepted. Add specific codes here to accept extras. |
+
+
+
+
+
+
 <a name="ondewo.nlu.RagCreateCrawlerRequest"></a>
 
 ### RagCreateCrawlerRequest
@@ -7565,6 +11553,7 @@ Request message for creating a new dataset.
 | avatar | [string](#string) |  | Optional. Base64-encoded avatar image in the format <code>"data:image/[png|jpeg];base64,&lt;base64_string&gt;"</code>. Maximum 65,535 characters. |
 | chunk_method | [RagChunkMethod](#ondewo.nlu.RagChunkMethod) |  | Optional. Default chunking method for documents in this dataset. |
 | parser_config | [RagParserConfig](#ondewo.nlu.RagParserConfig) |  | Optional. Configuration settings for the dataset parser. The used fields vary depending on the selected <code>chunk_method</code>. |
+| embedding_model_ccai_service_name | [string](#string) |  | Optional if <code>dataset_default_embedding_ccai_service_name</code> is set in the ONDEWO config, otherwise mandatory. CCAI service to use for embedding the documents in the dataset. |
 
 
 
@@ -7592,6 +11581,7 @@ Dataset containing documents for RAG.
 | parsing_status | [RagDatasetParsingStatus](#ondewo.nlu.RagDatasetParsingStatus) |  | Parsing status of all documents in the dataset. Might be empty if the system failed to get the parsing statistics. |
 | create_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Creation date and time. |
 | update_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Last update date and time. |
+| embedding_model_ccai_service_name | [string](#string) |  | CCAI service name of the embedding model used by this dataset. |
 
 
 
@@ -7936,6 +11926,8 @@ If unset or non-positive, backend default is used. |
 
 Both <code>current_index-&lt;idx&gt;</code> and <code>page_size-&lt;size&gt;</code> are optional and default to <code>0</code> and <code>10</code> respectively. The following are all valid <code>page_token</code>s <br> <ul> <li><code> </code> (empty string/missing value) - index 0, page size 10</li> <li><code>current_index-3</code> - index 3, page size 10</li> <li><code>page_size-20</code> - index 0, page size 20</li> <li><code>current_index-3--page_size-20</code> - index 3, page size 20</li> </ul> |
 | field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which <code>RagDataset</code> fields get returned. |
+| orderby | [string](#string) |  | Optional. Sort field (default: <code>create_time</code>). |
+| sorting_mode | [SortingMode](#ondewo.nlu.SortingMode) | optional | Optional. Sort descending (default: <code>SORTING_MODE_DESCENDING</code>). |
 
 
 
@@ -7988,6 +11980,7 @@ Request message for getting a single crawler result from a crawler run.
 | language_code | [string](#string) |  | Required. The language of the project to use. |
 | operation_name | [string](#string) |  | Required. Resource name of the crawler run. Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawler_runs/&lt;crawler_run_uuid&gt;</code></pre> |
 | url | [string](#string) |  | Required. Exact URL of the crawler result to retrieve. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which RagCrawlerResult fields get returned. |
 
 
 
@@ -8022,6 +12015,9 @@ RagGetCrawlerResults(run_name, page_token="...")
 
 Both <code>current_index-&lt;idx&gt;</code> and <code>page_size-&lt;size&gt;</code> are optional and default to <code>0</code> and <code>10</code> respectively. The following are all valid <code>page_token</code>s <br> <ul> <li><code> </code> (empty string/missing value) - index 0, page size 10</li> <li><code>current_index-3</code> - index 3, page size 10</li> <li><code>page_size-20</code> - index 0, page size 20</li> <li><code>current_index-3--page_size-20</code> - index 3, page size 20</li> </ul> |
 | url_query | [string](#string) |  | Optional. Filter by URL substring. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which <code>RagCrawlerResult</code> fields get returned. |
+| orderby | [string](#string) |  | Optional. Sort field (default: <code>last_crawled_date</code>). |
+| sorting_mode | [SortingMode](#ondewo.nlu.SortingMode) | optional | Optional. Sort descending. |
 
 
 
@@ -8064,6 +12060,9 @@ Request message for getting crawler run logs.
 | start_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Optional. Filter logs generated after this time. |
 | end_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Optional. Filter logs generated before this time. |
 | source_url_filter | [string](#string) |  | Optional. Filter by source URL (substring match). |
+| orderby | [string](#string) |  | Optional. Sort field. Accept any field of <code>LogEntry</code>. Default: <code>log_entry_timestamp</code>. |
+| sorting_mode | [SortingMode](#ondewo.nlu.SortingMode) | optional | Optional. Sort descending. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which <code>LogEntry</code> fields get returned. |
 
 
 
@@ -8083,6 +12082,7 @@ Response message for getting crawler run logs.
 | status | [OperationMetadata.Status](#ondewo.nlu.OperationMetadata.Status) |  | Operation status of the run. |
 | entries | [LogEntry](#ondewo.nlu.LogEntry) | repeated | List of log entries for the requested page. |
 | next_page_token | [string](#string) |  | Page token string for retrieving the next results page. |
+| total_log_entries | [int32](#int32) |  | Total number of log entries available after applying filters. |
 
 
 
@@ -8116,7 +12116,7 @@ GraphRAG configuration.
 | ----- | ---- | ----- | ----------- |
 | use_graphrag | [bool](#bool) | optional | Optional. Default <code>false</code>. |
 | entity_types | [string](#string) | repeated | Optional. Default <code>["organization", "person", "geo", "event", "category"]</code>. |
-| method | [RagGraphRagMethod](#ondewo.nlu.RagGraphRagMethod) | optional | Optional. Default <code>light</code>. |
+| method | [RagGraphRagMethod](#ondewo.nlu.RagGraphRagMethod) |  | Optional. Default <code>light</code>. |
 | community | [bool](#bool) | optional | Optional. Default <code>false</code>. |
 | resolution | [bool](#bool) | optional | Optional. Default <code>false</code>. |
 
@@ -8189,6 +12189,7 @@ Both <code>current_index-&lt;idx&gt;</code> and <code>page_size-&lt;size&gt;</co
 | crawler_name | [string](#string) |  | Optional. Filter by crawler name. |
 | orderby | [string](#string) |  | Optional. Sort field (default: <code>create_time</code>). |
 | sorting_mode | [SortingMode](#ondewo.nlu.SortingMode) | optional | Optional. Sort descending. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The Mask to control which RagCrawler fields get returned for each crawler in the list response. |
 
 
 
@@ -8230,8 +12231,10 @@ Request message for listing datasets with pagination and filtering.
 <ul> <li><code> </code> (empty string/missing value) - index 0, page size 10</li> <li><code>current_index-3</code> - index 3, page size 10</li> <li><code>page_size-20</code> - index 0, page size 20</li> <li><code>current_index-3--page_size-20</code> - index 3, page size 20</li> </ul> |
 | id | [string](#string) |  | Optional. Filter by dataset ID. |
 | name | [string](#string) |  | Optional. Filter by dataset name. |
-| orderby | [string](#string) |  | Optional. Sort field. Can be <code>create_time</code> or <code>update_time</code> (default: <code>create_time</code>). |
-| desc | [bool](#bool) | optional | Optional. Sort descending (default: <code>true</code>). |
+| orderby | [string](#string) |  | Optional. Sort field. Can be one of <ul> <li><code>id</code></li> <li><code>name</code></li> <li><code>description</code></li> <li><code>document_count</code></li> <li><code>token_num</code></li> <li><code>chunk_count</code></li> <li><code>chunk_method</code></li> <li><code>pagerank</code></li> <li><code>create_time</code></li> <li><code>update_time</code></li> </ul> (default: <code>create_time</code>). |
+| desc | [bool](#bool) | optional | **Deprecated.** Optional. Sort descending (default: <code>true</code>). |
+| sorting_mode | [SortingMode](#ondewo.nlu.SortingMode) |  | Optional. Specify whether to sort ascending or descending (default: ascending). |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which <code>RagDataset</code> fields get returned. |
 
 
 
@@ -8259,13 +12262,15 @@ Request message for listing documents in a dataset with pagination and filtering
 
 Both <code>current_index-&lt;idx&gt;</code> and <code>page_size-&lt;size&gt;</code> are optional and default to <code>0</code> and <code>10</code> respectively. The following are all valid <code>page_token</code>s <br> <ul> <li><code> </code> (empty string/missing value) - index 0, page size 10</li> <li><code>current_index-3</code> - index 3, page size 10</li> <li><code>page_size-20</code> - index 0, page size 20</li> <li><code>current_index-3--page_size-20</code> - index 3, page size 20</li> </ul> |
 | orderby | [string](#string) |  | Optional. Sort field (default: <code>"create_time"</code>). Accept any field of <code>RagDocument</code>. |
-| desc | [bool](#bool) | optional | Optional. Sort in descending order (default: <code>true</code>). |
+| desc | [bool](#bool) | optional | **Deprecated.** Optional. Sort in descending order (default: <code>true</code>). |
 | keywords | [string](#string) |  | Optional. Filter by document names containing <code>keywords</code>. |
 | suffix | [string](#string) | repeated | Optional. Suffixes to filter by (e.g. <code>["pdf", "png", "docx"]</code>). |
 | run_status | [RagDocumentStatus](#ondewo.nlu.RagDocumentStatus) | repeated | Optional. Document statuses to filter by. |
 | create_time_from | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Optional. Filter by creation time start. |
 | create_time_to | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Optional. Filter by creation time end. |
 | metadata_condition | [RagMetadataConditions](#ondewo.nlu.RagMetadataConditions) |  | Optional. Metadata filter condition to restrict results based on document metadata.<br> |
+| sorting_mode | [SortingMode](#ondewo.nlu.SortingMode) |  | Optional. Specify whether to sort ascending or descending (default: ascending). |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which <code>RagDocument</code> fields get returned. |
 
 
 
@@ -8438,6 +12443,8 @@ Both <code>current_index-&lt;idx&gt;</code> and <code>page_size-&lt;size&gt;</co
 | top_k | [int32](#int32) |  | Optional. Minimum 1. Maximum number of chunks to retrieve before reranking (default: <code>1024</code>). |
 | highlight | [bool](#bool) | optional | Optional. Whether to highlight matched content in the returned chunks. |
 | keyword | [bool](#bool) | optional | Optional. Extract additional keywords from the query to improve retrieval. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which <code>RagChunk</code> fields get returned. |
+| rerank_model_ccai_service_name | [string](#string) | optional | Optional. Rerank model used to refine the initial retrieval scores. If not provided, the default model is used (if one is set). If empty, the results are not reranked. |
 
 
 
@@ -8552,6 +12559,9 @@ The same field constraints as for <code>RagCreateDatasetRequest</code> apply her
 | chunk_method | [RagChunkMethod](#ondewo.nlu.RagChunkMethod) |  | Optional. New chunk method. |
 | parser_config | [RagParserConfig](#ondewo.nlu.RagParserConfig) |  | Optional. New parser config (deep merged with existing). |
 | pagerank | [int32](#int32) | optional | Optional. Minimum 0. Maximum 100. PageRank value. |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. FieldMask to specify which fields to update. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which <code>RagDataset</code> fields get returned. |
+| embedding_model_ccai_service_name | [string](#string) |  | Optional. CCAI service to use for embedding the documents in the dataset. |
 
 
 
@@ -8575,6 +12585,8 @@ Request message for updating an existing document's metadata and configuration.
 | parser_config | [RagParserConfig](#ondewo.nlu.RagParserConfig) |  | Optional. New parser configuration (deep merged with existing configuration). |
 | enabled | [bool](#bool) | optional | Optional. Document enabled/disabled status. |
 | meta_fields | [google.protobuf.Struct](#google.protobuf.Struct) |  | Optional. Custom metadata fields for document-specific metadata (replaces existing metadata). |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. FieldMask to specify which fields to update. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which <code>RagDocument</code> fields get returned. |
 
 
 
@@ -8690,6 +12702,19 @@ Crawl traversal strategy.
 | RAG_CRAWLER_META_DATA_EXTRACTOR_TYPE_CSS_SELECTOR | 3 | CSS selector. |
 | RAG_CRAWLER_META_DATA_EXTRACTOR_TYPE_XPATH_SELECTOR | 4 | XPath selector. |
 | RAG_CRAWLER_META_DATA_EXTRACTOR_TYPE_ID_SELECTOR | 5 | ID selector. |
+
+
+
+<a name="ondewo.nlu.RagCrawlerPruningThresholdType"></a>
+
+### RagCrawlerPruningThresholdType
+Interpretation of the density-pruning threshold.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| RAG_CRAWLER_PRUNING_THRESHOLD_TYPE_UNSPECIFIED | 0 | Unspecified (treated as FIXED). |
+| RAG_CRAWLER_PRUNING_THRESHOLD_TYPE_FIXED | 1 | Fixed cutoff: nodes scoring below <code>threshold</code> are removed. |
+| RAG_CRAWLER_PRUNING_THRESHOLD_TYPE_DYNAMIC | 2 | Dynamic: the threshold is adjusted per-document by the pruning heuristic. |
 
 
 
@@ -8913,6 +12938,22 @@ This message is a request to add a comment to a session
 
 
 
+<a name="ondewo.nlu.AddSessionFeedbackRequest"></a>
+
+### AddSessionFeedbackRequest
+Request to record feedback about a whole session.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| session_id | [string](#string) |  | The id of the session. |
+| feedback | [SessionFeedback](#ondewo.nlu.SessionFeedback) |  | The feedback to record. session_step_id is left empty for session-level feedback. |
+
+
+
+
+
+
 <a name="ondewo.nlu.AddSessionLabelsRequest"></a>
 
 ### AddSessionLabelsRequest
@@ -8929,15 +12970,32 @@ This message is a request to add session labels
 
 
 
-<a name="ondewo.nlu.AudioFileResource"></a>
+<a name="ondewo.nlu.AddSessionStepFeedbackRequest"></a>
 
-### AudioFileResource
-
+### AddSessionStepFeedbackRequest
+Request to record feedback about a single session step (turn).
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The unique identifier of the session for which the latest review should be returned Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/audios/&lt;audio_uuid&gt;</code></pre> |
+| session_id | [string](#string) |  | The id of the session. |
+| session_step_id | [string](#string) |  | The id of the session step (turn) the feedback is about. |
+| feedback | [SessionFeedback](#ondewo.nlu.SessionFeedback) |  | The feedback to record. |
+
+
+
+
+
+
+<a name="ondewo.nlu.AudioFileResource"></a>
+
+### AudioFileResource
+Represents an audio file resource attached to a session (input recording or generated TTS output).
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The unique identifier of the audio file resource. Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/audios/&lt;audio_uuid&gt;</code></pre> |
 | bytes | [bytes](#bytes) |  | Bytes of the audio file |
 | language | [string](#string) |  | Language of the audio file |
 | duration_in_s | [float](#float) |  | Duration in seconds and milliseconds of the audio file |
@@ -8948,7 +13006,7 @@ This message is a request to add session labels
 | modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
 | created_by | [string](#string) |  | User id in form of a valid UUID. |
 | modified_by | [string](#string) |  | User id in form of a valid UUID. |
-| display_name | [string](#string) |  | Bytes of the audio file |
+| display_name | [string](#string) |  | Display name of the audio file, e.g., MyRecording.wav, or a user-assigned label. |
 
 
 
@@ -8996,7 +13054,8 @@ Optional. If not provided, it will be auto-generated |
 <a name="ondewo.nlu.CreateSessionReviewRequest"></a>
 
 ### CreateSessionReviewRequest
-
+Request to persist a session review for a given session.
+As a side effect, training data in ondewo-cai may also be updated.
 
 
 | Field | Type | Label | Description |
@@ -9014,14 +13073,14 @@ Optional. If not provided, it will be auto-generated |
 <a name="ondewo.nlu.CreateSessionStepRequest"></a>
 
 ### CreateSessionStepRequest
-CreateSessionStepRequest stores a session step into the session
+Request to append a new SessionStep to an existing session.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| session_id | [string](#string) |  | The unique identifier for the given review Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/sessionsteps/&lt;session_step_uuid&gt;</code></pre>. |
-| session_step | [SessionStep](#ondewo.nlu.SessionStep) |  | The session step to be added |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | field mask specifying what the request should return, e.g. only name, created_at etc. |
+| session_id | [string](#string) |  | The unique identifier of the parent session. Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code></pre>. |
+| session_step | [SessionStep](#ondewo.nlu.SessionStep) |  | The session step to be added. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Field mask specifying which fields the returned SessionStep should carry (e.g. only <code>name</code>, <code>created_at</code>). |
 
 
 
@@ -9070,6 +13129,21 @@ This message is a request to delete a session comment
 | ----- | ---- | ----- | ----------- |
 | session_id | [string](#string) |  | The id of the session |
 | comment_names | [string](#string) | repeated | The comment names to delete from the session |
+
+
+
+
+
+
+<a name="ondewo.nlu.DeleteSessionFeedbackRequest"></a>
+
+### DeleteSessionFeedbackRequest
+Request to delete (withdraw) a feedback.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The resource name of the feedback to delete. |
 
 
 
@@ -9151,6 +13225,7 @@ The message returned from the DetectIntent method.
 | response_id | [string](#string) |  | The unique identifier of the response. It can be used to locate a response in the training example set or for reporting issues. |
 | query_result | [QueryResult](#ondewo.nlu.QueryResult) |  | The results of the conversational query or event processing. |
 | webhook_status | [google.rpc.Status](#google.rpc.Status) |  | Specifies the status of the webhook request. <code>webhook_status</code> is never populated in webhook requests. |
+| llm_telemetry_report | [LlmTelemetryReport](#ondewo.nlu.LlmTelemetryReport) |  | Aggregated LLM telemetry — duplicated convenience copy of <code>query_result.llm_telemetry_report</code> for unary clients. |
 
 
 
@@ -9216,6 +13291,101 @@ The parameter <code>name</code> may be used by the agent in the response: <code>
 
 
 
+<a name="ondewo.nlu.FeedbackBreakdownBucket"></a>
+
+### FeedbackBreakdownBucket
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  | The bucket key (e.g. a language code, an intent display name, an author type). |
+| thumbs_up_count | [int32](#int32) |  | Number of thumbs-up feedback in this bucket. |
+| thumbs_down_count | [int32](#int32) |  | Number of thumbs-down feedback in this bucket. |
+| total | [int32](#int32) |  | Total feedback in this bucket (including unrated comment-only feedback). |
+
+
+
+
+
+
+<a name="ondewo.nlu.FeedbackFilter"></a>
+
+### FeedbackFilter
+A key + up/down counts breakdown bucket (by language / intent / author type / ...).
+A feedback-native filter for feedback list + analytics requests, complementing SessionFilter (which
+filters the parent sessions). All set fields are AND-combined; repeated fields are OR-within-field.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ratings | [FeedbackRating](#ondewo.nlu.FeedbackRating) | repeated | Keep only feedback with one of these ratings (thumbs up / down / unspecified). |
+| author_types | [FeedbackAuthorType](#ondewo.nlu.FeedbackAuthorType) | repeated | Keep only feedback left by one of these author types. |
+| has_comment | [bool](#bool) | optional | When set, keep only feedback that has (true) or lacks (false) a free-text comment. |
+| earliest | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Keep only feedback created at or after this time (feedback created_at, not session time). |
+| latest | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Keep only feedback created at or before this time. |
+| criteria | [string](#string) | repeated | Keep only feedback whose criterion is one of these. |
+| language_codes | [string](#string) | repeated | Keep only feedback whose language code is one of these. |
+| annotator_user_ids | [string](#string) | repeated | Keep only feedback whose authenticated annotator is one of these user ids. |
+| origin_ids | [string](#string) | repeated | Keep only feedback whose channel origin id is one of these. |
+| score_min | [float](#float) | optional | When set, keep only feedback with a numeric score at or above this value. |
+| score_max | [float](#float) | optional | When set, keep only feedback with a numeric score at or below this value. |
+| scope | [FeedbackScope](#ondewo.nlu.FeedbackScope) |  | Restrict to session-level or step-level feedback (unspecified means both). |
+
+
+
+
+
+
+<a name="ondewo.nlu.FeedbackStatistics"></a>
+
+### FeedbackStatistics
+Aggregated feedback statistics for an agent.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| total_feedback | [int32](#int32) |  | Total feedback records. |
+| thumbs_up_count | [int32](#int32) |  | Number of thumbs-up feedback. |
+| thumbs_down_count | [int32](#int32) |  | Number of thumbs-down feedback. |
+| session_level_count | [int32](#int32) |  | Number of session-level feedback. |
+| session_step_level_count | [int32](#int32) |  | Number of session-step-level feedback. |
+| comment_count | [int32](#int32) |  | Number of feedback that carry a free-text comment. |
+| session_review_count | [int32](#int32) |  | Roll-up of existing session reviews (additional quality signal). |
+| session_comment_count | [int32](#int32) |  | Roll-up of existing session comments (additional quality signal). |
+| by_language | [FeedbackBreakdownBucket](#ondewo.nlu.FeedbackBreakdownBucket) | repeated | Up/down breakdown by language code. |
+| by_intent | [FeedbackBreakdownBucket](#ondewo.nlu.FeedbackBreakdownBucket) | repeated | Up/down breakdown by matched intent. |
+| by_author_type | [FeedbackBreakdownBucket](#ondewo.nlu.FeedbackBreakdownBucket) | repeated | Up/down breakdown by author type. |
+| unspecified_rating_count | [int32](#int32) |  | Number of feedback with no rating (comment-only / unspecified rating). |
+| scored_count | [int32](#int32) |  | Number of feedback that carry a numeric score. |
+| average_score | [float](#float) |  | Mean of the numeric scores across scored feedback (0 when none). |
+| by_origin | [FeedbackBreakdownBucket](#ondewo.nlu.FeedbackBreakdownBucket) | repeated | Up/down breakdown by channel origin id. |
+| by_criterion | [FeedbackBreakdownBucket](#ondewo.nlu.FeedbackBreakdownBucket) | repeated | Up/down breakdown by criterion. |
+
+
+
+
+
+
+<a name="ondewo.nlu.FeedbackTimeSeriesBucket"></a>
+
+### FeedbackTimeSeriesBucket
+One time bucket of feedback counts.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| bucket_start | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | The (inclusive) start of the time bucket. |
+| thumbs_up_count | [int32](#int32) |  | Number of thumbs-up feedback in this bucket. |
+| thumbs_down_count | [int32](#int32) |  | Number of thumbs-down feedback in this bucket. |
+| total | [int32](#int32) |  | Total feedback in this bucket. |
+| bucket_end | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | The (exclusive) end of the time bucket. |
+
+
+
+
+
+
 <a name="ondewo.nlu.FileResource"></a>
 
 ### FileResource
@@ -9245,7 +13415,7 @@ This message is a request to get one one file combining all audios of a specific
 | parent | [string](#string) |  | Required. The project of this agent. Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
 | session_id | [string](#string) |  | The unique identifier of the session for which the audio files should be combined Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/&lt</code></pre> |
 | resource_view | [ResourceView](#ondewo.nlu.ResourceView) |  | Represents the options for views of resources |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -9273,7 +13443,7 @@ Examples of valid page token strings: <ul> <li><code>&quot;&quot;</code></li> <l
 
 Examples of invalid page token strings: <ul> <li><code>&quot;1&quot;</code></li> <li><code>&quot;current_index-0--page_size-20&quot;</code></li> <li><code>&quot;current_index--1--page_size-20&quot;</code></li> <li><code>&quot;current_index1--page_size-20&quot;</code></li> <li><code>&quot;current_index-1--page_size--20&quot;</code></li> </ul> |
 | sorting_mode | [SortingMode](#ondewo.nlu.SortingMode) |  | sorting mode |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -9297,6 +13467,79 @@ This message is a request to retrieve the audio files specified
 
 
 
+<a name="ondewo.nlu.GetFeedbackStatisticsRequest"></a>
+
+### GetFeedbackStatisticsRequest
+Request for aggregated feedback statistics.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | The agent parent. Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
+| session_filter | [SessionFilter](#ondewo.nlu.SessionFilter) |  | Optional. A filter to narrow the sessions considered. |
+| include_review_and_comment_rollup | [bool](#bool) |  | Optional. When true, roll up existing session reviews and comments as additional signals. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields of the statistics get returned. |
+| feedback_filter | [FeedbackFilter](#ondewo.nlu.FeedbackFilter) |  | Optional. A feedback-native filter (rating / author / comment / score / criterion / date window). |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetFeedbackStatisticsResponse"></a>
+
+### GetFeedbackStatisticsResponse
+Response carrying aggregated feedback statistics.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| statistics | [FeedbackStatistics](#ondewo.nlu.FeedbackStatistics) |  | The aggregated statistics. |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetFeedbackStatisticsTimeSeriesRequest"></a>
+
+### GetFeedbackStatisticsTimeSeriesRequest
+Request for feedback statistics bucketed over time.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | The agent parent. Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
+| session_filter | [SessionFilter](#ondewo.nlu.SessionFilter) |  | Optional. A filter to narrow the sessions considered. |
+| bucket_width_seconds | [int32](#int32) |  | The width of each time bucket in seconds. |
+| max_buckets | [int32](#int32) |  | The maximum number of buckets to return. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields get returned. |
+| feedback_filter | [FeedbackFilter](#ondewo.nlu.FeedbackFilter) |  | Optional. A feedback-native filter. |
+| granularity | [FeedbackTimeGranularity](#ondewo.nlu.FeedbackTimeGranularity) |  | Optional. Calendar granularity; when set (non-unspecified) it overrides bucket_width_seconds. |
+| time_zone | [string](#string) |  | Optional. IANA timezone for calendar bucketing (e.g. "Europe/Vienna"); defaults to UTC. |
+| start | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Optional. Inclusive start of the series window; when set, empty leading buckets are zero-filled. |
+| end | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Optional. Exclusive end of the series window; defaults to now. |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetFeedbackStatisticsTimeSeriesResponse"></a>
+
+### GetFeedbackStatisticsTimeSeriesResponse
+Response carrying feedback counts bucketed over time.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| buckets | [FeedbackTimeSeriesBucket](#ondewo.nlu.FeedbackTimeSeriesBucket) | repeated | The time buckets, oldest first. |
+
+
+
+
+
+
 <a name="ondewo.nlu.GetLatestSessionReviewRequest"></a>
 
 ### GetLatestSessionReviewRequest
@@ -9307,7 +13550,23 @@ This message is a request to get latest session review
 | ----- | ---- | ----- | ----------- |
 | session_id | [string](#string) |  | The unique identifier of the session for which the latest review should be returned Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code></pre> |
 | session_review_view | [SessionReview.View](#ondewo.nlu.SessionReview.View) |  | An enum specifying the amount of information to be returned for the desired session review |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetSessionFeedbackRequest"></a>
+
+### GetSessionFeedbackRequest
+Request to fetch a single feedback by resource name.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The resource name of the feedback. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields get returned. |
 
 
 
@@ -9341,7 +13600,7 @@ This message is a request to get session review
 | ----- | ---- | ----- | ----------- |
 | session_review_id | [string](#string) |  | The unique identifier of the session review to be returned |
 | session_review_view | [SessionReview.View](#ondewo.nlu.SessionReview.View) |  | The view of the session review to be returned |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -9367,14 +13626,14 @@ This message is a request to get a session step
 <a name="ondewo.nlu.ImageFileResource"></a>
 
 ### ImageFileResource
-
+Represents an image file resource (e.g., JPEG, PNG, GIF) attached to a session.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The unique identifier of the session for which the latest review should be returned Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/images/&lt;image_uuid&gt;</code></pre> |
+| name | [string](#string) |  | The unique identifier of the image file resource. Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/images/&lt;image_uuid&gt;</code></pre> |
 | display_name | [string](#string) |  | File name of the image, e.g., MyPicture.jpg, or a user assigned display name |
-| bytes | [bytes](#bytes) |  | Bytes of the audio file |
+| bytes | [bytes](#bytes) |  | Raw bytes of the image file. |
 | created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Creation date and time. Read-only field. |
 | modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
 | created_by | [string](#string) |  | User id in form of a valid UUID. |
@@ -9413,7 +13672,7 @@ request to list all account_ids of all sessions
 | ----- | ---- | ----- | ----------- |
 | parent | [string](#string) |  | The parent for which the account_ids for all sessions should be listed Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
 | session_filter | [SessionFilter](#ondewo.nlu.SessionFilter) |  | Optional. A filter to narrow the response down to sessions of interest. |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -9456,7 +13715,7 @@ Examples of valid page token strings: <ul> <li><code>&quot;&quot;</code></li> <l
 
 Examples of invalid page token strings: <ul> <li><code>&quot;1&quot;</code></li> <li><code>&quot;current_index-0--page_size-20&quot;</code></li> <li><code>&quot;current_index--1--page_size-20&quot;</code></li> <li><code>&quot;current_index1--page_size-20&quot;</code></li> <li><code>&quot;current_index-1--page_size--20&quot;</code></li> </ul> |
 | sorting_mode | [SortingMode](#ondewo.nlu.SortingMode) |  | sorting mode |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -9521,7 +13780,7 @@ request to list all identified_user_ids of all sessions
 | ----- | ---- | ----- | ----------- |
 | parent | [string](#string) |  | The parent for which the identified_user_ids for all sessions should be listed Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
 | session_filter | [SessionFilter](#ondewo.nlu.SessionFilter) |  | Optional. A filter to narrow the response down to sessions of interest. |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -9553,7 +13812,7 @@ request to list all input_contexts of all sessions
 | ----- | ---- | ----- | ----------- |
 | parent | [string](#string) |  | The parent for which the input_contexts for all sessions should be listed Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
 | session_filter | [SessionFilter](#ondewo.nlu.SessionFilter) |  | Optional. A filter to narrow the response down to sessions of interest. |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -9585,7 +13844,7 @@ request to list all language codes of all sessions
 | ----- | ---- | ----- | ----------- |
 | parent | [string](#string) |  | The parent for which the language_codes for all sessions should be listed Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
 | session_filter | [SessionFilter](#ondewo.nlu.SessionFilter) |  | Optional. A filter to narrow the response down to sessions of interest. |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -9617,7 +13876,7 @@ request to list all matched_entity_types of all sessions
 | ----- | ---- | ----- | ----------- |
 | parent | [string](#string) |  | The parent for which the matched_entity_types for all sessions should be listed Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
 | session_filter | [SessionFilter](#ondewo.nlu.SessionFilter) |  | Optional. A filter to narrow the response down to sessions of interest. |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -9649,7 +13908,7 @@ request to list all matched_intents of all sessions
 | ----- | ---- | ----- | ----------- |
 | parent | [string](#string) |  | The parent for which the matched_intents for all sessions should be listed Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
 | session_filter | [SessionFilter](#ondewo.nlu.SessionFilter) |  | Optional. A filter to narrow the response down to sessions of interest. |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -9681,7 +13940,7 @@ request to list all origin_ids of all sessions
 | ----- | ---- | ----- | ----------- |
 | parent | [string](#string) |  | The parent for which the origin_ids for all sessions should be listed Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
 | session_filter | [SessionFilter](#ondewo.nlu.SessionFilter) |  | Optional. A filter to narrow the response down to sessions of interest. |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -9713,7 +13972,7 @@ request to list all output_contexts of all sessions
 | ----- | ---- | ----- | ----------- |
 | parent | [string](#string) |  | The parent for which the output_contexts for all sessions should be listed Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
 | session_filter | [SessionFilter](#ondewo.nlu.SessionFilter) |  | Optional. A filter to narrow the response down to sessions of interest. |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -9745,7 +14004,7 @@ request to list all labels of all sessions
 | ----- | ---- | ----- | ----------- |
 | parent | [string](#string) |  | The parent for which the platforms for all sessions should be listed Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
 | session_filter | [SessionFilter](#ondewo.nlu.SessionFilter) |  | Optional. A filter to narrow the response down to sessions of interest. |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -9798,6 +14057,25 @@ This message is a response of listing session property_ids
 
 
 
+<a name="ondewo.nlu.ListSessionCommentsOfAllSessionsRequest"></a>
+
+### ListSessionCommentsOfAllSessionsRequest
+This message is a request to list comments of all sessions of an agent
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | The parent for which the comments of all sessions should be listed Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
+| session_filter | [SessionFilter](#ondewo.nlu.SessionFilter) |  | Optional. A filter to narrow the response down to sessions of interest. |
+| page_token | [string](#string) |  | Optional. The page token to support pagination. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
+| is_resolved | [bool](#bool) | optional | Optional. Filter comments by their resolved status. If unset, comments with any resolved status are returned. |
+
+
+
+
+
+
 <a name="ondewo.nlu.ListSessionCommentsRequest"></a>
 
 ### ListSessionCommentsRequest
@@ -9806,7 +14084,7 @@ This message is a request to list comments of a session
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| session_id | [string](#string) |  | The unique identifier for the session for which reviews should be listed Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code></pre> |
+| session_id | [string](#string) |  | The unique identifier for the session for which comments should be listed Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code></pre> |
 | page_token | [string](#string) |  | Optional: The page token to support pagination. Pagination allows you to retrieve a large result set in smaller, more manageable portions. The page token is a string representing the current index and page size.
 
 Valid page token strings: <ul> <li><code>&quot;&quot;</code> (empty string) - Retrieves the first page.</li> <li><code>&quot;current_index-0--page_size-20&quot;</code> - Retrieves the first page with a page size of 20.</li> <li><code>&quot;current_index-1--page_size-20&quot;</code> - Retrieves the second page with a page size of 20.</li> </ul>
@@ -9816,7 +14094,8 @@ Index starts at 0.
 Examples of valid page token strings: <ul> <li><code>&quot;&quot;</code></li> <li><code>&quot;current_index-0--page_size-20&quot;</code></li> <li><code>&quot;current_index-1--page_size-20&quot;</code></li> <li><code>&quot;current_index-10--page_size-20&quot;</code></li> </ul>
 
 Examples of invalid page token strings: <ul> <li><code>&quot;1&quot;</code></li> <li><code>&quot;current_index-0--page_size-20&quot;</code></li> <li><code>&quot;current_index--1--page_size-20&quot;</code></li> <li><code>&quot;current_index1--page_size-20&quot;</code></li> <li><code>&quot;current_index-1--page_size--20&quot;</code></li> </ul> |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
+| is_resolved | [bool](#bool) | optional | Optional. Filter comments by their resolved status. If unset, comments with any resolved status are returned. |
 
 
 
@@ -9847,6 +14126,60 @@ Examples of invalid page token strings: <ul> <li><code>&quot;1&quot;</code></li>
 
 
 
+<a name="ondewo.nlu.ListSessionFeedbackOfAllSessionsRequest"></a>
+
+### ListSessionFeedbackOfAllSessionsRequest
+Request to list feedback across all sessions of an agent.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| parent | [string](#string) |  | The parent for which the feedback of all sessions should be listed. Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
+| session_filter | [SessionFilter](#ondewo.nlu.SessionFilter) |  | Optional. A filter to narrow the response down to sessions of interest. |
+| page_token | [string](#string) |  | Optional. The page token to support pagination. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields get returned. |
+| feedback_filter | [FeedbackFilter](#ondewo.nlu.FeedbackFilter) |  | Optional. A feedback-native filter (rating / author / comment / score / criterion / date window). |
+| order_by | [string](#string) |  | Optional. Sort order, e.g. "created_at desc" (default), "created_at asc", "rating desc". |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListSessionFeedbackRequest"></a>
+
+### ListSessionFeedbackRequest
+Request to list all feedback attached to a session.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| session_id | [string](#string) |  | The id of the session. |
+| page_token | [string](#string) |  | Optional. The page token to support pagination. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields get returned. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListSessionFeedbackResponse"></a>
+
+### ListSessionFeedbackResponse
+A page of feedback.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| feedback | [SessionFeedback](#ondewo.nlu.SessionFeedback) | repeated | The feedback of the requested scope. |
+| next_page_token | [string](#string) |  | The page token for the next page (empty when there are no more pages). |
+| total_count | [int32](#int32) |  | Total number of feedback matching the filter across all pages. |
+
+
+
+
+
+
 <a name="ondewo.nlu.ListSessionLabelsOfAllSessionsRequest"></a>
 
 ### ListSessionLabelsOfAllSessionsRequest
@@ -9857,7 +14190,7 @@ request to list all labels of all sessions
 | ----- | ---- | ----- | ----------- |
 | parent | [string](#string) |  | The parent for which the labels for all sessions should be listed Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
 | session_filter | [SessionFilter](#ondewo.nlu.SessionFilter) |  | Optional. A filter to narrow the response down to sessions of interest. |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -9988,7 +14321,7 @@ request to list all tags of all sessions
 | ----- | ---- | ----- | ----------- |
 | parent | [string](#string) |  | The parent for which the tags for all sessions should be listed Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
 | session_filter | [SessionFilter](#ondewo.nlu.SessionFilter) |  | Optional. A filter to narrow the response down to sessions of interest. |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -10020,7 +14353,7 @@ request to list all user_ids of all sessions
 | ----- | ---- | ----- | ----------- |
 | parent | [string](#string) |  | The parent for which the user_ids for all sessions should be listed Format: <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
 | session_filter | [SessionFilter](#ondewo.nlu.SessionFilter) |  | Optional. A filter to narrow the response down to sessions of interest. |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -10036,6 +14369,633 @@ This message is a response of listing session user_ids
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | user_ids | [string](#string) | repeated | The user_ids of the session |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmAgentUsage"></a>
+
+### LlmAgentUsage
+Per-intent-agent usage rollup across the scope.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| agent_name | [string](#string) |  | intent_agent executor / agent name owning the calls. |
+| agent_role | [string](#string) |  | Optional agent role. |
+| team_name | [string](#string) |  | Optional team name. |
+| call_count | [int64](#int64) |  | Number of LLM calls attributed to this agent in scope. |
+| llm_token_usage | [LlmTokenUsage](#ondewo.nlu.LlmTokenUsage) |  | Summed token usage for this agent. |
+| tool_call_count | [int64](#int64) |  | Tool-call count attributed to this agent. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmCacheStats"></a>
+
+### LlmCacheStats
+Prompt-cache efficiency aggregate across the LLM calls in scope.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| cached_input_tokens | [int64](#int64) |  | Tokens served from prompt cache (cached_input_tokens summed). |
+| cache_creation_input_tokens | [int64](#int64) |  | Tokens written to prompt cache (cache_creation_input_tokens summed). |
+| uncached_input_tokens | [int64](#int64) |  | Non-cached input tokens. |
+| cache_hit_rate | [double](#double) |  | cached_input_tokens / (cached_input_tokens + uncached_input_tokens). |
+| token_savings | [int64](#int64) |  | Input tokens avoided by cache reuse. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmCallFinishedEvent"></a>
+
+### LlmCallFinishedEvent
+Emitted on a streaming DetectIntent when an LLM invocation finishes.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_call_id | [string](#string) |  | Collector-assigned id grouping events for this LLM call. |
+| end_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock end time of the LLM call. |
+| duration_in_s | [double](#double) |  | Convenience duration (end_time - start_time). |
+| llm_token_usage | [LlmTokenUsage](#ondewo.nlu.LlmTokenUsage) |  | Final token totals for this LLM call. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmCallStartedEvent"></a>
+
+### LlmCallStartedEvent
+Emitted on a streaming DetectIntent when an LLM invocation starts.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_call_id | [string](#string) |  | Collector-assigned id grouping all events emitted for this LLM call. |
+| provider | [string](#string) |  | Provider tag: "autogen" | "langchain" | "openai" | "anthropic" | ... |
+| model_name | [string](#string) |  | Concrete model identifier (e.g. "claude-3-5-sonnet-20241022"). |
+| agent_name | [string](#string) |  | intent_agent executor / agent name owning the call. |
+| start_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock start of the LLM call. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmCcaiServiceUsage"></a>
+
+### LlmCcaiServiceUsage
+Per-CCAI-service usage rollup across the scope.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ccai_service_provider | [CcaiServiceProvider](#ondewo.nlu.CcaiServiceProvider) |  | CCAI service provider enum value. |
+| ccai_service_name | [string](#string) |  | Resource name of the CCAI service. |
+| call_count | [int64](#int64) |  | Number of LLM calls attributed to this CCAI service in scope. |
+| llm_token_usage | [LlmTokenUsage](#ondewo.nlu.LlmTokenUsage) |  | Summed token usage for this CCAI service. |
+| base_url | [string](#string) |  | Base URL used by this CCAI service. |
+| model_names | [string](#string) | repeated | Distinct model names seen under this CCAI service. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmErrorStat"></a>
+
+### LlmErrorStat
+One error class aggregate.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| error_class | [string](#string) |  | Error class / type (LlmTelemetry.error_class). |
+| count | [int64](#int64) |  | Number of occurrences in scope. |
+| rate | [double](#double) |  | count / total LLM calls in scope. |
+| sample_message | [string](#string) |  | A representative error_message sample (may be truncated / redacted). |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmErrorStats"></a>
+
+### LlmErrorStats
+Error breakdown aggregate across the scope.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| total_error_count | [int64](#int64) |  | Total failed LLM calls in scope. |
+| overall_error_rate | [double](#double) |  | total_error_count / total LLM calls in scope. |
+| errors_by_class | [LlmErrorStat](#ondewo.nlu.LlmErrorStat) | repeated | Per-error-class breakdown, descending by count. |
+| retry_count_total | [int64](#int64) |  | Total retries observed (LlmTelemetry.retry_count summed). |
+| max_fallback_depth | [int32](#int32) |  | Max fallback depth observed (LlmTelemetry.fallback_depth max). |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmFinishReasonStat"></a>
+
+### LlmFinishReasonStat
+One finish-reason aggregate.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| finish_reason | [string](#string) |  | Finish reason ("stop" | "length" | "tool_calls" | "content_filter" | "error" | ...). |
+| count | [int64](#int64) |  | Number of occurrences in scope. |
+| rate | [double](#double) |  | count / total LLM calls in scope. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmLatencyStats"></a>
+
+### LlmLatencyStats
+Latency aggregate (seconds) across the LLM calls in scope.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| call_count | [int64](#int64) |  | Number of LLM calls included in these latency stats. |
+| mean_duration_seconds | [double](#double) |  | Mean end-to-end call duration in seconds. |
+| p50_duration_seconds | [double](#double) |  | 50th percentile end-to-end call duration in seconds. |
+| p95_duration_seconds | [double](#double) |  | 95th percentile end-to-end call duration in seconds. |
+| p99_duration_seconds | [double](#double) |  | 99th percentile end-to-end call duration in seconds. |
+| max_duration_seconds | [double](#double) |  | Maximum observed end-to-end call duration in seconds. |
+| mean_first_token_latency_seconds | [double](#double) |  | Mean time-to-first-token in seconds (streaming calls only). |
+| p95_first_token_latency_seconds | [double](#double) |  | 95th percentile time-to-first-token in seconds. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmModelUsage"></a>
+
+### LlmModelUsage
+Per-model usage rollup across the scope.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| model_name | [string](#string) |  | Concrete model identifier (e.g. "claude-3-5-sonnet-20241022"). |
+| provider | [string](#string) |  | Provider tag owning the model (e.g. "anthropic"). |
+| call_count | [int64](#int64) |  | Number of LLM calls to this model in scope. |
+| llm_token_usage | [LlmTokenUsage](#ondewo.nlu.LlmTokenUsage) |  | Summed token usage (input / output / total) for this model. |
+| tool_call_count | [int64](#int64) |  | Tool-call count attributed to this model. |
+| error_count | [int64](#int64) |  | Error count attributed to this model. |
+| duration_seconds_total | [double](#double) |  | Summed call duration in seconds for this model. |
+| cache_stats | [LlmCacheStats](#ondewo.nlu.LlmCacheStats) |  | Optional cache stats for this model. |
+| ccai_service_name | [string](#string) |  | Resource name of the CCAI service that issued the calls. |
+| ccai_service_provider | [CcaiServiceProvider](#ondewo.nlu.CcaiServiceProvider) |  | Provider of the CCAI service. |
+| base_url | [string](#string) |  | Base URL used for the calls (proxy / compatible provider). |
+| thinking_tokens_total | [int64](#int64) |  | Summed thinking-block tokens for this model. |
+| thinking_duration_seconds_total | [double](#double) |  | Summed thinking-block duration in seconds for this model. |
+| tool_call_tokens_total | [int64](#int64) |  | Summed tool-call tokens for this model. |
+| tool_call_duration_seconds_total | [double](#double) |  | Summed tool-call duration in seconds for this model. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmProviderUsage"></a>
+
+### LlmProviderUsage
+Per-provider usage rollup across the scope.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| provider | [string](#string) |  | Provider tag (e.g. "anthropic", "openai", "ollama"). |
+| call_count | [int64](#int64) |  | Number of LLM calls to this provider in scope. |
+| llm_token_usage | [LlmTokenUsage](#ondewo.nlu.LlmTokenUsage) |  | Summed token usage for this provider. |
+| error_count | [int64](#int64) |  | Error count attributed to this provider. |
+| duration_seconds_total | [double](#double) |  | Summed call duration in seconds for this provider. |
+| model_names | [string](#string) | repeated | Distinct model names seen under this provider. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmReasoningEffortStat"></a>
+
+### LlmReasoningEffortStat
+One reasoning-effort aggregate.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| reasoning_effort | [ReasoningEffort](#ondewo.nlu.ReasoningEffort) |  | Reasoning effort enum value. |
+| count | [int64](#int64) |  | Number of LLM calls at this effort level in scope. |
+| rate | [double](#double) |  | count / total LLM calls in scope. |
+| llm_token_usage | [LlmTokenUsage](#ondewo.nlu.LlmTokenUsage) |  | Summed token usage at this effort level. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmRetrievalMetadata"></a>
+
+### LlmRetrievalMetadata
+Typed view of the chunks retrieved for one LLM call. Populated alongside the
+unstructured <code>outputs.retrieved_chunks</code> Struct (field 18 on
+LlmTelemetry, kept for back-compat); both carry the same chunk list.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| chunks | [LlmRetrievedChunk](#ondewo.nlu.LlmRetrievedChunk) | repeated | The retrieved chunks in retrieval-result order. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmRetrievedChunk"></a>
+
+### LlmRetrievedChunk
+One retrieved RAG chunk surfaced during an LLM call. Mirrors the five-field
+chunk already emitted into <code>outputs.retrieved_chunks</code> (Struct) plus
+a typed <code>rank</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| document_id | [string](#string) |  | Source document identifier the chunk was retrieved from. |
+| chunk_id | [string](#string) |  | Chunk identifier within the source document. |
+| score | [double](#double) |  | Retrieval similarity / relevance score assigned by the retriever. |
+| text | [string](#string) |  | Chunk text (already truncated to the emit-time character cap, ~2000 chars). |
+| source_uri | [string](#string) |  | Source URI (document URL or document name) for click-through. |
+| rank | [int32](#int32) |  | Zero-based position of this chunk in the retrieval result order (RAGFlow reference order / LangChain document order). |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmSafetyAssessment"></a>
+
+### LlmSafetyAssessment
+Native safety assessment for one LLM call, computed at telemetry build time by
+a dependency-free (regex / substring) assessor over the call's input / output
+text. Additive, optional: absent when safety scoring is disabled. This is the
+live MONITORING signal; the offline LLM-judge safety evaluators live in
+<code>llm_evaluation.proto</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| flagged_categories | [string](#string) | repeated | Detector categories that fired across input and output (<code>prompt_injection</code> | <code>jailbreak</code> | <code>pii</code> | <code>info_leak</code>). Empty when nothing was flagged. |
+| has_pii | [bool](#bool) |  | True when any PII pattern (email / phone / IBAN / credit-card / national-id) was detected in input or output. |
+| has_injection_attempt | [bool](#bool) |  | True when a prompt-injection pattern was detected in the input. |
+| has_jailbreak_attempt | [bool](#bool) |  | True when a jailbreak / role-override pattern was detected in the input. |
+| safety_score | [double](#double) |  | Overall safety score in <code>[0.0, 1.0]</code> where <code>1.0</code> means fully safe (no findings) and lower values indicate higher risk. |
+| findings | [LlmSafetyFinding](#ondewo.nlu.LlmSafetyFinding) | repeated | Per-finding detail records (category / severity / matched pattern / location). |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmSafetyCategoryStat"></a>
+
+### LlmSafetyCategoryStat
+Per-category native-safety aggregate across the LLM calls in scope.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| category | [string](#string) |  | Detector category (<code>prompt_injection</code> | <code>jailbreak</code> | <code>pii</code> | <code>info_leak</code>). |
+| count | [int64](#int64) |  | Number of calls flagged for this category in scope. |
+| rate | [double](#double) |  | count / total_assessed. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmSafetyFinding"></a>
+
+### LlmSafetyFinding
+One concrete safety finding inside an LlmSafetyAssessment.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| category | [string](#string) |  | Detector category that fired (e.g. <code>prompt_injection</code>, <code>jailbreak</code>, <code>pii</code>, <code>info_leak</code>). |
+| severity | [string](#string) |  | Severity tag ("low" | "medium" | "high" | "critical"). |
+| matched_pattern | [string](#string) |  | The pattern / detector rule that matched (may be a redacted excerpt). |
+| location | [LlmSafetyLocation](#ondewo.nlu.LlmSafetyLocation) |  | Whether the finding was located in the input or the output. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmSafetyStats"></a>
+
+### LlmSafetyStats
+Native-safety breakdown aggregate across the LLM calls in scope. Computed from
+the per-call LlmSafetyAssessment records.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| total_assessed | [int64](#int64) |  | Number of LLM calls that carried a safety assessment in scope. |
+| flagged_count | [int64](#int64) |  | Number of assessed calls with at least one flagged category. |
+| overall_safety_score | [double](#double) |  | Mean LlmSafetyAssessment.safety_score across assessed calls (<code>1.0</code> = fully safe). |
+| category_stats | [LlmSafetyCategoryStat](#ondewo.nlu.LlmSafetyCategoryStat) | repeated | Per-category counts and rates, descending by count. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmTelemetry"></a>
+
+### LlmTelemetry
+Telemetry for a single LLM invocation inside one DetectIntent turn.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| provider | [string](#string) |  | Provider tag: "autogen" | "langchain" | "openai" | "anthropic" | ... |
+| model_name | [string](#string) |  | Concrete model identifier (e.g. "Qwen/Qwen3.6-27b-fp8"). |
+| agent_name | [string](#string) |  | intent_agent executor / agent name. |
+| llm_token_usage | [LlmTokenUsage](#ondewo.nlu.LlmTokenUsage) |  | Totals for this call. |
+| llm_tool_call_metadatas | [LlmToolCallMetadata](#ondewo.nlu.LlmToolCallMetadata) | repeated | Tool calls observed during this LLM invocation. |
+| tool_call_count | [int32](#int32) |  | Denormalized len(llm_tool_call_metadatas). |
+| llm_thinking_metadata | [LlmThinkingMetadata](#ondewo.nlu.LlmThinkingMetadata) |  | Thinking block when surfaced by the model. |
+| start_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock start of the LLM call. |
+| end_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock end of the LLM call. |
+| duration_in_s | [double](#double) |  | Convenience duration (end_time - start_time). |
+| run_id | [string](#string) |  | LangChain / LangSmith run identifier for this LLM call (UUID). |
+| parent_run_id | [string](#string) |  | LangChain / LangSmith identifier of the parent run that spawned this call, forming the LangSmith run tree. |
+| run_type | [string](#string) |  | LangSmith run taxonomy: chain | llm | tool | retriever | agent | parser | prompt. |
+| component_name | [string](#string) |  | Serialized component name from LangChain callbacks (e.g. "ChatOpenAI"). |
+| tags | [string](#string) | repeated | Tags propagated via RunnableConfig. |
+| metadata | [google.protobuf.Struct](#google.protobuf.Struct) |  | Free-form metadata propagated via RunnableConfig. |
+| inputs | [google.protobuf.Struct](#google.protobuf.Struct) |  | Redaction-aware snapshot of inputs at the run boundary. |
+| outputs | [google.protobuf.Struct](#google.protobuf.Struct) |  | Redaction-aware snapshot of outputs at the run boundary. |
+| error_class | [string](#string) |  | Exception class name when the LLM call failed; empty on success. |
+| error_message | [string](#string) |  | Exception message text when the LLM call failed; empty on success. |
+| traceback | [string](#string) |  | Formatted stack trace when the LLM call failed; empty on success. |
+| streaming_chunk_count | [int32](#int32) |  | Streaming chunk count observed during the call. |
+| first_token_latency_seconds | [double](#double) |  | Time-to-first-token (start_time -> first chunk). |
+| system_fingerprint | [string](#string) |  | OpenAI system_fingerprint when available. |
+| cached | [bool](#bool) |  | Whether the result was served from a client-side cache. |
+| retry_count | [int32](#int32) |  | Retry count for the underlying provider call. |
+| fallback_depth | [int32](#int32) |  | Index inside a with_fallbacks([...]) chain when the call succeeded. |
+| temperature | [double](#double) |  | Sampling temperature requested for the LLM call (request kwargs). |
+| top_p | [double](#double) |  | Top-p (nucleus sampling) parameter requested for the LLM call. |
+| max_tokens | [int32](#int32) |  | Maximum number of tokens the model was allowed to produce. |
+| n_generations | [int32](#int32) |  | Number of generations the model was asked to return (<code>n</code> in OpenAI API). |
+| finish_reasons | [string](#string) | repeated | One finish reason per generation (e.g. <code>stop</code>, <code>length</code>, <code>tool_calls</code>, <code>content_filter</code>). |
+| cached_input_tokens | [int32](#int32) |  | Number of input tokens served from the provider-side prompt cache (Anthropic <code>cache_read_input_tokens</code>). |
+| cache_creation_input_tokens | [int32](#int32) |  | Number of input tokens written to the provider-side prompt cache (Anthropic <code>cache_creation_input_tokens</code>). |
+| langsmith_run_url | [string](#string) |  | LangSmith run URL for direct click-through when LangSmith tracing is active. |
+| team_name | [string](#string) |  | Autogen team display name owning the call. |
+| team_id | [string](#string) |  | Autogen team identifier (UUID). |
+| agent_role | [string](#string) |  | Autogen agent role tag (user_proxy | assistant | tool_executor | reflection). |
+| sender_agent | [string](#string) |  | Name of the autogen agent that produced the message. |
+| recipient_agent | [string](#string) |  | Name of the autogen agent that received the message. |
+| turn_index | [int32](#int32) |  | Zero-based position of this LLM call inside the autogen <code>run_stream()</code> sequence. |
+| reflection_iterations | [int32](#int32) |  | Number of reflection loops executed in <code>robust_assistant_agent</code> for this call. |
+| termination_reason | [string](#string) |  | Autogen <code>TaskResult.stop_reason</code> string when surfaced. |
+| evaluator_runs_join_key | [string](#string) |  | Join key linking this LLM call to an evaluator run (see llm_evaluation.proto). |
+| llm_evaluation_feedbacks | [LlmEvaluationFeedback](#ondewo.nlu.LlmEvaluationFeedback) | repeated | Immediate inline feedback recorded inside the turn (e.g. self-grading by a reflection agent). Each entry is a single LlmEvaluationFeedback record. |
+| ccai_service_name | [string](#string) |  | Resource name of the CCAI service that issued this LLM call. |
+| base_url | [string](#string) |  | The base URL for the OpenAI API. Overrides the default endpoint, useful for proxies or compatible third-party providers. |
+| default_headers | [google.protobuf.Struct](#google.protobuf.Struct) |  | Optional. Default HTTP headers to include with every request to the OpenAI API. |
+| default_query | [google.protobuf.Struct](#google.protobuf.Struct) |  | Optional. Default query parameters to append to every request URL sent to the OpenAI API. Values can be of any type (string, number, boolean, list), hence the use of Struct. |
+| frequency_penalty | [float](#float) | optional | Optional. A number between -2.0 and 2.0. Positive values penalize new tokens based on their existing frequency in the text so far, decreasing the likelihood of the model repeating the same line verbatim. |
+| openai_metadata | [google.protobuf.Struct](#google.protobuf.Struct) |  | Optional. Developer-defined tags and values used for filtering completions in the OpenAI dashboard. |
+| presence_penalty | [float](#float) | optional | Optional. A number between -2.0 and 2.0. Positive values penalize new tokens based on whether they have already appeared in the text, increasing the likelihood of the model discussing new topics. |
+| reasoning_effort | [ReasoningEffort](#ondewo.nlu.ReasoningEffort) | optional | Optional. Constrains the effort level for reasoning models (e.g. o1, o3). Controls the trade-off between speed and quality. |
+| user | [string](#string) | optional | Optional. A unique identifier representing the end-user, which helps OpenAI monitor and detect abuse. |
+| timeout | [float](#float) | optional | Optional. The timeout in seconds for requests to the OpenAI API. Applies to the entire request lifecycle including connection, sending, and receiving. |
+| strict_response_validation | [bool](#bool) | optional | Optional. If true, enables strict validation of response payloads returned by the OpenAI API. |
+| extra_headers | [google.protobuf.Struct](#google.protobuf.Struct) |  | Optional. Additional HTTP headers to send with the request. These are merged with and override default_headers for this specific request only. |
+| extra_query | [google.protobuf.Struct](#google.protobuf.Struct) |  | Optional. Additional query parameters to send with the request. These are merged with and override default_query for this specific request only. |
+| extra_body | [google.protobuf.Struct](#google.protobuf.Struct) |  | Optional. Additional JSON properties to include in the request body. Useful for accessing new or undocumented API parameters. |
+| ccai_service_provider | [CcaiServiceProvider](#ondewo.nlu.CcaiServiceProvider) |  | Provider of the ccai service |
+| llm_safety_assessment | [LlmSafetyAssessment](#ondewo.nlu.LlmSafetyAssessment) |  | Native (regex / substring, no-LLM) safety assessment computed at telemetry build time over the call's input / output text. Distinct from the offline LLM-judge safety evaluators in <code>llm_evaluation.proto</code>: this is the live MONITORING signal on real DetectIntent traffic. Unset when safety scoring is disabled. |
+| llm_retrieval_metadata | [LlmRetrievalMetadata](#ondewo.nlu.LlmRetrievalMetadata) |  | Typed view of the retrieved RAG chunks for this LLM call. Populated alongside the unstructured <code>outputs.retrieved_chunks</code> Struct (field 18, kept for back-compat); both carry the same chunk list. Unset for non-retrieval calls. |
+| llm_call_id | [string](#string) |  | Id of THIS LLM call. Same identifier the streaming telemetry events carry as <code>llm_call_id</code> (<code>LlmLlmCallStartedEvent</code>, <code>LlmToolCallStartedEvent</code>, ...), so an aggregate or a persisted row can be correlated back to the live event stream. Distinct from <code>run_id</code> (field 11), which is the UPSTREAM framework's id (autogen / langchain). |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmTelemetryReport"></a>
+
+### LlmTelemetryReport
+Aggregated telemetry across all LLM calls in one DetectIntent turn, or across
+a session / agent-domain scope when used as a statistics report payload. The
+breakdown fields (6+) are populated only for the matching report type; a
+*_LLM_TOTAL_STATISTICS report populates all of them.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_token_usage | [LlmTokenUsage](#ondewo.nlu.LlmTokenUsage) |  | Summed LlmTokenUsage across llm_telemetries. |
+| tool_call_count_total | [int32](#int32) |  | Sum of LlmTelemetry.tool_call_count across llm_telemetries. |
+| llm_call_count | [int32](#int32) |  | Denormalized len(llm_telemetries). |
+| llm_telemetries | [LlmTelemetry](#ondewo.nlu.LlmTelemetry) | repeated | Per-LLM-invocation breakdown. |
+| duration_seconds_total | [double](#double) |  | Sum of LlmTelemetry.duration_in_s across llm_telemetries. |
+| models_used | [LlmModelUsage](#ondewo.nlu.LlmModelUsage) | repeated | Per-model usage rollup. Populated for *_LLM_MODELS_USED and *_LLM_TOTAL_STATISTICS. |
+| providers_used | [LlmProviderUsage](#ondewo.nlu.LlmProviderUsage) | repeated | Per-provider usage rollup. Populated for *_LLM_PROVIDERS_USED and *_LLM_TOTAL_STATISTICS. |
+| ccai_services_used | [LlmCcaiServiceUsage](#ondewo.nlu.LlmCcaiServiceUsage) | repeated | Per-CCAI-service usage rollup. Populated for *_LLM_CCAI_SERVICES_USED and *_LLM_TOTAL_STATISTICS. |
+| agents_used | [LlmAgentUsage](#ondewo.nlu.LlmAgentUsage) | repeated | Per-intent-agent usage rollup. Populated for *_LLM_AGENTS_USED and *_LLM_TOTAL_STATISTICS. |
+| tools_used | [LlmToolUsage](#ondewo.nlu.LlmToolUsage) | repeated | Tool-usage rollup. Populated for *_LLM_TOP_X_TOOLS / *_LLM_LEAST_X_TOOLS and *_LLM_TOTAL_STATISTICS. |
+| latency_stats | [LlmLatencyStats](#ondewo.nlu.LlmLatencyStats) |  | Latency aggregate. Populated for *_LLM_LATENCY and *_LLM_TOTAL_STATISTICS. |
+| cache_stats | [LlmCacheStats](#ondewo.nlu.LlmCacheStats) |  | Cache efficiency aggregate. Populated for *_LLM_CACHE_EFFICIENCY and *_LLM_TOTAL_STATISTICS. |
+| error_stats | [LlmErrorStats](#ondewo.nlu.LlmErrorStats) |  | Error aggregate. Populated for *_LLM_ERRORS and *_LLM_TOTAL_STATISTICS. |
+| finish_reason_distribution | [LlmFinishReasonStat](#ondewo.nlu.LlmFinishReasonStat) | repeated | Finish-reason distribution. Populated for *_LLM_FINISH_REASONS and *_LLM_TOTAL_STATISTICS. |
+| reasoning_effort_distribution | [LlmReasoningEffortStat](#ondewo.nlu.LlmReasoningEffortStat) | repeated | Reasoning-effort distribution. Populated for *_LLM_REASONING_EFFORT and *_LLM_TOTAL_STATISTICS. |
+| thinking_tokens_total | [int64](#int64) |  | Scope-wide summed thinking-block tokens. |
+| thinking_duration_seconds_total | [double](#double) |  | Scope-wide summed thinking-block duration in seconds. |
+| tool_call_tokens_total | [int64](#int64) |  | Scope-wide summed tool-call tokens. |
+| tool_call_duration_seconds_total | [double](#double) |  | Scope-wide summed tool-call duration in seconds. |
+| safety_stats | [LlmSafetyStats](#ondewo.nlu.LlmSafetyStats) |  | Native safety aggregate (counts / rates / mean score). Populated for *_LLM_SAFETY and *_LLM_TOTAL_STATISTICS reports. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmThinkingDeltaEvent"></a>
+
+### LlmThinkingDeltaEvent
+Emitted on a streaming DetectIntent for each thinking-delta chunk.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_call_id | [string](#string) |  | Groups events under an LlmTelemetry entry. |
+| text_delta | [string](#string) |  | Incremental thinking text chunk (subject to redaction policy on the client). |
+| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock timestamp of the chunk. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmThinkingMetadata"></a>
+
+### LlmThinkingMetadata
+Thinking / reasoning block emitted by the model (e.g. Anthropic extended thinking,
+OpenAI o-series reasoning).
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_token_usage | [LlmTokenUsage](#ondewo.nlu.LlmTokenUsage) |  | Token attribution for the thinking block when surfaced by the provider. |
+| start_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock start of the thinking block. |
+| end_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock end of the thinking block. |
+| duration_in_s | [double](#double) |  | Convenience duration (end_time - start_time). |
+| thinking_text | [string](#string) |  | Raw thinking text. Subject to redaction depending on telemetry policy. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmTokenUsage"></a>
+
+### LlmTokenUsage
+Token usage counters for a single LLM call (or aggregate).
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| total_tokens | [int64](#int64) |  | Sum of input and output tokens for this call (or aggregate across calls). |
+| input_tokens | [int64](#int64) |  | Number of prompt / input tokens consumed. |
+| output_tokens | [int64](#int64) |  | Number of completion / output tokens produced. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmTokenUsageUpdateEvent"></a>
+
+### LlmTokenUsageUpdateEvent
+Emitted on a streaming DetectIntent when running token counts update.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_call_id | [string](#string) |  | Groups events under an LlmTelemetry entry. |
+| llm_token_usage | [LlmTokenUsage](#ondewo.nlu.LlmTokenUsage) |  | Running totals for that llm_call. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmToolCallFinishedEvent"></a>
+
+### LlmToolCallFinishedEvent
+Emitted on a streaming DetectIntent when a tool call finishes.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| tool_call_id | [string](#string) |  | Stable id matching the matching LlmToolCallStartedEvent. |
+| end_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock end time of the tool call. |
+| duration_in_s | [double](#double) |  | Convenience duration (end_time - start_time). |
+| llm_token_usage | [LlmTokenUsage](#ondewo.nlu.LlmTokenUsage) |  | Token attribution for this tool call when available. |
+| result | [google.protobuf.Struct](#google.protobuf.Struct) |  | Tool result payload (may be omitted on failure or redaction). |
+| error_message | [string](#string) |  | Populated only when the tool call failed; empty string on success. |
+| llm_call_id | [string](#string) |  | Groups events under an LlmTelemetry entry. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmToolCallMetadata"></a>
+
+### LlmToolCallMetadata
+Metadata for one tool call executed by the LLM.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| tool_call_id | [string](#string) |  | Stable id assigned by the upstream framework (autogen / langchain). |
+| tool_name | [string](#string) |  | Name of the tool / function invoked. |
+| start_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock start time of the tool call. |
+| end_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock end time of the tool call. |
+| duration_in_s | [double](#double) |  | Convenience duration (end_time - start_time). |
+| llm_token_usage | [LlmTokenUsage](#ondewo.nlu.LlmTokenUsage) |  | Token attribution for this tool call when available. |
+| arguments | [google.protobuf.Struct](#google.protobuf.Struct) |  | Tool arguments as a structured payload. May be omitted on incremental events. |
+| result | [google.protobuf.Struct](#google.protobuf.Struct) |  | Tool result as a structured payload. May be omitted on incremental events. |
+| error_message | [string](#string) |  | Populated only when the tool call failed; empty string on success. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmToolCallStartedEvent"></a>
+
+### LlmToolCallStartedEvent
+Emitted on a streaming DetectIntent when a tool call starts.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| tool_call_id | [string](#string) |  | Stable id assigned by the upstream framework (autogen / langchain). |
+| tool_name | [string](#string) |  | Name of the tool / function invoked. |
+| arguments | [google.protobuf.Struct](#google.protobuf.Struct) |  | Tool arguments as a structured payload (Struct kept as-is; not a custom Message). |
+| start_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock start time of the tool call. |
+| llm_call_id | [string](#string) |  | Groups events under an LlmTelemetry entry. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmToolUsage"></a>
+
+### LlmToolUsage
+One tool's invocation aggregate across the scope.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| tool_name | [string](#string) |  | Name of the tool / function. |
+| call_count | [int64](#int64) |  | Number of times the tool was invoked in scope. |
+| error_count | [int64](#int64) |  | Number of failed invocations. |
+| error_rate | [double](#double) |  | error_count / call_count. |
+| duration_seconds_total | [double](#double) |  | Summed tool-call duration in seconds. |
+| mean_duration_seconds | [double](#double) |  | Mean tool-call duration in seconds. |
+| llm_token_usage | [LlmTokenUsage](#ondewo.nlu.LlmTokenUsage) |  | Summed tool-call token usage (input / output / total). |
+| arguments | [google.protobuf.Struct](#google.protobuf.Struct) |  | Arguments the representative invocation was called with, as a structured payload (Struct kept as-is; not a custom Message). Unset when the source metadata carried none. |
+| llm_call_id | [string](#string) |  | Groups the representative invocation under its <code>LlmTelemetry</code> entry. |
+| tool_call_id | [string](#string) |  | Stable id of the representative invocation, assigned by the upstream framework (autogen / langchain). |
 
 
 
@@ -10127,6 +15087,31 @@ You should not rely on this field as it isn&apos;t guaranteed to be accurate, or
 | diagnostic_info | [google.protobuf.Struct](#google.protobuf.Struct) |  | The free-form diagnostic info. For example, this field could contain webhook call latency. |
 | language_code | [string](#string) |  | The language that was triggered during intent detection. See <a href="https://dialogflow.com/docs/reference/language">Language Support</a> for a list of the currently supported language codes. |
 | file_resources | [FileResource](#ondewo.nlu.FileResource) | repeated | Generated or attached files, e.g., llm generates a picture or file attachment |
+| llm_telemetry_report | [LlmTelemetryReport](#ondewo.nlu.LlmTelemetryReport) |  | Aggregated LLM telemetry (tokens, tool calls, thinking) for this turn. |
+| referenced_chunks | [ReferencedChunk](#ondewo.nlu.ReferencedChunk) | repeated | Source chunks the answer cited via in-text <code>[ID:N]</code> markers, documents. Empty when the turn was not answered from a RAG dataset. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ReferencedChunk"></a>
+
+### ReferencedChunk
+Chunk information for a document chunk referenced in a RAG based <code>StreamingDetectIntentResponse</code>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| reference_index | [int32](#int32) |  | Index by which this chunk is referenced in the response text. For index <code>N</code> the reference in the response text has format <code>[ID:N]</code> |
+| dataset_id | [string](#string) |  | ID of the dataset the chunk belongs to. |
+| document_id | [string](#string) |  | ID of the document the chunk belongs to. |
+| chunk_id | [string](#string) |  | ID of the chunk. |
+| document_name | [string](#string) |  | Name of the document the chunk belongs to. |
+| content | [string](#string) |  | Text of the chunk. |
+| similarity | [float](#float) |  | Similarity score of this chunk for response it is retruned with. |
+| document_url | [string](#string) |  | For crawled documents the URL of the source document. For any other document it is left empty. |
+| deep_link_url | [string](#string) |  | For crawled documents link to the source document that directly jumps to the chunk's location on the page using a text fragment anchor (a bit fragile and might not always work). For any other document it is left empty. |
 
 
 
@@ -10174,6 +15159,48 @@ Session of a user interaction
 | modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
 | created_by | [string](#string) |  | User id in form of a valid UUID. |
 | modified_by | [string](#string) |  | User id in form of a valid UUID. |
+
+
+
+
+
+
+<a name="ondewo.nlu.SessionFeedback"></a>
+
+### SessionFeedback
+A single piece of user feedback about a whole session or a single session step (turn).
+
+The rating is intentionally extensible: <code>rating</code> carries the thumbs signal surfaced in the UI
+today, while <code>score</code> and <code>categorical_value</code> allow richer scales (star / NPS / CSAT)
+to be added later without a schema change. The feedback is pinned to the exact forensic context it is
+about (<code>session_id</code>, <code>session_step_id</code>, <code>response_id</code>,
+<code>session_step_llm_telemetry_id</code>) so the full conversation state up to the feedback can be
+reconstructed from the already-persisted session step.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The resource name of the feedback. Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/feedback/&lt;feedback_uuid&gt;</code></pre> |
+| session_id | [string](#string) |  | The session this feedback belongs to. Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code></pre> |
+| session_step_id | [string](#string) |  | The session step (turn) this feedback targets. Empty for session-level feedback. |
+| response_id | [string](#string) |  | Optional. The specific detect-intent response this feedback pins. |
+| session_step_llm_telemetry_id | [string](#string) |  | Optional. The specific LLM-telemetry sub-event (llm call / tool call) this feedback pins. |
+| rating | [FeedbackRating](#ondewo.nlu.FeedbackRating) |  | The thumbs rating. |
+| categorical_value | [string](#string) |  | Optional. An extensible categorical value (e.g. star bucket, NPS/CSAT bucket). |
+| score | [float](#float) | optional | Optional. A numeric score in [0, 1] for future continuous scales.
+
+Explicit presence (<code>optional</code>): a score of <code>0.0</code> is a MEANINGFUL rating — the worst point of a 0-10 NPS or 0-5 CSAT scale — and without presence it is indistinguishable from "no score given". The server persists an absent score as SQL NULL and excludes it from <code>average_score</code> / <code>scored_count</code> and from the <code>score_min</code> / <code>score_max</code> range filters, so conflating the two silently dropped exactly the worst ratings and biased the reported average upward. Use <code>HasField("score")</code> to distinguish. Matches <code>FeedbackFilter.score_min</code> / <code>score_max</code>, which are already optional. |
+| comment | [string](#string) |  | Optional. Free-text comment. |
+| criterion | [string](#string) |  | Optional. A dimension the feedback is about (e.g. "helpfulness", "accuracy"). |
+| author_type | [FeedbackAuthorType](#ondewo.nlu.FeedbackAuthorType) |  | Who left the feedback. |
+| annotator_user_id | [string](#string) |  | The authenticated author's user id (Keycloak sub); empty for anonymous end-users. |
+| origin_id | [string](#string) |  | Optional. The channel origin id (webchat / webphone) identifying an anonymous end-user. |
+| identified_user_id | [string](#string) |  | Optional. The identified end-user id, when the channel provides one. |
+| raw | [google.protobuf.Struct](#google.protobuf.Struct) |  | Optional. An extensibility escape hatch for channel-specific metadata. |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the feedback was created. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the feedback was last modified. |
+| created_by | [string](#string) |  | Who created the feedback. |
+| modified_by | [string](#string) |  | Who last modified the feedback. |
 
 
 
@@ -10366,12 +15393,12 @@ This string represents what has been passed to the entity recognition and intent
 <a name="ondewo.nlu.SessionStep"></a>
 
 ### SessionStep
-SessionStep is a single user interaction as part of a session
+SessionStep is a single user interaction as part of a session.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The unique identifier for the given review Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/sessionsteps/&lt;session_step_uuid&gt;</code></pre> |
+| name | [string](#string) |  | The unique identifier of the session step. Format: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;/sessionsteps/&lt;session_step_uuid&gt;</code></pre> |
 | detect_intent_request | [DetectIntentRequest](#ondewo.nlu.DetectIntentRequest) |  | The detect intent request of the session step |
 | detect_intent_response | [DetectIntentResponse](#ondewo.nlu.DetectIntentResponse) |  | The detect intent response of the session step |
 | contexts | [Context](#ondewo.nlu.Context) | repeated | The contexts which were active at the beginning of this step |
@@ -10381,6 +15408,7 @@ SessionStep is a single user interaction as part of a session
 | created_by | [string](#string) |  | User id in form of a valid UUID. |
 | modified_by | [string](#string) |  | User id in form of a valid UUID. |
 | audio_file_resources | [AudioFileResource](#ondewo.nlu.AudioFileResource) | repeated | audio file resources associated with the session step |
+| llm_telemetry_report | [LlmTelemetryReport](#ondewo.nlu.LlmTelemetryReport) |  | Aggregated LLM telemetry for this step (one entry per LLM invocation, plus turn-level totals). |
 
 
 
@@ -10424,6 +15452,12 @@ Multiple response messages can be returned in order:
 | recognition_result | [StreamingRecognitionResult](#ondewo.nlu.StreamingRecognitionResult) |  | The result of speech recognition. |
 | query_result | [QueryResult](#ondewo.nlu.QueryResult) |  | The result of the conversational query or event processing. |
 | webhook_status | [google.rpc.Status](#google.rpc.Status) |  | Specifies the status of the webhook request. |
+| llm_call_started | [LlmCallStartedEvent](#ondewo.nlu.LlmCallStartedEvent) |  | Emitted when an LLM call has started. |
+| llm_call_finished | [LlmCallFinishedEvent](#ondewo.nlu.LlmCallFinishedEvent) |  | Emitted when an LLM call has finished. |
+| llm_tool_call_started | [LlmToolCallStartedEvent](#ondewo.nlu.LlmToolCallStartedEvent) |  | Emitted when an LLM tool call has started. |
+| llm_tool_call_finished | [LlmToolCallFinishedEvent](#ondewo.nlu.LlmToolCallFinishedEvent) |  | Emitted when an LLM tool call has finished. |
+| llm_thinking_delta | [LlmThinkingDeltaEvent](#ondewo.nlu.LlmThinkingDeltaEvent) |  | Emitted for an incremental LLM thinking (reasoning) update. |
+| llm_token_usage_update | [LlmTokenUsageUpdateEvent](#ondewo.nlu.LlmTokenUsageUpdateEvent) |  | Emitted when the running LLM token-usage totals are updated. |
 
 
 
@@ -10505,6 +15539,22 @@ This message is a request to update a session comment
 | ----- | ---- | ----- | ----------- |
 | session_id | [string](#string) |  | The id of the session |
 | comment | [Comment](#ondewo.nlu.Comment) |  | The comment of a session to be updated |
+
+
+
+
+
+
+<a name="ondewo.nlu.UpdateSessionFeedbackRequest"></a>
+
+### UpdateSessionFeedbackRequest
+Request to update (revise) an existing feedback.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| feedback | [SessionFeedback](#ondewo.nlu.SessionFeedback) |  | The feedback to update; feedback.name identifies the record. |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The fields of the feedback to update. |
 
 
 
@@ -10604,6 +15654,92 @@ Type of operator to compare
 
 
 
+<a name="ondewo.nlu.FeedbackAuthorType"></a>
+
+### FeedbackAuthorType
+Who left a piece of feedback — distinguishes trusted reviewers from anonymous production end-users.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| FEEDBACK_AUTHOR_TYPE_UNSPECIFIED | 0 | Unknown author type. |
+| FEEDBACK_AUTHOR_TYPE_HUMAN_REVIEWER | 1 | A logged-in human reviewer / test user (an authenticated Keycloak identity; annotator_user_id is set). |
+| FEEDBACK_AUTHOR_TYPE_TECHNICAL_USER | 2 | A technical / service user. |
+| FEEDBACK_AUTHOR_TYPE_END_USER_ANONYMOUS | 3 | An anonymous production end-user of the webchat / webphone channel (no authenticated identity; identified only by the session and channel origin). |
+
+
+
+<a name="ondewo.nlu.FeedbackRating"></a>
+
+### FeedbackRating
+The thumbs rating a user gives as feedback.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| FEEDBACK_RATING_UNSPECIFIED | 0 | No rating provided (e.g. a comment-only feedback). |
+| FEEDBACK_RATING_THUMBS_UP | 1 | Positive feedback (thumbs up). |
+| FEEDBACK_RATING_THUMBS_DOWN | 2 | Negative feedback (thumbs down). |
+
+
+
+<a name="ondewo.nlu.FeedbackScope"></a>
+
+### FeedbackScope
+The scope a feedback filter targets: session-level, step-level, or both.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| FEEDBACK_SCOPE_UNSPECIFIED | 0 | Both session-level and step-level feedback. |
+| FEEDBACK_SCOPE_SESSION_LEVEL | 1 | Only session-level feedback (session_step_id empty). |
+| FEEDBACK_SCOPE_STEP_LEVEL | 2 | Only session-step-level feedback (session_step_id set). |
+
+
+
+<a name="ondewo.nlu.FeedbackTimeGranularity"></a>
+
+### FeedbackTimeGranularity
+The calendar granularity of a feedback time series. When set (non-unspecified) it overrides the
+fixed-width bucket_width_seconds on the request.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| FEEDBACK_TIME_GRANULARITY_UNSPECIFIED | 0 | Unspecified — use the request's fixed-width bucket_width_seconds instead. |
+| FEEDBACK_TIME_GRANULARITY_HOUR | 1 | Hourly calendar buckets. |
+| FEEDBACK_TIME_GRANULARITY_DAY | 2 | Daily calendar buckets. |
+| FEEDBACK_TIME_GRANULARITY_WEEK | 3 | Weekly calendar buckets (ISO weeks, Monday start). |
+| FEEDBACK_TIME_GRANULARITY_MONTH | 4 | Monthly calendar buckets. |
+| FEEDBACK_TIME_GRANULARITY_YEAR | 5 | Yearly calendar buckets. |
+
+
+
+<a name="ondewo.nlu.LlmSafetyLocation"></a>
+
+### LlmSafetyLocation
+Where a safety finding was located in the LLM call.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| LLM_SAFETY_LOCATION_UNSPECIFIED | 0 | Default / unset. |
+| LLM_SAFETY_LOCATION_INPUT | 1 | The finding was matched in the model input (prompt / user turn). |
+| LLM_SAFETY_LOCATION_OUTPUT | 2 | The finding was matched in the model output (completion). |
+
+
+
+<a name="ondewo.nlu.ReasoningEffort"></a>
+
+### ReasoningEffort
+Effort level for reasoning models (e.g. o1, o3). Controls the trade-off
+between speed and quality.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| REASONING_EFFORT_UNSPECIFIED | 0 | Unspecified reasoning effort. |
+| REASONING_EFFORT_MINIMAL | 1 | Minimal reasoning effort. |
+| REASONING_EFFORT_LOW | 2 | Low reasoning effort. |
+| REASONING_EFFORT_MEDIUM | 3 | Medium reasoning effort. |
+| REASONING_EFFORT_HIGH | 4 | High reasoning effort. |
+
+
+
 <a name="ondewo.nlu.ResourceView"></a>
 
 ### ResourceView
@@ -10662,13 +15798,14 @@ Type of the response message.
 <a name="ondewo.nlu.TranscriptionType"></a>
 
 ### TranscriptionType
-
+Identifies whether a transcription was produced by an automatic
+speech-to-text system or by a human annotator.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
-| TRANSCRIPTION_TYPE_UNSPECIFIED | 0 | unspecified |
-| TRANSCRIPTION_TYPE_S2T | 1 | Automatic transcription by a speech to text system |
-| TRANSCRIPTION_TYPE_HUMAN | 2 | Manual human transcription |
+| TRANSCRIPTION_TYPE_UNSPECIFIED | 0 | Sentinel value when the source of the transcription was not specified. |
+| TRANSCRIPTION_TYPE_S2T | 1 | Automatic transcription produced by a speech-to-text system. |
+| TRANSCRIPTION_TYPE_HUMAN | 2 | Manual transcription produced by a human annotator. |
 
 
  <!-- end enums -->
@@ -10693,27 +15830,37 @@ A session represents an interaction with a user. You retrieve user input and pas
 | UpdateSessionStep | [UpdateSessionStepRequest](#ondewo.nlu.UpdateSessionStepRequest) | [SessionStep](#ondewo.nlu.SessionStep) | UpdateSessionStep: updates an existing session step in a session |
 | DeleteSessionStep | [DeleteSessionStepRequest](#ondewo.nlu.DeleteSessionStepRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | DeleteSessionStep: deletes an existing session step from the session |
 | DeleteSession | [DeleteSessionRequest](#ondewo.nlu.DeleteSessionRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | DeleteSession: delete a session(=conversation) from ondewo-kb (for testing only) |
-| ListSessionLabels | [ListSessionLabelsRequest](#ondewo.nlu.ListSessionLabelsRequest) | [ListSessionLabelsResponse](#ondewo.nlu.ListSessionLabelsResponse) |  |
-| ListSessionLabelsOfAllSessions | [ListSessionLabelsOfAllSessionsRequest](#ondewo.nlu.ListSessionLabelsOfAllSessionsRequest) | [ListSessionLabelsResponse](#ondewo.nlu.ListSessionLabelsResponse) |  |
-| ListLanguageCodesOfAllSessions | [ListLanguageCodesOfAllSessionsRequest](#ondewo.nlu.ListLanguageCodesOfAllSessionsRequest) | [ListLanguageCodesResponse](#ondewo.nlu.ListLanguageCodesResponse) |  |
-| ListMatchedIntentsOfAllSessions | [ListMatchedIntentsOfAllSessionsRequest](#ondewo.nlu.ListMatchedIntentsOfAllSessionsRequest) | [ListMatchedIntentsResponse](#ondewo.nlu.ListMatchedIntentsResponse) |  |
-| ListMatchedEntityTypesOfAllSessions | [ListMatchedEntityTypesOfAllSessionsRequest](#ondewo.nlu.ListMatchedEntityTypesOfAllSessionsRequest) | [ListMatchedEntityTypesResponse](#ondewo.nlu.ListMatchedEntityTypesResponse) |  |
-| ListUserIdsOfAllSessions | [ListUserIdsOfAllSessionsRequest](#ondewo.nlu.ListUserIdsOfAllSessionsRequest) | [ListUserIdsResponse](#ondewo.nlu.ListUserIdsResponse) |  |
-| ListIdentifiedUserIdsOfAllSessions | [ListIdentifiedUserIdsOfAllSessionsRequest](#ondewo.nlu.ListIdentifiedUserIdsOfAllSessionsRequest) | [ListIdentifiedUserIdsResponse](#ondewo.nlu.ListIdentifiedUserIdsResponse) |  |
-| ListTagsOfAllSessions | [ListTagsOfAllSessionsRequest](#ondewo.nlu.ListTagsOfAllSessionsRequest) | [ListTagsResponse](#ondewo.nlu.ListTagsResponse) |  |
-| ListInputContextsOfAllSessions | [ListInputContextsOfAllSessionsRequest](#ondewo.nlu.ListInputContextsOfAllSessionsRequest) | [ListInputContextsResponse](#ondewo.nlu.ListInputContextsResponse) |  |
-| ListOutputContextsOfAllSessions | [ListOutputContextsOfAllSessionsRequest](#ondewo.nlu.ListOutputContextsOfAllSessionsRequest) | [ListOutputContextsResponse](#ondewo.nlu.ListOutputContextsResponse) |  |
-| ListPlatformsOfAllSessions | [ListPlatformsOfAllSessionsRequest](#ondewo.nlu.ListPlatformsOfAllSessionsRequest) | [ListPlatformsResponse](#ondewo.nlu.ListPlatformsResponse) |  |
-| ListAccountIdsOfAllSessions | [ListAccountIdsOfAllSessionsRequest](#ondewo.nlu.ListAccountIdsOfAllSessionsRequest) | [ListAccountIdsResponse](#ondewo.nlu.ListAccountIdsResponse) |  |
-| ListPropertyIdsOfAllSessions | [ListPropertyIdsOfAllSessionsRequest](#ondewo.nlu.ListPropertyIdsOfAllSessionsRequest) | [ListPropertyIdsResponse](#ondewo.nlu.ListPropertyIdsResponse) |  |
-| ListDatastreamIdsOfAllSessions | [ListDatastreamIdsOfAllSessionsRequest](#ondewo.nlu.ListDatastreamIdsOfAllSessionsRequest) | [ListDatastreamIdsResponse](#ondewo.nlu.ListDatastreamIdsResponse) |  |
-| ListOriginIdsOfAllSessions | [ListOriginIdsOfAllSessionsRequest](#ondewo.nlu.ListOriginIdsOfAllSessionsRequest) | [ListOriginIdsResponse](#ondewo.nlu.ListOriginIdsResponse) |  |
-| AddSessionLabels | [AddSessionLabelsRequest](#ondewo.nlu.AddSessionLabelsRequest) | [Session](#ondewo.nlu.Session) |  |
-| DeleteSessionLabels | [DeleteSessionLabelsRequest](#ondewo.nlu.DeleteSessionLabelsRequest) | [Session](#ondewo.nlu.Session) |  |
-| AddSessionComment | [AddSessionCommentRequest](#ondewo.nlu.AddSessionCommentRequest) | [Comment](#ondewo.nlu.Comment) |  |
-| DeleteSessionComments | [DeleteSessionCommentsRequest](#ondewo.nlu.DeleteSessionCommentsRequest) | [Session](#ondewo.nlu.Session) |  |
-| UpdateSessionComments | [UpdateSessionCommentsRequest](#ondewo.nlu.UpdateSessionCommentsRequest) | [Session](#ondewo.nlu.Session) |  |
-| ListSessionComments | [ListSessionCommentsRequest](#ondewo.nlu.ListSessionCommentsRequest) | [ListSessionCommentsResponse](#ondewo.nlu.ListSessionCommentsResponse) |  |
+| ListSessionLabels | [ListSessionLabelsRequest](#ondewo.nlu.ListSessionLabelsRequest) | [ListSessionLabelsResponse](#ondewo.nlu.ListSessionLabelsResponse) | Returns the list of labels attached to a single session. |
+| ListSessionLabelsOfAllSessions | [ListSessionLabelsOfAllSessionsRequest](#ondewo.nlu.ListSessionLabelsOfAllSessionsRequest) | [ListSessionLabelsResponse](#ondewo.nlu.ListSessionLabelsResponse) | Returns the distinct set of labels observed across all sessions of the agent, optionally narrowed by a SessionFilter. |
+| ListLanguageCodesOfAllSessions | [ListLanguageCodesOfAllSessionsRequest](#ondewo.nlu.ListLanguageCodesOfAllSessionsRequest) | [ListLanguageCodesResponse](#ondewo.nlu.ListLanguageCodesResponse) | Returns the distinct set of language codes observed across all sessions of the agent, optionally narrowed by a SessionFilter. |
+| ListMatchedIntentsOfAllSessions | [ListMatchedIntentsOfAllSessionsRequest](#ondewo.nlu.ListMatchedIntentsOfAllSessionsRequest) | [ListMatchedIntentsResponse](#ondewo.nlu.ListMatchedIntentsResponse) | Returns the distinct set of intents matched across all sessions of the agent, optionally narrowed by a SessionFilter. |
+| ListMatchedEntityTypesOfAllSessions | [ListMatchedEntityTypesOfAllSessionsRequest](#ondewo.nlu.ListMatchedEntityTypesOfAllSessionsRequest) | [ListMatchedEntityTypesResponse](#ondewo.nlu.ListMatchedEntityTypesResponse) | Returns the distinct set of entity types recognised across all sessions of the agent, optionally narrowed by a SessionFilter. |
+| ListUserIdsOfAllSessions | [ListUserIdsOfAllSessionsRequest](#ondewo.nlu.ListUserIdsOfAllSessionsRequest) | [ListUserIdsResponse](#ondewo.nlu.ListUserIdsResponse) | Returns the distinct set of <code>user_id</code> values observed across all sessions of the agent, optionally narrowed by a SessionFilter. |
+| ListIdentifiedUserIdsOfAllSessions | [ListIdentifiedUserIdsOfAllSessionsRequest](#ondewo.nlu.ListIdentifiedUserIdsOfAllSessionsRequest) | [ListIdentifiedUserIdsResponse](#ondewo.nlu.ListIdentifiedUserIdsResponse) | Returns the distinct set of <code>identified_user_id</code> values observed across all sessions of the agent, optionally narrowed by a SessionFilter. |
+| ListTagsOfAllSessions | [ListTagsOfAllSessionsRequest](#ondewo.nlu.ListTagsOfAllSessionsRequest) | [ListTagsResponse](#ondewo.nlu.ListTagsResponse) | Returns the distinct set of intent tags observed across all sessions of the agent, optionally narrowed by a SessionFilter. |
+| ListInputContextsOfAllSessions | [ListInputContextsOfAllSessionsRequest](#ondewo.nlu.ListInputContextsOfAllSessionsRequest) | [ListInputContextsResponse](#ondewo.nlu.ListInputContextsResponse) | Returns the distinct set of input contexts observed across all sessions of the agent, optionally narrowed by a SessionFilter. |
+| ListOutputContextsOfAllSessions | [ListOutputContextsOfAllSessionsRequest](#ondewo.nlu.ListOutputContextsOfAllSessionsRequest) | [ListOutputContextsResponse](#ondewo.nlu.ListOutputContextsResponse) | Returns the distinct set of output contexts observed across all sessions of the agent, optionally narrowed by a SessionFilter. |
+| ListPlatformsOfAllSessions | [ListPlatformsOfAllSessionsRequest](#ondewo.nlu.ListPlatformsOfAllSessionsRequest) | [ListPlatformsResponse](#ondewo.nlu.ListPlatformsResponse) | Returns the distinct set of <code>Intent.Message.Platform</code> values observed across all sessions of the agent, optionally narrowed by a SessionFilter. |
+| ListAccountIdsOfAllSessions | [ListAccountIdsOfAllSessionsRequest](#ondewo.nlu.ListAccountIdsOfAllSessionsRequest) | [ListAccountIdsResponse](#ondewo.nlu.ListAccountIdsResponse) | Returns the distinct set of <code>account_id</code> values observed across all sessions of the agent, optionally narrowed by a SessionFilter. |
+| ListPropertyIdsOfAllSessions | [ListPropertyIdsOfAllSessionsRequest](#ondewo.nlu.ListPropertyIdsOfAllSessionsRequest) | [ListPropertyIdsResponse](#ondewo.nlu.ListPropertyIdsResponse) | Returns the distinct set of <code>property_id</code> values observed across all sessions of the agent, optionally narrowed by a SessionFilter. |
+| ListDatastreamIdsOfAllSessions | [ListDatastreamIdsOfAllSessionsRequest](#ondewo.nlu.ListDatastreamIdsOfAllSessionsRequest) | [ListDatastreamIdsResponse](#ondewo.nlu.ListDatastreamIdsResponse) | Returns the distinct set of <code>datastream_id</code> values observed across all sessions of the agent, optionally narrowed by a SessionFilter. |
+| ListOriginIdsOfAllSessions | [ListOriginIdsOfAllSessionsRequest](#ondewo.nlu.ListOriginIdsOfAllSessionsRequest) | [ListOriginIdsResponse](#ondewo.nlu.ListOriginIdsResponse) | Returns the distinct set of <code>origin_id</code> values observed across all sessions of the agent, optionally narrowed by a SessionFilter. |
+| AddSessionLabels | [AddSessionLabelsRequest](#ondewo.nlu.AddSessionLabelsRequest) | [Session](#ondewo.nlu.Session) | Attaches the supplied labels to a session and returns the updated session. |
+| DeleteSessionLabels | [DeleteSessionLabelsRequest](#ondewo.nlu.DeleteSessionLabelsRequest) | [Session](#ondewo.nlu.Session) | Removes the supplied labels from a session and returns the updated session. |
+| AddSessionComment | [AddSessionCommentRequest](#ondewo.nlu.AddSessionCommentRequest) | [Comment](#ondewo.nlu.Comment) | Appends a comment to a session and returns the persisted comment. |
+| DeleteSessionComments | [DeleteSessionCommentsRequest](#ondewo.nlu.DeleteSessionCommentsRequest) | [Session](#ondewo.nlu.Session) | Removes the comments named in the request from a session and returns the updated session. |
+| UpdateSessionComments | [UpdateSessionCommentsRequest](#ondewo.nlu.UpdateSessionCommentsRequest) | [Session](#ondewo.nlu.Session) | Updates an existing comment on a session and returns the updated session. |
+| ListSessionComments | [ListSessionCommentsRequest](#ondewo.nlu.ListSessionCommentsRequest) | [ListSessionCommentsResponse](#ondewo.nlu.ListSessionCommentsResponse) | Lists the comments attached to a session with pagination support, optionally narrowed by resolved status. |
+| ListSessionCommentsOfAllSessions | [ListSessionCommentsOfAllSessionsRequest](#ondewo.nlu.ListSessionCommentsOfAllSessionsRequest) | [ListSessionCommentsResponse](#ondewo.nlu.ListSessionCommentsResponse) | Lists the comments attached to all sessions of the agent with pagination support, optionally narrowed by a SessionFilter and by resolved status. |
+| AddSessionFeedback | [AddSessionFeedbackRequest](#ondewo.nlu.AddSessionFeedbackRequest) | [SessionFeedback](#ondewo.nlu.SessionFeedback) | Records user feedback (thumbs up/down + optional comment + optional score/categorical value) about a whole session and returns the persisted feedback. Works for authenticated reviewers/test users and, where enabled, anonymous production end-users (webchat/webphone). |
+| AddSessionStepFeedback | [AddSessionStepFeedbackRequest](#ondewo.nlu.AddSessionStepFeedbackRequest) | [SessionFeedback](#ondewo.nlu.SessionFeedback) | Records user feedback about a single session step (turn), pinned to the exact response, and returns the persisted feedback. |
+| GetSessionFeedback | [GetSessionFeedbackRequest](#ondewo.nlu.GetSessionFeedbackRequest) | [SessionFeedback](#ondewo.nlu.SessionFeedback) | Returns a single session/step feedback by its resource name. |
+| UpdateSessionFeedback | [UpdateSessionFeedbackRequest](#ondewo.nlu.UpdateSessionFeedbackRequest) | [SessionFeedback](#ondewo.nlu.SessionFeedback) | Updates an existing feedback (a user revising their thumbs / comment) and returns it. |
+| DeleteSessionFeedback | [DeleteSessionFeedbackRequest](#ondewo.nlu.DeleteSessionFeedbackRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Deletes a feedback (a user withdrawing their feedback). |
+| ListSessionFeedback | [ListSessionFeedbackRequest](#ondewo.nlu.ListSessionFeedbackRequest) | [ListSessionFeedbackResponse](#ondewo.nlu.ListSessionFeedbackResponse) | Lists all feedback (session-level and step-level) attached to a session with pagination support. |
+| ListSessionFeedbackOfAllSessions | [ListSessionFeedbackOfAllSessionsRequest](#ondewo.nlu.ListSessionFeedbackOfAllSessionsRequest) | [ListSessionFeedbackResponse](#ondewo.nlu.ListSessionFeedbackResponse) | Lists feedback across all sessions of the agent, optionally narrowed by a SessionFilter. |
+| GetFeedbackStatistics | [GetFeedbackStatisticsRequest](#ondewo.nlu.GetFeedbackStatisticsRequest) | [GetFeedbackStatisticsResponse](#ondewo.nlu.GetFeedbackStatisticsResponse) | Returns aggregated feedback statistics for an agent (thumbs up/down counts + breakdowns), optionally rolling up existing session reviews and comments as additional quality signals. |
+| GetFeedbackStatisticsTimeSeries | [GetFeedbackStatisticsTimeSeriesRequest](#ondewo.nlu.GetFeedbackStatisticsTimeSeriesRequest) | [GetFeedbackStatisticsTimeSeriesResponse](#ondewo.nlu.GetFeedbackStatisticsTimeSeriesResponse) | Returns feedback statistics bucketed over time for trend charts. |
 | ListSessionReviews | [ListSessionReviewsRequest](#ondewo.nlu.ListSessionReviewsRequest) | [ListSessionReviewsResponse](#ondewo.nlu.ListSessionReviewsResponse) | ListSessionReviews: returns list of session reviews from ondewo-kb; by default only returns session review IDs |
 | GetSessionReview | [GetSessionReviewRequest](#ondewo.nlu.GetSessionReviewRequest) | [SessionReview](#ondewo.nlu.SessionReview) | GetSessionReview: returns a session-review from ondewo-kb or computes the first review if none exists |
 | GetLatestSessionReview | [GetLatestSessionReviewRequest](#ondewo.nlu.GetLatestSessionReviewRequest) | [SessionReview](#ondewo.nlu.SessionReview) | GetLatestSessionReview: returns a session-review from ondewo-kb or computes the first review if none exists |
@@ -10856,7 +16003,7 @@ Request to get server role
 | ----- | ---- | ----- | ----------- |
 | role_id | [uint32](#uint32) |  | role is identified by role id |
 | role_name | [string](#string) |  | role can also be uniquely identified by its name |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -10874,7 +16021,7 @@ Request to get user preferences.
 | user_name | [string](#string) |  | The name of the user. Format: <pre><code>projects/&lt;project_uuid&gt;/agent/users/&lt;user_uuid&gt;</code></pre> |
 | keys | [string](#string) | repeated | Specific keys to retrieve from user preferences. If keys are specified multiple times then only one KeyValue pair is returned |
 | regex_include | [string](#string) |  | Optional: In addition to the keys specified also include all <code>keys</code> that match the provided <code>regex_include</code> regular expression. If user does not add regex_filter, then only the keys specified in the keys field are returned. If both, a key in the keys field and in the regex_include will be matched than only a single <code>KeyValuePair</code> is returned. |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -10932,7 +16079,7 @@ Index starts at 0.
 Examples of valid page token strings: <ul> <li><code>&quot;&quot;</code></li> <li><code>&quot;current_index-0--page_size-20&quot;</code></li> <li><code>&quot;current_index-1--page_size-20&quot;</code></li> <li><code>&quot;current_index-10--page_size-20&quot;</code></li> </ul>
 
 Examples of invalid page token strings: <ul> <li><code>&quot;1&quot;</code></li> <li><code>&quot;current_index-0--page_size-20&quot;</code></li> <li><code>&quot;current_index--1--page_size-20&quot;</code></li> <li><code>&quot;current_index1--page_size-20&quot;</code></li> <li><code>&quot;current_index-1--page_size--20&quot;</code></li> </ul> |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -10972,7 +16119,7 @@ Index starts at 0.
 Examples of valid page token strings: <ul> <li><code>&quot;&quot;</code></li> <li><code>&quot;current_index-0--page_size-20&quot;</code></li> <li><code>&quot;current_index-1--page_size-20&quot;</code></li> <li><code>&quot;current_index-10--page_size-20&quot;</code></li> </ul>
 
 Examples of invalid page token strings: <ul> <li><code>&quot;1&quot;</code></li> <li><code>&quot;current_index-0--page_size-20&quot;</code></li> <li><code>&quot;current_index--1--page_size-20&quot;</code></li> <li><code>&quot;current_index1--page_size-20&quot;</code></li> <li><code>&quot;current_index-1--page_size--20&quot;</code></li> </ul> |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -11021,7 +16168,7 @@ Request to list all user preferences for a specific user.
 | ----- | ---- | ----- | ----------- |
 | user_name | [string](#string) |  | The name of the user. Format: <pre><code>projects/&lt;project_uuid&gt;/agent/users/&lt;user_uuid&gt;</code></pre> |
 | regex_filter | [string](#string) |  | Optional: Only list keys that match the provided regular expression |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -11062,7 +16209,7 @@ Index starts at 0.
 Examples of valid page token strings: <ul> <li><code>&quot;&quot;</code></li> <li><code>&quot;current_index-0--page_size-20&quot;</code></li> <li><code>&quot;current_index-1--page_size-20&quot;</code></li> <li><code>&quot;current_index-10--page_size-20&quot;</code></li> </ul>
 
 Examples of invalid page token strings: <ul> <li><code>&quot;1&quot;</code></li> <li><code>&quot;current_index-0--page_size-20&quot;</code></li> <li><code>&quot;current_index--1--page_size-20&quot;</code></li> <li><code>&quot;current_index1--page_size-20&quot;</code></li> <li><code>&quot;current_index-1--page_size--20&quot;</code></li> </ul> |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields gets returned. |
 
 
 
@@ -11079,39 +16226,6 @@ Response containing list of users
 | ----- | ---- | ----- | ----------- |
 | users | [User](#ondewo.nlu.User) | repeated | The list of users. There will be a maximum number of items returned based on the page_token field in the request. |
 | next_page_token | [string](#string) |  | The next_page_token is used to retrieve the next page of a returned result, e.g. next_page_token is current_index-2 |
-
-
-
-
-
-
-<a name="ondewo.nlu.LoginRequest"></a>
-
-### LoginRequest
-Authentication messages
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| user_email | [string](#string) |  | user email |
-| password | [string](#string) |  | user password |
-| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) | optional | Optional. The mask to control which fields gets returned. |
-
-
-
-
-
-
-<a name="ondewo.nlu.LoginResponse"></a>
-
-### LoginResponse
-This message is a response of logging
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| user | [User](#ondewo.nlu.User) |  | user object - user_id must be there |
-| auth_token | [string](#string) |  | authentication token after successful login of the user to access NLU services |
 
 
 
@@ -11301,11 +16415,15 @@ gRPC service for managing users and server roles.
 | UpdateServerRole | [UpdateServerRoleRequest](#ondewo.nlu.UpdateServerRoleRequest) | [ServerRole](#ondewo.nlu.ServerRole) | Updates a server role. |
 | ListServerRoles | [ListServerRolesRequest](#ondewo.nlu.ListServerRolesRequest) | [ListServerRolesResponse](#ondewo.nlu.ListServerRolesResponse) | Lists server roles. |
 | ListServerPermissions | [ListServerPermissionsRequest](#ondewo.nlu.ListServerPermissionsRequest) | [ListServerPermissionsResponse](#ondewo.nlu.ListServerPermissionsResponse) | Lists server permissions. |
-| Login | [LoginRequest](#ondewo.nlu.LoginRequest) | [LoginResponse](#ondewo.nlu.LoginResponse) | Requests login. |
 | CheckLogin | [.google.protobuf.Empty](#google.protobuf.Empty) | [.google.protobuf.Empty](#google.protobuf.Empty) | Checks login. |
 | ListNotifications | [ListNotificationsRequest](#ondewo.nlu.ListNotificationsRequest) | [ListNotificationsResponse](#ondewo.nlu.ListNotificationsResponse) | Lists notifications based on specified filters. |
 | SetNotificationsFlaggedStatus | [SetNotificationsFlaggedStatusRequest](#ondewo.nlu.SetNotificationsFlaggedStatusRequest) | [ListNotificationsResponse](#ondewo.nlu.ListNotificationsResponse) | Sets the flagged status for multiple notifications. |
 | SetNotificationsReadStatus | [SetNotificationsReadStatusRequest](#ondewo.nlu.SetNotificationsReadStatusRequest) | [ListNotificationsResponse](#ondewo.nlu.ListNotificationsResponse) | Sets the read status for multiple notifications. |
+| AddNotifications | [AddNotificationsRequest](#ondewo.nlu.AddNotificationsRequest) | [AddNotificationsResponse](#ondewo.nlu.AddNotificationsResponse) | Adds one or more notifications. |
+| GetNotification | [GetNotificationRequest](#ondewo.nlu.GetNotificationRequest) | [Notification](#ondewo.nlu.Notification) | Retrieves a single notification by its resource name. |
+| UpdateNotification | [UpdateNotificationRequest](#ondewo.nlu.UpdateNotificationRequest) | [Notification](#ondewo.nlu.Notification) | Updates a single notification, applying only the fields named in the update mask. |
+| DeleteNotifications | [DeleteNotificationsRequest](#ondewo.nlu.DeleteNotificationsRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) | Deletes one or more notifications by their resource names. |
+| StreamNotifications | [StreamNotificationsRequest](#ondewo.nlu.StreamNotificationsRequest) | [Notification](#ondewo.nlu.Notification) stream | Streams notifications for the authenticated caller in real time: each newly-added notification that matches the request filter is pushed to the client as it is created (backed server-side by a Postgres LISTEN/NOTIFY channel). The stream stays open until the client disconnects. When <code>include_existing</code> is set the currently-stored matching notifications are replayed first (newest last) before switching to the live tail. |
 | GetUserPreferences | [GetUserPreferencesRequest](#ondewo.nlu.GetUserPreferencesRequest) | [GetUserPreferencesResponse](#ondewo.nlu.GetUserPreferencesResponse) | Retrieves user preferences based on the provided request. |
 | SetUserPreferences | [SetUserPreferencesRequest](#ondewo.nlu.SetUserPreferencesRequest) | [SetUserPreferencesResponse](#ondewo.nlu.SetUserPreferencesResponse) | Sets or updates user preferences based on the provided request. |
 | DeleteUserPreferences | [DeleteUserPreferencesRequest](#ondewo.nlu.DeleteUserPreferencesRequest) | [DeleteUserPreferencesResponse](#ondewo.nlu.DeleteUserPreferencesResponse) | Deletes specific user preferences based on the provided request. |
@@ -11657,7 +16775,7 @@ Validation request for entity type values
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| entity_type | [EntityType.Entity](#ondewo.nlu.EntityType.Entity) |  |  |
+| entity_type | [EntityType.Entity](#ondewo.nlu.EntityType.Entity) |  | The entity (with embedded regex) to validate |
 
 
 
@@ -13037,6 +18155,7 @@ Used by both normalization and inverse-normalization tasks.</p>
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | active | [bool](#bool) | optional | Optional. Indicates if the summarization task of LLM post-processing is active. |
+| prompt | [string](#string) | optional | Optional. Custom prompt to guide the LLM for summarization. Overrides the default prompt when set. |
 | min_chars | [int32](#int32) | optional | Optional. Minimum number of characters of the summary generated in summarization task of LLM post-processing. |
 | max_chars | [int32](#int32) | optional | Optional. Maximum number of characters of the summary generated in summarization task of LLM post-processing. |
 
@@ -13055,6 +18174,7 @@ Used by both normalization and inverse-normalization tasks.</p>
 | ----- | ---- | ----- | ----------- |
 | active | [bool](#bool) | optional | Optional. Indicates if the translation task of LLM post-processing is active. |
 | language | [string](#string) | optional | Optional. Target language of the translation task of LLM post-processing. |
+| prompt | [string](#string) | optional | Optional. Custom prompt to guide the LLM for translation. Overrides the default prompt when set. |
 
 
 
@@ -15217,6 +20337,7 @@ Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI which are common fo
 | nlu_vtsi_config | [NluVtsiConfig](#ondewo.vtsi.NluVtsiConfig) |  | ondewo-nlu configuration |
 | t2s_vtsi_config | [T2sVtsiConfig](#ondewo.vtsi.T2sVtsiConfig) |  | text-to-speech service configuration |
 | csi_vtsi_config | [CsiVtsiConfig](#ondewo.vtsi.CsiVtsiConfig) |  | CSI service configuration |
+| voice_interaction_config | [VoiceInteractionConfig](#ondewo.vtsi.VoiceInteractionConfig) |  | Voice interaction configuration for turn detection, interruption (barge-in) handling and response timing |
 
 
 
@@ -15434,6 +20555,28 @@ Represents a request to get a specific listener.
 
 
 
+<a name="ondewo.vtsi.InterruptionHandlingConfig"></a>
+
+### InterruptionHandlingConfig
+Configuration of the interruption (barge-in) handling, i.e. the caller speaking while the bot is speaking
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| enabled | [bool](#bool) | optional | Optional: Enable interruption (barge-in) handling, i.e. the caller can interrupt the bot while it is speaking |
+| min_interruption_duration_seconds | [float](#float) | optional | Optional: Minimum duration in seconds of caller speech while the bot is speaking to trigger an interruption (noise gate) (default: 0.5) |
+| min_interruption_words | [int32](#int32) | optional | Optional: Minimum number of transcribed words of caller speech while the bot is speaking to trigger an interruption (default: 2) |
+| false_interruption_timeout_seconds | [float](#float) | optional | Optional: Time in seconds after an interruption trigger without a committed transcription after which the interruption is classified as a false interruption (default: 2.0) |
+| resume_after_false_interruption | [bool](#bool) | optional | Optional: Resume the paused bot response after a false interruption, e.g. a cough or brief background noise (default: true) |
+| backoff_seconds | [float](#float) | optional | Optional: Silence in seconds after a real interruption before the next bot response is played (default: 1.0) |
+| first_message_protected_seconds | [float](#float) | optional | Optional: Protect the first bot message from interruptions for the given number of seconds (default: 0 = no protection) |
+| transcribe_on_disabled_interruptions | [bool](#bool) |  | Transcribe caller speech while the bot is speaking even if interruptions are disabled |
+
+
+
+
+
+
 <a name="ondewo.vtsi.ListCallersRequest"></a>
 
 ### ListCallersRequest
@@ -15644,6 +20787,25 @@ Configuration of the RabbitMQ Message Broker
 
 
 
+<a name="ondewo.vtsi.ResponseTimingConfig"></a>
+
+### ResponseTimingConfig
+Configuration of the response timing, i.e. when and how the bot responds
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| turn_timeout_seconds | [float](#float) | optional | Optional: Seconds of caller silence after a bot response until a follow-up event is triggered (default: 20.0, valid range: 1.0 - 30.0) |
+| silence_end_call_timeout_seconds | [float](#float) | optional | Optional: Seconds of caller silence until the call is ended. Unset = off (-1 is also accepted as explicit off) |
+| soft_timeout_config | [SoftTimeoutConfig](#ondewo.vtsi.SoftTimeoutConfig) |  | Configuration of the soft timeout filler messages |
+| preemptive_generation_enabled | [bool](#bool) | optional | Optional: Enable preemptive response generation on an eagerly detected end of turn (default: false) |
+| t2s_chunked_streaming_enabled | [bool](#bool) | optional | Optional: Enable chunked text-to-speech streaming for a lower time to first audio (default: false) |
+
+
+
+
+
+
 <a name="ondewo.vtsi.S2tVtsiCallbacks"></a>
 
 ### S2tVtsiCallbacks
@@ -15754,6 +20916,24 @@ Configuration of the SIP caller
 | ----- | ---- | ----- | ----------- |
 | key | [string](#string) |  |  |
 | value | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.vtsi.SoftTimeoutConfig"></a>
+
+### SoftTimeoutConfig
+Configuration of the soft timeout, i.e. filler messages played
+when the response generation takes longer than the timeout
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| timeout_seconds | [float](#float) | optional | Optional: Seconds after which a filler message is played while the response is still being generated. Unset = off (-1 is also accepted as explicit off). Recommended: 3.0 |
+| messages | [string](#string) | repeated | Filler messages, rotated per soft timeout (maximum 7 messages, each 1 - 200 characters) |
+| max_per_generation | [int32](#int32) | optional | Optional: Maximum number of filler messages per response generation (default: 1) |
 
 
 
@@ -16263,6 +21443,44 @@ Response to transfer a call to a phone number or voip number
 
 
 
+
+<a name="ondewo.vtsi.TurnDetectionConfig"></a>
+
+### TurnDetectionConfig
+Configuration of the turn detection, i.e. deciding when the caller has finished speaking
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| mode | [TurnDetectionConfig.TurnDetectionMode](#ondewo.vtsi.TurnDetectionConfig.TurnDetectionMode) |  | Mode of the turn detection. Defaults to SEMANTIC_MODEL if unspecified |
+| min_endpointing_delay_seconds | [float](#float) | optional | Optional: Minimum delay in seconds before a confidently detected end of turn is committed (default: 0.5) |
+| max_endpointing_delay_seconds | [float](#float) | optional | Optional: Maximum delay in seconds to wait for an end of turn before the turn is committed from the latest stable partial transcription (default: 3.0) |
+| turn_eagerness | [TurnDetectionConfig.TurnEagerness](#ondewo.vtsi.TurnDetectionConfig.TurnEagerness) |  | Eagerness of the turn detection: scales both endpointing delays. Defaults to NORMAL if unspecified |
+| turn_detection_system_prompt | [string](#string) |  | System prompt for the semantic (LLM) turn detection model of the speech-to-text service |
+| turn_detection_user_prompt | [string](#string) |  | User prompt for the semantic (LLM) turn detection model of the speech-to-text service |
+
+
+
+
+
+
+<a name="ondewo.vtsi.VoiceInteractionConfig"></a>
+
+### VoiceInteractionConfig
+Configuration of the voice interaction behavior of a call:
+turn detection, interruption (barge-in) handling and response timing
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| turn_detection_config | [TurnDetectionConfig](#ondewo.vtsi.TurnDetectionConfig) |  | Configuration of the turn detection |
+| interruption_handling_config | [InterruptionHandlingConfig](#ondewo.vtsi.InterruptionHandlingConfig) |  | Configuration of the interruption (barge-in) handling |
+| response_timing_config | [ResponseTimingConfig](#ondewo.vtsi.ResponseTimingConfig) |  | Configuration of the response timing |
+
+
+
+
+
  <!-- end messages -->
 
 
@@ -16305,6 +21523,34 @@ Call view options
 | FULL | 2 | Gives you the full info with status history and the services statuses |
 
 
+
+<a name="ondewo.vtsi.TurnDetectionConfig.TurnDetectionMode"></a>
+
+### TurnDetectionConfig.TurnDetectionMode
+Mode of the turn detection
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| TURN_DETECTION_MODE_UNSPECIFIED | 0 | Unspecified turn detection mode defaults to SEMANTIC_MODEL |
+| VAD | 1 | Turn detection based on voice activity detection, i.e. pauses in the caller audio (fallback mode) |
+| SEMANTIC_MODEL | 2 | Turn detection based on a semantic (LLM) turn detection model of the speech-to-text service (default) |
+| AUDIO_MODEL | 3 | Turn detection based on an audio-native turn detection model |
+
+
+
+<a name="ondewo.vtsi.TurnDetectionConfig.TurnEagerness"></a>
+
+### TurnDetectionConfig.TurnEagerness
+Eagerness of the turn detection
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| TURN_EAGERNESS_UNSPECIFIED | 0 | Unspecified turn eagerness defaults to NORMAL |
+| PATIENT | 1 | Patient turn taking: scales the endpointing delays by a factor of 1.7 |
+| NORMAL | 2 | Normal turn taking: keeps the endpointing delays unchanged (factor 1.0) |
+| EAGER | 3 | Eager turn taking: scales the endpointing delays by a factor of 0.6 |
+
+
  <!-- end enums -->
 
  <!-- end HasExtensions -->
@@ -16342,6 +21588,411 @@ Call view options
 | TransferCalls | [TransferCallsRequest](#ondewo.vtsi.TransferCallsRequest) | [TransferCallsResponse](#ondewo.vtsi.TransferCallsResponse) | <p>Transfer a call from a listener to another</p> |
 | GetCall | [GetCallRequest](#ondewo.vtsi.GetCallRequest) | [Call](#ondewo.vtsi.Call) | <p>Get call log for single call instance</p> |
 | ListCalls | [ListCallsRequest](#ondewo.vtsi.ListCallsRequest) | [ListCallsResponse](#ondewo.vtsi.ListCallsResponse) | <p>Get call log for all call instances</p> |
+
+ <!-- end services -->
+
+
+
+<a name="ondewo/vtsi/logs.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## ondewo/vtsi/logs.proto
+
+
+
+<a name="ondewo.vtsi.CallLogEntry"></a>
+
+### CallLogEntry
+A single captured container log record. One record may span several physical docker log lines: a
+Python traceback, a protobuf <code>str()</code> dump and a multi-line configuration banner are all
+one record, and are stored and returned as one entry.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| seq | [int64](#int64) |  | Ordering cursor. Assigned by the database, monotonically increasing WITHIN ONE LOG STREAM. It is NOT contiguous: values are drawn from a sequence shared by every stream, are consumed by rolled-back write batches, and are removed by retention. Never compute the next cursor as <code>seq + 1</code>; use <code>resume_token</code>, or <code>before_seq</code> / <code>after_seq</code> when the filter resolves to exactly one log stream. |
+| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | The instant the docker daemon observed the first physical line of this record, in UTC. This is the authoritative clock: the timestamp the application itself prints is container-local and carries no timezone. |
+| timestamp_is_exact | [bool](#bool) |  | False when <code>timestamp</code> is the instant VTSI ingested the record rather than the instant docker observed it, which happens when the daemon&apos;s timestamp prefix could not be parsed. The entry is still stored and still ordered; only the clock is approximate. |
+| level | [ondewo.nlu.LogSeverity](#ondewo.nlu.LogSeverity) |  | The severity of the record. <code>LOG_SEVERITY_UNSPECIFIED</code> means the emitter does not log in a recognised format and no severity heuristic matched. |
+| message | [string](#string) |  | The log text, with ANSI escape sequences removed, continuation lines re-joined, and secrets redacted server-side. |
+| container_id | [string](#string) |  | Docker container id of the container this record came from. |
+| container_name | [string](#string) |  | Docker container name of the container this record came from. |
+| log_source | [LogSource](#ondewo.vtsi.LogSource) |  | Which process inside the container emitted the record. |
+| channel | [LogStreamChannel](#ondewo.vtsi.LogStreamChannel) |  | Which docker output channel the record arrived on. |
+| emitter | [string](#string) |  | <code>&lt;module&gt;:&lt;function&gt;:&lt;line&gt;</code> of the emitting log statement. Empty for output that is not in the ONDEWO logging format. |
+| thread_name | [string](#string) |  | Name of the thread that emitted the record. Empty when not available. |
+| log_stream | [string](#string) |  | Resource name of the log stream this entry belongs to. The format is: <pre><code>projects/&lt;project_uuid&gt;/logStreams/&lt;log_stream_uuid&gt;</code></pre> |
+| call | [string](#string) |  | Resource name of the call this entry was attributed to. Empty when the entry falls outside any call, which is normal and useful: a persistent listener&apos;s container start-up and its idle time between calls belong to no call. The format is: <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
+| nlu_session_name | [string](#string) |  | The NLU session the entry was attributed to. The format is: <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code></pre> |
+| physical_line_count | [int32](#int32) |  | How many physical docker log lines were folded into <code>message</code>. <code>1</code> for an ordinary single-line record. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CallLogFilter"></a>
+
+### CallLogFilter
+Narrows a log query. Every field is optional; an empty repeated field means &quot;do not filter on
+this&quot;. Fields are combined with AND; the values within one repeated field are combined with OR.
+
+<p>Filters fall into two groups. IDENTITY filters select which containers and which calls are of
+interest and are resolved against VTSI&apos;s own call records. CONTENT filters select which
+entries of those containers to return.</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| call_names | [string](#string) | repeated | Call resource names of the form <pre><code>projects/&lt;project_uuid&gt;/{callers|listeners}/&lt;uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
+| caller_names | [string](#string) | repeated | Caller resource names of the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> |
+| listener_names | [string](#string) | repeated | Listener resource names of the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> |
+| caller_ids | [string](#string) | repeated | Caller uuids. |
+| listener_ids | [string](#string) | repeated | Listener uuids. |
+| call_ids | [string](#string) | repeated | Call uuids. |
+| container_names | [string](#string) | repeated | Docker container names. |
+| container_ids | [string](#string) | repeated | Docker container ids. |
+| log_stream_names | [string](#string) | repeated | Log stream resource names of the form <pre><code>projects/&lt;project_uuid&gt;/logStreams/&lt;log_stream_uuid&gt;</code></pre> |
+| sip_accounts | [string](#string) | repeated | Asterisk SIP account names, for example <code>sut@asterisk.local</code>. |
+| sip_ports | [string](#string) | repeated | SIP ports of the per-call container. |
+| csi_ports | [string](#string) | repeated | ONDEWO CSI ports of the per-call container. |
+| asterisk_ports | [string](#string) | repeated | Asterisk ports of the project. |
+| phone_numbers | [string](#string) | repeated | Phone numbers of the calls of interest. |
+| callee_ids | [string](#string) | repeated | Callee ids of the calls of interest. |
+| nlu_session_names | [string](#string) | repeated | NLU session names of the form <pre><code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code></pre> |
+| nlu_session_uuids | [string](#string) | repeated | NLU session uuids. |
+| nlu_project_uuids | [string](#string) | repeated | NLU project uuids. |
+| call_types | [CallType](#ondewo.vtsi.CallType) | repeated | Restrict to callers, to listeners, or to both. <code>BOTH</code> disables the filter, matching the semantics of <a href="index.html#ondewo.vtsi.CallFilter">CallFilter</a>. |
+| sip_headers | [SipHeaderFilter](#ondewo.vtsi.SipHeaderFilter) | repeated | SIP header predicates. All entries must match. |
+| log_sources | [LogSource](#ondewo.vtsi.LogSource) | repeated | Restrict to entries emitted by these processes. |
+| channels | [LogStreamChannel](#ondewo.vtsi.LogStreamChannel) | repeated | Restrict to entries that arrived on these docker channels. |
+| min_log_level | [ondewo.nlu.LogSeverity](#ondewo.nlu.LogSeverity) |  | Only return entries at or above this severity. <code>LOG_SEVERITY_UNSPECIFIED</code> (the default) applies no lower bound. Ignored when <code>log_levels</code> is non-empty. |
+| log_levels | [ondewo.nlu.LogSeverity](#ondewo.nlu.LogSeverity) | repeated | Exact severities to include. When non-empty this OVERRIDES <code>min_log_level</code>. |
+| include_unleveled_lines | [bool](#bool) | optional | Keep entries whose severity could not be determined even when a severity bound is set. Asterisk, PulseAudio, PJSIP and the gRPC C core do not log in a recognised format, so a <code>&gt;= WARNING</code> filter would otherwise hide exactly the crash output being searched for. Defaults to <code>false</code>. |
+| text | [string](#string) | optional | Case-insensitive substring match against the message. |
+| regex | [string](#string) | optional | Regular expression (Python <code>re</code> syntax) matched against the message. At most 512 characters; an invalid or oversized pattern is rejected with <code>INVALID_ARGUMENT</code>. |
+| emitter_prefixes | [string](#string) | repeated | Prefix match against <code>&lt;module&gt;:&lt;function&gt;:&lt;line&gt;</code>, for example <code>ondewo_csi.servicers.conversations</code>. |
+| thread_names | [string](#string) | repeated | Restrict to entries emitted by these threads. |
+| start_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) | optional | Only return entries at or after this instant. |
+| end_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) | optional | Only return entries at or before this instant. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CallLogStream"></a>
+
+### CallLogStream
+One capture generation of one container on one docker channel. A container that is recreated
+yields a NEW log stream, because a recreated container is a different docker container and the
+previous container&apos;s logs no longer exist anywhere except here.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the log stream. The format is: <pre><code>projects/&lt;project_uuid&gt;/logStreams/&lt;log_stream_uuid&gt;</code></pre> |
+| container_name | [string](#string) |  | Docker container name. |
+| container_id | [string](#string) |  | Docker container id. |
+| channel | [LogStreamChannel](#ondewo.vtsi.LogStreamChannel) |  | The docker channel this stream captures. |
+| project_id | [string](#string) |  | Uuid of the VTSI project owning the container. |
+| voip_call_name | [string](#string) |  | Resource name of the caller or listener the container serves. |
+| call_type | [CallType](#ondewo.vtsi.CallType) |  | Whether the container serves a caller or a listener. |
+| sip_account | [string](#string) |  | Asterisk SIP account the container registers with. |
+| sip_port | [int32](#int32) |  | SIP port of the container. |
+| csi_port | [int32](#int32) |  | ONDEWO CSI port of the container. |
+| asterisk_port | [int32](#int32) |  | Asterisk port of the project. |
+| image | [string](#string) |  | Docker image the container runs. |
+| capture_state | [LogCaptureState](#ondewo.vtsi.LogCaptureState) |  | State of VTSI&apos;s capture of this stream. |
+| capture_error | [string](#string) |  | Why capture failed, when <code>capture_state</code> is <code>LOG_CAPTURE_STATE_FAILED</code>. |
+| capture_started_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When VTSI STARTED CAPTURING this stream. This is not the container&apos;s start time: capture begins when the container is discovered, which for a container that was already running when VTSI started is later than the container&apos;s own start. |
+| capture_finished_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When VTSI STOPPED CAPTURING this stream. |
+| partial_capture | [bool](#bool) |  | True when capture attached to an already-running container, so entries emitted before the attach were never captured and are not recoverable. |
+| min_available_seq | [int64](#int64) |  | The smallest <code>seq</code> currently stored for this stream. |
+| max_available_seq | [int64](#int64) |  | The largest <code>seq</code> currently stored for this stream. |
+| line_count | [int64](#int64) |  | How many entries are currently stored for this stream. |
+| dropped_line_count | [int64](#int64) |  | How many physical log lines were deliberately not stored, summed over every reason: the ingest severity floor, the emitter denylist, the conversation-content denylist, an oversized line, and retention. A non-zero value is why a stream can be thinner than the container&apos;s own log. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DeleteCallLogsRequest"></a>
+
+### DeleteCallLogsRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Logs.DeleteCallLogs">Logs.DeleteCallLogs</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project name for which to delete the logs. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| filter | [CallLogFilter](#ondewo.vtsi.CallLogFilter) |  | The entries to delete. Only the identity fields and the time window apply; content filters are rejected, because deleting by message content is not an auditable operation. At least one field must be set: an empty filter is rejected rather than treated as &quot;delete everything&quot;. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DeleteCallLogsResponse"></a>
+
+### DeleteCallLogsResponse
+The response message for
+<a href="index.html#ondewo.vtsi.Logs.DeleteCallLogs">Logs.DeleteCallLogs</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| deleted_log_entry_count | [int64](#int64) |  | How many log entries were deleted. |
+| deleted_log_stream_count | [int64](#int64) |  | How many log streams were deleted because no entries remained. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.GetCallLogStreamRequest"></a>
+
+### GetCallLogStreamRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Logs.GetCallLogStream">Logs.GetCallLogStream</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| name | [string](#string) |  | The name of the log stream to retrieve of the form <pre><code>projects/&lt;project_uuid&gt;/logStreams/&lt;log_stream_uuid&gt;</code></pre> |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListCallLogStreamsRequest"></a>
+
+### ListCallLogStreamsRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Logs.ListCallLogStreams">Logs.ListCallLogStreams</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project name for which to list the log streams. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| filter | [CallLogFilter](#ondewo.vtsi.CallLogFilter) | optional | Optional. A filter to narrow the response down to the log streams of interest. Only the identity fields of the filter apply here; content fields are ignored. |
+| page_token | [string](#string) | optional | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListCallLogStreamsResponse"></a>
+
+### ListCallLogStreamsResponse
+The response message for
+<a href="index.html#ondewo.vtsi.Logs.ListCallLogStreams">Logs.ListCallLogStreams</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| log_streams | [CallLogStream](#ondewo.vtsi.CallLogStream) | repeated | The list of log streams returned in the response. |
+| next_page_token | [string](#string) |  | Token to retrieve the next page of results. This field is a string that holds a token for fetching the next page of results. If there are no more results in the list, this field will be empty. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListCallLogsRequest"></a>
+
+### ListCallLogsRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Logs.ListCallLogs">Logs.ListCallLogs</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project name for which to list the logs. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| filter | [CallLogFilter](#ondewo.vtsi.CallLogFilter) | optional | Optional. A filter to narrow the response down to the entries of interest. |
+| max_lines | [int32](#int32) | optional | Return at most this many entries. <code>0</code> (the default) applies the server default; values above the server hard cap are clamped to it. |
+| before_seq | [int64](#int64) | optional | Optional cursor for infinite-scroll UP: return the newest entries with <code>seq</code> less than this value. Valid only when the filter resolves to exactly one log stream. |
+| after_seq | [int64](#int64) | optional | Optional cursor for infinite-scroll DOWN: return entries with <code>seq</code> greater than this value. Valid only when the filter resolves to exactly one log stream. |
+| resume_token | [string](#string) | optional | Optional. An opaque, server-encoded per-log-stream cursor from a previous response. Use this instead of <code>after_seq</code> whenever the filter can match more than one container. |
+| oldest_first | [bool](#bool) | optional | Walk forward from the cursor oldest-first instead of returning the most recent window. A client paging through a whole backlog must set this: the default window silently skips everything between the cursor and the newest entries. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListCallLogsResponse"></a>
+
+### ListCallLogsResponse
+The response message for
+<a href="index.html#ondewo.vtsi.Logs.ListCallLogs">Logs.ListCallLogs</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| log_entries | [CallLogEntry](#ondewo.vtsi.CallLogEntry) | repeated | The matching entries, oldest first. |
+| truncated | [bool](#bool) |  | True when matching entries were dropped because <code>max_lines</code> was reached. |
+| min_available_seq | [int64](#int64) |  | The smallest <code>seq</code> available under the request&apos;s IDENTITY filters. Deliberately not narrowed by the content filters, so that a regex which empties one page does not make a client believe it has reached the beginning of history. |
+| max_available_seq | [int64](#int64) |  | The largest <code>seq</code> available under the request&apos;s identity filters. |
+| has_more_older | [bool](#bool) |  | True when entries older than this window exist. |
+| has_more_newer | [bool](#bool) |  | True when entries newer than this window exist. |
+| next_resume_token | [string](#string) |  | Cursor to fetch the next window, or to start a live stream that continues exactly here. |
+| scope_limited_filters | [CallLogFilterField](#ondewo.vtsi.CallLogFilterField) | repeated | Filters that could only be applied WITHIN the returned window rather than across the whole history, because they are not indexed. A client displaying a match count must qualify it when this is non-empty. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.SipHeaderFilter"></a>
+
+### SipHeaderFilter
+A key/value predicate over the SIP headers captured on a call.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  | The SIP header key, for example <code>Call-ID</code> or <code>X-ondewo-callrouting</code>. |
+| value | [string](#string) |  | The value the header must have. Empty matches on the presence of the key alone. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StreamCallLogsRequest"></a>
+
+### StreamCallLogsRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Logs.StreamCallLogs">Logs.StreamCallLogs</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project name for which to stream the logs. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| filter | [CallLogFilter](#ondewo.vtsi.CallLogFilter) | optional | Optional. A filter to narrow the stream down to the entries of interest. The time-window fields and paging cursors of the filter are meaningless for a live stream and are rejected with <code>INVALID_ARGUMENT</code> rather than silently ignored. |
+| tail_lines | [int32](#int32) | optional | Replay at most this many of the most recent stored entries before switching to live follow. <code>0</code> (the default) starts the follow with no historical replay. Applied to the FILTERED result, so <code>tail_lines = 100</code> with a severity floor returns up to 100 matching entries rather than the matches within the last 100 entries. |
+| resume_token | [string](#string) | optional | Optional. Resume exactly where a previous stream or page stopped. This is an opaque, server-encoded per-log-stream cursor and must be echoed back verbatim. Prefer it over <code>after_seq</code>: a single scalar cannot express a cursor across several containers, and using one when the filter matches more than one container SKIPS entries. |
+| after_seq | [int64](#int64) | optional | Optional. Resume after this <code>seq</code>. Valid ONLY when the filter resolves to exactly one log stream; otherwise the request is rejected with <code>INVALID_ARGUMENT</code>. Ignored when <code>resume_token</code> is set. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StreamCallLogsResponse"></a>
+
+### StreamCallLogsResponse
+The response message for
+<a href="index.html#ondewo.vtsi.Logs.StreamCallLogs">Logs.StreamCallLogs</a>. The stream carries an
+envelope rather than a bare entry so that a viewer can tell a healthy quiet container from a
+capture that has died.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| log_entries | [CallLogEntry](#ondewo.vtsi.CallLogEntry) | repeated | The entries in this batch, oldest first. May be empty on a keep-alive message. |
+| capture_state | [LogCaptureState](#ondewo.vtsi.LogCaptureState) |  | The capture state of the log streams being followed, aggregated: <code>FAILED</code> if any has failed, else <code>DETACHED</code> if any is detached, else <code>CAPTURING</code> if any is capturing, else <code>STOPPED</code>. |
+| capture_error | [string](#string) |  | Why capture failed, when <code>capture_state</code> is <code>LOG_CAPTURE_STATE_FAILED</code>. |
+| dropped_line_count | [int64](#int64) |  | Total entries deliberately not stored across the followed streams. See <a href="index.html#ondewo.vtsi.CallLogStream">CallLogStream.dropped_line_count</a>. |
+| resume_token | [string](#string) |  | Cursor to resume this stream. Echo it into <code>StreamCallLogsRequest.resume_token</code> after a disconnect. |
+| end_reason | [string](#string) |  | Set on the final message when the stream was ended by the server rather than by the client, for example because the maximum stream duration was reached. Empty otherwise. |
+
+
+
+
+
+ <!-- end messages -->
+
+
+<a name="ondewo.vtsi.CallLogFilterField"></a>
+
+### CallLogFilterField
+Identifies a field of <a href="index.html#ondewo.vtsi.CallLogFilter">CallLogFilter</a>. Used by
+<a href="index.html#ondewo.vtsi.ListCallLogsResponse">ListCallLogsResponse.scope_limited_filters</a>
+to declare which filters could only be applied inside the returned window.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| CALL_LOG_FILTER_FIELD_UNSPECIFIED | 0 | Unspecified. |
+| CALL_LOG_FILTER_FIELD_TEXT | 1 | <code>CallLogFilter.text</code>. |
+| CALL_LOG_FILTER_FIELD_REGEX | 2 | <code>CallLogFilter.regex</code>. |
+| CALL_LOG_FILTER_FIELD_LOG_SOURCES | 3 | <code>CallLogFilter.log_sources</code>. |
+| CALL_LOG_FILTER_FIELD_CHANNELS | 4 | <code>CallLogFilter.channels</code>. |
+| CALL_LOG_FILTER_FIELD_EMITTER_PREFIXES | 5 | <code>CallLogFilter.emitter_prefixes</code>. |
+| CALL_LOG_FILTER_FIELD_THREAD_NAMES | 6 | <code>CallLogFilter.thread_names</code>. |
+| CALL_LOG_FILTER_FIELD_SIP_HEADERS | 7 | <code>CallLogFilter.sip_headers</code>. |
+
+
+
+<a name="ondewo.vtsi.LogCaptureState"></a>
+
+### LogCaptureState
+The state of VTSI&apos;s capture of one log stream. This describes the CAPTURE, not the container:
+a healthy container whose capture lease was lost is <code>DETACHED</code>, and a container that no
+longer exists but whose capture completed cleanly is <code>STOPPED</code>.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| LOG_CAPTURE_STATE_UNSPECIFIED | 0 | Unspecified. |
+| LOG_CAPTURE_STATE_CAPTURING | 1 | Capture is running. |
+| LOG_CAPTURE_STATE_STOPPED | 2 | Capture ended cleanly; the stream is complete up to the container&apos;s removal. |
+| LOG_CAPTURE_STATE_FAILED | 3 | Capture failed. The stored history is incomplete and <code>capture_error</code> says why. |
+| LOG_CAPTURE_STATE_DETACHED | 4 | Another VTSI replica holds the capture lease for this container. |
+
+
+
+<a name="ondewo.vtsi.LogSource"></a>
+
+### LogSource
+Which process inside the container emitted a log entry. All of these share a single docker log
+stream, because ondewo-csi runs as a child process of the ondewo-sip container.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| LOG_SOURCE_UNSPECIFIED | 0 | Unspecified or unrecognised source. |
+| LOG_SOURCE_SIP | 1 | The ondewo-sip server, i.e. an <code>ondewo_sip.*</code> logger. |
+| LOG_SOURCE_CSI | 2 | The ondewo-csi server or its speech2speech child, i.e. an <code>ondewo_csi.*</code> logger. |
+| LOG_SOURCE_ASTERISK | 3 | The Asterisk SIP server. |
+| LOG_SOURCE_PULSEAUDIO | 4 | PulseAudio. |
+| LOG_SOURCE_SYSTEM | 5 | Container start-up scripts, the Python standard-library logging module, the gRPC C core, and anything else that could not be attributed. |
+
+
+
+<a name="ondewo.vtsi.LogStreamChannel"></a>
+
+### LogStreamChannel
+The docker output channel an entry arrived on.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| LOG_STREAM_CHANNEL_UNSPECIFIED | 0 | The channel is not known. This is the honest value for a container started with a TTY, where the pseudo-terminal genuinely merges both channels into one unframed stream. |
+| LOG_STREAM_CHANNEL_STDOUT | 1 | Standard output. |
+| LOG_STREAM_CHANNEL_STDERR | 2 | Standard error. The ondewo-sip and ondewo-csi loggers write here. |
+
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="ondewo.vtsi.Logs"></a>
+
+### Logs
+<p>ONDEWO VTSI API</p>
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| StreamCallLogs | [StreamCallLogsRequest](#ondewo.vtsi.StreamCallLogsRequest) | [StreamCallLogsResponse](#ondewo.vtsi.StreamCallLogsResponse) stream | <p>Streams the container logs of the ondewo-sip / ondewo-csi containers of a VTSI project as they are captured, in the manner of <code>docker logs --follow</code>. The stream replays <code>tail_lines</code> historical entries and then follows. It stays open until the capture of every matching log stream has terminated, until the client disconnects, or until the server-side maximum stream duration is reached.</p> <p>Entries are served from the VTSI database rather than from the docker daemon, so a container that has already been removed still streams. Secrets are redacted server-side.</p> |
+| ListCallLogs | [ListCallLogsRequest](#ondewo.vtsi.ListCallLogsRequest) | [ListCallLogsResponse](#ondewo.vtsi.ListCallLogsResponse) | <p>Returns a bounded, filtered page of captured container log entries. Supports a time window, severity filtering, a regular expression, a plain-text search and cursor paging in both directions for infinite scrolling. Secrets are redacted server-side.</p> |
+| GetCallLogStream | [GetCallLogStreamRequest](#ondewo.vtsi.GetCallLogStreamRequest) | [CallLogStream](#ondewo.vtsi.CallLogStream) | <p>Returns the capture state of a single log stream, i.e. of one capture generation of one container.</p> |
+| ListCallLogStreams | [ListCallLogStreamsRequest](#ondewo.vtsi.ListCallLogStreamsRequest) | [ListCallLogStreamsResponse](#ondewo.vtsi.ListCallLogStreamsResponse) | <p>Lists the log streams VTSI has captured for a project. A single container yields a new log stream every time it is recreated, because a recreated container is a new docker container whose previous logs no longer exist.</p> |
+| DeleteCallLogs | [DeleteCallLogsRequest](#ondewo.vtsi.DeleteCallLogsRequest) | [DeleteCallLogsResponse](#ondewo.vtsi.DeleteCallLogsResponse) | <p>Permanently deletes captured log entries matching a filter. This is the erasure path for data-subject requests: retention answers &quot;delete everything older than N days&quot;, this answers &quot;delete everything for this call or this phone number&quot;.</p> |
 
  <!-- end services -->
 
