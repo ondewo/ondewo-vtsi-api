@@ -8,6 +8,11 @@
 
 * [[OND211-2418]](https://ondewo.atlassian.net/browse/OND211-2418) Upgrade to ONDEWO NLU API [7.0.0](https://github.com/ondewo/ondewo-nlu-api/releases/7.0.0), ONDEWO S2T API [7.4.0](https://github.com/ondewo/ondewo-s2t-api/releases/7.4.0), ONDEWO T2S API [6.6.0](https://github.com/ondewo/ondewo-t2s-api/releases/6.6.0) and ONDEWO SIP API [5.4.0](https://github.com/ondewo/ondewo-sip-api/releases/5.4.0)
 * [[OND211-2418]](https://ondewo.atlassian.net/browse/OND211-2418) Added `ondewo/vtsi/logs.proto` for container log capture and streaming
+* [[OND211-2418]](https://ondewo.atlassian.net/browse/OND211-2418) Added the optional field `asterisk_version` to
+  `AsteriskConfigs`. It carries the docker image tag of the ONDEWO Asterisk image a VTSI project should start
+  (e.g. `alpine-3.18-18.20.2`), so the Asterisk version becomes a per-project setting instead of a server-wide one.
+  The field is explicitly `optional`: leaving it unset keeps the server default
+  (`ONDEWO_VTSI_ASTERISK_IMAGE_TAG`), while an empty string is rejected rather than silently treated as unset
 * [[OND235-105]](https://ondewo.atlassian.net/browse/OND235-105) Added `VoiceInteractionConfig` with
   `TurnDetectionConfig`, `InterruptionHandlingConfig`, `ResponseTimingConfig` and `SoftTimeoutConfig`
   to `CommonServicesConfig` for fine-granular per-call configuration of turn detection,
