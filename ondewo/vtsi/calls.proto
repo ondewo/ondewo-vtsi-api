@@ -215,6 +215,147 @@ message CommonServicesConfig{
     // CSI service configuration
     CsiVtsiConfig csi_vtsi_config = 4;
 
+    // Voice interaction configuration for turn detection, interruption (barge-in) handling and response timing
+    VoiceInteractionConfig voice_interaction_config = 5;
+
+}
+
+// Configuration of the voice interaction behavior of a call:
+// turn detection, interruption (barge-in) handling and response timing
+message VoiceInteractionConfig{
+
+    // Configuration of the turn detection
+    TurnDetectionConfig turn_detection_config = 1;
+
+    // Configuration of the interruption (barge-in) handling
+    InterruptionHandlingConfig interruption_handling_config = 2;
+
+    // Configuration of the response timing
+    ResponseTimingConfig response_timing_config = 3;
+}
+
+// Configuration of the turn detection, i.e. deciding when the caller has finished speaking
+message TurnDetectionConfig{
+
+    // Mode of the turn detection
+    enum TurnDetectionMode {
+
+        // Unspecified turn detection mode defaults to SEMANTIC_MODEL
+        TURN_DETECTION_MODE_UNSPECIFIED = 0;
+
+        // Turn detection based on voice activity detection, i.e. pauses in the caller audio (fallback mode)
+        VAD = 1;
+
+        // Turn detection based on a semantic (LLM) turn detection model of the speech-to-text service (default)
+        SEMANTIC_MODEL = 2;
+
+        // Turn detection based on an audio-native turn detection model
+        AUDIO_MODEL = 3;
+    }
+
+    // Mode of the turn detection. Defaults to SEMANTIC_MODEL if unspecified
+    TurnDetectionMode mode = 1;
+
+    // Optional: Minimum delay in seconds before a confidently detected end of turn is committed (default: 0.5)
+    optional float min_endpointing_delay_seconds = 2;
+
+    // Optional: Maximum delay in seconds to wait for an end of turn before the turn is committed
+    // from the latest stable partial transcription (default: 3.0)
+    optional float max_endpointing_delay_seconds = 3;
+
+    // Eagerness of the turn detection
+    enum TurnEagerness {
+
+        // Unspecified turn eagerness defaults to NORMAL
+        TURN_EAGERNESS_UNSPECIFIED = 0;
+
+        // Patient turn taking: scales the endpointing delays by a factor of 1.7
+        PATIENT = 1;
+
+        // Normal turn taking: keeps the endpointing delays unchanged (factor 1.0)
+        NORMAL = 2;
+
+        // Eager turn taking: scales the endpointing delays by a factor of 0.6
+        EAGER = 3;
+    }
+
+    // Eagerness of the turn detection: scales both endpointing delays. Defaults to NORMAL if unspecified
+    TurnEagerness turn_eagerness = 4;
+
+    // System prompt for the semantic (LLM) turn detection model of the speech-to-text service
+    string turn_detection_system_prompt = 5;
+
+    // User prompt for the semantic (LLM) turn detection model of the speech-to-text service
+    string turn_detection_user_prompt = 6;
+}
+
+// Configuration of the interruption (barge-in) handling, i.e. the caller speaking while the bot is speaking
+message InterruptionHandlingConfig{
+
+    // Optional: Enable interruption (barge-in) handling, i.e. the caller can interrupt the bot while it is speaking
+    optional bool enabled = 1;
+
+    // Optional: Minimum duration in seconds of caller speech while the bot is speaking
+    // to trigger an interruption (noise gate) (default: 0.5)
+    optional float min_interruption_duration_seconds = 2;
+
+    // Optional: Minimum number of transcribed words of caller speech while the bot is speaking
+    // to trigger an interruption (default: 2)
+    optional int32 min_interruption_words = 3;
+
+    // Optional: Time in seconds after an interruption trigger without a committed transcription
+    // after which the interruption is classified as a false interruption (default: 2.0)
+    optional float false_interruption_timeout_seconds = 4;
+
+    // Optional: Resume the paused bot response after a false interruption,
+    // e.g. a cough or brief background noise (default: true)
+    optional bool resume_after_false_interruption = 5;
+
+    // Optional: Silence in seconds after a real interruption before the next bot response is played (default: 1.0)
+    optional float backoff_seconds = 6;
+
+    // Optional: Protect the first bot message from interruptions
+    // for the given number of seconds (default: 0 = no protection)
+    optional float first_message_protected_seconds = 7;
+
+    // Transcribe caller speech while the bot is speaking even if interruptions are disabled
+    bool transcribe_on_disabled_interruptions = 8;
+}
+
+// Configuration of the response timing, i.e. when and how the bot responds
+message ResponseTimingConfig{
+
+    // Optional: Seconds of caller silence after a bot response until a follow-up event
+    // is triggered (default: 20.0, valid range: 1.0 - 30.0)
+    optional float turn_timeout_seconds = 1;
+
+    // Optional: Seconds of caller silence until the call is ended.
+    // Unset = off (-1 is also accepted as explicit off)
+    optional float silence_end_call_timeout_seconds = 2;
+
+    // Configuration of the soft timeout filler messages
+    SoftTimeoutConfig soft_timeout_config = 3;
+
+    // Optional: Enable preemptive response generation on an eagerly detected end of turn (default: false)
+    optional bool preemptive_generation_enabled = 4;
+
+    // Optional: Enable chunked text-to-speech streaming for a lower time to first audio (default: false)
+    optional bool t2s_chunked_streaming_enabled = 5;
+}
+
+// Configuration of the soft timeout, i.e. filler messages played
+// when the response generation takes longer than the timeout
+message SoftTimeoutConfig{
+
+    // Optional: Seconds after which a filler message is played while the response is still being generated.
+    // Unset = off (-1 is also accepted as explicit off). Recommended: 3.0
+    optional float timeout_seconds = 1;
+
+    // Filler messages, rotated per soft timeout (maximum 7 messages, each 1 - 200 characters)
+    repeated string messages = 2;
+
+    // Optional: Maximum number of filler messages per response generation (default: 1)
+    optional int32 max_per_generation = 3;
 }
 
 // The base config is for both the listener and caller. If you only provide it you will get a listener

@@ -165,3 +165,8 @@ cython_debug/
 
 .idea/
 .vscode/
+
+# Tool checkout cached by `make build_docs`, which clones ondewo-protoc-gen-doc-action into it
+# (Makefile: build_docs) and reuses it on later runs. It is a nested git clone, so it must never be
+# committed; deleting it just makes the next `make build_docs` re-clone.
+.tmp-protoc-gen-doc-action/

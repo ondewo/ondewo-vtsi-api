@@ -160,3 +160,25 @@ Pre-commit here uses only the language-agnostic hooks — **markdownlint-cli2, p
 
 - **markdownlint MD053 is disabled** (its auto-fix deletes `[comment]: <>` reference-definition markers).
 - **markdownlint RELEASE.md reformatting is content-safe**: it only strips trailing whitespace and adds blank lines around headings — the `## Release … <VERSION>` headings and `*****` separators that `ondewo_release` greps for remain intact. (Confirmed: the 6.5.0 release notes sliced correctly after the reformat.)
+
+## Adding a scalar field: `optional` is a decision, not a formality
+
+A proto3 scalar without `optional` has **implicit presence** — it reads back as its zero value whether the caller set it or not, and `HasField` raises on it. So the moment a new field means "if you say nothing, the server keeps doing what it was doing", the field needs `optional`. Without it there is no wire-level way to tell "the caller expressed no preference" from "the caller sent the default", and the server has to guess.
+
+`AsteriskConfigs.asterisk_version` is the worked example. Unset means "use the deployment's `ONDEWO_VTSI_ASTERISK_IMAGE_TAG`"; an empty string cannot form a usable docker image reference and is rejected. Both would read back as `""` on a plain scalar.
+
+Two consequences worth knowing before adding one:
+
+- **`optional` compiles to a synthetic one-member oneof** named `_<field>`. It shows up in the generated `WhichOneof` overloads and in `DESCRIPTOR.oneofs`, next to any real oneof in the same message. It does not join the real one — `WhichOneof("asterisk_configs_oneof")` is unaffected in both directions — but a descriptor walk that assumes one oneof per message will now see two.
+- **The clients are not equivalent.** python and the jspb clients (js / nodejs / typescript) expose real presence (`HasField` / `hasX()`); **ngx-grpc flattens it** into a plain string that is written to the wire only when truthy, so an Angular caller cannot send the empty value at all. If a field genuinely needs the third state from Angular, that has to be designed for rather than discovered after release.
+
+## Jenkins — never trigger a multibranch scan or branch indexing
+
+**NEVER trigger a Jenkins multibranch scan or branch indexing.** Do not call a multibranch/folder job's
+`build`, `scan`, or reindex endpoints, click "Scan Repository Now" / "Build Now" on a folder, run
+`p4 scan`, or use any API/CLI that reindexes branches or scans the repository. A scan/reindex runs across
+**every** branch, consumes CI resources, and can kick off unintended builds and deploys.
+
+If a branch is not building — it was not discovered, or its job is marked `buildable: false` / orphaned —
+**report it and stop**. Let the user or a Jenkins admin adjust branch-discovery/config or rename the branch
+to the convention. Never force a build by scanning or reindexing.

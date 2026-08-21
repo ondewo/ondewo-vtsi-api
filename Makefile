@@ -16,12 +16,12 @@ export
 
 # MUST BE THE SAME AS API in Mayor and Minor Version Number
 # example: API 2.9.0 --> Client 2.9.X
-ONDEWO_VTSI_API_VERSION=8.2.0
+ONDEWO_VTSI_API_VERSION=8.3.0
 
-ONDEWO_NLU_API_GIT_BRANCH=tags/6.7.0
-ONDEWO_S2T_API_GIT_BRANCH=tags/7.2.0
-ONDEWO_T2S_API_GIT_BRANCH=tags/6.2.0
-ONDEWO_SIP_API_GIT_BRANCH=tags/5.2.0
+ONDEWO_NLU_API_GIT_BRANCH=tags/7.0.0
+ONDEWO_S2T_API_GIT_BRANCH=tags/7.4.0
+ONDEWO_T2S_API_GIT_BRANCH=tags/6.6.0
+ONDEWO_SIP_API_GIT_BRANCH=tags/5.4.0
 ONDEWO_NLU_DIR=ondewo-nlu-api
 ONDEWO_S2T_DIR=ondewo-s2t-api
 ONDEWO_T2S_DIR=ondewo-t2s-api
@@ -175,11 +175,11 @@ build: init_submodules checkout_defined_submodule_versions ## Checks out and cop
 		git add google/*; \
 		git add ondewo/*; \
 		git status; \
-		git commit -m "Prepare for release of ondewo-vtsi-api ${ONDEWO_VTSI_API_VERSION}" || true; \
+		git commit -m "chore: prepare for release of ondewo-vtsi-api ${ONDEWO_VTSI_API_VERSION}" || true; \
 		# Required to run twice since pre-commit hook might change files; \
 		git add google/*; \
 		git add ondewo/*; \
-		git commit -m "Prepare for release of ondewo-vtsi-api ${ONDEWO_VTSI_API_VERSION}" || true; \
+		git commit -m "chore: prepare for release of ondewo-vtsi-api ${ONDEWO_VTSI_API_VERSION}" || true; \
 		git push; \
 	fi
 
@@ -203,7 +203,7 @@ checkout_defined_submodule_versions: ## Update submodule versions
 	if [ -d ondewo/s2t ]; then rm -Rf ondewo/s2t; fi
 	if [ -d ondewo/t2s ]; then rm -Rf ondewo/t2s; fi
 	if [ -d ondewo/sip ]; then rm -Rf ondewo/sip; fi
-	if [ -d ondewo/qa ]; then rm -Rf ondewo/sip; fi
+	if [ -d ondewo/qa ]; then rm -Rf ondewo/qa; fi
 	cp -r "${ONDEWO_NLU_DIR}/google" google
 	cp -r "${ONDEWO_NLU_DIR}/ondewo/nlu" ondewo
 	cp -r "${ONDEWO_NLU_DIR}/ondewo/qa" ondewo

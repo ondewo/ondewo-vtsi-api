@@ -28,7 +28,8 @@
 
 // File-level comment for <code>ondewo/nlu/rag.proto</code>.
 // This file contains a single service <a href="#ondewo.nlu.Rags">Rags</a>. The Rags service provides RAG (Retrieval-Augmented Generation) and web crawler functionality.
-// All message fields that are marked as <code>optional</code> are not actually optional but marked as such to enable presence tracking so that it is possible to distinguish between null and default value fields. Without the <code>optional</code> keyword it would for instance not be possible to distinguish between an integer <code>0</code> and <code>null</code>.
+// Fields marked as <code>optional</code> carry explicit presence, so that an explicitly set default value (<code>0</code>, <code>false</code>, <code>""</code>) can be distinguished from a field that was never set. Without the <code>optional</code> keyword it would for instance not be possible to distinguish between an integer <code>0</code> and <code>null</code>.
+// The marker is applied where that distinction is actually consumed — the partial-update inputs (an unset field leaves the stored value untouched, an explicit default clears it) and the retrieval overrides that are forwarded to RAGFlow (an explicit <code>0.0</code> or <code>false</code> must override the server-side default rather than fall back to it). Fields that carry no such distinction are deliberately left without the keyword, and for message-typed fields it is omitted because proto3 gives them explicit presence anyway.
 syntax = "proto3";
 
 package ondewo.nlu;
@@ -254,6 +255,9 @@ message RagCreateDatasetRequest {
     // Optional. Configuration settings for the dataset parser. The used fields vary depending on the selected <code>chunk_method</code>.
     RagParserConfig parser_config = 7;
 
+    // Optional if <code>dataset_default_embedding_ccai_service_name</code> is set in the ONDEWO config, otherwise mandatory. CCAI service to use for embedding the documents in the dataset.
+    string embedding_model_ccai_service_name = 8;
+
 }
 
 // Chunking method for documents. See <a href="https://ragflow.io/docs/dev/configure_knowledge_base#select-chunking-method">https://ragflow.io/docs/dev/configure_knowledge_base#select-chunking-method</a> for details.
@@ -394,7 +398,7 @@ message RagGraphRagConfig {
     repeated string entity_types = 2;
 
     // Optional. Default <code>light</code>.
-    optional RagGraphRagMethod method = 3;
+    RagGraphRagMethod method = 3;
 
     // Optional. Default <code>false</code>.
     optional bool community = 4;
@@ -460,6 +464,9 @@ message RagDataset {
     // Last update date and time.
     google.protobuf.Timestamp update_time = 13;
 
+    // CCAI service name of the embedding model used by this dataset.
+    string embedding_model_ccai_service_name = 14;
+
 }
 
 // Parsing status statistics of all documents in a dataset
@@ -513,6 +520,15 @@ message RagUpdateDatasetRequest {
 
     // Optional. Minimum 0. Maximum 100. PageRank value.
     optional int32 pagerank = 9;
+
+    // Optional. FieldMask to specify which fields to update.
+    google.protobuf.FieldMask update_mask = 10;
+
+    // Optional. The mask to control which <code>RagDataset</code> fields get returned.
+    google.protobuf.FieldMask field_mask = 11;
+
+    // Optional. CCAI service to use for embedding the documents in the dataset.
+    string embedding_model_ccai_service_name = 12;
 
 }
 
@@ -570,11 +586,30 @@ message RagListDatasetsRequest {
     // Optional. Filter by dataset name.
     string name = 5;
 
-    // Optional. Sort field. Can be <code>create_time</code> or <code>update_time</code> (default: <code>create_time</code>).
+    // Optional. Sort field. Can be one of
+    // <ul>
+    //     <li><code>id</code></li>
+    //     <li><code>name</code></li>
+    //     <li><code>description</code></li>
+    //     <li><code>document_count</code></li>
+    //     <li><code>token_num</code></li>
+    //     <li><code>chunk_count</code></li>
+    //     <li><code>chunk_method</code></li>
+    //     <li><code>pagerank</code></li>
+    //     <li><code>create_time</code></li>
+    //     <li><code>update_time</code></li>
+    // </ul>
+    // (default: <code>create_time</code>).
     string orderby = 6;
 
     // Optional. Sort descending (default: <code>true</code>).
-    optional bool desc = 7;
+    optional bool desc = 7 [deprecated = true];
+
+    // Optional. Specify whether to sort ascending or descending (default: ascending).
+    SortingMode sorting_mode = 8;
+
+    // Optional. The mask to control which <code>RagDataset</code> fields get returned.
+    google.protobuf.FieldMask field_mask = 9;
 
 }
 
@@ -762,6 +797,12 @@ message RagUpdateDocumentRequest {
     // Optional. Custom metadata fields for document-specific metadata (replaces existing metadata).
     google.protobuf.Struct meta_fields = 9;
 
+    // Optional. FieldMask to specify which fields to update.
+    google.protobuf.FieldMask update_mask = 10;
+
+    // Optional. The mask to control which <code>RagDocument</code> fields get returned.
+    google.protobuf.FieldMask field_mask = 11;
+
 }
 
 // Request message for downloading the document file.
@@ -837,7 +878,7 @@ message RagListDocumentsRequest {
     string orderby = 7;
 
     // Optional. Sort in descending order (default: <code>true</code>).
-    optional bool desc = 8;
+    optional bool desc = 8 [deprecated = true];
 
     // Optional. Filter by document names containing <code>keywords</code>.
     string keywords = 9;
@@ -856,6 +897,12 @@ message RagListDocumentsRequest {
 
     // Optional. Metadata filter condition to restrict results based on document metadata.<br>
     RagMetadataConditions metadata_condition = 14;
+
+    // Optional. Specify whether to sort ascending or descending (default: ascending).
+    SortingMode sorting_mode = 15;
+
+    // Optional. The mask to control which <code>RagDocument</code> fields get returned.
+    google.protobuf.FieldMask field_mask = 16;
 
 }
 
@@ -1079,6 +1126,12 @@ message RagRetrievalRequest {
     // Optional. Extract additional keywords from the query to improve retrieval.
     optional bool keyword = 14;
 
+    // Optional. The mask to control which <code>RagChunk</code> fields get returned.
+    google.protobuf.FieldMask field_mask = 15;
+
+    // Optional. Rerank model used to refine the initial retrieval scores. If not provided, the default model is used (if one is set). If empty, the results are not reranked.
+    optional string rerank_model_ccai_service_name = 16;
+
 }
 
 // Response message for chunk retrieval.
@@ -1272,6 +1325,9 @@ message RagListCrawlersRequest {
     // Optional. Sort descending.
     optional SortingMode sorting_mode = 7;
 
+    // Optional. The Mask to control which RagCrawler fields get returned for each crawler in the list response.
+    google.protobuf.FieldMask field_mask = 8;
+
 }
 
 // Response message for listing crawlers.
@@ -1427,12 +1483,16 @@ message RagCrawlerFilters {
     // Optional. Include social media links.
     bool allow_social_media_links = 5;
 
+    // Optional. Path allow-list by regular expression.
     repeated string allowed_regex = 6;
 
+    // Optional. Path block-list by regular expression.
     repeated string disallowed_regex = 7;
 
+    // Optional. Explicit path allow-list.
     repeated string allowed_paths = 8;
 
+    // Optional. Explicit path block-list.
     repeated string disallowed_paths = 9;
 }
 
@@ -1551,7 +1611,7 @@ message RagCrawlerBrowserConfig {
     repeated RagCrawlerCookie crawler_cookies = 2;
 
     // Optional. User-Agent sent with requests.
-    string crawler_user_agent = 3;
+    optional string crawler_user_agent = 3;
 
 }
 
@@ -1576,6 +1636,9 @@ message RagCrawlerConcurrencyConfig {
     // Increase for throughput; reduce for fragile sites/rate limits.
     int32 max_concurrent_requests = 1;
 
+    // Optional. Enable slow crawl mode with fixed delays between requests to avoid rate limits.
+    bool slow_crawl = 2;
+
 }
 
 // Crawl run behavior.
@@ -1593,6 +1656,9 @@ message RagCrawlerConfig {
     // Optional. Structured output configuration (format + metadata policy).
     RagCrawlerResultsConfig output_config = 3;
 
+    // Optional. HTTP status filtering: which fetched pages become result documents.
+    RagCrawlerStatusFilter status_filter = 4;
+
 }
 
 // Deep crawler options grouped under one config node.
@@ -1609,13 +1675,16 @@ message RagCrawlerDeepCrawlerConfig {
 
     // Optional. Maximum link depth from seed URLs.
     // <code>0</code> usually means only seed pages.
-    int32 max_depth = 3;
+    optional int32 max_depth = 3;
 
     // Optional. Hard cap on total processed pages for this run.
     int32 max_pages = 4;
 
     // Optional. URL and domain restrictions.
     RagCrawlerFilters deep_crawler_filters = 5;
+
+    // Optional. Normalize URL case (lowercase the path) during link discovery/deduplication.
+    optional bool normalize_url_case = 6;
 
 }
 
@@ -1633,6 +1702,60 @@ message RagCrawlerResultsConfig {
 
     // Optional. Metadata extractors.
     repeated RagCrawlerMetaDataExtractor meta_data_extractors = 2;
+
+    // Optional. CSS-selector based content scoping for markdown extraction.
+    RagCrawlerContentScope content_scope = 3;
+
+    // Optional. Density-based content pruning (Crawl4AI PruningContentFilter).
+    // If not set the <code>RagCrawlerDensityPruning</code> defaults are used.
+    RagCrawlerDensityPruning density_pruning = 4;
+
+}
+
+// CSS-selector based content scoping for markdown extraction.
+//
+// When set, Markdown is generated only from the elements matched by <code>include_selectors</code> (if any), after removing elements matched by <code>exclude_selectors</code>.
+message RagCrawlerContentScope {
+
+    // Optional. CSS selectors to scope extraction to (keep only matching subtrees).
+    // Empty means the whole page is used.
+    repeated string include_selectors = 1;
+
+    // Optional. CSS selectors whose matching elements are removed before extraction (e.g. navigation, footer, sidebars, internal-only blocks).
+    repeated string exclude_selectors = 2;
+
+}
+
+// Density-based content pruning (Crawl4AI PruningContentFilter).
+//
+// Removes low-text-density and very short nodes by a composite density score.
+message RagCrawlerDensityPruning {
+
+    // Optional. Enable density pruning. Default <code>true</code>.
+    optional bool is_active = 1;
+
+    // Optional. Density score threshold. Default <code>0.5</code>.
+    optional float threshold = 2;
+
+    // Optional. Threshold interpretation. Default <code>RAG_CRAWLER_PRUNING_THRESHOLD_TYPE_FIXED</code>.
+    optional RagCrawlerPruningThresholdType threshold_type = 3;
+
+    // Optional. Nodes with fewer than this many words are removed. Default <code>10</code>.
+    optional int32 min_word_threshold = 4;
+
+}
+
+// Interpretation of the density-pruning threshold.
+enum RagCrawlerPruningThresholdType {
+
+    // Unspecified (treated as FIXED).
+    RAG_CRAWLER_PRUNING_THRESHOLD_TYPE_UNSPECIFIED = 0;
+
+    // Fixed cutoff: nodes scoring below <code>threshold</code> are removed.
+    RAG_CRAWLER_PRUNING_THRESHOLD_TYPE_FIXED = 1;
+
+    // Dynamic: the threshold is adjusted per-document by the pruning heuristic.
+    RAG_CRAWLER_PRUNING_THRESHOLD_TYPE_DYNAMIC = 2;
 
 }
 
@@ -1692,10 +1815,23 @@ enum RagCrawlerCrawlStrategy {
 message RagCrawlerRetryConfig {
 
     // Optional. Page load/render timeout in seconds.
-    int32 page_load_timeout_seconds = 1;
+    optional int32 page_load_timeout_seconds = 1;
 
     // Optional. Maximum retry attempts per page source.
-    int32 retry_max_attempts = 2;
+    optional int32 retry_max_attempts = 2;
+
+}
+
+// HTTP status filtering for crawled pages.
+//
+// When active, a fetched page becomes a result document only if its HTTP status is accepted.
+message RagCrawlerStatusFilter {
+
+    // Optional. Enable HTTP status filtering. Default <code>false</code>.
+    optional bool is_active = 1;
+
+    // Optional. Accepted HTTP status codes. If empty while active, only the 2xx range (<code>200</code>-<code>299</code>) is accepted. Add specific codes here to accept extras.
+    repeated int32 accepted_status_codes = 2;
 
 }
 
@@ -1706,7 +1842,7 @@ message RagCrawlerContentResult {
     google.protobuf.Struct metadata = 1;
 
     // Optional. Extracted markdown output.
-    string markdown = 2;
+    optional string markdown = 2;
 
 }
 
@@ -1717,10 +1853,10 @@ message RagCrawlerExecutionInfo {
     google.protobuf.Struct ssl_certificate = 1;
 
     // Optional. Crawl status flag.
-    bool success = 2;
+    optional bool success = 2;
 
     // Optional. Error details if crawl failed.
-    string error_message = 3;
+    optional string error_message = 3;
 
 }
 
@@ -1960,6 +2096,14 @@ message RagGetCrawlerResultsRequest {
     // Optional. Filter by URL substring.
     string url_query = 5;
 
+    // Optional. The mask to control which <code>RagCrawlerResult</code> fields get returned.
+    google.protobuf.FieldMask field_mask = 6;
+
+    // Optional. Sort field (default: <code>last_crawled_date</code>).
+    string orderby = 7;
+
+    // Optional. Sort descending.
+    optional SortingMode sorting_mode = 8;
 }
 
 // Response message for getting crawler results.
@@ -1993,6 +2137,9 @@ message RagGetCrawlerResultRequest {
 
     // Required. Exact URL of the crawler result to retrieve.
     string url = 4;
+
+    // Optional. The mask to control which RagCrawlerResult fields get returned.
+    google.protobuf.FieldMask field_mask = 5;
 
 }
 
@@ -2091,6 +2238,12 @@ message RagGetCrawlerAttachedDatasetsRequest {
     // Optional. The mask to control which <code>RagDataset</code> fields get returned.
     google.protobuf.FieldMask field_mask = 6;
 
+    // Optional. Sort field (default: <code>create_time</code>).
+    string orderby = 7;
+
+    // Optional. Sort descending (default: <code>SORTING_MODE_DESCENDING</code>).
+    optional SortingMode sorting_mode = 8;
+
 }
 
 // Response message for getting datasets attached to a crawler.
@@ -2143,6 +2296,16 @@ message RagGetCrawlerRunLogsRequest {
   // Optional. Filter by source URL (substring match).
   string source_url_filter = 11;
 
+  // Optional. Sort field. Accept any field of <code>LogEntry</code>.
+  // Default: <code>log_entry_timestamp</code>.
+  string orderby = 12;
+
+  // Optional. Sort descending.
+  optional SortingMode sorting_mode = 13;
+
+  // Optional. The mask to control which <code>LogEntry</code> fields get returned.
+  google.protobuf.FieldMask field_mask = 14;
+
 }
 
 // Response message for getting crawler run logs.
@@ -2162,4 +2325,6 @@ message RagGetCrawlerRunLogsResponse {
   // Page token string for retrieving the next results page.
   string next_page_token = 5;
 
+  // Total number of log entries available after applying filters.
+  int32 total_log_entries = 6;
 }
