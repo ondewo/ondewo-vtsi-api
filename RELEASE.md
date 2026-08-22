@@ -2,6 +2,25 @@
 
 *****************
 
+## Release ONDEWO VTSI API 8.4.0
+
+### Improvements
+
+* [[OND211-2418]](https://ondewo.atlassian.net/browse/OND211-2418) Added the field `next_page_token` to
+  `ListCallersResponse`. `ListCallersRequest` has always accepted a `page_token`, but the response carried no
+  way to return the next one, so `ListCallers` could not actually be paged: a caller either received the
+  first page and had no means of asking for the second, or — worse — treated the first page as the complete
+  set and silently under-counted. The field carries the same contract as its two siblings,
+  `ListListenersResponse.next_page_token` and `ListCallsResponse.next_page_token`: a non-empty token means
+  more results are available, and an empty token means the list is exhausted. It is a plain scalar rather
+  than `optional` for exactly that reason — "no more results" and "no preference expressed" are not
+  different states here, and the two sibling responses would otherwise disagree with this one on shape.
+  Adding field number 2 to a message that previously ended at 1 is wire-compatible: an older client decoding
+  a newer response skips the unknown field, and a newer client reading an older server sees the empty default,
+  which is the correct "no further pages" answer
+
+*****************
+
 ## Release ONDEWO VTSI API 8.3.0
 
 ### Improvements

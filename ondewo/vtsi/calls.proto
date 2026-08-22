@@ -680,6 +680,11 @@ message ListCallersResponse {
     // The list of callers.
     repeated Caller callers = 1;
 
+    // Token to retrieve the next page of results.
+    // This field is a string that holds a token for fetching the next page of results.
+    // If there are no more results in the list, this field will be empty.
+    string next_page_token = 2;
+
 }
 
 // Represents a request to get a specific caller.
