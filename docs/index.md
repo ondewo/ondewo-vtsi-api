@@ -20664,6 +20664,7 @@ Represents the response for listing callers.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | callers | [Caller](#ondewo.vtsi.Caller) | repeated | The list of callers. |
+| next_page_token | [string](#string) |  | Token to retrieve the next page of results. This field is a string that holds a token for fetching the next page of results. If there are no more results in the list, this field will be empty. |
 
 
 
