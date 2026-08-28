@@ -1062,6 +1062,8 @@
     - [Call](#ondewo.vtsi.Call)
     - [CallFilter](#ondewo.vtsi.CallFilter)
     - [Caller](#ondewo.vtsi.Caller)
+    - [CancelScheduledCallerRequest](#ondewo.vtsi.CancelScheduledCallerRequest)
+    - [CancelScheduledCallerResponse](#ondewo.vtsi.CancelScheduledCallerResponse)
     - [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig)
     - [Credentials](#ondewo.vtsi.Credentials)
     - [CsiVtsiConfig](#ondewo.vtsi.CsiVtsiConfig)
@@ -1076,6 +1078,7 @@
     - [GetCallRequest](#ondewo.vtsi.GetCallRequest)
     - [GetCallerRequest](#ondewo.vtsi.GetCallerRequest)
     - [GetListenerRequest](#ondewo.vtsi.GetListenerRequest)
+    - [GetScheduledCallerRequest](#ondewo.vtsi.GetScheduledCallerRequest)
     - [InterruptionHandlingConfig](#ondewo.vtsi.InterruptionHandlingConfig)
     - [ListCallersRequest](#ondewo.vtsi.ListCallersRequest)
     - [ListCallersResponse](#ondewo.vtsi.ListCallersResponse)
@@ -1083,6 +1086,8 @@
     - [ListCallsResponse](#ondewo.vtsi.ListCallsResponse)
     - [ListListenersRequest](#ondewo.vtsi.ListListenersRequest)
     - [ListListenersResponse](#ondewo.vtsi.ListListenersResponse)
+    - [ListScheduledCallersRequest](#ondewo.vtsi.ListScheduledCallersRequest)
+    - [ListScheduledCallersResponse](#ondewo.vtsi.ListScheduledCallersResponse)
     - [Listener](#ondewo.vtsi.Listener)
     - [MessageBrokerConfig](#ondewo.vtsi.MessageBrokerConfig)
     - [MessageBrokerServicesActivationConfig](#ondewo.vtsi.MessageBrokerServicesActivationConfig)
@@ -1135,6 +1140,7 @@
     - [CallStatus](#ondewo.vtsi.CallStatus)
     - [CallType](#ondewo.vtsi.CallType)
     - [CallView](#ondewo.vtsi.CallView)
+    - [ScheduledCallerStatus](#ondewo.vtsi.ScheduledCallerStatus)
     - [TurnDetectionConfig.TurnDetectionMode](#ondewo.vtsi.TurnDetectionConfig.TurnDetectionMode)
     - [TurnDetectionConfig.TurnEagerness](#ondewo.vtsi.TurnDetectionConfig.TurnEagerness)
   
@@ -20386,6 +20392,40 @@ Caller represents a caller instance that initiates outbound calls
 
 
 
+<a name="ondewo.vtsi.CancelScheduledCallerRequest"></a>
+
+### CancelScheduledCallerRequest
+Represents a request to cancel a scheduled caller that has not fired yet.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| name | [string](#string) |  | The name of the scheduled caller to cancel of the form <pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre> |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CancelScheduledCallerResponse"></a>
+
+### CancelScheduledCallerResponse
+Response to cancelling a scheduled caller.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the scheduled caller of the form <pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre> |
+| status | [ScheduledCallerStatus](#ondewo.vtsi.ScheduledCallerStatus) |  | The state of the scheduled caller AFTER this request. A scheduled caller that was already firing, done, failed or cancelled keeps the state it had |
+| cancelled | [bool](#bool) |  | True when this request performed the transition to SCHEDULED_CALLER_STATUS_CANCELLED. False means the scheduled caller was already in a state it cannot be cancelled from - read status to find out which one, this is not an error |
+| error_message | [string](#string) |  | error message if you have any so if it's unhealthy |
+
+
+
+
+
+
 <a name="ondewo.vtsi.CommonServicesConfig"></a>
 
 ### CommonServicesConfig
@@ -20616,6 +20656,23 @@ Represents a request to get a specific listener.
 
 
 
+<a name="ondewo.vtsi.GetScheduledCallerRequest"></a>
+
+### GetScheduledCallerRequest
+Represents a request to get a specific scheduled caller.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| name | [string](#string) |  | The name of the scheduled caller to retrieve of the form <pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre> |
+| call_view | [CallView](#ondewo.vtsi.CallView) | optional | you can specify the view to be shallow or full |
+
+
+
+
+
+
 <a name="ondewo.vtsi.InterruptionHandlingConfig"></a>
 
 ### InterruptionHandlingConfig
@@ -20731,6 +20788,40 @@ Represents the response for listing listeners.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | listeners | [Listener](#ondewo.vtsi.Listener) | repeated | The list of listeners. |
+| next_page_token | [string](#string) |  | Token to retrieve the next page of results. This field is a string that holds a token for fetching the next page of results. If there are no more results in the list, this field will be empty. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListScheduledCallersRequest"></a>
+
+### ListScheduledCallersRequest
+Represents a request to list the scheduled callers of a vtsi-project.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project name for which to perform the call. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| page_token | [string](#string) | optional | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
+| call_view | [CallView](#ondewo.vtsi.CallView) | optional | you can specify the view to be shallow or full |
+| statuses | [ScheduledCallerStatus](#ondewo.vtsi.ScheduledCallerStatus) | repeated | Optional. Only return scheduled callers in one of these states. An empty list returns every state. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListScheduledCallersResponse"></a>
+
+### ListScheduledCallersResponse
+Represents the response for listing scheduled callers.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| scheduled_callers | [ScheduledCaller](#ondewo.vtsi.ScheduledCaller) | repeated | The list of scheduled callers, oldest scheduled_time first. |
 | next_page_token | [string](#string) |  | Token to retrieve the next page of results. This field is a string that holds a token for fetching the next page of results. If there are no more results in the list, this field will be empty. |
 
 
@@ -20910,9 +21001,15 @@ ScheduledCaller message - a Caller with a schedule when to start calling
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | Resource name of the scheduled caller <pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre> |
 | call_name | [string](#string) |  | The asterisk sip call name that was assigned to the call For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
-| sip_config | [SipBaseConfig](#ondewo.vtsi.SipBaseConfig) |  | SIP service configuration |
+| sip_config | [SipBaseConfig](#ondewo.vtsi.SipBaseConfig) |  | SIP service configuration. This is the sip_base_config half of sip_caller_config below and is kept for wire compatibility with clients built before field 6 existed |
 | common_services_config | [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig) |  | Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI |
 | scheduled_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Time the call is scheduled TODO to be refactored with a more complex scheduling object |
+| sip_caller_config | [SipCallerConfig](#ondewo.vtsi.SipCallerConfig) |  | Full SIP caller configuration, including the callee_id that will be dialled and the sip_headers that will be sent. sip_config (field 3) carries only the sip_base_config half of this message |
+| status | [ScheduledCallerStatus](#ondewo.vtsi.ScheduledCallerStatus) |  | Lifecycle state of this scheduled caller |
+| vtsi_project_name | [string](#string) |  | VTSI project name that owns this scheduled caller of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Time the scheduled caller was created |
+| fired_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Time the call was actually started, or the attempt failed. Unset while the status is SCHEDULED_CALLER_STATUS_PENDING, SCHEDULED_CALLER_STATUS_FIRING or SCHEDULED_CALLER_STATUS_CANCELLED |
+| error_message | [string](#string) |  | Why starting the call failed. Only populated when the status is SCHEDULED_CALLER_STATUS_FAILED |
 
 
 
@@ -21586,6 +21683,22 @@ Call view options
 
 
 
+<a name="ondewo.vtsi.ScheduledCallerStatus"></a>
+
+### ScheduledCallerStatus
+Lifecycle state of a ScheduledCaller
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| SCHEDULED_CALLER_STATUS_UNSPECIFIED | 0 | Unspecified status |
+| SCHEDULED_CALLER_STATUS_PENDING | 1 | Created and waiting for its scheduled_time to arrive |
+| SCHEDULED_CALLER_STATUS_FIRING | 2 | Claimed by a server replica and being dialled right now |
+| SCHEDULED_CALLER_STATUS_DONE | 3 | The call was started successfully |
+| SCHEDULED_CALLER_STATUS_FAILED | 4 | Starting the call failed; see error_message |
+| SCHEDULED_CALLER_STATUS_CANCELLED | 5 | Cancelled before it fired |
+
+
+
 <a name="ondewo.vtsi.TurnDetectionConfig.TurnDetectionMode"></a>
 
 ### TurnDetectionConfig.TurnDetectionMode
@@ -21641,8 +21754,11 @@ Eagerness of the turn detection
 | GetListener | [GetListenerRequest](#ondewo.vtsi.GetListenerRequest) | [Listener](#ondewo.vtsi.Listener) | <p>Gets a listener</p> |
 | DeleteListener | [DeleteListenerRequest](#ondewo.vtsi.DeleteListenerRequest) | [DeleteListenerResponse](#ondewo.vtsi.DeleteListenerResponse) | <p>Deletes a listener</p> |
 | DeleteListeners | [DeleteListenersRequest](#ondewo.vtsi.DeleteListenersRequest) | [DeleteListenersResponse](#ondewo.vtsi.DeleteListenersResponse) | <p>Deletes multiple listeners</p> |
-| StartScheduledCaller | [StartScheduledCallerRequest](#ondewo.vtsi.StartScheduledCallerRequest) | [StartScheduledCallerResponse](#ondewo.vtsi.StartScheduledCallerResponse) | <p>Start multiple ondewo-sip callers instances with schedules</p> |
-| StartScheduledCallers | [StartScheduledCallersRequest](#ondewo.vtsi.StartScheduledCallersRequest) | [StartScheduledCallersResponse](#ondewo.vtsi.StartScheduledCallersResponse) | <p>Start multiple ondewo-sip callers instances with schedules</p> |
+| StartScheduledCaller | [StartScheduledCallerRequest](#ondewo.vtsi.StartScheduledCallerRequest) | [StartScheduledCallerResponse](#ondewo.vtsi.StartScheduledCallerResponse) | <p>Start a single ondewo-sip caller instance at a scheduled time</p> |
+| StartScheduledCallers | [StartScheduledCallersRequest](#ondewo.vtsi.StartScheduledCallersRequest) | [StartScheduledCallersResponse](#ondewo.vtsi.StartScheduledCallersResponse) | <p>Start multiple ondewo-sip caller instances, each at its own scheduled time</p> |
+| GetScheduledCaller | [GetScheduledCallerRequest](#ondewo.vtsi.GetScheduledCallerRequest) | [ScheduledCaller](#ondewo.vtsi.ScheduledCaller) | <p>Gets a scheduled caller</p> |
+| ListScheduledCallers | [ListScheduledCallersRequest](#ondewo.vtsi.ListScheduledCallersRequest) | [ListScheduledCallersResponse](#ondewo.vtsi.ListScheduledCallersResponse) | <p>Lists the scheduled callers of a vtsi-project</p> |
+| CancelScheduledCaller | [CancelScheduledCallerRequest](#ondewo.vtsi.CancelScheduledCallerRequest) | [CancelScheduledCallerResponse](#ondewo.vtsi.CancelScheduledCallerResponse) | <p>Cancels a scheduled caller that has not fired yet</p> |
 | StopCall | [StopCallRequest](#ondewo.vtsi.StopCallRequest) | [StopCallResponse](#ondewo.vtsi.StopCallResponse) | <p>Stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.</p> |
 | StopCalls | [StopCallsRequest](#ondewo.vtsi.StopCallsRequest) | [StopCallsResponse](#ondewo.vtsi.StopCallsResponse) | <p>Stop/kill a list of ondewo-sip listener or caller instances for a specific vtsi-project.</p> <p>Stops both Listener and Caller calls</p> |
 | StopAllCalls | [StopAllCallsRequest](#ondewo.vtsi.StopAllCallsRequest) | [StopCallsResponse](#ondewo.vtsi.StopCallsResponse) | <p>Stop/kill all ondewo-sip listener or caller instance for a specific nlu-project.</p> <p>Stops all Listener and Caller calls</p> |

@@ -81,11 +81,20 @@ service Calls {
     // <p>Deletes multiple listeners</p>
     rpc DeleteListeners (DeleteListenersRequest) returns (DeleteListenersResponse);
 
-    // <p>Start multiple ondewo-sip callers instances with schedules</p>
+    // <p>Start a single ondewo-sip caller instance at a scheduled time</p>
     rpc StartScheduledCaller (StartScheduledCallerRequest) returns (StartScheduledCallerResponse);
 
-    // <p>Start multiple ondewo-sip callers instances with schedules</p>
+    // <p>Start multiple ondewo-sip caller instances, each at its own scheduled time</p>
     rpc StartScheduledCallers (StartScheduledCallersRequest) returns (StartScheduledCallersResponse);
+
+    // <p>Gets a scheduled caller</p>
+    rpc GetScheduledCaller (GetScheduledCallerRequest) returns (ScheduledCaller);
+
+    // <p>Lists the scheduled callers of a vtsi-project</p>
+    rpc ListScheduledCallers (ListScheduledCallersRequest) returns (ListScheduledCallersResponse);
+
+    // <p>Cancels a scheduled caller that has not fired yet</p>
+    rpc CancelScheduledCaller (CancelScheduledCallerRequest) returns (CancelScheduledCallerResponse);
 
     // <p>Stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.</p>
     rpc StopCall (StopCallRequest) returns (StopCallResponse);
@@ -947,6 +956,28 @@ message StartScheduledCallerResponse {
 
 }
 
+// Lifecycle state of a ScheduledCaller
+enum ScheduledCallerStatus {
+
+    // Unspecified status
+    SCHEDULED_CALLER_STATUS_UNSPECIFIED = 0;
+
+    // Created and waiting for its scheduled_time to arrive
+    SCHEDULED_CALLER_STATUS_PENDING = 1;
+
+    // Claimed by a server replica and being dialled right now
+    SCHEDULED_CALLER_STATUS_FIRING = 2;
+
+    // The call was started successfully
+    SCHEDULED_CALLER_STATUS_DONE = 3;
+
+    // Starting the call failed; see error_message
+    SCHEDULED_CALLER_STATUS_FAILED = 4;
+
+    // Cancelled before it fired
+    SCHEDULED_CALLER_STATUS_CANCELLED = 5;
+}
+
 // ScheduledCaller message - a Caller with a schedule when to start calling
 message ScheduledCaller {
 
@@ -959,7 +990,9 @@ message ScheduledCaller {
     // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     string call_name = 2;
 
-    // SIP service configuration
+    // SIP service configuration.
+    // This is the sip_base_config half of sip_caller_config below and is kept for wire compatibility
+    // with clients built before field 6 existed
     SipBaseConfig sip_config = 3;
 
     // Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI
@@ -968,6 +1001,108 @@ message ScheduledCaller {
     // Time the call is scheduled
     // TODO to be refactored with a more complex scheduling object
     google.protobuf.Timestamp scheduled_time = 5;
+
+    // Full SIP caller configuration, including the callee_id that will be dialled and the sip_headers
+    // that will be sent. sip_config (field 3) carries only the sip_base_config half of this message
+    SipCallerConfig sip_caller_config = 6;
+
+    // Lifecycle state of this scheduled caller
+    ScheduledCallerStatus status = 7;
+
+    // VTSI project name that owns this scheduled caller of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 8;
+
+    // Time the scheduled caller was created
+    google.protobuf.Timestamp created_at = 9;
+
+    // Time the call was actually started, or the attempt failed. Unset while the status is
+    // SCHEDULED_CALLER_STATUS_PENDING, SCHEDULED_CALLER_STATUS_FIRING or
+    // SCHEDULED_CALLER_STATUS_CANCELLED
+    google.protobuf.Timestamp fired_at = 10;
+
+    // Why starting the call failed. Only populated when the status is SCHEDULED_CALLER_STATUS_FAILED
+    string error_message = 11;
+}
+
+// Represents a request to get a specific scheduled caller.
+message GetScheduledCallerRequest {
+
+    // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // The name of the scheduled caller to retrieve of the form
+    // <pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre>
+    string name = 2;
+
+    // you can specify the view to be shallow or full
+    optional CallView call_view = 3;
+
+}
+
+// Represents a request to list the scheduled callers of a vtsi-project.
+message ListScheduledCallersRequest {
+
+    // VTSI project name for which to perform the call.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Optional. The next_page_token value returned from a previous list request.
+    // Example: "current_index-1--page_size-20"
+    optional string page_token = 2;
+
+    // you can specify the view to be shallow or full
+    optional CallView call_view = 3;
+
+    // Optional. Only return scheduled callers in one of these states.
+    // An empty list returns every state.
+    repeated ScheduledCallerStatus statuses = 4;
+
+}
+
+// Represents the response for listing scheduled callers.
+message ListScheduledCallersResponse {
+
+    // The list of scheduled callers, oldest scheduled_time first.
+    repeated ScheduledCaller scheduled_callers = 1;
+
+    // Token to retrieve the next page of results.
+    // This field is a string that holds a token for fetching the next page of results.
+    // If there are no more results in the list, this field will be empty.
+    string next_page_token = 2;
+
+}
+
+// Represents a request to cancel a scheduled caller that has not fired yet.
+message CancelScheduledCallerRequest {
+
+    // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // The name of the scheduled caller to cancel of the form
+    // <pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre>
+    string name = 2;
+
+}
+
+// Response to cancelling a scheduled caller.
+message CancelScheduledCallerResponse {
+
+    // The name of the scheduled caller of the form
+    // <pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre>
+    string name = 1;
+
+    // The state of the scheduled caller AFTER this request. A scheduled caller that was already
+    // firing, done, failed or cancelled keeps the state it had
+    ScheduledCallerStatus status = 2;
+
+    // True when this request performed the transition to SCHEDULED_CALLER_STATUS_CANCELLED.
+    // False means the scheduled caller was already in a state it cannot be cancelled from -
+    // read status to find out which one, this is not an error
+    bool cancelled = 3;
+
+    // error message if you have any so if it's unhealthy
+    string error_message = 4;
+
 }
 
 // Request to stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.

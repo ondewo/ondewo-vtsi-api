@@ -2,6 +2,43 @@
 
 *****************
 
+## Release ONDEWO VTSI API 8.5.0
+
+### Improvements
+
+* [[OND211-2418]](https://ondewo.atlassian.net/browse/OND211-2418) Gave `ScheduledCaller` a read and cancel
+  surface. `StartScheduledCaller` and `StartScheduledCallers` created a named, persisted resource that no RPC
+  could subsequently observe or withdraw, so a schedule that failed at fire time was — in the words of the
+  server's own comment — "invisible to the client by construction". Three RPCs close that: `GetScheduledCaller`
+  returns a single `ScheduledCaller`, matching `GetCaller` and `GetListener` in returning the bare resource
+  rather than a wrapper; `ListScheduledCallers` pages a project's scheduled callers oldest `scheduled_time`
+  first, with the same `page_token` / `next_page_token` contract as `ListCallers`, `ListListeners` and
+  `ListCalls`; and `CancelScheduledCaller` withdraws one that has not fired yet.
+* [[OND211-2418]](https://ondewo.atlassian.net/browse/OND211-2418) Added `ScheduledCallerStatus`, the lifecycle
+  of a scheduled caller: `PENDING`, `FIRING`, `DONE`, `FAILED`, `CANCELLED`. The members are prefixed
+  (`SCHEDULED_CALLER_STATUS_*`) because proto3 enum members share the enclosing file's scope, matching
+  `CallStatus` rather than the older unprefixed `CallView` and `CallType`.
+* [[OND211-2418]](https://ondewo.atlassian.net/browse/OND211-2418) Extended `ScheduledCaller` with six fields,
+  numbers 6 to 11, leaving 1 to 5 byte-for-byte unchanged: `sip_caller_config` (the full caller configuration —
+  field 3 `sip_config` carries only its `sip_base_config` half, so `callee_id` and `sip_headers` were dropped
+  and the create response could not say who would be called), `status`, `vtsi_project_name`, `created_at`,
+  `fired_at` and `error_message`. `created_at` and `fired_at` are message fields, which carry presence in
+  proto3 without `optional`, so a pending row leaves `fired_at` unset rather than stamping epoch zero.
+  `claimed_by` is deliberately **not** exposed: it is `<hostname>:<pid>` and would teach a tenant the server's
+  internal topology while gaining them nothing.
+* [[OND211-2418]](https://ondewo.atlassian.net/browse/OND211-2418) Fixed the two RPC comments on
+  `StartScheduledCaller` and `StartScheduledCallers`, which were the same copy-pasted sentence and wrong for
+  the singular form.
+
+### Compatibility
+
+Wire-compatible in both directions. The three new RPCs are additive; the six new `ScheduledCaller` fields use
+previously unused numbers, so an older client decoding a newer message skips them and a newer client reading an
+older server sees the defaults. `ScheduledCallerStatus` carries a zero member,
+`SCHEDULED_CALLER_STATUS_UNSPECIFIED`, so an old client decoding a new status is not left without a value.
+
+*****************
+
 ## Release ONDEWO VTSI API 8.4.0
 
 ### Improvements

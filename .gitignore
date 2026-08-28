@@ -2,6 +2,7 @@
 ondewo.github.io
 ondewo-devops-accounts
 build_log_*.txt
+release_run_*.log
 node_modules
 package.json
 package-lock.json

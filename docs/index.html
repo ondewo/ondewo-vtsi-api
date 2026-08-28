@@ -5372,6 +5372,12 @@
                       
                         <li><a href="#ondewo.vtsi.Calls.StartScheduledCallers" class="title-badge method">StartScheduledCallers</a></li>
                       
+                        <li><a href="#ondewo.vtsi.Calls.GetScheduledCaller" class="title-badge method">GetScheduledCaller</a></li>
+                      
+                        <li><a href="#ondewo.vtsi.Calls.ListScheduledCallers" class="title-badge method">ListScheduledCallers</a></li>
+                      
+                        <li><a href="#ondewo.vtsi.Calls.CancelScheduledCaller" class="title-badge method">CancelScheduledCaller</a></li>
+                      
                         <li><a href="#ondewo.vtsi.Calls.StopCall" class="title-badge method">StopCall</a></li>
                       
                         <li><a href="#ondewo.vtsi.Calls.StopCalls" class="title-badge method">StopCalls</a></li>
@@ -5426,6 +5432,14 @@
                     
                       <li>
                         <a href="#ondewo.vtsi.Caller" class="title-badge message">Caller</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.CancelScheduledCallerRequest" class="title-badge message">CancelScheduledCallerRequest</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.CancelScheduledCallerResponse" class="title-badge message">CancelScheduledCallerResponse</a>
                       </li>
                     
                       <li>
@@ -5485,6 +5499,10 @@
                       </li>
                     
                       <li>
+                        <a href="#ondewo.vtsi.GetScheduledCallerRequest" class="title-badge message">GetScheduledCallerRequest</a>
+                      </li>
+                    
+                      <li>
                         <a href="#ondewo.vtsi.InterruptionHandlingConfig" class="title-badge message">InterruptionHandlingConfig</a>
                       </li>
                     
@@ -5510,6 +5528,14 @@
                     
                       <li>
                         <a href="#ondewo.vtsi.ListListenersResponse" class="title-badge message">ListListenersResponse</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.ListScheduledCallersRequest" class="title-badge message">ListScheduledCallersRequest</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.ListScheduledCallersResponse" class="title-badge message">ListScheduledCallersResponse</a>
                       </li>
                     
                       <li>
@@ -5720,6 +5746,10 @@
                     
                       <li>
                         <a href="#ondewo.vtsi.CallView" class="title-badge enum">CallView</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.ScheduledCallerStatus" class="title-badge enum">ScheduledCallerStatus</a>
                       </li>
                     
                       <li>
@@ -60427,13 +60457,31 @@ qwen3_tts_custom_voice, qwen3_tts_base). </p></td>
 
           <pre>rpc StartScheduledCaller (<a href="#ondewo.vtsi.StartScheduledCallerRequest">StartScheduledCallerRequest</a>) returns (<a href="#ondewo.vtsi.StartScheduledCallerResponse">StartScheduledCallerResponse)</a></pre>
 
-          <p>Start multiple ondewo-sip callers instances with schedules</p>
+          <p>Start a single ondewo-sip caller instance at a scheduled time</p>
         
           <h4 id="ondewo.vtsi.Calls.StartScheduledCallers" class="title-badge method">StartScheduledCallers</h4>
 
           <pre>rpc StartScheduledCallers (<a href="#ondewo.vtsi.StartScheduledCallersRequest">StartScheduledCallersRequest</a>) returns (<a href="#ondewo.vtsi.StartScheduledCallersResponse">StartScheduledCallersResponse)</a></pre>
 
-          <p>Start multiple ondewo-sip callers instances with schedules</p>
+          <p>Start multiple ondewo-sip caller instances, each at its own scheduled time</p>
+        
+          <h4 id="ondewo.vtsi.Calls.GetScheduledCaller" class="title-badge method">GetScheduledCaller</h4>
+
+          <pre>rpc GetScheduledCaller (<a href="#ondewo.vtsi.GetScheduledCallerRequest">GetScheduledCallerRequest</a>) returns (<a href="#ondewo.vtsi.ScheduledCaller">ScheduledCaller)</a></pre>
+
+          <p>Gets a scheduled caller</p>
+        
+          <h4 id="ondewo.vtsi.Calls.ListScheduledCallers" class="title-badge method">ListScheduledCallers</h4>
+
+          <pre>rpc ListScheduledCallers (<a href="#ondewo.vtsi.ListScheduledCallersRequest">ListScheduledCallersRequest</a>) returns (<a href="#ondewo.vtsi.ListScheduledCallersResponse">ListScheduledCallersResponse)</a></pre>
+
+          <p>Lists the scheduled callers of a vtsi-project</p>
+        
+          <h4 id="ondewo.vtsi.Calls.CancelScheduledCaller" class="title-badge method">CancelScheduledCaller</h4>
+
+          <pre>rpc CancelScheduledCaller (<a href="#ondewo.vtsi.CancelScheduledCallerRequest">CancelScheduledCallerRequest</a>) returns (<a href="#ondewo.vtsi.CancelScheduledCallerResponse">CancelScheduledCallerResponse)</a></pre>
+
+          <p>Cancels a scheduled caller that has not fired yet</p>
         
           <h4 id="ondewo.vtsi.Calls.StopCall" class="title-badge method">StopCall</h4>
 
@@ -60978,6 +61026,87 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
 
         
       
+        <h3 id="ondewo.vtsi.CancelScheduledCallerRequest" class="title-badge message">CancelScheduledCallerRequest</h3>
+        <p>Represents a request to cancel a scheduled caller that has not fired yet.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>vtsi_project_name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The name of the scheduled caller to cancel of the form
+<pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.CancelScheduledCallerResponse" class="title-badge message">CancelScheduledCallerResponse</h3>
+        <p>Response to cancelling a scheduled caller.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The name of the scheduled caller of the form
+<pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>status</td>
+                  <td><a href="#ondewo.vtsi.ScheduledCallerStatus">ScheduledCallerStatus</a></td>
+                  <td></td>
+                  <td><p>The state of the scheduled caller AFTER this request. A scheduled caller that was already
+firing, done, failed or cancelled keeps the state it had </p></td>
+                </tr>
+              
+                <tr>
+                  <td>cancelled</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>True when this request performed the transition to SCHEDULED_CALLER_STATUS_CANCELLED.
+False means the scheduled caller was already in a state it cannot be cancelled from -
+read status to find out which one, this is not an error </p></td>
+                </tr>
+              
+                <tr>
+                  <td>error_message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>error message if you have any so if it's unhealthy </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
         <h3 id="ondewo.vtsi.CommonServicesConfig" class="title-badge message">CommonServicesConfig</h3>
         <p>Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI which are common for both listener and caller</p>
 
@@ -61460,6 +61589,45 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
 
         
       
+        <h3 id="ondewo.vtsi.GetScheduledCallerRequest" class="title-badge message">GetScheduledCallerRequest</h3>
+        <p>Represents a request to get a specific scheduled caller.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>vtsi_project_name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The name of the scheduled caller to retrieve of the form
+<pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>call_view</td>
+                  <td><a href="#ondewo.vtsi.CallView">CallView</a></td>
+                  <td>optional</td>
+                  <td><p>you can specify the view to be shallow or full </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
         <h3 id="ondewo.vtsi.InterruptionHandlingConfig" class="title-badge message">InterruptionHandlingConfig</h3>
         <p>Configuration of the interruption (barge-in) handling, i.e. the caller speaking while the bot is speaking</p>
 
@@ -61745,6 +61913,87 @@ Example: "current_index-1--page_size-20" </p></td>
                   <td><a href="#ondewo.vtsi.Listener">Listener</a></td>
                   <td>repeated</td>
                   <td><p>The list of listeners. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>next_page_token</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>Token to retrieve the next page of results.
+This field is a string that holds a token for fetching the next page of results.
+If there are no more results in the list, this field will be empty. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.ListScheduledCallersRequest" class="title-badge message">ListScheduledCallersRequest</h3>
+        <p>Represents a request to list the scheduled callers of a vtsi-project.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>vtsi_project_name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>VTSI project name for which to perform the call.
+The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>page_token</td>
+                  <td><a href="#string">string</a></td>
+                  <td>optional</td>
+                  <td><p>Optional. The next_page_token value returned from a previous list request.
+Example: "current_index-1--page_size-20" </p></td>
+                </tr>
+              
+                <tr>
+                  <td>call_view</td>
+                  <td><a href="#ondewo.vtsi.CallView">CallView</a></td>
+                  <td>optional</td>
+                  <td><p>you can specify the view to be shallow or full </p></td>
+                </tr>
+              
+                <tr>
+                  <td>statuses</td>
+                  <td><a href="#ondewo.vtsi.ScheduledCallerStatus">ScheduledCallerStatus</a></td>
+                  <td>repeated</td>
+                  <td><p>Optional. Only return scheduled callers in one of these states.
+An empty list returns every state. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="ondewo.vtsi.ListScheduledCallersResponse" class="title-badge message">ListScheduledCallersResponse</h3>
+        <p>Represents the response for listing scheduled callers.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>scheduled_callers</td>
+                  <td><a href="#ondewo.vtsi.ScheduledCaller">ScheduledCaller</a></td>
+                  <td>repeated</td>
+                  <td><p>The list of scheduled callers, oldest scheduled_time first. </p></td>
                 </tr>
               
                 <tr>
@@ -62205,7 +62454,9 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
                   <td>sip_config</td>
                   <td><a href="#ondewo.vtsi.SipBaseConfig">SipBaseConfig</a></td>
                   <td></td>
-                  <td><p>SIP service configuration </p></td>
+                  <td><p>SIP service configuration.
+This is the sip_base_config half of sip_caller_config below and is kept for wire compatibility
+with clients built before field 6 existed </p></td>
                 </tr>
               
                 <tr>
@@ -62221,6 +62472,51 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
                   <td></td>
                   <td><p>Time the call is scheduled
 TODO to be refactored with a more complex scheduling object </p></td>
+                </tr>
+              
+                <tr>
+                  <td>sip_caller_config</td>
+                  <td><a href="#ondewo.vtsi.SipCallerConfig">SipCallerConfig</a></td>
+                  <td></td>
+                  <td><p>Full SIP caller configuration, including the callee_id that will be dialled and the sip_headers
+that will be sent. sip_config (field 3) carries only the sip_base_config half of this message </p></td>
+                </tr>
+              
+                <tr>
+                  <td>status</td>
+                  <td><a href="#ondewo.vtsi.ScheduledCallerStatus">ScheduledCallerStatus</a></td>
+                  <td></td>
+                  <td><p>Lifecycle state of this scheduled caller </p></td>
+                </tr>
+              
+                <tr>
+                  <td>vtsi_project_name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>VTSI project name that owns this scheduled caller of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>created_at</td>
+                  <td><a href="#google.protobuf.Timestamp">google.protobuf.Timestamp</a></td>
+                  <td></td>
+                  <td><p>Time the scheduled caller was created </p></td>
+                </tr>
+              
+                <tr>
+                  <td>fired_at</td>
+                  <td><a href="#google.protobuf.Timestamp">google.protobuf.Timestamp</a></td>
+                  <td></td>
+                  <td><p>Time the call was actually started, or the attempt failed. Unset while the status is
+SCHEDULED_CALLER_STATUS_PENDING, SCHEDULED_CALLER_STATUS_FIRING or
+SCHEDULED_CALLER_STATUS_CANCELLED </p></td>
+                </tr>
+              
+                <tr>
+                  <td>error_message</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>Why starting the call failed. Only populated when the status is SCHEDULED_CALLER_STATUS_FAILED </p></td>
                 </tr>
               
             </tbody>
@@ -63612,6 +63908,53 @@ from the latest stable partial transcription (default: 3.0) </p></td>
                 <td>FULL</td>
                 <td>2</td>
                 <td><p>Gives you the full info with status history and the services statuses</p></td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+        <h3 id="ondewo.vtsi.ScheduledCallerStatus" class="title-badge enum">ScheduledCallerStatus</h3>
+        <p>Lifecycle state of a ScheduledCaller</p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>SCHEDULED_CALLER_STATUS_UNSPECIFIED</td>
+                <td>0</td>
+                <td><p>Unspecified status</p></td>
+              </tr>
+            
+              <tr>
+                <td>SCHEDULED_CALLER_STATUS_PENDING</td>
+                <td>1</td>
+                <td><p>Created and waiting for its scheduled_time to arrive</p></td>
+              </tr>
+            
+              <tr>
+                <td>SCHEDULED_CALLER_STATUS_FIRING</td>
+                <td>2</td>
+                <td><p>Claimed by a server replica and being dialled right now</p></td>
+              </tr>
+            
+              <tr>
+                <td>SCHEDULED_CALLER_STATUS_DONE</td>
+                <td>3</td>
+                <td><p>The call was started successfully</p></td>
+              </tr>
+            
+              <tr>
+                <td>SCHEDULED_CALLER_STATUS_FAILED</td>
+                <td>4</td>
+                <td><p>Starting the call failed; see error_message</p></td>
+              </tr>
+            
+              <tr>
+                <td>SCHEDULED_CALLER_STATUS_CANCELLED</td>
+                <td>5</td>
+                <td><p>Cancelled before it fired</p></td>
               </tr>
             
           </tbody>
