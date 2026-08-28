@@ -65942,6 +65942,15 @@ Semantics:
       that has once been pinned track the deployment default again.</li>
   <li>Path absent from the mask: the field is left untouched, whether or not
       <pre><code>vtsi_project</code></pre> carries a value for it.</li>
+  <li>Path the server does not recognise: the request is REFUSED with
+      <pre><code>INVALID_ARGUMENT</code></pre> naming the path. It is never ignored.
+      This matters most for the one mistake this surface invites: ONDEWO's own
+      <pre><code>ondewo.nlu.UpdateAgentRequest</code></pre> documents the PREFIXED form
+      (<pre><code>agent.display_name</code></pre>), so a caller who copies that sibling will
+      send <pre><code>vtsi_project.display_name</code></pre> here. Silently ignoring it would
+      leave the field un-cleared while the call reported success - the exact failure this
+      field exists to remove - so an unrecognised path fails loudly at the first request
+      instead.</li>
 </ul> </p></td>
                 </tr>
               
