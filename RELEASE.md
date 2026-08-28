@@ -2,6 +2,52 @@
 
 *****************
 
+## Release ONDEWO VTSI API 8.6.0
+
+### Improvements
+
+* [[OND211-2418]](https://ondewo.atlassian.net/browse/OND211-2418) Added the field `update_mask` to
+  `UpdateVtsiProjectRequest`, a `google.protobuf.FieldMask` on the next free number, 2. Without it a field
+  that has once been set can never be unset: `UpdateVtsiProject` merges the incoming project additively, so a
+  scalar sent at its proto3 default is indistinguishable from a scalar the caller never mentioned and the
+  stored value survives. The worked case is `AsteriskConfigs.asterisk_version` — once a project is pinned to
+  an Asterisk image tag it stays pinned, which defeats the deploy-time fallback that is the whole point of
+  leaving the field unset. The same mechanism blocked resetting `display_name`, `max_callers` and
+  `max_listeners`, and clearing `nlu_agent_names`. Paths are field paths within `vtsi_project` and carry no
+  leading `vtsi_project.` prefix, so the mask can be handed straight to the standard `FieldMask` merge
+  helpers, which take paths relative to the message being merged. A path in the mask but absent from
+  `vtsi_project` means CLEAR; a path absent from the mask leaves the field untouched; an unset or empty mask
+  keeps the additive merge every earlier release performed.
+* [[OND211-2418]](https://ondewo.atlassian.net/browse/OND211-2418) Made
+  `CsiVtsiConfig.activate_control_messages` `optional`. As a presence-less `bool` it read back as `false`
+  whether the caller had switched control messages off or had said nothing at all, while the server's own
+  default for the setting is on — so a caller that never mentioned control messages silently disabled them.
+  `optional` adds the third state: unset now means "no preference expressed, keep the server default", which
+  is a different instruction from an explicit `false`. It also makes an explicit `false` expressible for the
+  first time, since a presence-less `false` puts no bytes on the wire at all.
+
+### Compatibility
+
+Wire-compatible in both directions; this is a MINOR release.
+
+`update_mask` is additive. It takes field number 2 in a message that previously ended at 1, so an 8.5.0
+server decoding an 8.6.0 request skips it as an unknown field and applies the additive merge it always
+applied, and an 8.6.0 server reading an 8.5.0 request sees an empty mask, which means exactly that same
+additive merge. A request that sends no mask is byte-identical to the 8.5.0 request. Because an older server
+ignores the mask rather than rejecting it, a client must not send one until the server it talks to honours
+it — a silently ignored mask reads as a successful clear that did not happen.
+
+`activate_control_messages` keeps field number 6 and wire type `bool`; `optional` only adds explicit
+presence, compiling to a synthetic one-member oneof (`_activate_control_messages`) that exists in the
+descriptor and not on the wire. The encoding of `true` is byte-for-byte what 8.5.0 emitted. One asymmetry is
+worth stating, because it constrains the server: an 8.5.0 client setting the field to `false` serialises
+nothing, so an 8.6.0 server sees it as unset and will apply its default rather than `false`. That
+ambiguity is the pre-existing defect and is not introduced here, but it is the reason the field cannot be
+read as a plain tri-state until the clients are on 8.6.0. Note also that ngx-grpc flattens `optional` and
+writes only truthy values, so an Angular caller can send `true` or nothing, but not `false`.
+
+*****************
+
 ## Release ONDEWO VTSI API 8.5.0
 
 ### Improvements

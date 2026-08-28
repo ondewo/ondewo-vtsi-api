@@ -414,7 +414,13 @@ message CsiVtsiConfig{
     //   <li>via RabbitMQ to remote control the system</li>
     //   <li>via embeddings in NLU text responses</li>
     // </ul>
-    bool activate_control_messages = 6;
+    // Explicitly optional: leaving the field unset means the caller expresses no preference and the
+    // server keeps its own configured default. That is NOT the same as sending
+    // <pre><code>false</code></pre>, which is a request to switch control messages off. A
+    // presence-less bool cannot tell the two apart, so an unset field arrived as
+    // <pre><code>false</code></pre> and silently disabled control messages for callers that never
+    // mentioned them.
+    optional bool activate_control_messages = 6;
 
 }
 
