@@ -161,6 +161,73 @@ Pre-commit here uses only the language-agnostic hooks — **markdownlint-cli2, p
 - **markdownlint MD053 is disabled** (its auto-fix deletes `[comment]: <>` reference-definition markers).
 - **markdownlint RELEASE.md reformatting is content-safe**: it only strips trailing whitespace and adds blank lines around headings — the `## Release … <VERSION>` headings and `*****` separators that `ondewo_release` greps for remain intact. (Confirmed: the 6.5.0 release notes sliced correctly after the reformat.)
 
+## GitHub Actions — `Generate API Documentation` is a required gate
+
+`.github/workflows/generate-doc-and-deploy.yaml` is the only workflow in this repo, and it is a **required gate,
+not advisory**: it runs on every push and pull request against `master` (plus `workflow_dispatch`), and its last
+step publishes `docs/` to GitHub Pages. A red run means the published API documentation silently stops updating.
+
+The `generate-doc-and-deploy` job (`ubuntu-latest`) has three author-written steps; the runner wraps them in
+`Set up job`, `Build ondewo/ondewo-protoc-gen-doc-action@master`, `Post Checkout 🛎️` and `Complete job`:
+
+1. **Checkout 🛎️** — `actions/checkout@v5` with `submodules: true`.
+2. **Generate documentation from ONDEWO proto files 🔧** — `ondewo/ondewo-protoc-gen-doc-action@master`.
+3. **Deploy 🚀** — `JamesIves/github-pages-deploy-action@v4`, guarded by `if: ${{ !env.ACT }}`, deploying folder
+   `docs` to target folder `docs` on branch `master`.
+
+### Reproducing it locally
+
+```bash
+make build_docs           # the whole gate; `make clean_docs_builder` drops the checkout + image
+```
+
+Use that target rather than hand-rolling a `protoc` line. It clones the action into `.tmp-protoc-gen-doc-action/`
+(gitignored), builds the action's own `Dockerfile`, and runs the resulting image with the same `html,md index`
+arguments `action.yaml` passes — so it exercises the CI tool itself, not an approximation of it. It requires
+**Docker and network access**; there is no offline path. Step 3 cannot be run locally and must not be: it pushes
+to `master`.
+
+To read the real verdict for the current commit instead of guessing:
+
+```bash
+SHA=$(git rev-parse HEAD)
+curl -s "https://api.github.com/repos/ondewo/ondewo-vtsi-api/actions/runs?head_sha=$SHA" \
+  | grep -E '"(status|conclusion)"'
+```
+
+There is deliberately **no `uv` / `ruff` / `mypy` / `pytest` step to mirror**: this repo contains zero Python
+files (`git ls-files '*.py'` is empty), which is why `.pre-commit-config.yaml` carries only language-agnostic
+hooks. The `mypy` and `install_python_requirements` targets still sitting in the `Makefile` are vestigial —
+`mypy` even calls `pre-commit run mypy`, a hook id this repo does not define — and are wired into no gate.
+
+### What is sharp about it
+
+- **The action is pinned to `@master`, so the toolchain floats.** There is no lockfile here and nothing to
+  `--frozen`, so the protection a frozen install buys elsewhere does not exist: both
+  `ondewo/ondewo-protoc-gen-doc-action` and its `FROM pseudomuto/protoc-gen-doc` base can move underneath you.
+  A green run yesterday is not evidence about today — re-run `make build_docs` rather than trusting the last
+  run's colour.
+- **Nothing ever compares the committed `docs/` with what the action generates.** The workflow regenerates and
+  deploys; it never diffs. Stale committed docs therefore cannot turn a run red — the drift is invisible to CI
+  by construction, and a clean `make build_docs` followed by `git diff docs/` is the only thing that detects it.
+  Live example at `5a32ca1`: the committed `docs/index.html` differs from a fresh build by 21 lines, because
+  that commit added 30 trailing-whitespace lines to `ondewo/s2t/speech-to-text.proto` without regenerating.
+- **Only `index.html` drifts that way.** `html.tmpl` copies proto comment text verbatim, trailing whitespace and
+  line breaks included, while `md.tmpl` folds each comment into one table cell so per-line trailing spaces
+  vanish. Expect an HTML-only diff from a whitespace-only proto edit, and do not read it as corruption.
+- **`submodules: true` does not feed the documentation.** The action's `entrypoint.sh` globs
+  `find ondewo -name '*.proto'` — only the self-contained top-level `ondewo/` tree (25 protos). Building from a
+  tree with all four `ondewo-*-api` submodule directories completely empty yields byte-identical `index.html`,
+  `index.md` and `style.css`. A drifted or uninitialised submodule can therefore never explain a docs diff; look
+  at `ondewo/**/*.proto` instead.
+- **Two warning classes are expected and are not failures.** `googleapis: warning: directory does not exist.`
+  (the entrypoint passes `-Igoogleapis`, which this repo does not have — the vendored `google/` tree resolves
+  through `-I.`) and the `Import ... is unused` lines for `ondewo/vtsi/calls.proto` and `ondewo/vtsi/projects.proto`.
+  `protoc` still exits 0; do not chase them.
+- **`make build_docs` writes into the working tree.** It overwrites `docs/` in place, so run it from a clean
+  tree and then either commit the refresh deliberately or `git checkout -- docs/`. Note that `docs/**` is
+  excluded from both markdownlint and pre-commit, so nothing will normalise what it emits.
+
 ## Jenkins — never trigger a multibranch scan or branch indexing
 
 **NEVER trigger a Jenkins multibranch scan or branch indexing.** Do not call a multibranch/folder job's
