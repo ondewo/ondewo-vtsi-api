@@ -53719,7 +53719,7 @@ they have already appeared in the text, increasing the likelihood of the model d
                   <td>prompt_cache_key</td>
                   <td><a href="#string">string</a></td>
                   <td>optional</td>
-                  <td><p>Optional. Used by OpenAI to cache responses for similar requests to optimize your cache hit rates. Replaces the
+                  <td><p>Optional. Used by OpenAI to cache responses for similar requests to optimize your cache hit rates. Replaces the 
 `user` field. [Learn more](https://platform.openai.com/docs/guides/prompt-caching). </p></td>
                 </tr>
               
@@ -53727,9 +53727,9 @@ they have already appeared in the text, increasing the likelihood of the model d
                   <td>reasoning_effort</td>
                   <td><a href="#ondewo.s2t.ReasoningEffort">ReasoningEffort</a></td>
                   <td>optional</td>
-                  <td><p>Optional. Constrains effort on reasoning for
-[reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported values are `none`,
-`minimal`, `low`, `medium`, `high`, and `xhigh`. Reducing reasoning effort can result in faster responses and
+                  <td><p>Optional. Constrains effort on reasoning for 
+[reasoning models](https://platform.openai.com/docs/guides/reasoning). Currently supported values are `none`, 
+`minimal`, `low`, `medium`, `high`, and `xhigh`. Reducing reasoning effort can result in faster responses and 
 fewer tokens used on reasoning in a response. </p></td>
                 </tr>
               
@@ -53748,14 +53748,14 @@ same seed and parameters, enabling reproducible outputs. </p></td>
                   <td><p>Optional. Specifies the processing type used for serving the request.
 - If set to 'auto', then the request will be processed with the service tier configured in the Project settings.
   Unless otherwise configured, the Project will use 'default'.
-- If set to 'default', then the request will be processed with the standard pricing and performance for the
+- If set to 'default', then the request will be processed with the standard pricing and performance for the 
   selected model.
 - If set to '[flex](https://platform.openai.com/docs/guides/flex-processing)' or
   '[priority](https://openai.com/api-priority-processing/)', then the request will be processed with the
    corresponding service tier.
 - When not set, the default behavior is 'auto'.
-When the `service_tier` parameter is set, the response body will include the `service_tier` value based on the
-processing mode actually used to serve the request. This response value may be different from the value set in
+When the `service_tier` parameter is set, the response body will include the `service_tier` value based on the 
+processing mode actually used to serve the request. This response value may be different from the value set in 
 the parameter. </p></td>
                 </tr>
               
@@ -53763,7 +53763,7 @@ the parameter. </p></td>
                   <td>stop</td>
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
-                  <td><p>Optional. Not supported with latest reasoning models `o3` and `o4-mini`. Up to 4 sequences where the API will
+                  <td><p>Optional. Not supported with latest reasoning models `o3` and `o4-mini`. Up to 4 sequences where the API will 
 stop generating further tokens. The returned text will not contain the stop sequence. </p></td>
                 </tr>
               
@@ -53803,7 +53803,7 @@ considers only the tokens with top_p probability mass. Ranges from 0 to 1. </p><
                   <td>user</td>
                   <td><a href="#string">string</a></td>
                   <td>optional</td>
-                  <td><p>Optional. This field is being replaced by `safety_identifier` and `prompt_cache_key`. Use `prompt_cache_key`
+                  <td><p>Optional. This field is being replaced by `safety_identifier` and `prompt_cache_key`. Use `prompt_cache_key` 
 instead to maintain caching optimizations. A stable identifier for your end-users. Used to boost cache hit rates
  by better bucketing similar requests and to help OpenAI detect and prevent abuse.
 [Learn more](https://platform.openai.com/docs/guides/safety-best-practices#safety-identifiers). </p></td>
@@ -53813,8 +53813,8 @@ instead to maintain caching optimizations. A stable identifier for your end-user
                   <td>verbosity</td>
                   <td><a href="#ondewo.s2t.Verbosity">Verbosity</a></td>
                   <td>optional</td>
-                  <td><p>Optional. Constrains the verbosity of the model's response. Lower values will result in more concise responses,
-while higher values will result in more verbose responses.
+                  <td><p>Optional. Constrains the verbosity of the model's response. Lower values will result in more concise responses, 
+while higher values will result in more verbose responses. 
 Currently supported values are `low`, `medium`, and `high`. </p></td>
                 </tr>
               
@@ -54297,7 +54297,7 @@ More details at: <a href="https://developers.deepgram.com/docs/smart-format">htt
                   <td>numerals</td>
                   <td><a href="#bool">bool</a></td>
                   <td>optional</td>
-                  <td><p>Optional. Enables or disables <code>numerals</code> feature of Deepgram to convert numbers to numeric form in the resulted
+                  <td><p>Optional. Enables or disables <code>numerals</code> feature of Deepgram to convert numbers to numeric form in the resulted 
 transcript. More details at: <a href="https://developers.deepgram.com/docs/numerals">https://developers.deepgram.com/docs/numerals</a> </p></td>
                 </tr>
               
@@ -54314,7 +54314,7 @@ More details at: <a href="https://developers.deepgram.com/docs/measurements">htt
                   <td>dictation</td>
                   <td><a href="#bool">bool</a></td>
                   <td>optional</td>
-                  <td><p>Optional. Enables or disables <code>dictation</code> feature of Deepgram to convert spoken dictation commands into their
+                  <td><p>Optional. Enables or disables <code>dictation</code> feature of Deepgram to convert spoken dictation commands into their 
 corresponding punctuation marks. More details at: <a href="https://developers.deepgram.com/docs/dictation">https://developers.deepgram.com/docs/dictation</a> </p></td>
                 </tr>
               
@@ -54339,7 +54339,7 @@ corresponding punctuation marks. More details at: <a href="https://developers.de
                   <td>enable_automatic_punctuation</td>
                   <td><a href="#bool">bool</a></td>
                   <td>optional</td>
-                  <td><p>Optional. Enables or disables <code>automatic_punctuation</code> feature of Google s2t to add punctuations to the resulted
+                  <td><p>Optional. Enables or disables <code>automatic_punctuation</code> feature of Google s2t to add punctuations to the resulted 
 transcript. More details at: <a href="https://cloud.google.com/speech-to-text/docs/automatic-punctuation">https://cloud.google.com/speech-to-text/docs/automatic-punctuation</a> </p></td>
                 </tr>
               
@@ -54397,7 +54397,7 @@ Valid values are 0-30. A value of 0 or 1 will return a maximum of one. If omitte
                   <td>use_fast_transcription_api</td>
                   <td><a href="#bool">bool</a></td>
                   <td>optional</td>
-                  <td><p>Optional. Enables or disables the Microsoft Azure fast transcription API. It is faster than SDK but is in
+                  <td><p>Optional. Enables or disables the Microsoft Azure fast transcription API. It is faster than SDK but is in 
 preview version.
 More details at: <a href="https://learn.microsoft.com/en-us/azure/ai-services/speech-service/fast-transcription-create">https://learn.microsoft.com/en-us/azure/ai-services/speech-service/fast-transcription-create</a> </p></td>
                 </tr>
@@ -54439,7 +54439,7 @@ to add timestamps and confidences to the resulted transcript. </p></td>
                   <td>streaming_available</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>Specifies if streaming mode of Amazon web service speech to text is available for the selected language,
+                  <td><p>Specifies if streaming mode of Amazon web service speech to text is available for the selected language, 
 otherwise batch mode transcription is used. See the list of languages and available transcription modes at:
 <a href="https://docs.aws.amazon.com/transcribe/latest/dg/supported-languages.html">https://docs.aws.amazon.com/transcribe/latest/dg/supported-languages.html</a> </p></td>
                 </tr>
@@ -55585,7 +55585,7 @@ For Amazon S2T service, the following arguments should be passed in form of a di
   <li><code>aws_secret_access_key</code> (required) Secret access key to access Amazon Web Service.</li>
   <li><code>region</code> (required) Region name of Amazon Server.</li>
 </ul>
-Example: <code>s2t_config_service={&apos;aws_access_key_id&apos;: &apos;YOUR_AWS_ACCESS_KEY_ID&apos;, &apos;aws_secret_access_key&apos;:
+Example: <code>s2t_config_service={&apos;aws_access_key_id&apos;: &apos;YOUR_AWS_ACCESS_KEY_ID&apos;, &apos;aws_secret_access_key&apos;: 
 &apos;YOUR_AWS_SECRET_ACCESS_KEY&apos;, &apos;region&apos;: &apos;YOUR_AMAZON_SERVER_REGION_NAME&apos;}</code>
 For Deepgram S2T service, the following argument should be passed in form of a dict:
 <ul>
@@ -55596,7 +55596,7 @@ Example: <code>s2t_config_service={&apos;api_key&apos;: &apos;YOUR_DEEPGRAM_API_
 For Google cloud S2T service, the following arguments should be passed in form of a dict:
 <ul>
   <li><code>api_key</code> (required) API key of Google cloud to access its S2T service.</li>
-  <li><code>api_endpoint</code> (optional) Regional API endpoint of Google cloud S2T service. (Defaults to
+  <li><code>api_endpoint</code> (optional) Regional API endpoint of Google cloud S2T service. (Defaults to 
 &apos;eu-speech.googleapis.com&apos;)</li>
 </ul>
 Example: <code>s2t_config_service={&apos;api_key&apos;: &apos;YOUR_GOOGLE_CLOUD_API_KEY&apos;, &apos;api_endpoint&apos;: &apos;YOUR_GOOGLE_CLOUD_API_ENDPOINT&apos;}</code>
@@ -55605,7 +55605,7 @@ For Microsoft Azure S2T service, the following arguments should be passed in for
   <li><code>subscription_key</code> (required) Subscription key to access Microsoft Azure Service.</li>
   <li><code>region</code> (required) Region name of Microsoft Azure Server.</li>
 </ul>
-Example: <code>s2t_config_service={&apos;subscription_key&apos;: &apos;YOUR_MICROSOFT_AZURE_SUBSCRIPTION_KEY&apos;, &apos;region&apos;:
+Example: <code>s2t_config_service={&apos;subscription_key&apos;: &apos;YOUR_MICROSOFT_AZURE_SUBSCRIPTION_KEY&apos;, &apos;region&apos;: 
 &apos;YOUR_MICROSOFT_AZURE_SERVER_REGION_NAME&apos;}</code>
 Note: ondewo-s2t will raise an error if you don&apos;t pass any of the required arguments above. </p></td>
                 </tr>
@@ -55923,8 +55923,8 @@ the word and alternative words. </p></td>
                   <td>full_utterance_deployment</td>
                   <td><a href="#bool">bool</a></td>
                   <td>optional</td>
-                  <td><p>Optional. Whether to transcribe the whole utterance when turn moment is detected. It is helpful to increase
-accuracy of transcriptions in cost of drop in speed. If deactivated, it just transcribe from last short silence
+                  <td><p>Optional. Whether to transcribe the whole utterance when turn moment is detected. It is helpful to increase  
+accuracy of transcriptions in cost of drop in speed. If deactivated, it just transcribe from last short silence 
 period and concatenates the transcriptions of small audio chunks between tiny silences. </p></td>
                 </tr>
               
@@ -65075,6 +65075,19 @@ the pseudo-terminal genuinely merges both channels into one unframed stream.</p>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
                   <td><p>OPTIONAL: The port where Asterisk should start. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>asterisk_version</td>
+                  <td><a href="#string">string</a></td>
+                  <td>optional</td>
+                  <td><p>OPTIONAL: The Asterisk version to start, given as the docker image tag of the ONDEWO
+Asterisk image, e.g. <pre><code>alpine-3.18-18.20.2</code></pre>.
+The tag must match the docker tag grammar
+<pre><code>[A-Za-z0-9_][A-Za-z0-9._-]{0,127}</code></pre>.
+Explicitly optional: when the field is not set, the server keeps using its configured
+default (the <pre><code>ONDEWO_VTSI_ASTERISK_IMAGE_TAG</code></pre> environment variable).
+Sending an empty string is NOT the same as leaving it unset and is rejected. </p></td>
                 </tr>
               
             </tbody>

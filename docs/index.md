@@ -22078,6 +22078,7 @@ Configurations object for the Asterisk server
 | asterisk_configs_files | [AsteriskConfigsFiles](#ondewo.vtsi.AsteriskConfigsFiles) |  | Configs as files which will set up the configs using those files. |
 | asterisk_configs_target_directory_name | [string](#string) |  | Configs will be mapped in from a preconfigured asterisk target directory. |
 | asterisk_port | [int32](#int32) |  | OPTIONAL: The port where Asterisk should start. |
+| asterisk_version | [string](#string) | optional | OPTIONAL: The Asterisk version to start, given as the docker image tag of the ONDEWO Asterisk image, e.g. <pre><code>alpine-3.18-18.20.2</code></pre>. The tag must match the docker tag grammar <pre><code>[A-Za-z0-9_][A-Za-z0-9._-]{0,127}</code></pre>. Explicitly optional: when the field is not set, the server keeps using its configured default (the <pre><code>ONDEWO_VTSI_ASTERISK_IMAGE_TAG</code></pre> environment variable). Sending an empty string is NOT the same as leaving it unset and is rejected. |
 
 
 
