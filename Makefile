@@ -30,8 +30,14 @@ ONDEWO_SIP_DIR=ondewo-sip-api
 # You need to setup an access token at https://github.com/settings/tokens - permissions are important
 GITHUB_GH_TOKEN?=ENTER_YOUR_TOKEN_HERE
 
+# Terminate on the ***** separator that delimits release entries, NOT on /\*\*/ - that matched the first
+# markdown **bold** span inside the entry and silently truncated the notes there, with no error at all
+# from `gh release create -n "$(CURRENT_RELEASE_NOTES)"`. RELEASE.md already contains such a span: the
+# 8.5.0 entry says `claimed_by` is deliberately **not** exposed, and the old pattern sliced that entry to
+# 23 lines instead of 36, cutting off mid-sentence. All 35 separators in RELEASE.md are exactly 17
+# asterisks, so ^\*{5} cannot match anything but a separator.
 CURRENT_RELEASE_NOTES=`cat RELEASE.md \
-	| perl -ne 'print if /Release ONDEWO VTSI API ${ONDEWO_VTSI_API_VERSION}/../\*\*/'`
+	| perl -ne 'print if /Release ONDEWO VTSI API ${ONDEWO_VTSI_API_VERSION}/../^\*{5}/'`
 
 GH_REPO="https://github.com/ondewo/ondewo-vtsi-api"
 DEVOPS_ACCOUNT_GIT="ondewo-devops-accounts"
@@ -297,13 +303,33 @@ release_client:
 	@# Read through the environment (line 1 is a bare `export`) rather than interpolating the value into
 	@# the command text: interpolated, the value has to carry its own double quotes and the shell still
 	@# command-substitutes any backtick in it - which would gut a `` `Foo` is renamed to `Bar` `` note.
-	@printf '%b' "$$GENERIC_RELEASE_NOTES" > temp-notes-${REPO_NAME} && perl -i -pe 's/\\//g' temp-notes-${REPO_NAME} && perl -i -pe 's/REPONAME/${UPPER_REPO_NAME}/g' temp-notes-${REPO_NAME}
+	@# The final `perl -0777` normalises the file to EXACTLY one trailing newline. printf '%b' adds none of
+	@# its own (that is the point - echo's extra one produced a doubled blank line), so a GENERIC_RELEASE_NOTES
+	@# override that does not end in \n yields a file with no final newline; the insert below then swallows the
+	@# blank line before the next ***** separator - measured with the client's markdownlint-cli2 v0.23.0:
+	@# `MD032/blanks-around-lists`, 1 auto-fix, i.e. the exact `Failed - files were modified by this hook`
+	@# first run this recipe was changed to stop producing. Normalised: 0 errors, 0 fixes. The default value
+	@# already ends in \n, so its generated file is byte-identical (238 bytes) with and without this step.
+	@printf '%b' "$$GENERIC_RELEASE_NOTES" > temp-notes-${REPO_NAME} && perl -i -pe 's/\\//g' temp-notes-${REPO_NAME} && perl -i -pe 's/REPONAME/${UPPER_REPO_NAME}/g' temp-notes-${REPO_NAME} && perl -0777 -i -pe 's/\n*\z/\n/' temp-notes-${REPO_NAME}
 	git clone ${GENERIC_CLIENT}
 # Check if Client is already uptodate with API Version
 	@! git -C ${REPO_DIR} branch -a | grep -q ${ONDEWO_VTSI_API_VERSION} || (echo "Already Released ${ONDEWO_VTSI_API_VERSION} \n\n\n"  && touch .already_released_marker-${REPO_NAME} && rm -rf ${REPO_DIR} && rm -f temp-notes-${REPO_NAME} && exit 1)
 
 # Change Version Number and RELEASE NOTES
-	cd ${REPO_DIR} && perl -i -ne 'BEGIN{open my $$f,"<","../temp-notes-${REPO_NAME}" or die; @notes=<$$f>; close $$f} print; print @notes if /Release History/' ${RELEASEMD}
+# Only insert the generated boilerplate when the client does not already document this version. A client
+# whose RELEASE.md was written by hand ahead of the release would otherwise get a SECOND
+# "Release ONDEWO VTSI <Name> Client <VERSION>" heading, which buries the curated entry (the notes slice
+# takes the FIRST match) and trips markdownlint MD024, which does NOT auto-fix, so the client's own
+# pre-commit fails and the release aborts. Measured against the real ondewo-vtsi-client-python
+# RELEASE.md (it already documents 8.6.0) with the client's own markdownlint-cli2 v0.23.0 config:
+# unguarded insert -> 2 identical headings, `MD024/no-duplicate-heading`, exit 1, file NOT repaired
+# by fix: true; guarded -> 1 heading, 0 errors, exit 0. ondewo-nlu-client-angular already carries two
+# byte-identical "## Release ONDEWO NLU Angular Client 3.5.0" blocks from exactly this failure.
+	cd ${REPO_DIR} && if grep -qE "^#+ Release ONDEWO VTSI ${UPPER_REPO_NAME} Client ${ONDEWO_VTSI_API_VERSION}$$" ${RELEASEMD}; then \
+		echo "${RELEASEMD} already documents ${ONDEWO_VTSI_API_VERSION} - keeping the curated entry, not inserting the generated notes"; \
+	else \
+		perl -i -ne 'BEGIN{open my $$f,"<","../temp-notes-${REPO_NAME}" or die; @notes=<$$f>; close $$f} print; print @notes if /Release History/' ${RELEASEMD}; \
+	fi
 	cd ${REPO_DIR} && head -20 ${RELEASEMD}
 	cd ${REPO_DIR} && perl -i -pe 's/ONDEWO_VTSI_VERSION.*=.*/ONDEWO_VTSI_VERSION=${ONDEWO_VTSI_API_VERSION}/' Makefile
 	cd ${REPO_DIR} && perl -i -pe 's{ONDEWO_PROTO_COMPILER_GIT_BRANCH.*=.*}{ONDEWO_PROTO_COMPILER_GIT_BRANCH=tags/${PROTO_COMPILER}}' Makefile
