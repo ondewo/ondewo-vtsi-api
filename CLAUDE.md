@@ -161,6 +161,73 @@ Pre-commit here uses only the language-agnostic hooks — **markdownlint-cli2, p
 - **markdownlint MD053 is disabled** (its auto-fix deletes `[comment]: <>` reference-definition markers).
 - **markdownlint RELEASE.md reformatting is content-safe**: it only strips trailing whitespace and adds blank lines around headings — the `## Release … <VERSION>` headings and `*****` separators that `ondewo_release` greps for remain intact. (Confirmed: the 6.5.0 release notes sliced correctly after the reformat.)
 
+## GitHub Actions — `Generate API Documentation` is a required gate
+
+`.github/workflows/generate-doc-and-deploy.yaml` is the only workflow in this repo, and it is a **required gate,
+not advisory**: it runs on every push and pull request against `master` (plus `workflow_dispatch`), and its last
+step publishes `docs/` to GitHub Pages. A red run means the published API documentation silently stops updating.
+
+The `generate-doc-and-deploy` job (`ubuntu-latest`) has three author-written steps; the runner wraps them in
+`Set up job`, `Build ondewo/ondewo-protoc-gen-doc-action@master`, `Post Checkout 🛎️` and `Complete job`:
+
+1. **Checkout 🛎️** — `actions/checkout@v5` with `submodules: true`.
+2. **Generate documentation from ONDEWO proto files 🔧** — `ondewo/ondewo-protoc-gen-doc-action@master`.
+3. **Deploy 🚀** — `JamesIves/github-pages-deploy-action@v4`, guarded by `if: ${{ !env.ACT }}`, deploying folder
+   `docs` to target folder `docs` on branch `master`.
+
+### Reproducing it locally
+
+```bash
+make build_docs           # the whole gate; `make clean_docs_builder` drops the checkout + image
+```
+
+Use that target rather than hand-rolling a `protoc` line. It clones the action into `.tmp-protoc-gen-doc-action/`
+(gitignored), builds the action's own `Dockerfile`, and runs the resulting image with the same `html,md index`
+arguments `action.yaml` passes — so it exercises the CI tool itself, not an approximation of it. It requires
+**Docker and network access**; there is no offline path. Step 3 cannot be run locally and must not be: it pushes
+to `master`.
+
+To read the real verdict for the current commit instead of guessing:
+
+```bash
+SHA=$(git rev-parse HEAD)
+curl -s "https://api.github.com/repos/ondewo/ondewo-vtsi-api/actions/runs?head_sha=$SHA" \
+  | grep -E '"(status|conclusion)"'
+```
+
+There is deliberately **no `uv` / `ruff` / `mypy` / `pytest` step to mirror**: this repo contains zero Python
+files (`git ls-files '*.py'` is empty), which is why `.pre-commit-config.yaml` carries only language-agnostic
+hooks. The `mypy` and `install_python_requirements` targets still sitting in the `Makefile` are vestigial —
+`mypy` even calls `pre-commit run mypy`, a hook id this repo does not define — and are wired into no gate.
+
+### What is sharp about it
+
+- **The action is pinned to `@master`, so the toolchain floats.** There is no lockfile here and nothing to
+  `--frozen`, so the protection a frozen install buys elsewhere does not exist: both
+  `ondewo/ondewo-protoc-gen-doc-action` and its `FROM pseudomuto/protoc-gen-doc` base can move underneath you.
+  A green run yesterday is not evidence about today — re-run `make build_docs` rather than trusting the last
+  run's colour.
+- **Nothing ever compares the committed `docs/` with what the action generates.** The workflow regenerates and
+  deploys; it never diffs. Stale committed docs therefore cannot turn a run red — the drift is invisible to CI
+  by construction, and a clean `make build_docs` followed by `git diff docs/` is the only thing that detects it.
+  Live example at `5a32ca1`: the committed `docs/index.html` differs from a fresh build by 21 lines, because
+  that commit added 30 trailing-whitespace lines to `ondewo/s2t/speech-to-text.proto` without regenerating.
+- **Only `index.html` drifts that way.** `html.tmpl` copies proto comment text verbatim, trailing whitespace and
+  line breaks included, while `md.tmpl` folds each comment into one table cell so per-line trailing spaces
+  vanish. Expect an HTML-only diff from a whitespace-only proto edit, and do not read it as corruption.
+- **`submodules: true` does not feed the documentation.** The action's `entrypoint.sh` globs
+  `find ondewo -name '*.proto'` — only the self-contained top-level `ondewo/` tree (25 protos). Building from a
+  tree with all four `ondewo-*-api` submodule directories completely empty yields byte-identical `index.html`,
+  `index.md` and `style.css`. A drifted or uninitialised submodule can therefore never explain a docs diff; look
+  at `ondewo/**/*.proto` instead.
+- **Two warning classes are expected and are not failures.** `googleapis: warning: directory does not exist.`
+  (the entrypoint passes `-Igoogleapis`, which this repo does not have — the vendored `google/` tree resolves
+  through `-I.`) and the `Import ... is unused` lines for `ondewo/vtsi/calls.proto` and `ondewo/vtsi/projects.proto`.
+  `protoc` still exits 0; do not chase them.
+- **`make build_docs` writes into the working tree.** It overwrites `docs/` in place, so run it from a clean
+  tree and then either commit the refresh deliberately or `git checkout -- docs/`. Note that `docs/**` is
+  excluded from both markdownlint and pre-commit, so nothing will normalise what it emits.
+
 ## Adding a scalar field: `optional` is a decision, not a formality
 
 A proto3 scalar without `optional` has **implicit presence** — it reads back as its zero value whether the caller set it or not, and `HasField` raises on it. So the moment a new field means "if you say nothing, the server keeps doing what it was doing", the field needs `optional`. Without it there is no wire-level way to tell "the caller expressed no preference" from "the caller sent the default", and the server has to guess.
@@ -182,3 +249,103 @@ Two consequences worth knowing before adding one:
 If a branch is not building — it was not discovered, or its job is marked `buildable: false` / orphaned —
 **report it and stop**. Let the user or a Jenkins admin adjust branch-discovery/config or rename the branch
 to the convention. Never force a build by scanning or reindexing.
+
+## Releasing: preflight and the traps that have actually bitten
+
+Written after a release program across every ONDEWO client in one session. Each item below
+cost real time or a broken artefact; every statement is derived from THIS repo's Makefile.
+
+### Before you touch the version, check the released tag is in `master`
+
+Releases here are cut from a `release/<version>` branch and are **not always merged back**, so
+`master` can be missing work that is already published — and because a later version number
+sorts above the unmerged one, a consumer upgrading silently loses it. The ondewo-nlu-client-python
+7.1.0 release was exactly this: it shipped from a `master` that had never seen 7.0.5's
+offline-token hand-off, so PyPI's newest release was a regression against its predecessor.
+
+```bash
+latest=$(git tag --sort=-v:refname | head -1)
+git merge-base --is-ancestor "$latest" master && echo "in master" || echo "NOT in master -- merge first"
+```
+
+A fast-forward (`git merge --ff-only <tag>`) is the common case. A true merge needs care: resolve
+metadata toward `master` and keep BOTH release-note sections, newest first — a reader upgrading
+from the older line still needs the older entry.
+
+### `git add` on a dirty submodule stages the WRONG commit
+
+This repo has submodules (`ondewo-nlu-api`, `ondewo-s2t-api`, `ondewo-sip-api`, `ondewo-t2s-api`). If a submodule's working
+tree is dirty, `git add <submodule>` stages **its current HEAD**, not the pointer you resolved
+during a merge — silently regressing it to an older commit. `git checkout master -- <submodule>`
+fixes the index but the next `git add` re-breaks it. Move the working tree instead:
+
+```bash
+want=$(git ls-tree master <submodule> | awk '{print $3}')
+git -C <submodule> checkout -q "$want" && git add <submodule>
+```
+
+### The release notes are sliced by an EXACTLY-CASED heading
+
+`CURRENT_RELEASE_NOTES` slices `RELEASE.md` with a perl range. In THIS repo the opening
+pattern is, verbatim:
+
+```text
+Release ONDEWO VTSI API ${ONDEWO_VTSI_API_VERSION}
+```
+
+So the heading of a new entry must read exactly `## Release ONDEWO VTSI API <version>`. **This wording is
+not consistent across the ONDEWO repos** — some say `... <Name> Client`, some `... Client
+<Name>` with the words reversed, the API repos say `... API` with no `Client` at all, and the
+casing varies (`Js`, `Nodejs`, `Typescript`, `Survey`). Do not carry a heading over from a
+sibling repo. Copy the PREVIOUS entry in this file and change only the version, or read the
+pattern above out of the Makefile.
+
+A heading that does not match yields an **empty slice**, and the GitHub release is then
+created with empty notes or fails outright. Verify before releasing:
+
+```bash
+grep -c '^## Release ONDEWO VTSI API ' RELEASE.md     # must be >= 1 for your new version
+```
+
+### Where the release notes live
+
+This repo does NOT regenerate the root `RELEASE.md` from `src/`, so the root file is the one
+the release reads. Keep `src/RELEASE.md` in step by hand if it exists.
+
+### Publish order decides how a partial failure is recovered
+
+`make release` in this repo runs:
+
+
+The **npm publish happens LAST**. So a failure before it means nothing shipped, but the
+branch, tag and GitHub release may already exist — and `spc` will then refuse a re-run. Recover
+by running only the remaining step, not the whole target.
+
+### Verify against the registry, with the REAL package name
+
+This package publishes as **`<see package.json name>`**, which is not always the repository name — the JS client
+publishes as `@ondewo/ondewo-nlu-client-js` (doubled `ondewo`), so a lookup by repo name returns
+a 404 that reads like a failed release. Check the name in the manifest first, then:
+
+```bash
+npm view <see package.json name> versions --json
+```
+
+**An npm publish can be STAGED but not yet served.** Immediately after a publish the registry may
+answer 404 for the new version while refusing a re-publish with
+`409 Cannot publish over previously staged version`. That is not a failure and the version is
+not burned — wait and re-check before bumping to a new number.
+
+### The release prints credentials — read the log BEFORE you scrub it
+
+`make ondewo_release` clones `ondewo-devops-accounts` and passes the registry and GitHub tokens on
+the make command line, so they are echoed into the console and into any transcript capturing it.
+This is a known and accepted property of the shared release path: do **not** re-plumb the recipe.
+Redirect the run to a file, read it through a filter, and shred the file afterwards — and read it
+**before** shredding, or a genuine failure is lost with the secrets:
+
+```bash
+umask 077; make ondewo_release > /tmp/rel.log 2>&1; echo "RC=$?"
+grep -avE 'TOKEN|PASSWORD|USERNAME|_authToken' /tmp/rel.log | tail -20   # read FIRST
+shred -u /tmp/rel.log; rm -rf ondewo-devops-accounts                     # then scrub
+```
