@@ -563,6 +563,7 @@
     - [RagCrawlerFilters](#ondewo.nlu.RagCrawlerFilters)
     - [RagCrawlerHtmlAuth](#ondewo.nlu.RagCrawlerHtmlAuth)
     - [RagCrawlerHttpAuth](#ondewo.nlu.RagCrawlerHttpAuth)
+    - [RagCrawlerIncrementalConfig](#ondewo.nlu.RagCrawlerIncrementalConfig)
     - [RagCrawlerMetaDataExtractor](#ondewo.nlu.RagCrawlerMetaDataExtractor)
     - [RagCrawlerResult](#ondewo.nlu.RagCrawlerResult)
     - [RagCrawlerResultsConfig](#ondewo.nlu.RagCrawlerResultsConfig)
@@ -937,6 +938,7 @@
     - [S2tLlmPostProcessingTranslationOptions](#ondewo.s2t.S2tLlmPostProcessingTranslationOptions)
     - [S2tNormalization](#ondewo.s2t.S2tNormalization)
     - [S2tPipelineId](#ondewo.s2t.S2tPipelineId)
+    - [Silero](#ondewo.s2t.Silero)
     - [Speech2TextConfig](#ondewo.s2t.Speech2TextConfig)
     - [StreamingServer](#ondewo.s2t.StreamingServer)
     - [StreamingSpeechRecognition](#ondewo.s2t.StreamingSpeechRecognition)
@@ -955,6 +957,7 @@
     - [VoiceActivityDetection](#ondewo.s2t.VoiceActivityDetection)
     - [Wav2Vec](#ondewo.s2t.Wav2Vec)
     - [Wav2VecTriton](#ondewo.s2t.Wav2VecTriton)
+    - [WespeakerTsd](#ondewo.s2t.WespeakerTsd)
     - [Whisper](#ondewo.s2t.Whisper)
     - [WhisperTriton](#ondewo.s2t.WhisperTriton)
     - [WordAlternative](#ondewo.s2t.WordAlternative)
@@ -964,6 +967,8 @@
     - [InferenceBackend](#ondewo.s2t.InferenceBackend)
     - [ReasoningEffort](#ondewo.s2t.ReasoningEffort)
     - [ServiceTier](#ondewo.s2t.ServiceTier)
+    - [TsdMethod](#ondewo.s2t.TsdMethod)
+    - [VadMethod](#ondewo.s2t.VadMethod)
     - [Verbosity](#ondewo.s2t.Verbosity)
   
     - [Speech2Text](#ondewo.s2t.Speech2Text)
@@ -11209,6 +11214,7 @@ diagnostics capture, and deep crawling options for each crawler run.
 | deep_crawler_config | [RagCrawlerDeepCrawlerConfig](#ondewo.nlu.RagCrawlerDeepCrawlerConfig) |  | Optional. Deep crawler behavior (enable + depth/pages/scoring/filter chain). |
 | output_config | [RagCrawlerResultsConfig](#ondewo.nlu.RagCrawlerResultsConfig) |  | Optional. Structured output configuration (format + metadata policy). |
 | status_filter | [RagCrawlerStatusFilter](#ondewo.nlu.RagCrawlerStatusFilter) |  | Optional. HTTP status filtering: which fetched pages become result documents. |
+| incremental_config | [RagCrawlerIncrementalConfig](#ondewo.nlu.RagCrawlerIncrementalConfig) |  | Optional. Incremental crawling: reuse unchanged pages from the previous run instead of re-fetching them. |
 
 
 
@@ -11275,9 +11281,9 @@ Deep crawler options grouped under one config node.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | is_active | [bool](#bool) |  | Optional. Enable deep crawler behavior (link following beyond seeds). Default <code>false</code>. If <code>false</code>, <code>config</code> is ignored. |
-| crawl_strategy | [RagCrawlerCrawlStrategy](#ondewo.nlu.RagCrawlerCrawlStrategy) |  | Optional. Crawl traversal strategy. BFS is often best for broad site coverage; DFS for deep section traversal. Default <code>RAG_CRAWLER_CRAWL_STRATEGY_BFS</code>. |
-| max_depth | [int32](#int32) | optional | Optional. Maximum link depth from seed URLs. <code>0</code> usually means only seed pages. |
-| max_pages | [int32](#int32) |  | Optional. Hard cap on total processed pages for this run. |
+| crawl_strategy | [RagCrawlerCrawlStrategy](#ondewo.nlu.RagCrawlerCrawlStrategy) |  | Optional. Crawl traversal strategy. Default <code>RAG_CRAWLER_CRAWL_STRATEGY_BEST_FIRST</code>. |
+| max_depth | [int32](#int32) | optional | Optional. Maximum link depth from seed URLs, counted from the nearest seed. <code>0</code> means unlimited depth. |
+| max_pages | [int32](#int32) |  | Optional. Hard cap on pages fetched successfully in this run; <code>0</code> means unlimited. |
 | deep_crawler_filters | [RagCrawlerFilters](#ondewo.nlu.RagCrawlerFilters) |  | Optional. URL and domain restrictions. |
 | normalize_url_case | [bool](#bool) | optional | Optional. Normalize URL case (lowercase the path) during link discovery/deduplication. |
 
@@ -11339,13 +11345,13 @@ and domains to be excluded in the deep crawl or extraction of pages to be crawle
 | ----- | ---- | ----- | ----------- |
 | allowed_domains | [string](#string) | repeated | Optional. Domain allow-list (host-level gating). |
 | disallowed_domains | [string](#string) | repeated | Optional. Domain block-list. |
-| allow_internal_links | [bool](#bool) |  | Optional. Include internal links. |
-| allow_external_links | [bool](#bool) |  | Optional. Include external links. |
-| allow_social_media_links | [bool](#bool) |  | Optional. Include social media links. |
-| allowed_regex | [string](#string) | repeated | Optional. Path allow-list by regular expression. |
-| disallowed_regex | [string](#string) | repeated | Optional. Path block-list by regular expression. |
-| allowed_paths | [string](#string) | repeated | Optional. Explicit path allow-list. |
-| disallowed_paths | [string](#string) | repeated | Optional. Explicit path block-list. |
+| allow_internal_links | [bool](#bool) |  | **Deprecated.** Deprecated. Has never had any effect. |
+| allow_external_links | [bool](#bool) |  | Optional. Include external links, that is links outside the crawled site's registrable domain. |
+| allow_social_media_links | [bool](#bool) |  | **Deprecated.** Deprecated. Has never had any effect. |
+| allowed_regex | [string](#string) | repeated | Optional. URL allow-list by regular expression. |
+| disallowed_regex | [string](#string) | repeated | Optional. URL block-list by regular expression. |
+| allowed_paths | [string](#string) | repeated | **Deprecated.** Deprecated. Use <code>allowed_regex</code>, which can express everything this field could. |
+| disallowed_paths | [string](#string) | repeated | **Deprecated.** Deprecated. Use <code>disallowed_regex</code>. |
 
 
 
@@ -11393,6 +11399,27 @@ HTTP Basic authentication settings.
 
 
 
+<a name="ondewo.nlu.RagCrawlerIncrementalConfig"></a>
+
+### RagCrawlerIncrementalConfig
+Incremental crawling: skip re-fetching pages a sitemap reports as unchanged.
+
+A page is reused from the most recent completed run of the same crawler when its sitemap/ <code>&lt;lastmod&gt;</code> is not newer than the <code>page_last_updated_date</code> of the copy that run holds. A reused page is part of the new run exactly like a freshly fetched one; only <code>RagCrawlerResult.last_crawled_date</code> still reports when its content was actually fetched.
+
+A page is always fetched when any of the following holds: its sitemap entry carries no <code>&lt;lastmod&gt;</code>; the most recent completed run did not contain it; there is no completed previous
+run; the crawler configuration changed since that run; or <code>max_age_days</code> has elapsed.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| is_active | [bool](#bool) |  | Optional. Enable incremental crawling. Default <code>false</code>. |
+| max_age_days | [int32](#int32) | optional | Optional. Force a re-fetch of any page whose content was fetched more than this many days ago, regardless of what <code>&lt;lastmod&gt;</code> reports. Unset means never force a re-fetch. |
+
+
+
+
+
+
 <a name="ondewo.nlu.RagCrawlerMetaDataExtractor"></a>
 
 ### RagCrawlerMetaDataExtractor
@@ -11423,7 +11450,7 @@ extracted content, metadata, diagnostics, and optional binary artifacts.
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | Resource name of the crawler result. Format: <pre><code>projects/&lt;project_uuid&gt;/agent/crawler_results/&lt;crawler_result_uuid&gt;</code></pre> |
 | crawler_name | [string](#string) |  | Resource name of the source crawler profile. |
-| operation_name | [string](#string) |  | Resource name of the crawler run that produced this result. |
+| operation_name | [string](#string) |  | Resource name of the crawler run this result was requested under. |
 | source_url | [string](#string) |  | URL this content came from. |
 | file_resource | [FileResource](#ondewo.nlu.FileResource) |  | Classified primary file resource built from source URL and detected MIME/type. If its a HTML page, it will be stored in the DocumentFileResource Bytes. See FileResource Documentation for all other file types. |
 | last_crawled_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Timestamp when this URL was last processed by crawler. |
@@ -11446,10 +11473,11 @@ similar to Crawl4AI markdown/output-generation toggles.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| inject_frontmatter | [bool](#bool) | optional | Optional. Inject YAML frontmatter into markdown output. If the content is HTML based, it will automatically be converted to markdown. Optionally, you can inject YAML frontmatter into the markdown output. Default <code>true</code>. |
+| inject_frontmatter | [bool](#bool) | optional | Optional. Prepend the page's extracted metadata to the markdown as a YAML frontmatter block. |
 | meta_data_extractors | [RagCrawlerMetaDataExtractor](#ondewo.nlu.RagCrawlerMetaDataExtractor) | repeated | Optional. Metadata extractors. |
 | content_scope | [RagCrawlerContentScope](#ondewo.nlu.RagCrawlerContentScope) |  | Optional. CSS-selector based content scoping for markdown extraction. |
 | density_pruning | [RagCrawlerDensityPruning](#ondewo.nlu.RagCrawlerDensityPruning) |  | Optional. Density-based content pruning (Crawl4AI PruningContentFilter). If not set the <code>RagCrawlerDensityPruning</code> defaults are used. |
+| discovery_only_url_regex | [string](#string) | repeated | Optional. Regular expressions matched against a crawled page's URL. A page whose URL matches any of these is still fetched and its links are followed for discovery, but it is NOT converted into a document |
 
 
 
@@ -11466,6 +11494,8 @@ Timeout settings for crawler operations.
 | ----- | ---- | ----- | ----------- |
 | page_load_timeout_seconds | [int32](#int32) | optional | Optional. Page load/render timeout in seconds. |
 | retry_max_attempts | [int32](#int32) | optional | Optional. Maximum retry attempts per page source. |
+| retry_backoff_seconds | [float](#float) | optional | Optional. Base for the per-URL retry linear backoff, in seconds (default: 2). |
+| max_stall_seconds | [int32](#int32) | optional | Optional. Abort the crawl run when no page has been fetched successfully for this many seconds (default: 600). <code>0</code> disables the bound. |
 
 
 
@@ -12453,6 +12483,9 @@ Both <code>current_index-&lt;idx&gt;</code> and <code>page_size-&lt;size&gt;</co
 | keyword | [bool](#bool) | optional | Optional. Extract additional keywords from the query to improve retrieval. |
 | field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which <code>RagChunk</code> fields get returned. |
 | rerank_model_ccai_service_name | [string](#string) | optional | Optional. Rerank model used to refine the initial retrieval scores. If not provided, the default model is used (if one is set). If empty, the results are not reranked. |
+| rerank_candidates | [int32](#int32) |  | Optional. Minimum 0. Number of retrieved chunks the rerank model scores (default: <code>64</code>). Only takes effect when a rerank model is used. |
+| dedup_threshold | [float](#float) | optional | Optional. Drop a retrieved chunk whose word-shingle similarity to a better-ranked chunk reaches this threshold, between <code>0.0</code> and <code>1.0</code> (default: <code>0.0</code>). |
+| dedup_before_rerank | [bool](#bool) | optional | Optional. Suppress near-duplicates before reranking instead of after (default: <code>false</code>). |
 
 
 
@@ -18240,6 +18273,32 @@ Used by both normalization and inverse-normalization tasks.</p>
 
 
 
+<a name="ondewo.s2t.Silero"></a>
+
+### Silero
+<p>Silero contains configuration for the Silero voice activity detection model.</p>
+<p>Unlike <code>Pyannote</code>, Silero is configured with its own parameters rather than
+<code>(min_duration_on, min_duration_off)</code>. They carry exactly the meaning they have
+upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.</p>
+<p>Library: <a href="https://github.com/snakers4/silero-vad">silero-vad</a></p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| model_name | [string](#string) |  | Full name of the Silero model. |
+| min_audio_size | [int64](#int64) |  | Minimum audio size for processing. |
+| threshold | [float](#float) | optional | Speech probability, in [0, 1], above which a frame counts as speech. A run of speech ends at the hysteresis threshold <code>threshold - 0.15</code>, as it does upstream, so this sets both the onset and - through that offset - the release point. Optional, and explicitly so: 0 is a legitimate value here, and without presence tracking it would be indistinguishable from an unset field and silently replaced by the default. |
+| min_speech_duration_ms | [float](#float) | optional | Speech runs shorter than this many milliseconds are discarded. A run still open at the end of the buffer is kept regardless, since more audio may extend it. Optional for the same reason as <code>threshold</code>: 0 means &apos;discard nothing&apos;. |
+| min_silence_duration_ms | [float](#float) | optional | Silence, in milliseconds, that must follow the last speech before an utterance is declared to have ended. Optional for the same reason as <code>threshold</code>: 0 means &apos;end the utterance as soon as the speech stops&apos;. |
+| speech_pad_ms | [float](#float) | optional | Padding, in milliseconds, added on each side of the detected boundary. Optional for the same reason as <code>threshold</code>: 0 means &apos;no padding&apos;. |
+| triton_server_host | [string](#string) |  | Host name of triton inference server that serves the Silero model |
+| triton_server_port | [int64](#int64) |  | Port number of triton inference server that serves the Silero model |
+
+
+
+
+
+
 <a name="ondewo.s2t.Speech2TextConfig"></a>
 
 ### Speech2TextConfig
@@ -18532,9 +18591,13 @@ Used by both normalization and inverse-normalization tasks.</p>
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| active | [string](#string) |  | Indicates if voice activity detection is active. |
+| active | [string](#string) |  | Deprecated in favour of <code>vad_method</code>, but still honoured so that configurations written before that field existed keep working unchanged. One of &apos;pyannote&apos; or &apos;silero&apos;. Read only when <code>vad_method</code> is <code>VAD_METHOD_UNSPECIFIED</code>. |
 | sampling_rate | [int64](#int64) |  | Sampling rate for voice activity detection. |
-| pyannote | [Pyannote](#ondewo.s2t.Pyannote) |  | Configuration for the Pyannote model. |
+| pyannote | [Pyannote](#ondewo.s2t.Pyannote) |  | Configuration for the Pyannote model. Read when Pyannote is the resolved VAD or TSD method. |
+| silero | [Silero](#ondewo.s2t.Silero) |  | Configuration for the Silero model. Read when Silero is the resolved VAD method. |
+| wespeaker_tsd | [WespeakerTsd](#ondewo.s2t.WespeakerTsd) |  | Configuration for WeSpeaker target-speaker detection. Read when WeSpeaker is the resolved TSD method. |
+| vad_method | [VadMethod](#ondewo.s2t.VadMethod) |  | Which model splits the stream into utterances. Takes precedence over <code>active</code>; leave unset to keep using <code>active</code>. |
+| tsd_method | [TsdMethod](#ondewo.s2t.TsdMethod) |  | Which model decides whether an utterance came from the main speaker. Independent of <code>vad_method</code>, except that <code>TSD_METHOD_PYANNOTE</code> requires Pyannote to also be the active VAD. Leave unset to keep the behaviour of older configurations. |
 
 
 
@@ -18571,6 +18634,31 @@ Used by both normalization and inverse-normalization tasks.</p>
 | check_status_timeout | [int64](#int64) |  | Timeout for checking model status. |
 | triton_server_host | [string](#string) |  | Host name of triton inference server that serves the Wav2VecTriton model |
 | triton_server_port | [int64](#int64) |  | Port number of triton inference server that serves the Wav2VecTriton model |
+
+
+
+
+
+
+<a name="ondewo.s2t.WespeakerTsd"></a>
+
+### WespeakerTsd
+<p>WespeakerTsd contains configuration for the WeSpeaker target-speaker detection (TSD)
+model. Given a reference speaker embedding, it decides whether a newly detected utterance
+was spoken by the same person, so that speech from a different speaker (e.g. background
+noise, crosstalk, or a barge-in) can be rejected.</p>
+<p>Library: <a href="https://huggingface.co/pyannote/wespeaker-voxceleb-resnet34-LM">wespeaker-voxceleb-resnet34-LM</a></p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| active | [bool](#bool) |  | Indicates if target-speaker detection is active. |
+| model_name | [string](#string) |  | Full name of the WeSpeaker model. |
+| triton_server_host | [string](#string) |  | Host name of triton inference server that serves the WeSpeaker model |
+| triton_server_port | [int64](#int64) |  | Port number of triton inference server that serves the WeSpeaker model |
+| similarity_threshold | [float](#float) | optional | Cosine similarity, in [-1, 1], above which a candidate utterance is judged to come from the same speaker as the reference. Optional, and explicitly so: 0 sits in the middle of the valid range, and without presence tracking it would be indistinguishable from an unset field. |
+| min_audio_length | [float](#float) | optional | Utterances shorter than this many seconds carry too little speaker information to judge, and are treated as undecided rather than rejected. Optional for the same reason as <code>similarity_threshold</code>: 0 means &apos;judge every utterance, however short&apos;. |
+| reference_max_length | [float](#float) |  | The reference audio is cropped to its most recent this-many seconds before being embedded. |
 
 
 
@@ -18713,6 +18801,35 @@ The inference backend configuration
 | SERVICE_TIER_FLEX | 3 | Flex service tier. |
 | SERVICE_TIER_SCALE | 4 | Scale service tier. |
 | SERVICE_TIER_PRIORITY | 5 | Priority service tier. |
+
+
+
+<a name="ondewo.s2t.TsdMethod"></a>
+
+### TsdMethod
+<p>TsdMethod selects the model used for target-speaker detection (TSD): deciding whether a
+newly detected utterance came from the main speaker of the call, so that speech from anyone
+else (crosstalk, background speakers, barge-in) can be rejected.</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| TSD_METHOD_UNSPECIFIED | 0 | No explicit choice. TSD then follows the behaviour of older configurations that predate this field, which is keyed on the active VAD: Pyannote whenever Pyannote is the VAD, since its segmentation model doubles as a speaker filter; otherwise WeSpeaker if <code>wespeaker_tsd.active</code> is set; otherwise no TSD at all. Note that <code>wespeaker_tsd.active</code> is deliberately not consulted on the Pyannote path, because it was never consulted there before this field existed. |
+| TSD_METHOD_NONE | 1 | Disable target-speaker detection. Every detected utterance is transcribed, whoever spoke it. |
+| TSD_METHOD_PYANNOTE | 2 | Reuse the Pyannote segmentation model, which distinguishes speakers in addition to detecting speech. Available only when Pyannote is also the active VAD. |
+| TSD_METHOD_WESPEAKER | 3 | Use the dedicated WeSpeaker embedding model, configured by <code>VoiceActivityDetection.wespeaker_tsd</code>. Works with any VAD. |
+
+
+
+<a name="ondewo.s2t.VadMethod"></a>
+
+### VadMethod
+<p>VadMethod selects the model used to split the audio stream into utterances.</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| VAD_METHOD_UNSPECIFIED | 0 | No explicit choice. The method is then taken from the legacy <code>VoiceActivityDetection.active</code> string, and from Pyannote if that is empty too. |
+| VAD_METHOD_PYANNOTE | 1 | Use the Pyannote segmentation model, configured by <code>VoiceActivityDetection.pyannote</code>. |
+| VAD_METHOD_SILERO | 2 | Use the Silero model, configured by <code>VoiceActivityDetection.silero</code>. |
 
 
 
