@@ -2,6 +2,38 @@
 
 *****************
 
+## Release ONDEWO VTSI API 8.7.0
+
+### Improvements
+
+* [[OND211-2418]](https://ondewo.atlassian.net/browse/OND211-2418) Re-vendored against
+  [ondewo-nlu-api 7.1.0](https://github.com/ondewo/ondewo-nlu-api/releases/tag/7.1.0) (was 7.0.0) and
+  [ondewo-s2t-api 7.5.0](https://github.com/ondewo/ondewo-s2t-api/releases/tag/7.5.0) (was 7.4.0).
+  `ondewo/vtsi/**` is **unchanged**: no VTSI message, field or RPC moves in this release, so a client
+  built against 8.6.0 stays wire-compatible with one built against 8.7.0.
+* What grows is the vendored surface this API re-exports, and exactly two files changed:
+  `ondewo/s2t/speech-to-text.proto` gains the `VadMethod` and `TsdMethod` enums and the `Silero` and
+  `WespeakerTsd` messages (voice-activity and turn-shift detection configuration), and
+  `ondewo/nlu/rag.proto` gains `RagCrawlerIncrementalConfig`.
+* **The rag change is wire-compatible but is NOT purely additive, and the distinction is worth
+  stating rather than assuming.** Four fields of `RagCrawlerFilters` are re-declared with
+  `[deprecated = true]` — `allow_internal_links` (3), `allow_social_media_links` (5),
+  `allowed_paths` (8) and `disallowed_paths` (9). Every field NUMBER, name and type is preserved, so
+  nothing on the wire changes and no number is reused; generated code gains deprecation markers only.
+  The two path lists are superseded by `allowed_regex` / `disallowed_regex`, and the two booleans are
+  documented upstream as having never had any effect.
+
+### Why this release exists
+
+* The consumers that vendor these protos alongside a service client — `ondewo-vtsi-client` next to
+  `ondewo-nlu-client` and `ondewo-s2t-client` — must be regenerated from the SAME API versions those
+  clients ship. Measured against the 8.6.0 client wheel: its `ondewo/nlu` tree differs from
+  `ondewo-nlu-client` 7.1.2 in exactly `rag_pb2.py` / `.pyi`, and its `ondewo/s2t` tree differs from
+  `ondewo-s2t-client` 7.5.0 in exactly `speech_to_text_pb2.py` / `.pyi`. Those are the same module
+  paths in one site-packages, so the skew is resolved by install order rather than by an error.
+
+*****************
+
 ## Release ONDEWO VTSI API 8.6.0
 
 ### Improvements

@@ -16,10 +16,10 @@ export
 
 # MUST BE THE SAME AS API in Mayor and Minor Version Number
 # example: API 2.9.0 --> Client 2.9.X
-ONDEWO_VTSI_API_VERSION=8.6.0
+ONDEWO_VTSI_API_VERSION=8.7.0
 
-ONDEWO_NLU_API_GIT_BRANCH=tags/7.0.0
-ONDEWO_S2T_API_GIT_BRANCH=tags/7.4.0
+ONDEWO_NLU_API_GIT_BRANCH=tags/7.1.0
+ONDEWO_S2T_API_GIT_BRANCH=tags/7.5.0
 ONDEWO_T2S_API_GIT_BRANCH=tags/6.6.0
 ONDEWO_SIP_API_GIT_BRANCH=tags/5.4.0
 ONDEWO_NLU_DIR=ondewo-nlu-api
@@ -180,6 +180,12 @@ build: init_submodules checkout_defined_submodule_versions ## Checks out and cop
 		git status; \
 		git add google/*; \
 		git add ondewo/*; \
+		# The version, the notes and the four API submodule pointers are part of the release too. \
+		# Staging only the copied protos leaves the Makefile's own ONDEWO_*_API_GIT_BRANCH pins and \
+		# RELEASE.md dirty in the working tree, so the tag records protos whose provenance is not \
+		# committed anywhere. \
+		git add Makefile RELEASE.md; \
+		git add ondewo-nlu-api ondewo-s2t-api ondewo-t2s-api ondewo-sip-api; \
 		git status; \
 		git commit -m "chore: prepare for release of ondewo-vtsi-api ${ONDEWO_VTSI_API_VERSION}" || true; \
 		# Required to run twice since pre-commit hook might change files; \
