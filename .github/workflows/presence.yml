@@ -48,6 +48,17 @@ jobs:
         # both still render it byte-identically, so the pin is not papering over a live drift - it
         # is what stops a future renderer change turning up as a red build on an unrelated PR
         # instead of as a deliberate, reviewable bump here.
+        #
+        # THE 1.60.0 HALF OF THAT MEASUREMENT NEEDS setuptools<82, AND A CURRENT RUNNER HAS MORE.
+        # grpc_tools/protoc.py line 21 is a bare `import pkg_resources`, which setuptools removed.
+        # Measured the same day in four throwaway venvs on python 3.12.3 with grpcio-tools 1.60.0 +
+        # protobuf 4.25.3 held fixed and only setuptools varied: 80.10.2 and 81.0.0 import, warning
+        # "pkg_resources is deprecated ... pin to Setuptools<81"; 82.0.0, 83.0.0 and 84.0.0 all die
+        # with `ModuleNotFoundError: No module named 'pkg_resources'` BEFORE protoc is reached. So
+        # the equivalence above is not reproducible by `pip install "grpcio-tools==1.60.0"` on a
+        # fresh venv today - it needs `setuptools<82` installed alongside, and without that the
+        # attempt fails as a BROKEN toolchain rather than as manifest drift. Nothing here installs
+        # 1.60.0; this is recorded so the next person re-measuring the pin is not misled by it.
         run: python -m pip install --upgrade pip && python -m pip install "grpcio-tools==1.83.0" "protobuf==7.35.1"
 
       - name: Check proto field presence

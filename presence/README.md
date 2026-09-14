@@ -95,6 +95,14 @@ under grpcio-tools 1.60.0 + protobuf 4.25.3 and under 1.84.0 + protobuf 7.36.1 a
 is not papering over a live drift - it is what turns a future renderer change into a deliberate,
 reviewable bump here instead of a red build on an unrelated pull request.
 
+**Re-measuring the 1.60.0 half needs `setuptools<82`**, which a fresh venv today does not give you.
+`grpc_tools/protoc.py` line 21 is a bare `import pkg_resources`, and setuptools removed it: measured
+the same day with grpcio-tools 1.60.0 + protobuf 4.25.3 held fixed and only setuptools varied,
+`80.10.2` and `81.0.0` import (with the deprecation warning that names the `<81` pin) while `82.0.0`,
+`83.0.0` and `84.0.0` all raise `ModuleNotFoundError: No module named 'pkg_resources'` before protoc
+is reached. That is a **BROKEN toolchain, not manifest drift** — the distinction this guard makes
+everywhere else — so install `setuptools<82` alongside before concluding anything from a 1.60.0 run.
+
 ## Where it runs
 
 - `.github/workflows/presence.yml` — on `master`, on `release/**` and on every pull request.
