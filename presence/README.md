@@ -1,8 +1,8 @@
 # Proto field presence guard
 
 `make presence_check` walks a real `--descriptor_set_out` of this repository's own protos
-(every `ondewo/vtsi/*.proto`) and asserts the field-presence surface against the committed
-expectations in this directory. `make presence_update` regenerates the manifest after an
+(every `ondewo/vtsi/**/*.proto`, recursively) and asserts the field-presence surface against the
+committed expectations in this directory. `make presence_update` regenerates the manifest after an
 intended change.
 
 ## Why it exists
@@ -19,11 +19,27 @@ exactly the defect the keyword was added to fix.
 
 ## Which protos it walks
 
-The set is **derived from the filesystem** — `ondewo/vtsi/*.proto`, sorted — and is never
-hand-maintained. A literal list is a guard that stops covering the next file somebody adds, in
+The set is **derived from the filesystem** — `ondewo/vtsi/**/*.proto`, sorted, **recursive** — and is
+never hand-maintained. A literal list is a guard that stops covering the next file somebody adds, in
 silence: the new proto is walked by nothing, every printed count is unchanged, and the check still
 says OK. Measured before the derivation went in: dropping an `ondewo/vtsi/trunks.proto` carrying one
 `optional bool` into the tree left the output byte-identical and the check green.
+
+**The recursion is the same requirement one directory down, and it was missing.** The first
+derivation globbed `ondewo/vtsi/*.proto` — non-recursive — which closed the sibling case above and
+left the nested one wide open. Measured: a planted `ondewo/vtsi/v2/trunks.proto` (package
+`ondewo.vtsi.v2`) carrying `optional bool activate_everything = 1;` printed the unchanged
+`walked 3 proto file(s), 426 field(s)` and `presence_check: OK`, exit 0 — verbatim the property this
+section claimed to have closed. `MIN_FILES` cannot see it either, because a file that is never
+globbed does not lower the count. With `**` plus `recursive=True` the same plant now prints
+`walked 4 proto file(s), 427 field(s)` and fails by name on
+`UNDECLARED optional field: ondewo.vtsi.v2.PlantedTrunk.activate_everything`.
+
+The `**` and the `recursive=True` are one decision spelled in two places and neither may be changed
+alone: `**` **without** the flag is an ordinary single-segment wildcard and resolves to the nested
+file ALONE, dropping all three top-level protos. That direction is loud rather than silent — the
+`MIN_FILES` floor catches it — which is the second line of defence doing its job, not a reason to
+rely on it.
 
 `ondewo/{nlu,qa,s2t,t2s,sip}` are frozen copies of other APIs' submodules, re-assembled by
 `make build`. Their presence surface is their own repository's contract and is not ours to assert

@@ -7,12 +7,16 @@ a one-word edit that no compiler, no linter and no downstream test in this repos
 walks a real ``--descriptor_set_out`` and asserts the presence surface against committed
 expectations.
 
-WHICH PROTOS IT WALKS. The set is DERIVED from the filesystem - every ``ondewo/vtsi/*.proto`` - and
-never hand-maintained. A hand-written list is a guard that silently stops covering the next file
-somebody adds: the new proto is walked by nothing, every printed count is unchanged, and the check
-still says OK. ``ondewo/{nlu,qa,s2t,t2s,sip}`` are frozen copies of other APIs' submodules,
-re-assembled by ``make build``; their presence surface is their own repository's contract and is not
-ours to assert on, which is why the glob is scoped to ``ondewo/vtsi`` rather than to ``ondewo``.
+WHICH PROTOS IT WALKS. The set is DERIVED from the filesystem - every ``ondewo/vtsi/**/*.proto``,
+RECURSIVELY - and never hand-maintained. A hand-written list is a guard that silently stops covering
+the next file somebody adds: the new proto is walked by nothing, every printed count is unchanged,
+and the check still says OK. The recursion is the same requirement one directory down, and it is not
+hypothetical - a non-recursive glob shipped here and was measured: a planted
+``ondewo/vtsi/v2/trunks.proto`` carrying an undeclared ``optional bool`` printed the unchanged
+``walked 3 proto file(s), 426 field(s)`` and exited 0. ``ondewo/{nlu,qa,s2t,t2s,sip}`` are frozen
+copies of other APIs' submodules, re-assembled by ``make build``; their presence surface is their own
+repository's contract and is not ours to assert on, which is why the glob is scoped to
+``ondewo/vtsi`` rather than to ``ondewo``.
 
 WHAT IT ASSERTS, and why each is a SET EQUALITY rather than a subset check:
 
@@ -81,7 +85,16 @@ PRESENCE_DIR: str = os.path.join(REPO_ROOT, "presence")
 
 # The protos this repository OWNS, as a GLOB rather than a list. See the module docstring: a
 # hand-maintained tuple stops covering the next file added beside it, in silence.
-PROTO_GLOB: str = "ondewo/vtsi/*.proto"
+#
+# The glob is RECURSIVE, and the `**` and the `recursive=True` below are one decision spelled in two
+# places. A non-recursive `ondewo/vtsi/*.proto` covers a sibling file and nothing in a subdirectory,
+# so the silent-miss this derivation exists to prevent came straight back one directory down: a
+# planted `ondewo/vtsi/v2/trunks.proto` carrying an undeclared `optional bool` was walked by nothing,
+# left the printed counts at `3 proto file(s), 426 field(s)` and still reported OK. Measured the
+# other way round too, which is why neither half may be changed alone: `**` WITHOUT `recursive=True`
+# is a literal single-segment wildcard and resolves to the nested file ALONE, dropping all three
+# top-level protos - loud rather than silent, because MIN_FILES catches it, but wrong.
+PROTO_GLOB: str = "ondewo/vtsi/**/*.proto"
 
 
 def discover_proto_files() -> Tuple[str, ...]:
@@ -93,11 +106,15 @@ def discover_proto_files() -> Tuple[str, ...]:
     is caught a second time by the ``MIN_FILES`` floor, rather than turning an import of this module
     into an exception.
 
+    ``recursive=True`` is what gives the ``**`` in ``PROTO_GLOB`` its zero-or-more-directories
+    meaning, so a proto in a SUBDIRECTORY of ``ondewo/vtsi`` is walked too; see the comment there
+    for what each half does without the other.
+
     Returns:
         Tuple[str, ...]:
             Repo-relative POSIX paths, e.g. ``("ondewo/vtsi/calls.proto", ...)``.
     """
-    found: List[str] = sorted(glob.glob(os.path.join(REPO_ROOT, *PROTO_GLOB.split("/"))))
+    found: List[str] = sorted(glob.glob(os.path.join(REPO_ROOT, *PROTO_GLOB.split("/")), recursive=True))
     return tuple(os.path.relpath(path, REPO_ROOT).replace(os.sep, "/") for path in found)
 
 
@@ -108,9 +125,13 @@ LEGACY_OPTIONAL_MESSAGE_FILE: str = os.path.join(PRESENCE_DIR, "legacy_optional_
 MANIFEST_FILE: str = os.path.join(PRESENCE_DIR, "presence-manifest.json")
 
 # Non-vacuity floor. MIN_FILES is today's count ON PURPOSE now that the file set is derived: the
-# glob cannot resolve to FEWER files than exist, so the only two ways below the floor are the
-# directory moving (which `build_descriptor_set` already refuses) and a proto file being DELETED,
-# which is a breaking change that must be looked at rather than absorbed by a slack floor.
+# glob cannot resolve to FEWER files than exist, so the only three ways below the floor are the
+# directory moving (which `build_descriptor_set` already refuses), a proto file being DELETED, which
+# is a breaking change that must be looked at rather than absorbed by a slack floor, and
+# `recursive=True` being dropped from `discover_proto_files` while `**` stays, which resolves to the
+# subdirectories ALONE. The floor is a SECOND line of defence and not the first: it cannot see a
+# proto the glob never matched, because an unmatched file does not lower the count - which is how a
+# nested `ondewo/vtsi/v2/*.proto` went unwalked past both a floor of 3 and a printed count of 3.
 # MIN_FIELDS is sized below today's 426 so honest growth or a deleted message does not trip it.
 MIN_FILES: int = 3
 MIN_FIELDS: int = 400
