@@ -2,6 +2,110 @@
 
 *****************
 
+## Release ONDEWO VTSI API 9.0.0
+
+### Breaking changes
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) Renamed
+  `AsteriskConfigsFiles.sip_conf_file_string` to `pjsip_conf_file_string`. The `chan_sip` channel driver the
+  old name referred to was removed in Asterisk 21; the configuration file an Asterisk 22 server reads is
+  `pjsip.conf`, so the field carried a name that described a file no supported Asterisk parses. **Field
+  number 1 and type `string` do not change and no `json_name` override is added**, so the change is binary
+  wire-compatible in both directions and source-breaking only. The three sibling fields keep their names:
+  `extensions.conf`, `queues.conf` and `modules.conf` exist unchanged under `res_pjsip` and only their
+  CONTENT changes. The accessor that moves, per language, measured against the generated 8.7.x client trees:
+
+  | Client | 8.7.x | 9.0.0 |
+  | --- | --- | --- |
+  | python | `sip_conf_file_string` attribute, constructor keyword and `ClearField` literal | `pjsip_conf_file_string` |
+  | angular | `sipConfFileString` property (23 references) | `pjsipConfFileString` |
+  | nodejs, typescript, js | `getSipConfFileString()` / `setSipConfFileString()`, `sipConfFileString` on `AsObject` | `getPjsipConfFileString()` / `setPjsipConfFileString()` |
+
+  The field deliberately does NOT gain the `optional` keyword. On the create path `""` and unset are the
+  same instruction — build the Asterisk configuration from the blueprint — so presence would add a third
+  state that no server reads.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) Eleven singular scalars in
+  `ondewo/vtsi/calls.proto` gained the `optional` keyword, so that "the caller said nothing" stops being
+  indistinguishable from "the caller said the default":
+  `InterruptionHandlingConfig.transcribe_on_disabled_interruptions`,
+  `TurnDetectionConfig.turn_detection_system_prompt`, `TurnDetectionConfig.turn_detection_user_prompt`,
+  `AudioObjectStorageConfig.activate_audio_object_storage`,
+  `AudioObjectStorageServicesActivationConfig.activate_s2t` and `.activate_t2s`,
+  `MessageBrokerConfig.activate_message_broker`, and
+  `MessageBrokerServicesActivationConfig.activate_s2t`, `.activate_nlu`, `.activate_t2s` and
+  `.activate_sip`. Each keeps its field number and wire type; `optional` only adds explicit presence,
+  compiling to a synthetic one-member oneof that exists in the descriptor and not on the wire. The listed
+  fields are singular scalars only — a repeated or map field cannot take the keyword, a oneof member cannot
+  take it, and a singular message field already has presence without it.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) The comment on
+  `ScheduledCaller.call_name` lost the words "asterisk sip", matching its `Caller` and `Listener` siblings.
+  Listed here only because it is a source-visible change: it moves no descriptor byte, measured — the
+  descriptor set and the generated `calls_pb2.py` are byte-identical before and after it.
+
+### New features
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) `AsteriskConfigsVariables` gained two
+  fields on the next free numbers, 7 and 8, making the SIP trunk's transport a per-project choice instead
+  of a property of the image:
+  * `SipTrunkTransport sip_trunk_transport = 7` — `SIP_TRUNK_TRANSPORT_UNSPECIFIED` (0),
+    `SIP_TRUNK_TRANSPORT_TLS` (1), `SIP_TRUNK_TRANSPORT_UDP` (2), `SIP_TRUNK_TRANSPORT_TCP` (3). Unset ==
+    `UNSPECIFIED` == `TLS`: **the zero value is the encrypted one**, so a caller that says nothing gets an
+    encrypted trunk. The field takes no `optional` keyword, because an enum whose zero IS a documented
+    `*_UNSPECIFIED` sentinel already carries the third state.
+  * `optional string sip_trunk_source_cidr = 8` — the source address or CIDR the carrier sends from, e.g.
+    `203.0.113.7/32`. REQUIRED when the transport is `UDP` or `TCP`, where the trunk is matched by source
+    address rather than authenticated by a certificate, and ignored otherwise. A hostname is refused with
+    `INVALID_ARGUMENT`: Asterisk drops a `type=identify` section whose `match=` does not resolve, and it
+    does so silently, so an unresolvable name would read as a working trunk that never matches an inbound
+    call. This one DOES take `optional`, so a validator can tell an explicit empty CIDR from nothing sent
+    and refuse each by name, and so an `update_mask` can CLEAR it rather than assign `""`.
+
+  Both are additive. An 8.x server decoding a 9.0.0 request skips them as unknown fields.
+
+### Compatibility
+
+**Binary wire-compatible in BOTH directions. Source-breaking in every language. This is a MAJOR release
+because of the second sentence, not the first.** For a code-generating IDL the published contract is the
+generated symbol set, not the encoding, and this release removes `sip_conf_file_string` and its four
+accessor spellings from five languages at once.
+
+What that buys the operator: no coordinated deploy, no client-before-server ordering, and no rewrite of any
+stored protobuf payload. Measured with `grpc_tools.protoc` and protobuf 7.35.1, compiling the 8.7.0 and
+9.0.0 trees into two independent descriptor pools: an `AsteriskConfigsFiles` carrying the same text
+serialises to the same 14 bytes under either name, each side parses the other's bytes and re-serialises them
+byte-identically.
+
+Two things are NOT compatible, and neither raises anything at runtime.
+
+The JSON key moves. No `json_name` override is added, so `protoc` derives it from the field name and it goes
+from `sipConfFileString` to `pjsipConfFileString`. Any consumer that goes through `MessageToJson`,
+`ParseDict` or a hand-written JSON mapping must move with it. An override was considered and rejected: with
+the protobuf pin, `[json_name = "sipConfFileString"]` makes `ParseDict({"pjsipConfFileString": ...})` FAIL
+while the old key keeps working — it SWAPS the accepted key rather than widening it, which reinstates the
+name that lies in the one surface a human reads.
+
+The presence change has a MIRROR, and there is no runtime detector for it. A 9.0.0 client that explicitly
+sets one of the eleven fields to its default now puts bytes on the wire where 8.7.0 put none (`b''` becomes
+`b'\x08\x00'` for a `bool`, and `MessageToJson` goes from `{}` to `{"activate_s2t": false}`). The mirror is
+the risk: an 8.7.0 client that explicitly sets the default still sends NOTHING, and a 9.0.0 server reads
+that as unset. The two cases are identical on the wire, so no server-side check can separate them —
+regenerate a client against 9.0.0 before relying on an explicit default reaching the server as an explicit
+default. For the same reason, a round trip of a 9.0.0 message through an un-regenerated SDK silently DROPS
+presence, which is why all five clients are regenerated in one cycle.
+
+One trap for anyone writing a test against this. On an 8.7.0 message `HasField` on these eleven fields
+RAISES `ValueError: Field ... does not have presence` rather than returning `False`, so a test that probes
+with `HasField` crashes on exactly the messages it is meant to classify. The detection signal is
+`FieldDescriptor.has_presence`.
+
+The four vendored API submodule pins do not move in this release: `ondewo-nlu-api` stays at `tags/7.1.0`,
+`ondewo-s2t-api` at `tags/7.5.0`, `ondewo-t2s-api` at `tags/6.6.0` and `ondewo-sip-api` at `tags/5.4.0`.
+Freezing them is deliberate — it is what makes the 9.0.0-against-8.7.0 wheel comparison a clean
+"only `ondewo/vtsi` differs" measurement, and it keeps the vendored-proto lockstep rule from firing in
+every consumer that installs `ondewo-vtsi-client` next to a service client.
+
+*****************
+
 ## Release ONDEWO VTSI API 8.7.0
 
 ### Improvements

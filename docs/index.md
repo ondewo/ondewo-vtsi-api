@@ -1193,6 +1193,7 @@
     - [VtsiProject](#ondewo.vtsi.VtsiProject)
     - [VtsiProjectSorting](#ondewo.vtsi.VtsiProjectSorting)
   
+    - [SipTrunkTransport](#ondewo.vtsi.SipTrunkTransport)
     - [VtsiProjectSorting.VtsiProjectSortingField](#ondewo.vtsi.VtsiProjectSorting.VtsiProjectSortingField)
     - [VtsiProjectSortingMode](#ondewo.vtsi.VtsiProjectSortingMode)
     - [VtsiProjectStatus](#ondewo.vtsi.VtsiProjectStatus)
@@ -20389,7 +20390,7 @@ Minio Audio Object Store
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| activate_audio_object_storage | [bool](#bool) |  | Audio storage should be activated or not |
+| activate_audio_object_storage | [bool](#bool) | optional | Audio storage should be activated or not |
 | audio_object_storage_services_activation_config | [AudioObjectStorageServicesActivationConfig](#ondewo.vtsi.AudioObjectStorageServicesActivationConfig) |  | Configuration of the Minio Audio Object Store |
 
 
@@ -20405,8 +20406,8 @@ Configuration of the Minio Audio Object Store
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| activate_s2t | [bool](#bool) |  | Should audio object store save audio sent to the Speech-2-Text platform |
-| activate_t2s | [bool](#bool) |  | Should audio object store save audio generated from the Text-2-Speech platform |
+| activate_s2t | [bool](#bool) | optional | Should audio object store save audio sent to the Speech-2-Text platform |
+| activate_t2s | [bool](#bool) | optional | Should audio object store save audio generated from the Text-2-Speech platform |
 
 
 
@@ -20805,7 +20806,7 @@ Configuration of the interruption (barge-in) handling, i.e. the caller speaking 
 | resume_after_false_interruption | [bool](#bool) | optional | Optional: Resume the paused bot response after a false interruption, e.g. a cough or brief background noise (default: true) |
 | backoff_seconds | [float](#float) | optional | Optional: Silence in seconds after a real interruption before the next bot response is played (default: 1.0) |
 | first_message_protected_seconds | [float](#float) | optional | Optional: Protect the first bot message from interruptions for the given number of seconds (default: 0 = no protection) |
-| transcribe_on_disabled_interruptions | [bool](#bool) |  | Transcribe caller speech while the bot is speaking even if interruptions are disabled |
+| transcribe_on_disabled_interruptions | [bool](#bool) | optional | Transcribe caller speech while the bot is speaking even if interruptions are disabled |
 
 
 
@@ -20972,7 +20973,7 @@ Configuration of the RabbitMQ Message Broker
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| activate_message_broker | [bool](#bool) |  | Should the broker be activated or not |
+| activate_message_broker | [bool](#bool) | optional | Should the broker be activated or not |
 | message_broker_services_activation_config | [MessageBrokerServicesActivationConfig](#ondewo.vtsi.MessageBrokerServicesActivationConfig) |  | Configuration of the Broker service activation |
 | rabbit_mq_config | [RabbitMqConfig](#ondewo.vtsi.RabbitMqConfig) |  | Configuration of the RabbitMQ Message Broker |
 
@@ -20989,10 +20990,10 @@ Configuration of the RabbitMQ Message Broker
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| activate_s2t | [bool](#bool) |  | should RabbitMQ Message Broker be activated for Speech-2-Text platform |
-| activate_nlu | [bool](#bool) |  | should RabbitMQ Message Broker be activated for NLU platform |
-| activate_t2s | [bool](#bool) |  | should RabbitMQ Message Broker be activated for Text-2-Speech platform |
-| activate_sip | [bool](#bool) |  | should RabbitMQ Message Broker be activated for SIP platform |
+| activate_s2t | [bool](#bool) | optional | should RabbitMQ Message Broker be activated for Speech-2-Text platform |
+| activate_nlu | [bool](#bool) | optional | should RabbitMQ Message Broker be activated for NLU platform |
+| activate_t2s | [bool](#bool) | optional | should RabbitMQ Message Broker be activated for Text-2-Speech platform |
+| activate_sip | [bool](#bool) | optional | should RabbitMQ Message Broker be activated for SIP platform |
 
 
 
@@ -21117,7 +21118,7 @@ ScheduledCaller message - a Caller with a schedule when to start calling
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | Resource name of the scheduled caller <pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre> |
-| call_name | [string](#string) |  | The asterisk sip call name that was assigned to the call For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
+| call_name | [string](#string) |  | The call name that was assigned to the call For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
 | sip_config | [SipBaseConfig](#ondewo.vtsi.SipBaseConfig) |  | SIP service configuration. This is the sip_base_config half of sip_caller_config below and is kept for wire compatibility with clients built before field 6 existed |
 | common_services_config | [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig) |  | Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI |
 | scheduled_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Time the call is scheduled TODO to be refactored with a more complex scheduling object |
@@ -21732,8 +21733,8 @@ Configuration of the turn detection, i.e. deciding when the caller has finished 
 | min_endpointing_delay_seconds | [float](#float) | optional | Optional: Minimum delay in seconds before a confidently detected end of turn is committed (default: 0.5) |
 | max_endpointing_delay_seconds | [float](#float) | optional | Optional: Maximum delay in seconds to wait for an end of turn before the turn is committed from the latest stable partial transcription (default: 3.0) |
 | turn_eagerness | [TurnDetectionConfig.TurnEagerness](#ondewo.vtsi.TurnDetectionConfig.TurnEagerness) |  | Eagerness of the turn detection: scales both endpointing delays. Defaults to NORMAL if unspecified |
-| turn_detection_system_prompt | [string](#string) |  | System prompt for the semantic (LLM) turn detection model of the speech-to-text service |
-| turn_detection_user_prompt | [string](#string) |  | User prompt for the semantic (LLM) turn detection model of the speech-to-text service |
+| turn_detection_system_prompt | [string](#string) | optional | System prompt for the semantic (LLM) turn detection model of the speech-to-text service |
+| turn_detection_user_prompt | [string](#string) | optional | User prompt for the semantic (LLM) turn detection model of the speech-to-text service |
 
 
 
@@ -22327,7 +22328,7 @@ Configuration files for the Asterisk server
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| sip_conf_file_string | [string](#string) |  | sip.conf file as string |
+| pjsip_conf_file_string | [string](#string) |  | pjsip.conf file as string. Renamed from <pre><code>sip_conf_file_string</code></pre> in 9.0.0: the chan_sip driver this field was named after was removed in Asterisk 21, and the file an Asterisk 22 server reads is <pre><code>pjsip.conf</code></pre>. Field number 1 and type <pre><code>string</code></pre> are unchanged and no <pre><code>json_name</code></pre> override was added, so the change is binary wire-compatible in both directions and source-breaking only. |
 | extensions_conf_file_string | [string](#string) |  | extensions.conf file as string |
 | queues_conf_file_string | [string](#string) |  | queues.conf file as string |
 | modules_conf_file_string | [string](#string) |  | modules.conf file as string |
@@ -22351,6 +22352,8 @@ Configuration variables for the Asterisk server
 | transfer_number | [string](#string) |  | Transfer number. |
 | transfer_number_host | [string](#string) |  | Transfer number host. |
 | sip_trunk_phone_number | [string](#string) |  | SIP trunk phone number / caller id. |
+| sip_trunk_transport | [SipTrunkTransport](#ondewo.vtsi.SipTrunkTransport) |  | OPTIONAL: transport for the SIP trunk. Unset == <pre><code>SIP_TRUNK_TRANSPORT_UNSPECIFIED</code></pre> == <pre><code>SIP_TRUNK_TRANSPORT_TLS</code></pre>: encryption is the default, so a caller that says nothing gets an encrypted trunk. |
+| sip_trunk_source_cidr | [string](#string) | optional | OPTIONAL: the source address or CIDR the carrier sends from, e.g. <pre><code>203.0.113.7/32</code></pre>. REQUIRED when <pre><code>sip_trunk_transport</code></pre> is <pre><code>SIP_TRUNK_TRANSPORT_UDP</code></pre> or <pre><code>SIP_TRUNK_TRANSPORT_TCP</code></pre>, where the trunk is matched by source address rather than authenticated by a TLS certificate; ignored otherwise. A hostname is REFUSED with <pre><code>INVALID_ARGUMENT</code></pre>: Asterisk drops a <pre><code>type=identify</code></pre> section whose <pre><code>match=</code></pre> does not resolve, and it does so silently, so an unresolvable name would read as a working trunk that never matches an inbound call. |
 
 
 
@@ -22612,6 +22615,20 @@ This protobuf message defines the sorting order for VTSI (Virtual Test System In
 
 
  <!-- end messages -->
+
+
+<a name="ondewo.vtsi.SipTrunkTransport"></a>
+
+### SipTrunkTransport
+Transport for the SIP trunk of an Asterisk server.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| SIP_TRUNK_TRANSPORT_UNSPECIFIED | 0 | Unspecified transport: identical to <pre><code>SIP_TRUNK_TRANSPORT_TLS</code></pre>. Encryption is the default, so the zero value is the secure one. |
+| SIP_TRUNK_TRANSPORT_TLS | 1 | TLS transport with SRTP media. The trunk is authenticated by certificate and needs no source CIDR. |
+| SIP_TRUNK_TRANSPORT_UDP | 2 | Plain UDP transport. Requires <pre><code>sip_trunk_source_cidr</code></pre>. |
+| SIP_TRUNK_TRANSPORT_TCP | 3 | Plain TCP transport. Requires <pre><code>sip_trunk_source_cidr</code></pre>. |
+
 
 
 <a name="ondewo.vtsi.VtsiProjectSorting.VtsiProjectSortingField"></a>

@@ -6017,6 +6017,10 @@
                   <ul>
                     
                       <li>
+                        <a href="#ondewo.vtsi.SipTrunkTransport" class="title-badge enum">SipTrunkTransport</a>
+                      </li>
+                    
+                      <li>
                         <a href="#ondewo.vtsi.VtsiProjectSorting.VtsiProjectSortingField" class="title-badge enum">VtsiProjectSorting.VtsiProjectSortingField</a>
                       </li>
                     
@@ -61019,7 +61023,7 @@ qwen3_tts_custom_voice, qwen3_tts_base). </p></td>
                 <tr>
                   <td>activate_audio_object_storage</td>
                   <td><a href="#bool">bool</a></td>
-                  <td></td>
+                  <td>optional</td>
                   <td><p>Audio storage should be activated or not </p></td>
                 </tr>
               
@@ -61050,14 +61054,14 @@ qwen3_tts_custom_voice, qwen3_tts_base). </p></td>
                 <tr>
                   <td>activate_s2t</td>
                   <td><a href="#bool">bool</a></td>
-                  <td></td>
+                  <td>optional</td>
                   <td><p>Should audio object store save audio sent to the Speech-2-Text platform </p></td>
                 </tr>
               
                 <tr>
                   <td>activate_t2s</td>
                   <td><a href="#bool">bool</a></td>
-                  <td></td>
+                  <td>optional</td>
                   <td><p>Should audio object store save audio generated from the Text-2-Speech platform </p></td>
                 </tr>
               
@@ -62095,7 +62099,7 @@ for the given number of seconds (default: 0 = no protection) </p></td>
                 <tr>
                   <td>transcribe_on_disabled_interruptions</td>
                   <td><a href="#bool">bool</a></td>
-                  <td></td>
+                  <td>optional</td>
                   <td><p>Transcribe caller speech while the bot is speaking even if interruptions are disabled </p></td>
                 </tr>
               
@@ -62472,7 +62476,7 @@ If there are no more results in the list, this field will be empty. </p></td>
                 <tr>
                   <td>activate_message_broker</td>
                   <td><a href="#bool">bool</a></td>
-                  <td></td>
+                  <td>optional</td>
                   <td><p>Should the broker be activated or not </p></td>
                 </tr>
               
@@ -62510,28 +62514,28 @@ If there are no more results in the list, this field will be empty. </p></td>
                 <tr>
                   <td>activate_s2t</td>
                   <td><a href="#bool">bool</a></td>
-                  <td></td>
+                  <td>optional</td>
                   <td><p>should RabbitMQ Message Broker be activated for Speech-2-Text platform </p></td>
                 </tr>
               
                 <tr>
                   <td>activate_nlu</td>
                   <td><a href="#bool">bool</a></td>
-                  <td></td>
+                  <td>optional</td>
                   <td><p>should RabbitMQ Message Broker be activated for NLU platform </p></td>
                 </tr>
               
                 <tr>
                   <td>activate_t2s</td>
                   <td><a href="#bool">bool</a></td>
-                  <td></td>
+                  <td>optional</td>
                   <td><p>should RabbitMQ Message Broker be activated for Text-2-Speech platform </p></td>
                 </tr>
               
                 <tr>
                   <td>activate_sip</td>
                   <td><a href="#bool">bool</a></td>
-                  <td></td>
+                  <td>optional</td>
                   <td><p>should RabbitMQ Message Broker be activated for SIP platform </p></td>
                 </tr>
               
@@ -62845,7 +62849,7 @@ Unset = off (-1 is also accepted as explicit off) </p></td>
                   <td>call_name</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>The asterisk sip call name that was assigned to the call
+                  <td><p>The call name that was assigned to the call
 For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
 For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> </p></td>
                 </tr>
@@ -64159,14 +64163,14 @@ from the latest stable partial transcription (default: 3.0) </p></td>
                 <tr>
                   <td>turn_detection_system_prompt</td>
                   <td><a href="#string">string</a></td>
-                  <td></td>
+                  <td>optional</td>
                   <td><p>System prompt for the semantic (LLM) turn detection model of the speech-to-text service </p></td>
                 </tr>
               
                 <tr>
                   <td>turn_detection_user_prompt</td>
                   <td><a href="#string">string</a></td>
-                  <td></td>
+                  <td>optional</td>
                   <td><p>User prompt for the semantic (LLM) turn detection model of the speech-to-text service </p></td>
                 </tr>
               
@@ -65860,10 +65864,15 @@ Sending an empty string is NOT the same as leaving it unset and is rejected. </p
             <tbody>
               
                 <tr>
-                  <td>sip_conf_file_string</td>
+                  <td>pjsip_conf_file_string</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>sip.conf file as string </p></td>
+                  <td><p>pjsip.conf file as string.
+Renamed from <pre><code>sip_conf_file_string</code></pre> in 9.0.0: the chan_sip driver this field
+was named after was removed in Asterisk 21, and the file an Asterisk 22 server reads is
+<pre><code>pjsip.conf</code></pre>. Field number 1 and type <pre><code>string</code></pre> are
+unchanged and no <pre><code>json_name</code></pre> override was added, so the change is binary
+wire-compatible in both directions and source-breaking only. </p></td>
                 </tr>
               
                 <tr>
@@ -65944,6 +65953,29 @@ Sending an empty string is NOT the same as leaving it unset and is rejected. </p
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>SIP trunk phone number / caller id. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>sip_trunk_transport</td>
+                  <td><a href="#ondewo.vtsi.SipTrunkTransport">SipTrunkTransport</a></td>
+                  <td></td>
+                  <td><p>OPTIONAL: transport for the SIP trunk. Unset == <pre><code>SIP_TRUNK_TRANSPORT_UNSPECIFIED</code></pre>
+== <pre><code>SIP_TRUNK_TRANSPORT_TLS</code></pre>: encryption is the default, so a caller that says
+nothing gets an encrypted trunk. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>sip_trunk_source_cidr</td>
+                  <td><a href="#string">string</a></td>
+                  <td>optional</td>
+                  <td><p>OPTIONAL: the source address or CIDR the carrier sends from, e.g. <pre><code>203.0.113.7/32</code></pre>.
+REQUIRED when <pre><code>sip_trunk_transport</code></pre> is
+<pre><code>SIP_TRUNK_TRANSPORT_UDP</code></pre> or <pre><code>SIP_TRUNK_TRANSPORT_TCP</code></pre>,
+where the trunk is matched by source address rather than authenticated by a TLS certificate; ignored
+otherwise. A hostname is REFUSED with <pre><code>INVALID_ARGUMENT</code></pre>: Asterisk drops a
+<pre><code>type=identify</code></pre> section whose <pre><code>match=</code></pre> does not resolve,
+and it does so silently, so an unresolvable name would read as a working trunk that never matches an
+inbound call. </p></td>
                 </tr>
               
             </tbody>
@@ -66553,6 +66585,42 @@ Format: <pre><code>projects/&lt;Project ID&gt;/agent</code></pre> </p></td>
 
       
       <div id="ondewo/vtsi/projects.proto-enums" class="object-category">Enums</div>
+      
+        <h3 id="ondewo.vtsi.SipTrunkTransport" class="title-badge enum">SipTrunkTransport</h3>
+        <p>Transport for the SIP trunk of an Asterisk server.</p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>SIP_TRUNK_TRANSPORT_UNSPECIFIED</td>
+                <td>0</td>
+                <td><p>Unspecified transport: identical to <pre><code>SIP_TRUNK_TRANSPORT_TLS</code></pre>. Encryption is
+the default, so the zero value is the secure one.</p></td>
+              </tr>
+            
+              <tr>
+                <td>SIP_TRUNK_TRANSPORT_TLS</td>
+                <td>1</td>
+                <td><p>TLS transport with SRTP media. The trunk is authenticated by certificate and needs no source CIDR.</p></td>
+              </tr>
+            
+              <tr>
+                <td>SIP_TRUNK_TRANSPORT_UDP</td>
+                <td>2</td>
+                <td><p>Plain UDP transport. Requires <pre><code>sip_trunk_source_cidr</code></pre>.</p></td>
+              </tr>
+            
+              <tr>
+                <td>SIP_TRUNK_TRANSPORT_TCP</td>
+                <td>3</td>
+                <td><p>Plain TCP transport. Requires <pre><code>sip_trunk_source_cidr</code></pre>.</p></td>
+              </tr>
+            
+          </tbody>
+        </table>
       
         <h3 id="ondewo.vtsi.VtsiProjectSorting.VtsiProjectSortingField" class="title-badge enum">VtsiProjectSorting.VtsiProjectSortingField</h3>
         <p>Enum to specify the sorting field for VTSI projects.</p><p>Enum defining the field by which VTSI projects can be sorted</p>
