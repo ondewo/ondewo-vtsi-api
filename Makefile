@@ -242,15 +242,49 @@ checkout_defined_submodule_versions: ## Update submodule versions
 # presence_check is a PREREQUISITE and not merely a workflow step: .github/workflows/presence.yml
 # triggers on master, release/** and pull requests, and every one of those can be skipped, disabled
 # or bypassed, while a make prerequisite cannot. A release must not be cut against a proto tree the
-# guard has not read. It needs grpcio-tools on ${PRESENCE_PY}; point that at an interpreter which has
-# it (`make release PRESENCE_PY=.venv/bin/python`) rather than dropping the prerequisite. The steps
-# run in listed order, as every other multi-prerequisite target here already requires.
+# guard has not read.
+#
+# THIS IS A REAL OPERATIONAL CHANGE TO THE RELEASE ENTRY POINT, AND IT FAILS CLOSED. `make release`
+# and therefore `make ondewo_release` now HARD-REQUIRE grpcio-tools (or a protoc on PATH) on
+# ${PRESENCE_PY}, which defaults to a bare `python3`. A release machine whose system python3 does not
+# have it cuts NO branch and NO tag: the run stops on the first prerequisite with exit 2 and the
+# instruction printed by presence/check_presence.py. That is deliberate - a missing toolchain is a
+# BROKEN check and never a clean one - and it is loud rather than silent, so it cannot ship an
+# unread proto tree. The supported fix is to point the override at an interpreter that has the
+# toolchain, NEVER to drop the prerequisite:
+#
+#     make ondewo_release PRESENCE_PY=.venv/bin/python
+#     make release        PRESENCE_PY=/path/to/venv/bin/python
+#     make presence_check PRESENCE_PY=.venv/bin/python   # to check the interpreter first, alone
+#
+# ORDER IS LOAD-BEARING AND MAKE ONLY GUARANTEES IT SERIALLY, hence the `.NOTPARALLEL:` below.
+# Prerequisites are made left to right under a serial make, but `make -j` is free to run them
+# concurrently and in any order. MEASURED on GNU Make 4.3 with a four-step replica of this list:
+# `make -j4 release` ran it exactly INVERTED - build_and_release first and presence_check LAST. Run
+# again with the real check on an interpreter that has no toolchain, the replica created the branch,
+# pushed the tag and built the release, and only THEN failed with exit 2 - so the operator still sees
+# a red run, but against a release that already exists and was never guarded. That is the entire
+# failure the prerequisite exists to prevent, and a non-zero exit code does not undo it. A REPLICA
+# with real recipes was needed because `make -n -j4 release` CANNOT show this: a dry run forks no
+# jobs and prints the steps in order whether or not this line is present, so it is not a way to
+# check the hazard and not a way to disprove it. `.NOTPARALLEL:` with no prerequisites restores the
+# listed order on every make version and was measured to do so, on the same replica and with the
+# same broken interpreter: nothing beyond presence_check ran at all. The two
+# alternatives were rejected: ORDER-ONLY prerequisites (`|`) order the group against the TARGET and
+# not against each other, so they do not fix this at all; and chaining each step onto the previous
+# one would break the documented partial-failure recovery, which is to re-run only the remaining
+# step (CLAUDE.md, "Publish order decides how a partial failure is recovered"). The targeted form
+# `.NOTPARALLEL: release` would be narrower but needs make >= 4.4, and on the 4.3 measured here it
+# silently means the bare form anyway - so the bare form is spelled, which does the same thing
+# everywhere. Nothing in this makefile is written to be parallel-safe, so it costs nothing.
 #
 # ORDERING HAZARD, stated by target NAME because line numbers move and names do not:
 # create_release_tag tags and pushes BEFORE build_and_release_to_github_via_docker reaches build,
 # and build is what git-adds and commits the re-assembled proto trees, the Makefile and RELEASE.md.
 # So anything build produces lands on release/<version> AFTER the tag that the five client
 # repositories check out. RUN `make build` AND COMMIT ITS OUTPUT BEFORE `make ondewo_release`.
+.NOTPARALLEL:
+
 RELEASE_STEPS = presence_check create_release_branch create_release_tag build_and_release_to_github_via_docker
 
 release: ${RELEASE_STEPS} ## Automate the entire release process

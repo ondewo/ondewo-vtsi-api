@@ -127,12 +127,53 @@ TODOs after Pull Request was merged in:
    ```
 
 * `Commit and push` the changes made in `RELEASE.md` and `Makefile`
+* Check the proto field-presence guard can RUN on this machine (see below):
+   >make presence_check
 * Release:
    >make ondewo_release
+
+### The release now requires the proto toolchain, and fails closed without it
+
+`make release` — and therefore `make ondewo_release` — takes `presence_check` as its **first
+prerequisite**, so a release can no longer be cut against a proto tree the field-presence guard has
+never read. That guard runs a real `protoc`, which it gets from **`grpcio-tools`** installed on
+`${PRESENCE_PY}`, and `PRESENCE_PY` defaults to a bare `python3`.
+
+**On a machine whose system `python3` does not have it, the release stops before doing anything.**
+No release branch is created, no tag is pushed, nothing is published: the first prerequisite exits
+`2` with an instruction. Exit `2` rather than `1` is the distinction the guard makes everywhere — a
+check that could not run is **BROKEN**, never a clean pass and never a finding.
+
+The supported fix is to point `PRESENCE_PY` at an interpreter that has the toolchain. **Do not drop
+the prerequisite**; that is the one change that puts an unread proto tree back into a release.
+
+```bash
+python3 -m pip install grpcio-tools protobuf   # or use a venv that already has them
+make presence_check PRESENCE_PY=.venv/bin/python   # verify the interpreter on its own, first
+make ondewo_release PRESENCE_PY=.venv/bin/python   # then release with the same override
+```
+
+The override does reach the guard through `make ondewo_release`, even though that target runs the
+release in a **sub-make** (`run_release_with_devops` calls `make release $(info)`): a variable set on
+the make command line is passed down through `MAKEFLAGS`. Measured, not assumed — it is the
+non-obvious half, since the target you type is not the target that runs the guard. Exporting
+`PRESENCE_PY` in the environment happens to work too, because the makefile declares it with `?=`,
+but prefer the command line: that form also wins against a makefile assignment, so it keeps working
+if the default ever stops being conditional.
+
+Run `make presence_check` on its own **before** `make ondewo_release`, not because the release would
+skip it, but because finding out about a missing interpreter is much cheaper than finding out about
+it after the version bump has been committed and pushed.
+
+`make release` also declares `.NOTPARALLEL:`, because its steps must run in the listed order and
+make guarantees left-to-right prerequisite order only for a **serial** make. Under `make -j` the
+steps are free to run concurrently and in any order — measured on GNU Make 4.3, a replica of this
+step list ran fully inverted under `-j4`, tagging before the guard had read a single proto.
 
 ---
 The `make ondewo_release` command can be divided into 5 steps:
 
+* running the proto field-presence guard (`presence_check`), which stops the release if it cannot run
 * cloning the devops-accounts repository and extracting the credentials
 * creating and pushing the release branch
 * creating and pushing the release tag
