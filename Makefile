@@ -239,7 +239,21 @@ checkout_defined_submodule_versions: ## Update submodule versions
 ########################################################
 #		Release
 
-release: create_release_branch create_release_tag build_and_release_to_github_via_docker ## Automate the entire release process
+# presence_check is a PREREQUISITE and not merely a workflow step: .github/workflows/presence.yml
+# triggers on master, release/** and pull requests, and every one of those can be skipped, disabled
+# or bypassed, while a make prerequisite cannot. A release must not be cut against a proto tree the
+# guard has not read. It needs grpcio-tools on ${PRESENCE_PY}; point that at an interpreter which has
+# it (`make release PRESENCE_PY=.venv/bin/python`) rather than dropping the prerequisite. The steps
+# run in listed order, as every other multi-prerequisite target here already requires.
+#
+# ORDERING HAZARD, stated by target NAME because line numbers move and names do not:
+# create_release_tag tags and pushes BEFORE build_and_release_to_github_via_docker reaches build,
+# and build is what git-adds and commits the re-assembled proto trees, the Makefile and RELEASE.md.
+# So anything build produces lands on release/<version> AFTER the tag that the five client
+# repositories check out. RUN `make build` AND COMMIT ITS OUTPUT BEFORE `make ondewo_release`.
+RELEASE_STEPS = presence_check create_release_branch create_release_tag build_and_release_to_github_via_docker
+
+release: ${RELEASE_STEPS} ## Automate the entire release process
 	@echo "Release Finished"
 
 create_release_branch: ## Create Release Branch and push it to origin
