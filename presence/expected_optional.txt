@@ -1,0 +1,86 @@
+# Every field in this repository's own protos that carries the proto3 `optional` keyword, one fully
+# qualified name per line. Blank lines, whole-line `#` comments and inline `#` comments are ignored.
+#
+# presence/check_presence.py asserts SET EQUALITY against this file, so a keyword REMOVED fails
+# exactly as loudly as one added - removal silently turns an unset field back into an
+# indistinguishable default, which is the whole defect the keyword exists to fix.
+#
+# Adding a line is a source-breaking change in five generated languages. It belongs in the same
+# commit as the .proto edit and the RELEASE.md entry that documents it.
+ondewo.vtsi.AsteriskConfigs.asterisk_version
+ondewo.vtsi.AsteriskConfigsVariables.sip_trunk_source_cidr                   # new field in 9.0.0 (OND233-367)
+ondewo.vtsi.AudioObjectStorageConfig.activate_audio_object_storage           # keyword added in 9.0.0 (OND233-367)
+ondewo.vtsi.AudioObjectStorageServicesActivationConfig.activate_s2t          # keyword added in 9.0.0 (OND233-367)
+ondewo.vtsi.AudioObjectStorageServicesActivationConfig.activate_t2s          # keyword added in 9.0.0 (OND233-367)
+ondewo.vtsi.Call.common_services_config
+ondewo.vtsi.Call.csi_port
+ondewo.vtsi.Call.nlu_session_name
+ondewo.vtsi.Call.platforms
+ondewo.vtsi.Call.services_statuses
+ondewo.vtsi.Call.sip_port
+ondewo.vtsi.Call.sip_status
+ondewo.vtsi.Call.sip_status_history
+ondewo.vtsi.CallFilter.call_status
+ondewo.vtsi.CallFilter.duration_in_s_max
+ondewo.vtsi.CallFilter.duration_in_s_min
+ondewo.vtsi.CallFilter.end_time
+ondewo.vtsi.CallFilter.start_time
+ondewo.vtsi.CallLogFilter.end_time
+ondewo.vtsi.CallLogFilter.include_unleveled_lines
+ondewo.vtsi.CallLogFilter.regex
+ondewo.vtsi.CallLogFilter.start_time
+ondewo.vtsi.CallLogFilter.text
+ondewo.vtsi.CsiVtsiConfig.activate_control_messages
+ondewo.vtsi.GetCallRequest.call_view
+ondewo.vtsi.GetCallerRequest.call_view
+ondewo.vtsi.GetListenerRequest.call_view
+ondewo.vtsi.GetScheduledCallerRequest.call_view
+ondewo.vtsi.InterruptionHandlingConfig.backoff_seconds
+ondewo.vtsi.InterruptionHandlingConfig.enabled
+ondewo.vtsi.InterruptionHandlingConfig.false_interruption_timeout_seconds
+ondewo.vtsi.InterruptionHandlingConfig.first_message_protected_seconds
+ondewo.vtsi.InterruptionHandlingConfig.min_interruption_duration_seconds
+ondewo.vtsi.InterruptionHandlingConfig.min_interruption_words
+ondewo.vtsi.InterruptionHandlingConfig.resume_after_false_interruption
+ondewo.vtsi.InterruptionHandlingConfig.transcribe_on_disabled_interruptions  # keyword added in 9.0.0 (OND233-367)
+ondewo.vtsi.ListCallLogStreamsRequest.filter
+ondewo.vtsi.ListCallLogStreamsRequest.page_token
+ondewo.vtsi.ListCallLogsRequest.after_seq
+ondewo.vtsi.ListCallLogsRequest.before_seq
+ondewo.vtsi.ListCallLogsRequest.filter
+ondewo.vtsi.ListCallLogsRequest.max_lines
+ondewo.vtsi.ListCallLogsRequest.oldest_first
+ondewo.vtsi.ListCallLogsRequest.resume_token
+ondewo.vtsi.ListCallersRequest.call_view
+ondewo.vtsi.ListCallersRequest.page_token
+ondewo.vtsi.ListCallsRequest.call_filter
+ondewo.vtsi.ListCallsRequest.call_view
+ondewo.vtsi.ListCallsRequest.page_token
+ondewo.vtsi.ListListenersRequest.call_view
+ondewo.vtsi.ListListenersRequest.page_token
+ondewo.vtsi.ListScheduledCallersRequest.call_view
+ondewo.vtsi.ListScheduledCallersRequest.page_token
+ondewo.vtsi.ListVtsiProjectsRequest.page_token
+ondewo.vtsi.ListVtsiProjectsRequest.vtsi_project_sorting
+ondewo.vtsi.MessageBrokerConfig.activate_message_broker                      # keyword added in 9.0.0 (OND233-367)
+ondewo.vtsi.MessageBrokerServicesActivationConfig.activate_nlu               # keyword added in 9.0.0 (OND233-367)
+ondewo.vtsi.MessageBrokerServicesActivationConfig.activate_s2t               # keyword added in 9.0.0 (OND233-367)
+ondewo.vtsi.MessageBrokerServicesActivationConfig.activate_sip               # keyword added in 9.0.0 (OND233-367)
+ondewo.vtsi.MessageBrokerServicesActivationConfig.activate_t2s               # keyword added in 9.0.0 (OND233-367)
+ondewo.vtsi.NluVtsiConfig.platform
+ondewo.vtsi.ResponseTimingConfig.preemptive_generation_enabled
+ondewo.vtsi.ResponseTimingConfig.silence_end_call_timeout_seconds
+ondewo.vtsi.ResponseTimingConfig.t2s_chunked_streaming_enabled
+ondewo.vtsi.ResponseTimingConfig.turn_timeout_seconds
+ondewo.vtsi.SoftTimeoutConfig.max_per_generation
+ondewo.vtsi.SoftTimeoutConfig.timeout_seconds
+ondewo.vtsi.StreamCallLogsRequest.after_seq
+ondewo.vtsi.StreamCallLogsRequest.filter
+ondewo.vtsi.StreamCallLogsRequest.resume_token
+ondewo.vtsi.StreamCallLogsRequest.tail_lines
+ondewo.vtsi.TurnDetectionConfig.max_endpointing_delay_seconds
+ondewo.vtsi.TurnDetectionConfig.min_endpointing_delay_seconds
+ondewo.vtsi.TurnDetectionConfig.turn_detection_system_prompt                 # keyword added in 9.0.0 (OND233-367)
+ondewo.vtsi.TurnDetectionConfig.turn_detection_user_prompt                   # keyword added in 9.0.0 (OND233-367)
+ondewo.vtsi.VtsiProjectSorting.sorting_field
+ondewo.vtsi.VtsiProjectSorting.sorting_mode

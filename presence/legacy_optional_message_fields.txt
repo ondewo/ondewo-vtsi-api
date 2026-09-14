@@ -1,0 +1,28 @@
+# The THIRTEEN singular MESSAGE fields that carry the proto3 `optional` keyword redundantly, one
+# fully qualified name per line. Blank lines, whole-line `#` comments and inline `#` comments are
+# ignored.
+#
+# A singular message field ALREADY has presence without the keyword - measured: identical bytes,
+# identical HasField; the only difference is a synthetic entry in DESCRIPTOR.oneofs, which becomes
+# public surface in the generated clients (a `XCase` enum in the typescript client). So the keyword
+# buys nothing here and costs generated API.
+#
+# These thirteen predate the guard and are LEFT ALONE: removing the keyword is a second
+# source-breaking change for zero behavioural gain. presence/check_presence.py asserts SET EQUALITY
+# against this file, so a FOURTEENTH fails BY NAME - which is the point of the file. Do not add one.
+#
+# The inconsistency is real and documented rather than propagated: DeleteCallLogsRequest.filter is
+# the same CallLogFilter type in the same service as three siblings that DO carry the keyword.
+ondewo.vtsi.Call.common_services_config
+ondewo.vtsi.Call.services_statuses
+ondewo.vtsi.Call.sip_status
+ondewo.vtsi.Call.sip_status_history
+ondewo.vtsi.CallFilter.end_time
+ondewo.vtsi.CallFilter.start_time
+ondewo.vtsi.CallLogFilter.end_time
+ondewo.vtsi.CallLogFilter.start_time
+ondewo.vtsi.ListCallLogStreamsRequest.filter
+ondewo.vtsi.ListCallLogsRequest.filter
+ondewo.vtsi.ListCallsRequest.call_filter
+ondewo.vtsi.ListVtsiProjectsRequest.vtsi_project_sorting
+ondewo.vtsi.StreamCallLogsRequest.filter

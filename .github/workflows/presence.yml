@@ -1,0 +1,37 @@
+# Guards the field-presence surface of ondewo/vtsi/*.proto.
+#
+# Why a workflow of its own rather than a step in generate-doc-and-deploy: that workflow REGENERATES
+# and PUBLISHES the docs, so it is a producer and its success says nothing about whether the protos
+# still match their committed expectations. This one only reads, and it is allowed to fail.
+name: Proto field presence
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  presence_check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          # The check walks ondewo/vtsi/*.proto only, which is committed in this repository; the four
+          # vendored api submodules are not needed and cloning them would cost minutes for nothing.
+          submodules: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install the proto toolchain
+        # grpcio-tools carries protoc AND the well-known types. A bare apt protoc would resolve
+        # neither google/protobuf/timestamp.proto nor google/protobuf/field_mask.proto, and the
+        # failure would read as a proto defect instead of a missing include path.
+        run: python -m pip install --upgrade pip grpcio-tools protobuf
+
+      - name: Check proto field presence
+        run: make presence_check PRESENCE_PY=python

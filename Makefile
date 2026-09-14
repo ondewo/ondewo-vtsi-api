@@ -87,6 +87,19 @@ mypy: ## Run mypy static code checking
 	@echo "DONE: Run mypy directly"
 	@echo "---------------------------------------------"
 
+# The presence guard needs a real protoc. grpcio-tools carries one and the well-known types with it,
+# which is why it is preferred over a system protoc: a system binary without the well-known .protos on
+# its include path fails on `import "google/protobuf/timestamp.proto"` and the failure reads like a
+# proto defect rather than a missing include. PRESENCE_PY lets a caller point the target at a venv
+# interpreter that already has it (e.g. `make presence_check PRESENCE_PY=.venv/bin/python`).
+PRESENCE_PY?=python3
+
+presence_check: ## Check the proto field-presence surface against presence/expected_optional.txt
+	@${PRESENCE_PY} presence/check_presence.py
+
+presence_update: ## Regenerate presence/presence-manifest.json after an intended presence change
+	@${PRESENCE_PY} presence/check_presence.py --write
+
 help: ## Print usage info about help targets
 	# (first comment after target starting with double hashes ##)
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' Makefile | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-40s\033[0m %s\n", $$1, $$2}'
