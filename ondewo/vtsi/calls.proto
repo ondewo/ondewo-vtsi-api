@@ -292,10 +292,10 @@ message TurnDetectionConfig{
     TurnEagerness turn_eagerness = 4;
 
     // System prompt for the semantic (LLM) turn detection model of the speech-to-text service
-    string turn_detection_system_prompt = 5;
+    optional string turn_detection_system_prompt = 5;
 
     // User prompt for the semantic (LLM) turn detection model of the speech-to-text service
-    string turn_detection_user_prompt = 6;
+    optional string turn_detection_user_prompt = 6;
 }
 
 // Configuration of the interruption (barge-in) handling, i.e. the caller speaking while the bot is speaking
@@ -328,7 +328,7 @@ message InterruptionHandlingConfig{
     optional float first_message_protected_seconds = 7;
 
     // Transcribe caller speech while the bot is speaking even if interruptions are disabled
-    bool transcribe_on_disabled_interruptions = 8;
+    optional bool transcribe_on_disabled_interruptions = 8;
 }
 
 // Configuration of the response timing, i.e. when and how the bot responds
@@ -428,7 +428,7 @@ message CsiVtsiConfig{
 message AudioObjectStorageConfig{
 
     // Audio storage should be activated or not
-    bool activate_audio_object_storage = 1;
+    optional bool activate_audio_object_storage = 1;
 
     // Configuration of the Minio Audio Object Store
     AudioObjectStorageServicesActivationConfig audio_object_storage_services_activation_config = 2;
@@ -439,17 +439,17 @@ message AudioObjectStorageConfig{
 message AudioObjectStorageServicesActivationConfig{
 
     // Should audio object store save audio sent to the Speech-2-Text platform
-    bool activate_s2t = 1;
+    optional bool activate_s2t = 1;
 
     // Should audio object store save audio generated from the Text-2-Speech platform
-    bool activate_t2s = 2;
+    optional bool activate_t2s = 2;
 }
 
 // Configuration of the RabbitMQ Message Broker
 message MessageBrokerConfig{
 
     // Should the broker be activated or not
-    bool activate_message_broker = 1;
+    optional bool activate_message_broker = 1;
 
     // Configuration of the Broker service activation
     MessageBrokerServicesActivationConfig message_broker_services_activation_config = 2;
@@ -464,16 +464,16 @@ message MessageBrokerConfig{
 message MessageBrokerServicesActivationConfig{
 
     // should RabbitMQ Message Broker be activated for Speech-2-Text platform
-    bool activate_s2t = 1;
+    optional bool activate_s2t = 1;
 
     // should RabbitMQ Message Broker be activated for NLU platform
-    bool activate_nlu = 2;
+    optional bool activate_nlu = 2;
 
     // should RabbitMQ Message Broker be activated for Text-2-Speech platform
-    bool activate_t2s = 3;
+    optional bool activate_t2s = 3;
 
     // should RabbitMQ Message Broker be activated for SIP platform
-    bool activate_sip = 4;
+    optional bool activate_sip = 4;
 }
 
 // Configuration of the RabbitMQ Message Broker
@@ -991,7 +991,7 @@ message ScheduledCaller {
     // <pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre>
     string name = 1;
 
-    // The asterisk sip call name that was assigned to the call
+    // The call name that was assigned to the call
     // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     string call_name = 2;

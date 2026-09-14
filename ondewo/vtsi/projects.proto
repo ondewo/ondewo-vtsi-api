@@ -157,13 +157,51 @@ message AsteriskConfigsVariables{
     // SIP trunk phone number / caller id.
     string sip_trunk_phone_number = 6;
 
+    // OPTIONAL: transport for the SIP trunk. Unset == <pre><code>SIP_TRUNK_TRANSPORT_UNSPECIFIED</code></pre>
+    // == <pre><code>SIP_TRUNK_TRANSPORT_TLS</code></pre>: encryption is the default, so a caller that says
+    // nothing gets an encrypted trunk.
+    SipTrunkTransport sip_trunk_transport = 7;
+
+    // OPTIONAL: the source address or CIDR the carrier sends from, e.g. <pre><code>203.0.113.7/32</code></pre>.
+    // REQUIRED when <pre><code>sip_trunk_transport</code></pre> is
+    // <pre><code>SIP_TRUNK_TRANSPORT_UDP</code></pre> or <pre><code>SIP_TRUNK_TRANSPORT_TCP</code></pre>,
+    // where the trunk is matched by source address rather than authenticated by a TLS certificate; ignored
+    // otherwise. A hostname is REFUSED with <pre><code>INVALID_ARGUMENT</code></pre>: Asterisk drops a
+    // <pre><code>type=identify</code></pre> section whose <pre><code>match=</code></pre> does not resolve,
+    // and it does so silently, so an unresolvable name would read as a working trunk that never matches an
+    // inbound call.
+    optional string sip_trunk_source_cidr = 8;
+
+}
+
+// Transport for the SIP trunk of an Asterisk server.
+enum SipTrunkTransport {
+
+    // Unspecified transport: identical to <pre><code>SIP_TRUNK_TRANSPORT_TLS</code></pre>. Encryption is
+    // the default, so the zero value is the secure one.
+    SIP_TRUNK_TRANSPORT_UNSPECIFIED = 0;
+
+    // TLS transport with SRTP media. The trunk is authenticated by certificate and needs no source CIDR.
+    SIP_TRUNK_TRANSPORT_TLS = 1;
+
+    // Plain UDP transport. Requires <pre><code>sip_trunk_source_cidr</code></pre>.
+    SIP_TRUNK_TRANSPORT_UDP = 2;
+
+    // Plain TCP transport. Requires <pre><code>sip_trunk_source_cidr</code></pre>.
+    SIP_TRUNK_TRANSPORT_TCP = 3;
+
 }
 
 // Configuration files for the Asterisk server
 message AsteriskConfigsFiles{
 
-    // sip.conf file as string
-    string sip_conf_file_string = 1;
+    // pjsip.conf file as string.
+    // Renamed from <pre><code>sip_conf_file_string</code></pre> in 9.0.0: the chan_sip driver this field
+    // was named after was removed in Asterisk 21, and the file an Asterisk 22 server reads is
+    // <pre><code>pjsip.conf</code></pre>. Field number 1 and type <pre><code>string</code></pre> are
+    // unchanged and no <pre><code>json_name</code></pre> override was added, so the change is binary
+    // wire-compatible in both directions and source-breaking only.
+    string pjsip_conf_file_string = 1;
 
     // extensions.conf file as string
     string extensions_conf_file_string = 2;
