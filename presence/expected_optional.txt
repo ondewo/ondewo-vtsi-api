@@ -60,6 +60,8 @@ ondewo.vtsi.ListListenersRequest.call_view
 ondewo.vtsi.ListListenersRequest.page_token
 ondewo.vtsi.ListScheduledCallersRequest.call_view
 ondewo.vtsi.ListScheduledCallersRequest.page_token
+ondewo.vtsi.ListSoftphoneAccountsRequest.page_token                          # new field in 9.0.0 (OND233-367)
+ondewo.vtsi.ListSoftphoneCertificatesRequest.page_token                      # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.ListVtsiProjectsRequest.page_token
 ondewo.vtsi.ListVtsiProjectsRequest.vtsi_project_sorting
 ondewo.vtsi.MessageBrokerConfig.activate_message_broker                      # keyword added in 9.0.0 (OND233-367)
@@ -74,6 +76,10 @@ ondewo.vtsi.ResponseTimingConfig.t2s_chunked_streaming_enabled
 ondewo.vtsi.ResponseTimingConfig.turn_timeout_seconds
 ondewo.vtsi.SoftTimeoutConfig.max_per_generation
 ondewo.vtsi.SoftTimeoutConfig.timeout_seconds
+ondewo.vtsi.SoftphoneAccount.enabled                                         # new field in 9.0.0 (OND233-367)
+ondewo.vtsi.SoftphoneAccountFilter.enabled                                   # new field in 9.0.0 (OND233-367)
+ondewo.vtsi.SoftphoneAccountSorting.sorting_field                            # new field in 9.0.0 (OND233-367)
+ondewo.vtsi.SoftphoneAccountSorting.sorting_mode                             # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.StreamCallLogsRequest.after_seq
 ondewo.vtsi.StreamCallLogsRequest.filter
 ondewo.vtsi.StreamCallLogsRequest.resume_token

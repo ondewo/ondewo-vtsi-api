@@ -3,9 +3,10 @@
   "proto_files": [
     "ondewo/vtsi/calls.proto",
     "ondewo/vtsi/logs.proto",
-    "ondewo/vtsi/projects.proto"
+    "ondewo/vtsi/projects.proto",
+    "ondewo/vtsi/softphones.proto"
   ],
-  "optional_field_count": 77,
+  "optional_field_count": 83,
   "fields": [
     {
       "message": "ondewo.vtsi.AsteriskConfigs",
@@ -591,6 +592,28 @@
       "explicit_default_hex": "1200"
     },
     {
+      "message": "ondewo.vtsi.ListSoftphoneAccountsRequest",
+      "field": "page_token",
+      "number": 5,
+      "type": "string",
+      "type_name": null,
+      "json_name": "pageToken",
+      "file": "ondewo/vtsi/softphones.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "2a00"
+    },
+    {
+      "message": "ondewo.vtsi.ListSoftphoneCertificatesRequest",
+      "field": "page_token",
+      "number": 6,
+      "type": "string",
+      "type_name": null,
+      "json_name": "pageToken",
+      "file": "ondewo/vtsi/softphones.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "3200"
+    },
+    {
       "message": "ondewo.vtsi.ListVtsiProjectsRequest",
       "field": "page_token",
       "number": 2,
@@ -743,6 +766,50 @@
       "file": "ondewo/vtsi/calls.proto",
       "unset_hex": "",
       "explicit_default_hex": "0d00000000"
+    },
+    {
+      "message": "ondewo.vtsi.SoftphoneAccount",
+      "field": "enabled",
+      "number": 7,
+      "type": "bool",
+      "type_name": null,
+      "json_name": "enabled",
+      "file": "ondewo/vtsi/softphones.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "3800"
+    },
+    {
+      "message": "ondewo.vtsi.SoftphoneAccountFilter",
+      "field": "enabled",
+      "number": 2,
+      "type": "bool",
+      "type_name": null,
+      "json_name": "enabled",
+      "file": "ondewo/vtsi/softphones.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "1000"
+    },
+    {
+      "message": "ondewo.vtsi.SoftphoneAccountSorting",
+      "field": "sorting_field",
+      "number": 1,
+      "type": "enum",
+      "type_name": ".ondewo.vtsi.SoftphoneAccountSorting.SoftphoneAccountSortingField",
+      "json_name": "sortingField",
+      "file": "ondewo/vtsi/softphones.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "0800"
+    },
+    {
+      "message": "ondewo.vtsi.SoftphoneAccountSorting",
+      "field": "sorting_mode",
+      "number": 2,
+      "type": "enum",
+      "type_name": ".ondewo.vtsi.VtsiProjectSortingMode",
+      "json_name": "sortingMode",
+      "file": "ondewo/vtsi/softphones.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "1000"
     },
     {
       "message": "ondewo.vtsi.StreamCallLogsRequest",

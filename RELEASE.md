@@ -61,6 +61,33 @@
     and refuse each by name, and so an `update_mask` can CLEAR it rather than assign `""`.
 
   Both are additive. An 8.x server decoding a 9.0.0 request skips them as unknown fields.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) New service `Softphones` in the new file
+  `ondewo/vtsi/softphones.proto` (unreleased, in development): SIP accounts on a project's Asterisk for
+  humans using a softphone such as Zoiper, each with its OWN SIP credentials and never one of the
+  `ondewo000N` container accounts. Eleven RPCs:
+  * accounts: `CreateSoftphoneAccount`, `GetSoftphoneAccount` (`field_mask`), `UpdateSoftphoneAccount`
+    (required `update_mask`; updatable paths `display_name`, `transport_security`, `enabled`,
+    `max_contacts`, `labels`, `allowed_destinations`), `DeleteSoftphoneAccount`, `ListSoftphoneAccounts`
+    (structured `SoftphoneAccountFilter` by transport security, enabled, labels, display-name and
+    SIP-username substring and certificate-expiry window; `field_mask`; `page_size` / `page_token`;
+    `SoftphoneAccountSorting`) and `RotateSoftphoneCredentials`;
+  * certificates: `ListSoftphoneCertificates` (per account or per project, filtered by status and expiry
+    window), `GetSoftphoneCertificate` and `RevokeSoftphoneCertificate`;
+  * provisioning: `GetSoftphoneProvisioning`, returning server, port, TLS transport, outbound proxy, SIP
+    identity, mandatory SDES-SRTP, codecs (`opus`, `alaw`, `ulaw`), the server CA to trust, the fingerprint
+    of the client certificate to import and step-by-step Zoiper 5 instructions.
+
+  `SoftphoneTransportSecurity` chooses per account between `CLIENT_CERTIFICATE` (mutual TLS on the
+  project's internal TLS port, with a client certificate issued by a per-project SOFTPHONE CA) and
+  `SERVER_TLS_ONLY` (the external TLS port, SIP digest only, for Zoiper editions without client-certificate
+  support); the zero value means `CLIENT_CERTIFICATE`. **Secrets are returned exactly once**: the SIP
+  password and the password-protected PKCS#12 bundle with the private key appear only in the
+  `CreateSoftphoneAccount` and `RotateSoftphoneCredentials` responses (`SoftphoneCredentials`). Get, List
+  and provisioning carry public material only (certificate PEM, CA PEM, SHA-256 fingerprint, serial,
+  validity, status); a lost key or password is recovered by rotating it. Six new fields carry the
+  `optional` keyword and are declared in `presence/expected_optional.txt`: `SoftphoneAccount.enabled`,
+  `SoftphoneAccountFilter.enabled`, `SoftphoneAccountSorting.sorting_field` and `.sorting_mode`, and
+  `page_token` of both list requests. Purely additive: no existing message, field or RPC changes.
 
 ### Compatibility
 

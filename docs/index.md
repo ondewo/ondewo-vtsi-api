@@ -1201,6 +1201,39 @@
   
     - [Projects](#ondewo.vtsi.Projects)
   
+- [ondewo/vtsi/softphones.proto](#ondewo/vtsi/softphones.proto)
+    - [CreateSoftphoneAccountRequest](#ondewo.vtsi.CreateSoftphoneAccountRequest)
+    - [CreateSoftphoneAccountResponse](#ondewo.vtsi.CreateSoftphoneAccountResponse)
+    - [DeleteSoftphoneAccountRequest](#ondewo.vtsi.DeleteSoftphoneAccountRequest)
+    - [DeleteSoftphoneAccountResponse](#ondewo.vtsi.DeleteSoftphoneAccountResponse)
+    - [GetSoftphoneAccountRequest](#ondewo.vtsi.GetSoftphoneAccountRequest)
+    - [GetSoftphoneCertificateRequest](#ondewo.vtsi.GetSoftphoneCertificateRequest)
+    - [GetSoftphoneProvisioningRequest](#ondewo.vtsi.GetSoftphoneProvisioningRequest)
+    - [ListSoftphoneAccountsRequest](#ondewo.vtsi.ListSoftphoneAccountsRequest)
+    - [ListSoftphoneAccountsResponse](#ondewo.vtsi.ListSoftphoneAccountsResponse)
+    - [ListSoftphoneCertificatesRequest](#ondewo.vtsi.ListSoftphoneCertificatesRequest)
+    - [ListSoftphoneCertificatesResponse](#ondewo.vtsi.ListSoftphoneCertificatesResponse)
+    - [RevokeSoftphoneCertificateRequest](#ondewo.vtsi.RevokeSoftphoneCertificateRequest)
+    - [RotateSoftphoneCredentialsRequest](#ondewo.vtsi.RotateSoftphoneCredentialsRequest)
+    - [RotateSoftphoneCredentialsResponse](#ondewo.vtsi.RotateSoftphoneCredentialsResponse)
+    - [SoftphoneAccount](#ondewo.vtsi.SoftphoneAccount)
+    - [SoftphoneAccount.LabelsEntry](#ondewo.vtsi.SoftphoneAccount.LabelsEntry)
+    - [SoftphoneAccountFilter](#ondewo.vtsi.SoftphoneAccountFilter)
+    - [SoftphoneAccountFilter.LabelsEntry](#ondewo.vtsi.SoftphoneAccountFilter.LabelsEntry)
+    - [SoftphoneAccountSorting](#ondewo.vtsi.SoftphoneAccountSorting)
+    - [SoftphoneCertificate](#ondewo.vtsi.SoftphoneCertificate)
+    - [SoftphoneCertificateFilter](#ondewo.vtsi.SoftphoneCertificateFilter)
+    - [SoftphoneCredentials](#ondewo.vtsi.SoftphoneCredentials)
+    - [SoftphoneProvisioning](#ondewo.vtsi.SoftphoneProvisioning)
+    - [UpdateSoftphoneAccountRequest](#ondewo.vtsi.UpdateSoftphoneAccountRequest)
+  
+    - [SoftphoneAccountSorting.SoftphoneAccountSortingField](#ondewo.vtsi.SoftphoneAccountSorting.SoftphoneAccountSortingField)
+    - [SoftphoneCertificateStatus](#ondewo.vtsi.SoftphoneCertificateStatus)
+    - [SoftphoneSrtpMode](#ondewo.vtsi.SoftphoneSrtpMode)
+    - [SoftphoneTransportSecurity](#ondewo.vtsi.SoftphoneTransportSecurity)
+  
+    - [Softphones](#ondewo.vtsi.Softphones)
+  
 - [Scalar Value Types](#scalar-value-types)
 
 
@@ -22715,6 +22748,593 @@ Structure of VTSI_PROJECT view
 | DeployVtsiProject | [DeployVtsiProjectRequest](#ondewo.vtsi.DeployVtsiProjectRequest) | [DeployVtsiProjectResponse](#ondewo.vtsi.DeployVtsiProjectResponse) | <p>Deploy a VTSI project</p> |
 | UndeployVtsiProject | [UndeployVtsiProjectRequest](#ondewo.vtsi.UndeployVtsiProjectRequest) | [UndeployVtsiProjectResponse](#ondewo.vtsi.UndeployVtsiProjectResponse) | <p>Undeploy a VTSI project</p> |
 | ListVtsiProjects | [ListVtsiProjectsRequest](#ondewo.vtsi.ListVtsiProjectsRequest) | [ListVtsiProjectsResponse](#ondewo.vtsi.ListVtsiProjectsResponse) | <p>Get a VTSI project with configs</p> |
+
+ <!-- end services -->
+
+
+
+<a name="ondewo/vtsi/softphones.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## ondewo/vtsi/softphones.proto
+
+
+
+<a name="ondewo.vtsi.CreateSoftphoneAccountRequest"></a>
+
+### CreateSoftphoneAccountRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Softphones.CreateSoftphoneAccount">Softphones.CreateSoftphoneAccount</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project in which to create the account. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| softphone_account | [SoftphoneAccount](#ondewo.vtsi.SoftphoneAccount) |  | The account to create. <code>sip_username</code> is required. Output-only fields must be left unset and are otherwise rejected with <code>INVALID_ARGUMENT</code>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CreateSoftphoneAccountResponse"></a>
+
+### CreateSoftphoneAccountResponse
+The response message for
+<a href="index.html#ondewo.vtsi.Softphones.CreateSoftphoneAccount">Softphones.CreateSoftphoneAccount</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| softphone_account | [SoftphoneAccount](#ondewo.vtsi.SoftphoneAccount) |  | The created account. |
+| credentials | [SoftphoneCredentials](#ondewo.vtsi.SoftphoneCredentials) |  | ONE-TIME secrets: the SIP password and, for <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code>, the PKCS#12 bundle and its password. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DeleteSoftphoneAccountRequest"></a>
+
+### DeleteSoftphoneAccountRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Softphones.DeleteSoftphoneAccount">Softphones.DeleteSoftphoneAccount</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the account to delete. The format is: <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;softphone_account_uuid&gt;</code></pre> |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DeleteSoftphoneAccountResponse"></a>
+
+### DeleteSoftphoneAccountResponse
+The response message for
+<a href="index.html#ondewo.vtsi.Softphones.DeleteSoftphoneAccount">Softphones.DeleteSoftphoneAccount</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the deleted account. |
+| revoked_certificate_count | [int32](#int32) |  | How many certificates were revoked by the deletion (the ACTIVE one and any SUPERSEDED ones). |
+
+
+
+
+
+
+<a name="ondewo.vtsi.GetSoftphoneAccountRequest"></a>
+
+### GetSoftphoneAccountRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Softphones.GetSoftphoneAccount">Softphones.GetSoftphoneAccount</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the account. The format is: <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;softphone_account_uuid&gt;</code></pre> |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the <code>SoftphoneAccount</code> field paths to populate, e.g. <code>display_name</code>, <code>enabled</code>. <code>name</code> is always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.GetSoftphoneCertificateRequest"></a>
+
+### GetSoftphoneCertificateRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Softphones.GetSoftphoneCertificate">Softphones.GetSoftphoneCertificate</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the certificate. The format is: <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;softphone_account_uuid&gt;/certificates/&lt;certificate_uuid&gt;</code></pre> |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response, as in <a href="index.html#ondewo.vtsi.ListSoftphoneCertificatesRequest">ListSoftphoneCertificatesRequest.field_mask</a>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.GetSoftphoneProvisioningRequest"></a>
+
+### GetSoftphoneProvisioningRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Softphones.GetSoftphoneProvisioning">Softphones.GetSoftphoneProvisioning</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the account to provision. The format is: <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;softphone_account_uuid&gt;</code></pre> |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListSoftphoneAccountsRequest"></a>
+
+### ListSoftphoneAccountsRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Softphones.ListSoftphoneAccounts">Softphones.ListSoftphoneAccounts</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project whose accounts to list. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| filter | [SoftphoneAccountFilter](#ondewo.vtsi.SoftphoneAccountFilter) |  | Optional. Narrows the listing. Unset lists every account of the project. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response, as in <a href="index.html#ondewo.vtsi.GetSoftphoneAccountRequest">GetSoftphoneAccountRequest.field_mask</a>. |
+| page_size | [int32](#int32) |  | Optional. Maximum number of accounts per page. <code>0</code> means the server default of 20; values above 1000 are clamped to 1000; negative values are rejected with <code>INVALID_ARGUMENT</code>. |
+| page_token | [string](#string) | optional | Optional. The <code>next_page_token</code> of a previous response. Opaque; valid only with the same <code>vtsi_project_name</code>, <code>filter</code> and <code>softphone_account_sorting</code>. |
+| softphone_account_sorting | [SoftphoneAccountSorting](#ondewo.vtsi.SoftphoneAccountSorting) |  | Optional. Sorting of the listing. Unset sorts by <code>sip_username</code>, ascending. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListSoftphoneAccountsResponse"></a>
+
+### ListSoftphoneAccountsResponse
+The response message for
+<a href="index.html#ondewo.vtsi.Softphones.ListSoftphoneAccounts">Softphones.ListSoftphoneAccounts</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| softphone_accounts | [SoftphoneAccount](#ondewo.vtsi.SoftphoneAccount) | repeated | The accounts of this page. |
+| next_page_token | [string](#string) |  | Token to retrieve the next page. Empty when there are no more results. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListSoftphoneCertificatesRequest"></a>
+
+### ListSoftphoneCertificatesRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Softphones.ListSoftphoneCertificates">Softphones.ListSoftphoneCertificates</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | Every certificate of every account of this VTSI project. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| softphone_account_name | [string](#string) |  | The certificates of one softphone account. The format is: <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;softphone_account_uuid&gt;</code></pre> |
+| filter | [SoftphoneCertificateFilter](#ondewo.vtsi.SoftphoneCertificateFilter) |  | Optional. Narrows the listing. Unset lists every certificate in scope. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the <code>SoftphoneCertificate</code> field paths to populate, e.g. <code>status</code>, <code>not_after</code>. <code>name</code> is always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code>. |
+| page_size | [int32](#int32) |  | Optional. Maximum number of certificates per page, with the same default, cap and validation as <a href="index.html#ondewo.vtsi.ListSoftphoneAccountsRequest">ListSoftphoneAccountsRequest.page_size</a>. |
+| page_token | [string](#string) | optional | Optional. The <code>next_page_token</code> of a previous response. Opaque; valid only with the same scope and filter. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListSoftphoneCertificatesResponse"></a>
+
+### ListSoftphoneCertificatesResponse
+The response message for
+<a href="index.html#ondewo.vtsi.Softphones.ListSoftphoneCertificates">Softphones.ListSoftphoneCertificates</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| softphone_certificates | [SoftphoneCertificate](#ondewo.vtsi.SoftphoneCertificate) | repeated | The certificates of this page, newest <code>created_at</code> first. |
+| next_page_token | [string](#string) |  | Token to retrieve the next page. Empty when there are no more results. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.RevokeSoftphoneCertificateRequest"></a>
+
+### RevokeSoftphoneCertificateRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Softphones.RevokeSoftphoneCertificate">Softphones.RevokeSoftphoneCertificate</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the certificate to revoke. The format is: <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;softphone_account_uuid&gt;/certificates/&lt;certificate_uuid&gt;</code></pre> |
+| reason | [string](#string) |  | Optional. Why the certificate is revoked, e.g. <code>device lost</code>. At most 512 characters. Stored as <code>revocation_reason</code>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.RotateSoftphoneCredentialsRequest"></a>
+
+### RotateSoftphoneCredentialsRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Softphones.RotateSoftphoneCredentials">Softphones.RotateSoftphoneCredentials</a>.
+At least one of <code>rotate_sip_password</code> and <code>rotate_certificate</code> must be
+<code>true</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the account. The format is: <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;softphone_account_uuid&gt;</code></pre> |
+| rotate_sip_password | [bool](#bool) |  | Generate a new SIP password. The old one stops working immediately. |
+| rotate_certificate | [bool](#bool) |  | Issue a new client certificate and key. The previous ACTIVE certificate, if any, becomes <code>SOFTPHONE_CERTIFICATE_STATUS_SUPERSEDED</code> and is no longer accepted. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.RotateSoftphoneCredentialsResponse"></a>
+
+### RotateSoftphoneCredentialsResponse
+The response message for
+<a href="index.html#ondewo.vtsi.Softphones.RotateSoftphoneCredentials">Softphones.RotateSoftphoneCredentials</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| softphone_account | [SoftphoneAccount](#ondewo.vtsi.SoftphoneAccount) |  | The account after the rotation. |
+| credentials | [SoftphoneCredentials](#ondewo.vtsi.SoftphoneCredentials) |  | ONE-TIME secrets: only the rotated parts are set. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.SoftphoneAccount"></a>
+
+### SoftphoneAccount
+A SIP account on a VTSI project&apos;s Asterisk for a human using a softphone. Never carries a
+secret.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Output only. Resource name of the softphone account. The format is: <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;softphone_account_uuid&gt;</code></pre> Ignored on create; identifies the account on update. |
+| softphone_account_id | [string](#string) |  | Output only. The <code>&lt;softphone_account_uuid&gt;</code> part of <code>name</code>. |
+| vtsi_project_name | [string](#string) |  | Output only. Resource name of the VTSI project the account belongs to. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| display_name | [string](#string) |  | Human-readable name, shown as the caller name of calls from this softphone. At most 128 characters. Updatable. |
+| sip_username | [string](#string) |  | Required on create, immutable afterwards. The SIP user (extension) of the account: the user part of its address of record and its SIP digest username. 1 to 64 characters of <pre><code>[A-Za-z0-9._-]</code></pre>, starting with a letter or digit, unique within the project. Names starting with <code>ondewo</code> (case-insensitive) are reserved for the per-call ondewo-sip container accounts and are rejected with <code>INVALID_ARGUMENT</code>. |
+| transport_security | [SoftphoneTransportSecurity](#ondewo.vtsi.SoftphoneTransportSecurity) |  | How the softphone secures its connection. Unset on create means <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code>. Updatable; switching to <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code> requires an ACTIVE certificate. |
+| enabled | [bool](#bool) | optional | Whether the account may register and place or receive calls. A disabled account keeps its credentials and certificates, but the Asterisk refuses its registrations and calls and its current registrations are dropped. Unset on create means <code>true</code>. Updatable. |
+| max_contacts | [int32](#int32) |  | Maximum number of simultaneous registrations (devices) of this account. <code>0</code> on create means the server default of 1; the allowed range is 1 to 10. Updatable. |
+| labels | [SoftphoneAccount.LabelsEntry](#ondewo.vtsi.SoftphoneAccount.LabelsEntry) | repeated | Free-form labels for organising and filtering accounts, e.g. <code>team: support</code>. Keys: 1 to 63 characters of <pre><code>[a-z0-9_.-]</code></pre>, starting with a letter; values: at most 256 characters; at most 64 entries. Updatable (the whole map is replaced). |
+| allowed_destinations | [string](#string) | repeated | Asterisk dialplan extensions or patterns this softphone may dial, e.g. <code>100</code> or <code>_1XX</code>. Empty means the project default: the project&apos;s own listener extensions, and never the SIP trunk. Each entry is at most 64 characters of <pre><code>[A-Za-z0-9_.!*#+\[\]-]</code></pre>. Updatable (the whole list is replaced). |
+| current_certificate_name | [string](#string) |  | Output only. Resource name of the account&apos;s ACTIVE client certificate, empty when it has none. The format is: <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;softphone_account_uuid&gt;/certificates/&lt;certificate_uuid&gt;</code></pre> |
+| current_certificate_sha256_fingerprint | [string](#string) |  | Output only. SHA-256 fingerprint of the ACTIVE client certificate: 32 upper-case hex bytes separated by colons, as displayed by <code>openssl x509 -fingerprint -sha256</code>. Empty when there is no ACTIVE certificate. |
+| current_certificate_expire_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only. Expiry (notAfter) of the ACTIVE client certificate. Unset when there is none. |
+| sip_password_set_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only. When the SIP password was last set, by create or by rotation. |
+| created_by | [string](#string) |  | Output only. The user who created the account. |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only. Creation time of the account. |
+| modified_by | [string](#string) |  | Output only. The user who last modified the account, including credential rotation. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only. Last modification time of the account, including credential rotation. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.SoftphoneAccount.LabelsEntry"></a>
+
+### SoftphoneAccount.LabelsEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.vtsi.SoftphoneAccountFilter"></a>
+
+### SoftphoneAccountFilter
+Narrows a softphone account listing. Every field is optional; an unset field or an empty repeated
+field or map means &quot;do not filter on this&quot;. Fields are combined with AND; the values within
+one repeated field are combined with OR; the entries of <code>labels</code> are combined with AND.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| transport_securities | [SoftphoneTransportSecurity](#ondewo.vtsi.SoftphoneTransportSecurity) | repeated | Only accounts with one of these transport securities. <code>SOFTPHONE_TRANSPORT_SECURITY_UNSPECIFIED</code> is rejected with <code>INVALID_ARGUMENT</code>. |
+| enabled | [bool](#bool) | optional | Only enabled (<code>true</code>) or only disabled (<code>false</code>) accounts. Unset matches both. |
+| labels | [SoftphoneAccountFilter.LabelsEntry](#ondewo.vtsi.SoftphoneAccountFilter.LabelsEntry) | repeated | Only accounts carrying every one of these labels. An entry with an empty value matches on the presence of the key alone; otherwise the value must match exactly. |
+| display_name_contains | [string](#string) |  | Case-insensitive substring match against <code>display_name</code>. Empty does not filter. At most 128 characters. |
+| sip_username_contains | [string](#string) |  | Case-insensitive substring match against <code>sip_username</code>. Empty does not filter. At most 64 characters. |
+| certificate_expires_before | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Only accounts whose ACTIVE certificate expires strictly before this instant. Accounts without an ACTIVE certificate never match. Combine with <code>certificate_expires_after</code> for a window. |
+| certificate_expires_after | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Only accounts whose ACTIVE certificate expires at or after this instant. Accounts without an ACTIVE certificate never match. A window whose start is not before its end is rejected with <code>INVALID_ARGUMENT</code>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.SoftphoneAccountFilter.LabelsEntry"></a>
+
+### SoftphoneAccountFilter.LabelsEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.vtsi.SoftphoneAccountSorting"></a>
+
+### SoftphoneAccountSorting
+Sorting of a softphone account listing.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sorting_field | [SoftphoneAccountSorting.SoftphoneAccountSortingField](#ondewo.vtsi.SoftphoneAccountSorting.SoftphoneAccountSortingField) | optional | The sorting field. Unset means <code>NO_SOFTPHONE_ACCOUNT_SORTING</code>. |
+| sorting_mode | [VtsiProjectSortingMode](#ondewo.vtsi.VtsiProjectSortingMode) | optional | The sorting mode. Unset means <code>ASCENDING</code>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.SoftphoneCertificate"></a>
+
+### SoftphoneCertificate
+A client certificate issued to a softphone account by the project&apos;s SOFTPHONE certificate
+authority. Carries public material only: the private key exists solely inside the PKCS#12 bundle that
+was returned once when the certificate was issued. Every field is output only.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the certificate. The format is: <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;softphone_account_uuid&gt;/certificates/&lt;certificate_uuid&gt;</code></pre> |
+| softphone_account_name | [string](#string) |  | Resource name of the softphone account the certificate was issued to. The format is: <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;softphone_account_uuid&gt;</code></pre> |
+| status | [SoftphoneCertificateStatus](#ondewo.vtsi.SoftphoneCertificateStatus) |  | Lifecycle status of the certificate. Independent of expiry: an expired certificate keeps its status and is recognised by <code>not_after</code>. |
+| certificate_pem | [string](#string) |  | The certificate, PEM encoded. |
+| issuer_ca_certificate_pem | [string](#string) |  | The SOFTPHONE certificate authority certificate that issued it, PEM encoded. The project&apos;s internal TLS port trusts this CA for client certificates. |
+| sha256_fingerprint | [string](#string) |  | SHA-256 fingerprint of the certificate: 32 upper-case hex bytes separated by colons, as displayed by <code>openssl x509 -fingerprint -sha256</code>. |
+| serial_number | [string](#string) |  | Serial number of the certificate, upper-case hex without separators. |
+| subject | [string](#string) |  | Subject distinguished name, RFC 4514 string form. |
+| not_before | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Start of validity (notBefore). |
+| not_after | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | End of validity (notAfter). |
+| created_by | [string](#string) |  | The user who caused the certificate to be issued (create or rotation). |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the certificate was issued. |
+| superseded_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the certificate became <code>SOFTPHONE_CERTIFICATE_STATUS_SUPERSEDED</code>. Unset otherwise. |
+| superseded_by_certificate_name | [string](#string) |  | Resource name of the certificate that superseded this one. Empty unless SUPERSEDED. |
+| revoked_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the certificate became <code>SOFTPHONE_CERTIFICATE_STATUS_REVOKED</code>. Unset otherwise. |
+| revoked_by | [string](#string) |  | The user who revoked the certificate. Empty unless REVOKED. |
+| revocation_reason | [string](#string) |  | The reason given at revocation, or <code>account deleted</code>. Empty unless REVOKED. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.SoftphoneCertificateFilter"></a>
+
+### SoftphoneCertificateFilter
+Narrows a softphone certificate listing. Combined like
+<a href="index.html#ondewo.vtsi.SoftphoneAccountFilter">SoftphoneAccountFilter</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| statuses | [SoftphoneCertificateStatus](#ondewo.vtsi.SoftphoneCertificateStatus) | repeated | Only certificates with one of these statuses. Empty matches every status. <code>SOFTPHONE_CERTIFICATE_STATUS_UNSPECIFIED</code> is rejected with <code>INVALID_ARGUMENT</code>. |
+| expires_before | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Only certificates whose <code>not_after</code> is strictly before this instant. |
+| expires_after | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Only certificates whose <code>not_after</code> is at or after this instant. A window whose start is not before its end is rejected with <code>INVALID_ARGUMENT</code>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.SoftphoneCredentials"></a>
+
+### SoftphoneCredentials
+ONE-TIME secrets of a softphone account, returned only by <code>CreateSoftphoneAccount</code> and
+<code>RotateSoftphoneCredentials</code>. VTSI keeps no copy of the private key or of
+<code>pkcs12_password</code> and cannot return them again: store them now, or rotate later. Never log
+this message.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sip_password | [string](#string) |  | The SIP digest password. Set on create and when the password was rotated, empty otherwise. At least 32 characters from a URL-safe alphabet. |
+| pkcs12_bundle | [bytes](#bytes) |  | The client private key, the client certificate and the issuing SOFTPHONE CA certificate as a password-protected PKCS#12 (<code>.p12</code>) bundle, ready to import into a softphone. Set when a certificate was issued (create of a <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code> account, or a certificate rotation), empty otherwise. |
+| pkcs12_password | [string](#string) |  | The password protecting <code>pkcs12_bundle</code>. Set exactly when <code>pkcs12_bundle</code> is set. |
+| certificate | [SoftphoneCertificate](#ondewo.vtsi.SoftphoneCertificate) |  | Public view of the certificate inside <code>pkcs12_bundle</code>. Unset when no certificate was issued. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.SoftphoneProvisioning"></a>
+
+### SoftphoneProvisioning
+Everything needed to configure a softphone for one account, except the secrets. Every field is output
+only.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| softphone_account_name | [string](#string) |  | Resource name of the softphone account this describes. The format is: <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;softphone_account_uuid&gt;</code></pre> |
+| transport_security | [SoftphoneTransportSecurity](#ondewo.vtsi.SoftphoneTransportSecurity) |  | The account&apos;s transport security, which decides <code>sip_server_port</code> and whether a client certificate must be imported. |
+| sip_domain | [string](#string) |  | The SIP domain of the account: the host part of its address of record. Zoiper: <i>Domain</i>. |
+| sip_address | [string](#string) |  | The full address of record, <code>sip_username@sip_domain</code>. |
+| sip_server_host | [string](#string) |  | Host name or IP address of the project&apos;s Asterisk to connect to. It matches a subject alternative name of the server certificate. |
+| sip_server_port | [int32](#int32) |  | TLS port to connect to: the internal mutual-TLS port for <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code>, the external TLS port for <code>SOFTPHONE_TRANSPORT_SECURITY_SERVER_TLS_ONLY</code>. |
+| sip_transport | [string](#string) |  | Signalling transport. Always <code>TLS</code>. |
+| outbound_proxy | [string](#string) |  | Outbound proxy as <code>host:port</code>. Empty when the softphone connects to <code>sip_server_host</code> directly. Zoiper: <i>Outbound proxy</i>. |
+| username | [string](#string) |  | The SIP user. Zoiper: <i>Username</i>. |
+| auth_username | [string](#string) |  | The SIP digest authentication username. Zoiper: <i>Authentication user</i>. |
+| realm | [string](#string) |  | The SIP digest realm the Asterisk challenges with. |
+| srtp_mode | [SoftphoneSrtpMode](#ondewo.vtsi.SoftphoneSrtpMode) |  | Media encryption the softphone must use. |
+| codecs | [string](#string) | repeated | Audio codecs the Asterisk accepts for this account, in preference order, by their Asterisk names: <code>opus</code>, <code>alaw</code> (G.711 A-law, Zoiper <i>PCMA</i>), <code>ulaw</code> (G.711 mu-law, Zoiper <i>PCMU</i>). |
+| server_ca_certificate_pem | [string](#string) |  | The certificate authority that issued the Asterisk&apos;s TLS server certificate, PEM encoded. Import it as a trusted CA in the softphone, or the TLS handshake fails verification. |
+| server_certificate_sha256_fingerprint | [string](#string) |  | SHA-256 fingerprint of the Asterisk&apos;s TLS server certificate (colon-separated upper-case hex), for comparing with what the softphone displays on first connect. |
+| client_certificate_name | [string](#string) |  | Resource name of the client certificate to import. Empty for <code>SOFTPHONE_TRANSPORT_SECURITY_SERVER_TLS_ONLY</code>. |
+| client_certificate_sha256_fingerprint | [string](#string) |  | SHA-256 fingerprint of the client certificate to import: the one inside the PKCS#12 bundle returned when it was issued. Empty for <code>SOFTPHONE_TRANSPORT_SECURITY_SERVER_TLS_ONLY</code>. A softphone holding a bundle with a different fingerprint holds a superseded or revoked certificate. |
+| client_certificate_expire_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Expiry (notAfter) of the client certificate to import. Unset for <code>SOFTPHONE_TRANSPORT_SECURITY_SERVER_TLS_ONLY</code>. |
+| zoiper_instructions | [string](#string) |  | Human-readable, step-by-step Zoiper 5 configuration with the values of this message filled in: Accounts &gt; Add account &gt; manual configuration &gt; SIP; then under Advanced the transport <code>TLS</code>, the port, the outbound proxy and SRTP; then the certificates to trust and, for <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code>, to import. Plain text, lines separated by <code>\n</code>. Contains no secret: it refers to the SIP password and the PKCS#12 bundle by name. |
+| client_certificate_support_note | [string](#string) |  | Note on client-certificate support, which depends on the Zoiper edition: an edition that cannot present a client certificate cannot use <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code> and needs an account with <code>SOFTPHONE_TRANSPORT_SECURITY_SERVER_TLS_ONLY</code> instead. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.UpdateSoftphoneAccountRequest"></a>
+
+### UpdateSoftphoneAccountRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Softphones.UpdateSoftphoneAccount">Softphones.UpdateSoftphoneAccount</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| softphone_account | [SoftphoneAccount](#ondewo.vtsi.SoftphoneAccount) |  | The account to update, identified by <code>softphone_account.name</code>, carrying the new values of the fields named in <code>update_mask</code>. |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Required. The fields to update. Paths are field paths within <code>softphone_account</code> WITHOUT a <code>softphone_account.</code> prefix. Updatable paths: <code>display_name</code>, <code>transport_security</code>, <code>enabled</code>, <code>max_contacts</code>, <code>labels</code>, <code>allowed_destinations</code>. Semantics: <ul> <li>Mask unset or empty: rejected with <code>INVALID_ARGUMENT</code>. There is no implicit &quot;update everything sent&quot;.</li> <li>Path in the mask: the field is written with the value sent; a value that is not set is written as the field&apos;s create default (<code>enabled</code> unset writes <code>true</code>, <code>max_contacts</code> 0 writes the server default, an empty <code>labels</code> or <code>allowed_destinations</code> clears them).</li> <li>Path absent from the mask: the field is left untouched, whether or not a value was sent.</li> <li>Unknown, output-only or immutable path (<code>name</code>, <code>sip_username</code>, the certificate and audit fields): rejected with <code>INVALID_ARGUMENT</code> naming the path, never ignored.</li> </ul> |
+
+
+
+
+
+ <!-- end messages -->
+
+
+<a name="ondewo.vtsi.SoftphoneAccountSorting.SoftphoneAccountSortingField"></a>
+
+### SoftphoneAccountSorting.SoftphoneAccountSortingField
+The field by which softphone accounts are sorted.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| NO_SOFTPHONE_ACCOUNT_SORTING | 0 | Default order: by <code>sip_username</code>, ascending. |
+| SORT_SOFTPHONE_ACCOUNT_BY_DISPLAY_NAME | 1 | Sort by <code>display_name</code>. |
+| SORT_SOFTPHONE_ACCOUNT_BY_SIP_USERNAME | 2 | Sort by <code>sip_username</code>. |
+| SORT_SOFTPHONE_ACCOUNT_BY_CREATION_DATE | 3 | Sort by <code>created_at</code>. |
+| SORT_SOFTPHONE_ACCOUNT_BY_LAST_MODIFIED | 4 | Sort by <code>modified_at</code>. |
+| SORT_SOFTPHONE_ACCOUNT_BY_CERTIFICATE_EXPIRY | 5 | Sort by <code>current_certificate_expire_time</code>; accounts without an ACTIVE certificate sort last in either mode. |
+
+
+
+<a name="ondewo.vtsi.SoftphoneCertificateStatus"></a>
+
+### SoftphoneCertificateStatus
+Lifecycle status of a softphone client certificate.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| SOFTPHONE_CERTIFICATE_STATUS_UNSPECIFIED | 0 | Unspecified. Never returned; in a filter it matches nothing and is rejected with <code>INVALID_ARGUMENT</code>. |
+| SOFTPHONE_CERTIFICATE_STATUS_ACTIVE | 1 | The account&apos;s current certificate. It is accepted by the project&apos;s Asterisk until it expires. An account holds at most one ACTIVE certificate. |
+| SOFTPHONE_CERTIFICATE_STATUS_SUPERSEDED | 2 | Replaced by a newer certificate through <code>RotateSoftphoneCredentials</code>. No longer accepted. |
+| SOFTPHONE_CERTIFICATE_STATUS_REVOKED | 3 | Explicitly revoked through <code>RevokeSoftphoneCertificate</code>, or because its account was deleted. No longer accepted. |
+
+
+
+<a name="ondewo.vtsi.SoftphoneSrtpMode"></a>
+
+### SoftphoneSrtpMode
+Media encryption a softphone must use.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| SOFTPHONE_SRTP_MODE_UNSPECIFIED | 0 | Unspecified. Never returned. |
+| SOFTPHONE_SRTP_MODE_SDES_MANDATORY | 1 | SRTP with SDES key exchange (keys in the SDP, protected by the TLS signalling), MANDATORY: an offer without SRTP is rejected by the Asterisk. In Zoiper: Media encryption <code>SRTP</code> (SDES). |
+
+
+
+<a name="ondewo.vtsi.SoftphoneTransportSecurity"></a>
+
+### SoftphoneTransportSecurity
+How a softphone account secures its SIP signalling to the project&apos;s Asterisk. Both modes use TLS
+for signalling, SRTP for media and SIP digest authentication with the account&apos;s own credentials;
+they differ in which TLS port the softphone connects to and whether it must present a client
+certificate.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| SOFTPHONE_TRANSPORT_SECURITY_UNSPECIFIED | 0 | Unspecified: identical to <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code> on create. The zero value is the stronger mode, so a caller that says nothing gets mutual TLS. Never returned on a stored account. |
+| SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE | 1 | Mutual TLS. The softphone connects to the project&apos;s internal TLS port, which requires a client certificate, and presents the certificate VTSI issued for this account from the project&apos;s SOFTPHONE certificate authority. SIP digest authentication is required in addition. |
+| SOFTPHONE_TRANSPORT_SECURITY_SERVER_TLS_ONLY | 2 | Server-authenticated TLS only. The softphone connects to the project&apos;s external TLS port, which does not ask for a client certificate, and authenticates with SIP digest alone. Intended for softphone editions without client-certificate support, e.g. some Zoiper editions. |
+
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="ondewo.vtsi.Softphones"></a>
+
+### Softphones
+<p>ONDEWO VTSI API</p>
+<p>Manages the SOFTPHONE ACCOUNTS of a VTSI project: SIP accounts on the project&apos;s Asterisk that
+a human uses from a softphone such as Zoiper, to call into the project&apos;s listeners or to be reached
+by the project.</p>
+<p>A softphone account is NEVER one of the <code>ondewo000N</code> accounts the per-call ondewo-sip
+containers register with: it has its own SIP credentials, its own endpoint on the Asterisk and, for
+<code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code>, its own client certificate issued by the
+project&apos;s SOFTPHONE certificate authority.</p>
+<p><b>Secrets are handed out exactly once.</b> The SIP password and the password-protected PKCS#12
+bundle carrying the client private key appear only in the responses of
+<code>CreateSoftphoneAccount</code> and <code>RotateSoftphoneCredentials</code>. VTSI keeps no copy of
+the private key or of the PKCS#12 password, and stores the SIP password only in the form the Asterisk
+needs to verify a SIP digest. No other RPC returns a secret; a lost private key or password is
+recovered by rotating it.</p>
+<p>Errors are reported as gRPC status codes, not as <code>error_message</code> fields:
+<code>INVALID_ARGUMENT</code> for a malformed name, filter, field mask or value;
+<code>NOT_FOUND</code> for an unknown project, account or certificate;
+<code>ALREADY_EXISTS</code> for a <code>sip_username</code> already taken in the project;
+<code>FAILED_PRECONDITION</code> when the project or the account is in a state that does not allow the
+operation (each RPC names its cases).</p>
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| CreateSoftphoneAccount | [CreateSoftphoneAccountRequest](#ondewo.vtsi.CreateSoftphoneAccountRequest) | [CreateSoftphoneAccountResponse](#ondewo.vtsi.CreateSoftphoneAccountResponse) | <p>Creates a softphone account in a VTSI project, generates its SIP password and, for <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code>, issues its first client certificate. The response carries the ONE-TIME secrets; they cannot be retrieved again.</p> <p>If the project is deployed the account is applied to the running Asterisk; otherwise it is applied on the next deployment.</p> <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>ALREADY_EXISTS</code> if the <code>sip_username</code> is taken in the project; <code>INVALID_ARGUMENT</code> for an invalid or reserved <code>sip_username</code>, an output-only field that was set, or an out-of-range value; <code>FAILED_PRECONDITION</code> if the project is being deleted.</p> |
+| GetSoftphoneAccount | [GetSoftphoneAccountRequest](#ondewo.vtsi.GetSoftphoneAccountRequest) | [SoftphoneAccount](#ondewo.vtsi.SoftphoneAccount) | <p>Returns a softphone account. Never returns a secret.</p> <p>Errors: <code>NOT_FOUND</code> if the account does not exist; <code>INVALID_ARGUMENT</code> for a malformed name or an unknown <code>field_mask</code> path.</p> |
+| UpdateSoftphoneAccount | [UpdateSoftphoneAccountRequest](#ondewo.vtsi.UpdateSoftphoneAccountRequest) | [SoftphoneAccount](#ondewo.vtsi.SoftphoneAccount) | <p>Updates the mutable fields of a softphone account named by <code>update_mask</code>. Credentials are not changed here; use <code>RotateSoftphoneCredentials</code>.</p> <p>Errors: <code>NOT_FOUND</code> if the account does not exist; <code>INVALID_ARGUMENT</code> for an empty mask, an unknown, output-only or immutable path, or an out-of-range value; <code>FAILED_PRECONDITION</code> when switching to <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code> while the account has no <code>SOFTPHONE_CERTIFICATE_STATUS_ACTIVE</code> certificate.</p> |
+| DeleteSoftphoneAccount | [DeleteSoftphoneAccountRequest](#ondewo.vtsi.DeleteSoftphoneAccountRequest) | [DeleteSoftphoneAccountResponse](#ondewo.vtsi.DeleteSoftphoneAccountResponse) | <p>Deletes a softphone account. Its endpoint is removed from the Asterisk, its registrations are dropped and every certificate it holds is revoked. Deletion is permanent.</p> <p>Errors: <code>NOT_FOUND</code> if the account does not exist.</p> |
+| ListSoftphoneAccounts | [ListSoftphoneAccountsRequest](#ondewo.vtsi.ListSoftphoneAccountsRequest) | [ListSoftphoneAccountsResponse](#ondewo.vtsi.ListSoftphoneAccountsResponse) | <p>Lists the softphone accounts of a VTSI project, filtered, sorted and paged. Never returns a secret.</p> <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>INVALID_ARGUMENT</code> for an invalid filter, an unknown <code>field_mask</code> path, a negative <code>page_size</code> or a <code>page_token</code> that was not issued for the same project, filter and sorting.</p> |
+| RotateSoftphoneCredentials | [RotateSoftphoneCredentialsRequest](#ondewo.vtsi.RotateSoftphoneCredentialsRequest) | [RotateSoftphoneCredentialsResponse](#ondewo.vtsi.RotateSoftphoneCredentialsResponse) | <p>Rotates the SIP password and/or the client certificate of a softphone account and returns the new ONE-TIME secrets. A rotated password takes effect immediately and drops the account&apos;s current registrations, so every softphone using it must be reconfigured. A rotated certificate moves the previous <code>SOFTPHONE_CERTIFICATE_STATUS_ACTIVE</code> certificate to <code>SOFTPHONE_CERTIFICATE_STATUS_SUPERSEDED</code>, after which it is no longer accepted.</p> <p>Rotating the certificate of a <code>SOFTPHONE_TRANSPORT_SECURITY_SERVER_TLS_ONLY</code> account is allowed: it issues the certificate that a later switch to <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code> requires.</p> <p>Errors: <code>NOT_FOUND</code> if the account does not exist; <code>INVALID_ARGUMENT</code> if neither <code>rotate_sip_password</code> nor <code>rotate_certificate</code> is set.</p> |
+| ListSoftphoneCertificates | [ListSoftphoneCertificatesRequest](#ondewo.vtsi.ListSoftphoneCertificatesRequest) | [ListSoftphoneCertificatesResponse](#ondewo.vtsi.ListSoftphoneCertificatesResponse) | <p>Lists softphone client certificates, either of one softphone account or of a whole VTSI project, filtered and paged, newest first. Only public material is returned.</p> <p>Errors: <code>NOT_FOUND</code> if the project or account does not exist; <code>INVALID_ARGUMENT</code> if no scope is set, for an invalid filter, an unknown <code>field_mask</code> path, a negative <code>page_size</code> or a foreign <code>page_token</code>.</p> |
+| GetSoftphoneCertificate | [GetSoftphoneCertificateRequest](#ondewo.vtsi.GetSoftphoneCertificateRequest) | [SoftphoneCertificate](#ondewo.vtsi.SoftphoneCertificate) | <p>Returns one softphone client certificate. Only public material is returned.</p> <p>Errors: <code>NOT_FOUND</code> if the certificate does not exist; <code>INVALID_ARGUMENT</code> for a malformed name or an unknown <code>field_mask</code> path.</p> |
+| RevokeSoftphoneCertificate | [RevokeSoftphoneCertificateRequest](#ondewo.vtsi.RevokeSoftphoneCertificateRequest) | [SoftphoneCertificate](#ondewo.vtsi.SoftphoneCertificate) | <p>Revokes a softphone client certificate: it is no longer accepted by the project&apos;s Asterisk. Revoking the ACTIVE certificate of a <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code> account leaves that account unable to connect until <code>RotateSoftphoneCredentials</code> issues a new one. Revoking an already revoked certificate is idempotent and keeps the original revocation time and reason.</p> <p>Errors: <code>NOT_FOUND</code> if the certificate does not exist.</p> |
+| GetSoftphoneProvisioning | [GetSoftphoneProvisioningRequest](#ondewo.vtsi.GetSoftphoneProvisioningRequest) | [SoftphoneProvisioning](#ondewo.vtsi.SoftphoneProvisioning) | <p>Returns everything needed to configure a softphone for an account: server, port, transport, outbound proxy, SIP identity, SRTP mode, codecs, the certificate authority to trust, which client certificate to import, and step-by-step Zoiper instructions. It never contains the SIP password or the private key; those were returned once by <code>CreateSoftphoneAccount</code> or <code>RotateSoftphoneCredentials</code>.</p> <p>Errors: <code>NOT_FOUND</code> if the account does not exist; <code>FAILED_PRECONDITION</code> if the project is not <code>DEPLOYED</code> (the host and ports describe a running Asterisk), or if a <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code> account has no <code>SOFTPHONE_CERTIFICATE_STATUS_ACTIVE</code> certificate.</p> |
 
  <!-- end services -->
 
