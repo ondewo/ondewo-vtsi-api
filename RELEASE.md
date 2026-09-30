@@ -88,6 +88,20 @@
   `optional` keyword and are declared in `presence/expected_optional.txt`: `SoftphoneAccount.enabled`,
   `SoftphoneAccountFilter.enabled`, `SoftphoneAccountSorting.sorting_field` and `.sorting_mode`, and
   `page_token` of both list requests. Purely additive: no existing message, field or RPC changes.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) Answering machine detection (AMD) for
+  pooled persistent callers: `VoiceInteractionConfig.answering_machine_detection_config = 4` of the new
+  message `AnsweringMachineDetectionConfig`, with the enums `AmdAction` (`AMD_ACTION_UNSPECIFIED`,
+  `HANG_UP`, `DETECT_ONLY`) and `AmdSensitivity` (`AMD_SENSITIVITY_UNSPECIFIED`, `LOW`, `MEDIUM`, `HIGH`).
+  Its fourteen singular fields carry the `optional` keyword (unset = the CSI container default, documented
+  per field together with its valid range) and are declared in `presence/expected_optional.txt`; the two
+  phrase lists are `repeated string`. Defaults: `active` false, `action` `HANG_UP`, `sensitivity` `LOW`,
+  hang up on fax and network announcements, not on IVRs and call screening. A listener or a one-shot
+  caller carrying the config is rejected with `INVALID_ARGUMENT`.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) `Call` gained
+  `optional bool redial_recommended = 19` and `optional string redial_reason = 20`, set only when AMD hung
+  up the call (`answering_machine` and `network_announcement` recommend a redial, `fax` does not). The AMD
+  verdict, cause and confidence of a call are read from the existing `Call.sip_status.amd_result`, so they
+  need no field of their own. No call is redialled automatically.
 
 ### Compatibility
 
@@ -125,11 +139,14 @@ RAISES `ValueError: Field ... does not have presence` rather than returning `Fal
 with `HasField` crashes on exactly the messages it is meant to classify. The detection signal is
 `FieldDescriptor.has_presence`.
 
-The four vendored API submodule pins do not move in this release: `ondewo-nlu-api` stays at `tags/7.1.0`,
-`ondewo-s2t-api` at `tags/7.5.0`, `ondewo-t2s-api` at `tags/6.6.0` and `ondewo-sip-api` at `tags/5.4.0`.
-Freezing them is deliberate — it is what makes the 9.0.0-against-8.7.0 wheel comparison a clean
-"only `ondewo/vtsi` differs" measurement, and it keeps the vendored-proto lockstep rule from firing in
-every consumer that installs `ondewo-vtsi-client` next to a service client.
+Three vendored API submodule pins do not move in this release: `ondewo-nlu-api` stays at `tags/7.1.0`,
+`ondewo-s2t-api` at `tags/7.5.0` and `ondewo-t2s-api` at `tags/6.6.0`. `ondewo-sip-api` moves from
+`tags/5.4.0` to the answering-machine-detection commit `2fff350b24792e1cba66c1acc7390da3c0a51551`
+(a development pin, replaced by the released sip-api tag at release). That sip-api change is purely
+additive (`SipStatus.StatusType.OUTGOING_CALL_ANSWERING_MACHINE = 22`, `AnsweringMachineDetectionResult`,
+`SipStatus.amd_result`, `SipEndCallRequest.end_reason` and `amd_result`), and it means the vendored-proto
+lockstep rule DOES fire: a consumer installing `ondewo-vtsi-client` next to `ondewo-sip-client` must take
+the sip client generated from the same sip-api commit, or the last installed copy of `ondewo/sip` wins.
 
 *****************
 

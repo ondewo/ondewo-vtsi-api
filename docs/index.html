@@ -4957,6 +4957,10 @@
                   <ul>
                     
                       <li>
+                        <a href="#ondewo.sip.AnsweringMachineDetectionResult" class="title-badge message">AnsweringMachineDetectionResult</a>
+                      </li>
+                    
+                      <li>
                         <a href="#ondewo.sip.SipEndCallRequest" class="title-badge message">SipEndCallRequest</a>
                       </li>
                     
@@ -5005,6 +5009,22 @@
                   
                   <a href="#ondewo/sip/sip.proto-enums">Enums</a>
                   <ul>
+                    
+                      <li>
+                        <a href="#ondewo.sip.AnsweringMachineDetectionResult.ActionTaken" class="title-badge enum">AnsweringMachineDetectionResult.ActionTaken</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.sip.AnsweringMachineDetectionResult.Cause" class="title-badge enum">AnsweringMachineDetectionResult.Cause</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.sip.AnsweringMachineDetectionResult.Verdict" class="title-badge enum">AnsweringMachineDetectionResult.Verdict</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.sip.SipEndCallRequest.EndCallReason" class="title-badge enum">SipEndCallRequest.EndCallReason</a>
+                      </li>
                     
                       <li>
                         <a href="#ondewo.sip.SipStatus.StatusType" class="title-badge enum">SipStatus.StatusType</a>
@@ -5427,6 +5447,10 @@
                       </li>
                     
                       <li>
+                        <a href="#ondewo.vtsi.AnsweringMachineDetectionConfig" class="title-badge message">AnsweringMachineDetectionConfig</a>
+                      </li>
+                    
+                      <li>
                         <a href="#ondewo.vtsi.AsteriskConfig" class="title-badge message">AsteriskConfig</a>
                       </li>
                     
@@ -5755,6 +5779,14 @@
                   
                   <a href="#ondewo/vtsi/calls.proto-enums">Enums</a>
                   <ul>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.AnsweringMachineDetectionConfig.AmdAction" class="title-badge enum">AnsweringMachineDetectionConfig.AmdAction</a>
+                      </li>
+                    
+                      <li>
+                        <a href="#ondewo.vtsi.AnsweringMachineDetectionConfig.AmdSensitivity" class="title-badge enum">AnsweringMachineDetectionConfig.AmdSensitivity</a>
+                      </li>
                     
                       <li>
                         <a href="#ondewo.vtsi.CallStatus" class="title-badge enum">CallStatus</a>
@@ -57233,6 +57265,80 @@ detecting speech. Available only when Pyannote is also the active VAD.</p></td>
       
       <div id="ondewo/sip/sip.proto-messages" class="object-category">Messages</div>
       
+        <h3 id="ondewo.sip.AnsweringMachineDetectionResult" class="title-badge message">AnsweringMachineDetectionResult</h3>
+        <p><p>Result of the answering machine detection (AMD) of an outbound call</p></p><p><p>Carries identifiers from closed vocabularies only: never audio, transcript text or a phone number</p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>verdict</td>
+                  <td><a href="#ondewo.sip.AnsweringMachineDetectionResult.Verdict">AnsweringMachineDetectionResult.Verdict</a></td>
+                  <td></td>
+                  <td><p>Who or what answered the call </p></td>
+                </tr>
+              
+                <tr>
+                  <td>cause</td>
+                  <td><a href="#ondewo.sip.AnsweringMachineDetectionResult.Cause">AnsweringMachineDetectionResult.Cause</a></td>
+                  <td></td>
+                  <td><p>Evidence that led to the verdict </p></td>
+                </tr>
+              
+                <tr>
+                  <td>confidence</td>
+                  <td><a href="#float">float</a></td>
+                  <td></td>
+                  <td><p>Confidence of the verdict, between <code>0.0</code> and <code>1.0</code> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>decision_ms</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p>Time in milliseconds from the call being connected until the verdict was reached </p></td>
+                </tr>
+              
+                <tr>
+                  <td>rule_id</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>Identifier of the detection rule that produced the verdict </p></td>
+                </tr>
+              
+                <tr>
+                  <td>matched_cue_ids</td>
+                  <td><a href="#string">string</a></td>
+                  <td>repeated</td>
+                  <td><p>Identifiers of the cues that matched, e.g. keyword or tone identifiers. Identifiers only, never transcript text </p></td>
+                </tr>
+              
+                <tr>
+                  <td>action_taken</td>
+                  <td><a href="#ondewo.sip.AnsweringMachineDetectionResult.ActionTaken">AnsweringMachineDetectionResult.ActionTaken</a></td>
+                  <td></td>
+                  <td><p>What was done because of the verdict </p></td>
+                </tr>
+              
+                <tr>
+                  <td>call_id</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>Identifier of the call the result belongs to, i.e. the value of the <code>X-ondewo-vtsi-caller-call-id</code>
+header of the call. Used to match a result to its call by identity rather than by recency </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
         <h3 id="ondewo.sip.SipEndCallRequest" class="title-badge message">SipEndCallRequest</h3>
         <p><p>Ends an ongoing call of the active SIP session of the active SIP account</p></p>
 
@@ -57248,6 +57354,22 @@ detecting speech. Available only when Pyannote is also the active VAD.</p></td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
                   <td><p>Set to <code>True</code> to forcefully hang up the call </p></td>
+                </tr>
+              
+                <tr>
+                  <td>end_reason</td>
+                  <td><a href="#ondewo.sip.SipEndCallRequest.EndCallReason">SipEndCallRequest.EndCallReason</a></td>
+                  <td></td>
+                  <td><p>Optional: reason for ending the call. Leave unset for an ordinary hangup </p></td>
+                </tr>
+              
+                <tr>
+                  <td>amd_result</td>
+                  <td><a href="#ondewo.sip.AnsweringMachineDetectionResult">AnsweringMachineDetectionResult</a></td>
+                  <td></td>
+                  <td><p>Optional: result of the answering machine detection that decided to end the call. Only meaningful together with
+<code>end_reason = ANSWERING_MACHINE</code>; it is carried into <code>SipStatus.amd_result</code> of the
+terminal status of the call </p></td>
                 </tr>
               
             </tbody>
@@ -57502,6 +57624,14 @@ Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5
                   <td><p>session name of the NLU session </p></td>
                 </tr>
               
+                <tr>
+                  <td>amd_result</td>
+                  <td><a href="#ondewo.sip.AnsweringMachineDetectionResult">AnsweringMachineDetectionResult</a></td>
+                  <td></td>
+                  <td><p>Result of the answering machine detection of the call. Set on the terminal status of every call on which
+answering machine detection ran, including a <code>HUMAN</code> verdict; unset otherwise </p></td>
+                </tr>
+              
             </tbody>
           </table>
 
@@ -57630,6 +57760,196 @@ Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5
 
       
       <div id="ondewo/sip/sip.proto-enums" class="object-category">Enums</div>
+      
+        <h3 id="ondewo.sip.AnsweringMachineDetectionResult.ActionTaken" class="title-badge enum">AnsweringMachineDetectionResult.ActionTaken</h3>
+        <p><p>What was done because of the verdict</p></p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>ACTION_TAKEN_UNSPECIFIED</td>
+                <td>0</td>
+                <td><p>No action recorded</p></td>
+              </tr>
+            
+              <tr>
+                <td>HUNG_UP</td>
+                <td>1</td>
+                <td><p>The call was hung up</p></td>
+              </tr>
+            
+              <tr>
+                <td>CONTINUED</td>
+                <td>2</td>
+                <td><p>The call continued as normal</p></td>
+              </tr>
+            
+              <tr>
+                <td>DETECT_ONLY</td>
+                <td>3</td>
+                <td><p>Detection only: the verdict was recorded, but the call was not influenced by it</p></td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+        <h3 id="ondewo.sip.AnsweringMachineDetectionResult.Cause" class="title-badge enum">AnsweringMachineDetectionResult.Cause</h3>
+        <p><p>Evidence that led to the verdict</p></p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>CAUSE_UNSPECIFIED</td>
+                <td>0</td>
+                <td><p>No cause available</p></td>
+              </tr>
+            
+              <tr>
+                <td>CADENCE</td>
+                <td>1</td>
+                <td><p>The speech cadence, e.g. a long uninterrupted greeting</p></td>
+              </tr>
+            
+              <tr>
+                <td>KEYWORD</td>
+                <td>2</td>
+                <td><p>A keyword or phrase typical of the verdict</p></td>
+              </tr>
+            
+              <tr>
+                <td>BEEP</td>
+                <td>3</td>
+                <td><p>A voicemail beep</p></td>
+              </tr>
+            
+              <tr>
+                <td>TONE</td>
+                <td>4</td>
+                <td><p>A tone, e.g. a fax or special information tone</p></td>
+              </tr>
+            
+              <tr>
+                <td>CADENCE_AND_KEYWORD</td>
+                <td>5</td>
+                <td><p>Both the speech cadence and a keyword</p></td>
+              </tr>
+            
+              <tr>
+                <td>CADENCE_AND_BEEP</td>
+                <td>6</td>
+                <td><p>Both the speech cadence and a voicemail beep</p></td>
+              </tr>
+            
+              <tr>
+                <td>TIMEOUT</td>
+                <td>7</td>
+                <td><p>The detection window ended before any other evidence decided</p></td>
+              </tr>
+            
+              <tr>
+                <td>SILENCE</td>
+                <td>8</td>
+                <td><p>Silence throughout the detection window</p></td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+        <h3 id="ondewo.sip.AnsweringMachineDetectionResult.Verdict" class="title-badge enum">AnsweringMachineDetectionResult.Verdict</h3>
+        <p><p>Who or what answered the call</p></p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>VERDICT_UNSPECIFIED</td>
+                <td>0</td>
+                <td><p>No verdict available</p></td>
+              </tr>
+            
+              <tr>
+                <td>HUMAN</td>
+                <td>1</td>
+                <td><p>A person answered the call</p></td>
+              </tr>
+            
+              <tr>
+                <td>MACHINE</td>
+                <td>2</td>
+                <td><p>An answering machine or voicemail answered the call</p></td>
+              </tr>
+            
+              <tr>
+                <td>IVR</td>
+                <td>3</td>
+                <td><p>An interactive voice response system (IVR) answered the call</p></td>
+              </tr>
+            
+              <tr>
+                <td>FAX</td>
+                <td>4</td>
+                <td><p>A fax machine answered the call</p></td>
+              </tr>
+            
+              <tr>
+                <td>NETWORK_ANNOUNCEMENT</td>
+                <td>5</td>
+                <td><p>A network announcement answered the call, e.g. "the number you have dialed is not available"</p></td>
+              </tr>
+            
+              <tr>
+                <td>CALL_SCREENING</td>
+                <td>6</td>
+                <td><p>A call screening service answered the call, e.g. asking the caller to state their name</p></td>
+              </tr>
+            
+              <tr>
+                <td>NO_SPEECH</td>
+                <td>7</td>
+                <td><p>Nothing was said within the detection window</p></td>
+              </tr>
+            
+              <tr>
+                <td>UNKNOWN</td>
+                <td>8</td>
+                <td><p>The detection could not decide</p></td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+        <h3 id="ondewo.sip.SipEndCallRequest.EndCallReason" class="title-badge enum">SipEndCallRequest.EndCallReason</h3>
+        <p><p>Why the call is being ended</p></p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>END_CALL_REASON_UNSPECIFIED</td>
+                <td>0</td>
+                <td><p>No specific reason given. The call ends as an ordinary hangup, exactly as before this field existed</p></td>
+              </tr>
+            
+              <tr>
+                <td>ANSWERING_MACHINE</td>
+                <td>1</td>
+                <td><p>Answering machine detection decided the callee is not a person to talk to (answering machine, fax,
+network announcement, ...) and ends the call. The terminal status of the call is then
+<code>OUTGOING_CALL_ANSWERING_MACHINE</code> instead of <code>OUTGOING_CALL_FINISHED</code></p></td>
+              </tr>
+            
+          </tbody>
+        </table>
       
         <h3 id="ondewo.sip.SipStatus.StatusType" class="title-badge enum">SipStatus.StatusType</h3>
         <p>Types of status</p>
@@ -57769,6 +58089,14 @@ Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5
                 <td>NO_ONGOING_CALL</td>
                 <td>21</td>
                 <td><p>No ongoing call</p></td>
+              </tr>
+            
+              <tr>
+                <td>OUTGOING_CALL_ANSWERING_MACHINE</td>
+                <td>22</td>
+                <td><p>SIP account ended the ongoing outgoing call because answering machine detection decided the callee is not
+a person to talk to. Terminal, like <code>OUTGOING_CALL_FINISHED</code>; <code>amd_result.verdict</code>
+tells an answering machine, a fax, a network announcement, ... apart</p></td>
               </tr>
             
           </tbody>
@@ -61154,6 +61482,146 @@ qwen3_tts_custom_voice, qwen3_tts_base). </p></td>
 
         
       
+        <h3 id="ondewo.vtsi.AnsweringMachineDetectionConfig" class="title-badge message">AnsweringMachineDetectionConfig</h3>
+        <p>Configuration of the answering machine detection (AMD) of an outbound call, i.e. deciding in the first</p><p>seconds after the callee answered whether a person, an answering machine, a fax, an IVR or a network</p><p>announcement picked up, and hanging up on the non-human ones.</p><p>Detection listens first: the bot stays silent until the verdict is reached or the decision window ends.</p><p>Every field is optional: an unset field takes the default of the CSI container (listed per field below).</p><p>Only accepted for pooled persistent callers; the settings are part of the caller container configuration,</p><p>so callers with different AMD settings are never pooled together.</p><p>The verdict of a call is reported as ondewo.sip.SipStatus.amd_result, and a call ended by AMD reaches</p><p>the terminal status ondewo.sip.SipStatus.StatusType.OUTGOING_CALL_ANSWERING_MACHINE.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>active</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td>optional</td>
+                  <td><p>Optional: Master switch of the answering machine detection (default: false) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>action</td>
+                  <td><a href="#ondewo.vtsi.AnsweringMachineDetectionConfig.AmdAction">AnsweringMachineDetectionConfig.AmdAction</a></td>
+                  <td>optional</td>
+                  <td><p>Optional: Action on a non-human verdict (default: HANG_UP) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>sensitivity</td>
+                  <td><a href="#ondewo.vtsi.AnsweringMachineDetectionConfig.AmdSensitivity">AnsweringMachineDetectionConfig.AmdSensitivity</a></td>
+                  <td>optional</td>
+                  <td><p>Optional: Sensitivity of the detection (default: LOW) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>max_decision_time_ms</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td>optional</td>
+                  <td><p>Optional: Maximum time in milliseconds after the callee answered to reach a verdict when no
+machine-leaning evidence was seen; the verdict is UNKNOWN when it is reached
+(default: 4000, valid range: 1500 - 10000) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>max_machine_wait_ms</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td>optional</td>
+                  <td><p>Optional: Maximum time in milliseconds after the callee answered to reach a verdict once
+machine-leaning evidence extended the decision window (default: 11000, valid range: 4000 - 20000) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>beep_wait_after_greeting_ms</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td>optional</td>
+                  <td><p>Optional: Time in milliseconds to wait for a beep after a long greeting ended
+(default: 1500, valid range: 0 - 4000) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>initial_silence_ms</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td>optional</td>
+                  <td><p>Optional: Silence in milliseconds after the callee answered without any speech, after which the verdict
+is NO_SPEECH, which is treated like a person (default: 3500, valid range: 1000 - 10000) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>max_human_greeting_ms</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td>optional</td>
+                  <td><p>Optional: Continuous speech in milliseconds beyond which a greeting is machine-leaning
+(default: 2400, valid range: 1000 - 6000) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>greeting_end_silence_ms</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td>optional</td>
+                  <td><p>Optional: Silence in milliseconds after the first speech burst that ends a human greeting
+(default: 900, valid range: 300 - 3000) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>beep_detection_active</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td>optional</td>
+                  <td><p>Optional: Enable the tone detector for the beep of an answering machine (default: true) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>additional_machine_phrases</td>
+                  <td><a href="#string">string</a></td>
+                  <td>repeated</td>
+                  <td><p>Additional phrases that indicate an answering machine, added to the built-in de and en phrase lists
+(maximum 50 phrases, each 1 - 80 characters) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>additional_human_phrases</td>
+                  <td><a href="#string">string</a></td>
+                  <td>repeated</td>
+                  <td><p>Additional phrases that indicate a person, added to the built-in de and en phrase lists
+(maximum 50 phrases, each 1 - 80 characters) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>hang_up_on_fax</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td>optional</td>
+                  <td><p>Optional: Hang up on a FAX verdict when the action is HANG_UP (default: true) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>hang_up_on_network_announcement</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td>optional</td>
+                  <td><p>Optional: Hang up on a NETWORK_ANNOUNCEMENT verdict, e.g. "the number is not reachable",
+when the action is HANG_UP (default: true) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>hang_up_on_ivr</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td>optional</td>
+                  <td><p>Optional: Hang up on an IVR verdict, i.e. an automated menu, when the action is HANG_UP (default: false) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>hang_up_on_call_screening</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td>optional</td>
+                  <td><p>Optional: Hang up on a CALL_SCREENING verdict, i.e. a call screening assistant asking for the reason of
+the call, when the action is HANG_UP (default: false) </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
         <h3 id="ondewo.vtsi.AsteriskConfig" class="title-badge message">AsteriskConfig</h3>
         <p>Asterisk configuration</p>
 
@@ -61414,6 +61882,25 @@ For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_
                   <td><a href="#ondewo.nlu.Intent.Message.Platform">ondewo.nlu.Intent.Message.Platform</a></td>
                   <td>optional</td>
                   <td><p>Messages for each of the Intent.Message.Platform were sent to the user </p></td>
+                </tr>
+              
+                <tr>
+                  <td>redial_recommended</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td>optional</td>
+                  <td><p>Optional: Whether the callee should be called again later, set only when the answering machine
+detection (AMD) hung up the call: true for an answering machine or a network announcement,
+false for a fax. Unset when AMD did not hang up the call.
+The AMD verdict, cause and confidence of the call are in sip_status.amd_result.
+No call is redialled automatically; the marker is for the campaign logic of the client </p></td>
+                </tr>
+              
+                <tr>
+                  <td>redial_reason</td>
+                  <td><a href="#string">string</a></td>
+                  <td>optional</td>
+                  <td><p>Optional: Reason of redial_recommended, set together with it. One of
+"answering_machine", "network_announcement" or "fax" </p></td>
                 </tr>
               
             </tbody>
@@ -64380,6 +64867,15 @@ from the latest stable partial transcription (default: 3.0) </p></td>
                   <td><p>Configuration of the response timing </p></td>
                 </tr>
               
+                <tr>
+                  <td>answering_machine_detection_config</td>
+                  <td><a href="#ondewo.vtsi.AnsweringMachineDetectionConfig">AnsweringMachineDetectionConfig</a></td>
+                  <td></td>
+                  <td><p>Configuration of the answering machine detection (AMD) of an outbound call.
+Only accepted for pooled persistent callers: a listener or a one-shot caller that carries it
+is rejected with INVALID_ARGUMENT </p></td>
+                </tr>
+              
             </tbody>
           </table>
 
@@ -64391,6 +64887,72 @@ from the latest stable partial transcription (default: 3.0) </p></td>
 
       
       <div id="ondewo/vtsi/calls.proto-enums" class="object-category">Enums</div>
+      
+        <h3 id="ondewo.vtsi.AnsweringMachineDetectionConfig.AmdAction" class="title-badge enum">AnsweringMachineDetectionConfig.AmdAction</h3>
+        <p>What to do once a non-human verdict is reached</p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>AMD_ACTION_UNSPECIFIED</td>
+                <td>0</td>
+                <td><p>Unspecified action defaults to HANG_UP</p></td>
+              </tr>
+            
+              <tr>
+                <td>HANG_UP</td>
+                <td>1</td>
+                <td><p>Hang up on a non-human verdict whose per-verdict hang-up switch is on
+(an answering machine is always hung up on)</p></td>
+              </tr>
+            
+              <tr>
+                <td>DETECT_ONLY</td>
+                <td>2</td>
+                <td><p>Only detect and record the verdict, never hang up: the call continues with the greeting
+(shadow mode to calibrate the detection before enabling HANG_UP)</p></td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+        <h3 id="ondewo.vtsi.AnsweringMachineDetectionConfig.AmdSensitivity" class="title-badge enum">AnsweringMachineDetectionConfig.AmdSensitivity</h3>
+        <p>Sensitivity of the detection: selects the enabled detection rules and their internal thresholds</p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>AMD_SENSITIVITY_UNSPECIFIED</td>
+                <td>0</td>
+                <td><p>Unspecified sensitivity defaults to LOW</p></td>
+              </tr>
+            
+              <tr>
+                <td>LOW</td>
+                <td>1</td>
+                <td><p>Most conservative towards people: only strong machine evidence leads to a machine verdict (default)</p></td>
+              </tr>
+            
+              <tr>
+                <td>MEDIUM</td>
+                <td>2</td>
+                <td><p>Balanced between missed machines and people classified as machines</p></td>
+              </tr>
+            
+              <tr>
+                <td>HIGH</td>
+                <td>3</td>
+                <td><p>Most aggressive: detects more machines at a higher risk of hanging up on a person</p></td>
+              </tr>
+            
+          </tbody>
+        </table>
       
         <h3 id="ondewo.vtsi.CallStatus" class="title-badge enum">CallStatus</h3>
         <p>Call view options</p>

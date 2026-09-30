@@ -241,6 +241,11 @@ message VoiceInteractionConfig{
 
     // Configuration of the response timing
     ResponseTimingConfig response_timing_config = 3;
+
+    // Configuration of the answering machine detection (AMD) of an outbound call.
+    // Only accepted for pooled persistent callers: a listener or a one-shot caller that carries it
+    // is rejected with INVALID_ARGUMENT
+    AnsweringMachineDetectionConfig answering_machine_detection_config = 4;
 }
 
 // Configuration of the turn detection, i.e. deciding when the caller has finished speaking
@@ -365,6 +370,108 @@ message SoftTimeoutConfig{
 
     // Optional: Maximum number of filler messages per response generation (default: 1)
     optional int32 max_per_generation = 3;
+}
+
+// Configuration of the answering machine detection (AMD) of an outbound call, i.e. deciding in the first
+// seconds after the callee answered whether a person, an answering machine, a fax, an IVR or a network
+// announcement picked up, and hanging up on the non-human ones.
+// Detection listens first: the bot stays silent until the verdict is reached or the decision window ends.
+// Every field is optional: an unset field takes the default of the CSI container (listed per field below).
+// Only accepted for pooled persistent callers; the settings are part of the caller container configuration,
+// so callers with different AMD settings are never pooled together.
+// The verdict of a call is reported as ondewo.sip.SipStatus.amd_result, and a call ended by AMD reaches
+// the terminal status ondewo.sip.SipStatus.StatusType.OUTGOING_CALL_ANSWERING_MACHINE.
+message AnsweringMachineDetectionConfig{
+
+    // What to do once a non-human verdict is reached
+    enum AmdAction {
+
+        // Unspecified action defaults to HANG_UP
+        AMD_ACTION_UNSPECIFIED = 0;
+
+        // Hang up on a non-human verdict whose per-verdict hang-up switch is on
+        // (an answering machine is always hung up on)
+        HANG_UP = 1;
+
+        // Only detect and record the verdict, never hang up: the call continues with the greeting
+        // (shadow mode to calibrate the detection before enabling HANG_UP)
+        DETECT_ONLY = 2;
+    }
+
+    // Sensitivity of the detection: selects the enabled detection rules and their internal thresholds
+    enum AmdSensitivity {
+
+        // Unspecified sensitivity defaults to LOW
+        AMD_SENSITIVITY_UNSPECIFIED = 0;
+
+        // Most conservative towards people: only strong machine evidence leads to a machine verdict (default)
+        LOW = 1;
+
+        // Balanced between missed machines and people classified as machines
+        MEDIUM = 2;
+
+        // Most aggressive: detects more machines at a higher risk of hanging up on a person
+        HIGH = 3;
+    }
+
+    // Optional: Master switch of the answering machine detection (default: false)
+    optional bool active = 1;
+
+    // Optional: Action on a non-human verdict (default: HANG_UP)
+    optional AmdAction action = 2;
+
+    // Optional: Sensitivity of the detection (default: LOW)
+    optional AmdSensitivity sensitivity = 3;
+
+    // Optional: Maximum time in milliseconds after the callee answered to reach a verdict when no
+    // machine-leaning evidence was seen; the verdict is UNKNOWN when it is reached
+    // (default: 4000, valid range: 1500 - 10000)
+    optional int32 max_decision_time_ms = 4;
+
+    // Optional: Maximum time in milliseconds after the callee answered to reach a verdict once
+    // machine-leaning evidence extended the decision window (default: 11000, valid range: 4000 - 20000)
+    optional int32 max_machine_wait_ms = 5;
+
+    // Optional: Time in milliseconds to wait for a beep after a long greeting ended
+    // (default: 1500, valid range: 0 - 4000)
+    optional int32 beep_wait_after_greeting_ms = 6;
+
+    // Optional: Silence in milliseconds after the callee answered without any speech, after which the verdict
+    // is NO_SPEECH, which is treated like a person (default: 3500, valid range: 1000 - 10000)
+    optional int32 initial_silence_ms = 7;
+
+    // Optional: Continuous speech in milliseconds beyond which a greeting is machine-leaning
+    // (default: 2400, valid range: 1000 - 6000)
+    optional int32 max_human_greeting_ms = 8;
+
+    // Optional: Silence in milliseconds after the first speech burst that ends a human greeting
+    // (default: 900, valid range: 300 - 3000)
+    optional int32 greeting_end_silence_ms = 9;
+
+    // Optional: Enable the tone detector for the beep of an answering machine (default: true)
+    optional bool beep_detection_active = 10;
+
+    // Additional phrases that indicate an answering machine, added to the built-in de and en phrase lists
+    // (maximum 50 phrases, each 1 - 80 characters)
+    repeated string additional_machine_phrases = 11;
+
+    // Additional phrases that indicate a person, added to the built-in de and en phrase lists
+    // (maximum 50 phrases, each 1 - 80 characters)
+    repeated string additional_human_phrases = 12;
+
+    // Optional: Hang up on a FAX verdict when the action is HANG_UP (default: true)
+    optional bool hang_up_on_fax = 13;
+
+    // Optional: Hang up on a NETWORK_ANNOUNCEMENT verdict, e.g. "the number is not reachable",
+    // when the action is HANG_UP (default: true)
+    optional bool hang_up_on_network_announcement = 14;
+
+    // Optional: Hang up on an IVR verdict, i.e. an automated menu, when the action is HANG_UP (default: false)
+    optional bool hang_up_on_ivr = 15;
+
+    // Optional: Hang up on a CALL_SCREENING verdict, i.e. a call screening assistant asking for the reason of
+    // the call, when the action is HANG_UP (default: false)
+    optional bool hang_up_on_call_screening = 16;
 }
 
 // The base config is for both the listener and caller. If you only provide it you will get a listener
@@ -1343,6 +1450,17 @@ message Call {
 
     // Messages for each of the Intent.Message.Platform were sent to the user
     optional ondewo.nlu.Intent.Message.Platform platforms = 18;
+
+    // Optional: Whether the callee should be called again later, set only when the answering machine
+    // detection (AMD) hung up the call: true for an answering machine or a network announcement,
+    // false for a fax. Unset when AMD did not hang up the call.
+    // The AMD verdict, cause and confidence of the call are in sip_status.amd_result.
+    // No call is redialled automatically; the marker is for the campaign logic of the client
+    optional bool redial_recommended = 19;
+
+    // Optional: Reason of redial_recommended, set together with it. One of
+    // "answering_machine", "network_announcement" or "fax"
+    optional string redial_reason = 20;
 
 }
 
