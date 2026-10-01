@@ -172,6 +172,20 @@ message AsteriskConfigsVariables{
     // inbound call.
     optional string sip_trunk_source_cidr = 8;
 
+    // OPTIONAL: the PEM bundle of the CA certificate(s) the carrier's TLS certificate chains to, i.e. one
+    // or more <pre><code>-----BEGIN CERTIFICATE-----</code></pre> blocks and nothing else.
+    // When SET, Asterisk verifies the carrier's certificate chain and host name
+    // (<pre><code>verify_server=yes</code></pre> against this bundle) and refuses a carrier whose
+    // certificate does not chain to it. When UNSET or empty, behaviour is unchanged: the carrier's
+    // certificate is NOT verified.
+    // Applies only to the TLS trunk transport: setting it while <pre><code>sip_trunk_transport</code></pre>
+    // is <pre><code>SIP_TRUNK_TRANSPORT_UDP</code></pre> or <pre><code>SIP_TRUNK_TRANSPORT_TCP</code></pre>
+    // is REFUSED with <pre><code>INVALID_ARGUMENT</code></pre>, as is a bundle that is not PEM, contains a
+    // private key or any block other than a certificate, contains a certificate that is not a CA
+    // (basicConstraints CA=true) or has expired, or exceeds the server's count and size limits.
+    // This is PUBLIC data, not a secret: it is returned by Get and List like every other field here.
+    optional string sip_trunk_ca_certificates_pem = 9;
+
 }
 
 // Transport for the SIP trunk of an Asterisk server.

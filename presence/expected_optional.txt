@@ -22,6 +22,7 @@ ondewo.vtsi.AnsweringMachineDetectionConfig.max_human_greeting_ms            # n
 ondewo.vtsi.AnsweringMachineDetectionConfig.max_machine_wait_ms              # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.AnsweringMachineDetectionConfig.sensitivity                      # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.AsteriskConfigs.asterisk_version
+ondewo.vtsi.AsteriskConfigsVariables.sip_trunk_ca_certificates_pem          # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.AsteriskConfigsVariables.sip_trunk_source_cidr                   # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.AudioObjectStorageConfig.activate_audio_object_storage           # keyword added in 9.0.0 (OND233-367)
 ondewo.vtsi.AudioObjectStorageServicesActivationConfig.activate_s2t          # keyword added in 9.0.0 (OND233-367)

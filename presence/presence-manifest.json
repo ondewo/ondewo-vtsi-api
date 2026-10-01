@@ -6,7 +6,7 @@
     "ondewo/vtsi/projects.proto",
     "ondewo/vtsi/softphones.proto"
   ],
-  "optional_field_count": 99,
+  "optional_field_count": 100,
   "fields": [
     {
       "message": "ondewo.vtsi.AnsweringMachineDetectionConfig",
@@ -172,6 +172,17 @@
       "file": "ondewo/vtsi/projects.proto",
       "unset_hex": "",
       "explicit_default_hex": "2a00"
+    },
+    {
+      "message": "ondewo.vtsi.AsteriskConfigsVariables",
+      "field": "sip_trunk_ca_certificates_pem",
+      "number": 9,
+      "type": "string",
+      "type_name": null,
+      "json_name": "sipTrunkCaCertificatesPem",
+      "file": "ondewo/vtsi/projects.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "4a00"
     },
     {
       "message": "ondewo.vtsi.AsteriskConfigsVariables",
