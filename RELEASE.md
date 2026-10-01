@@ -91,15 +91,24 @@
 * [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) Answering machine detection (AMD) for
   pooled persistent callers: `VoiceInteractionConfig.answering_machine_detection_config = 4` of the new
   message `AnsweringMachineDetectionConfig`, with the enums `AmdAction` (`AMD_ACTION_UNSPECIFIED`,
-  `HANG_UP`, `DETECT_ONLY`) and `AmdSensitivity` (`AMD_SENSITIVITY_UNSPECIFIED`, `LOW`, `MEDIUM`, `HIGH`).
-  Its fourteen singular fields carry the `optional` keyword (unset = the CSI container default, documented
+  `HANG_UP`, `DETECT_ONLY`, `LEAVE_VOICE_MESSAGE`) and `AmdSensitivity` (`AMD_SENSITIVITY_UNSPECIFIED`, `LOW`, `MEDIUM`, `HIGH`).
+  Its nineteen singular fields carry the `optional` keyword (unset = the CSI container default, documented
   per field together with its valid range) and are declared in `presence/expected_optional.txt`; the two
   phrase lists are `repeated string`. Defaults: `active` false, `action` `HANG_UP`, `sensitivity` `LOW`,
   hang up on fax and network announcements, not on IVRs and call screening. A listener or a one-shot
-  caller carrying the config is rejected with `INVALID_ARGUMENT`.
+  caller carrying the config is rejected with `INVALID_ARGUMENT`. `LEAVE_VOICE_MESSAGE` speaks the
+  fulfillment of `voice_message_intent` (default: the welcome intent) once after the beep, waiting at most
+  `voice_message_max_beep_wait_ms` (default 10000, 0 - 30000), and hangs up when it finished playing or at
+  `voice_message_timeout_ms` after the verdict (default 30000, 5000 - 120000); a fax never gets a message.
+  `keyword_detection_active` and `cadence_detection_active` (both default true) switch those detectors off
+  next to `beep_detection_active`. `HANG_UP` stays the default because leaving a recorded message on a
+  consumer's mailbox for marketing is consent-bound (e.g. § 7 UWG in Germany).
 * [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) `Call` gained
-  `optional bool redial_recommended = 19` and `optional string redial_reason = 20`, set only when AMD hung
-  up the call (`answering_machine` and `network_announcement` recommend a redial, `fax` does not). The AMD
+  `optional bool redial_recommended = 19` and `optional string redial_reason = 20`, set only when AMD ended
+  the call (`answering_machine` and `network_announcement` hung up on without a voice message recommend a
+  redial; a left voice message and `fax` do not), and
+  `optional string answering_machine_detection_end_description = 21`, the description of the call's
+  terminal `OUTGOING_CALL_FINISHED` status (one of the four AMD descriptions documented on the field). The AMD
   verdict, cause and confidence of a call are read from the existing `Call.sip_status.amd_result`, so they
   need no field of their own. No call is redialled automatically.
 * [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) `AsteriskConfigsVariables` gained two fields
@@ -153,10 +162,11 @@ with `HasField` crashes on exactly the messages it is meant to classify. The det
 
 Three vendored API submodule pins do not move in this release: `ondewo-nlu-api` stays at `tags/7.1.0`,
 `ondewo-s2t-api` at `tags/7.5.0` and `ondewo-t2s-api` at `tags/6.6.0`. `ondewo-sip-api` moves from
-`tags/5.4.0` to the answering-machine-detection commit `2fff350b24792e1cba66c1acc7390da3c0a51551`
+`tags/5.4.0` to the answering-machine-detection commit `33d03678221f6bef6bfa1216c5808f99b7d8573d`
 (a development pin, replaced by the released sip-api tag at release). That sip-api change is purely
-additive (`SipStatus.StatusType.OUTGOING_CALL_ANSWERING_MACHINE = 22`, `AnsweringMachineDetectionResult`,
-`SipStatus.amd_result`, `SipEndCallRequest.end_reason` and `amd_result`), and it means the vendored-proto
+additive against 5.4.0 (`SipStatus.StatusType.OUTGOING_CALL_ANSWERING_MACHINE_DETECTED = 22`, non-terminal;
+`AnsweringMachineDetectionResult`, `SipStatus.amd_result`, `SipEndCallRequest.end_reason` and `amd_result`,
+the RPC `SipReportAnsweringMachineDetected`), and it means the vendored-proto
 lockstep rule DOES fire: a consumer installing `ondewo-vtsi-client` next to `ondewo-sip-client` must take
 the sip client generated from the same sip-api commit, or the last installed copy of `ondewo/sip` wins.
 

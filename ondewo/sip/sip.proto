@@ -54,6 +54,13 @@ service Sip {
 
     // <p>Un-mutes the microphone in an ongoing call of an active SIP session</p>
     rpc SipUnMute (google.protobuf.Empty) returns (SipStatus) {};
+
+    // <p>Reports that answering machine detection reached a verdict on the ongoing outgoing call. Sets the status
+    // <code>OUTGOING_CALL_ANSWERING_MACHINE_DETECTED</code> carrying <code>amd_result</code>; the call stays up.</p>
+    // <p>Called by the speech-to-speech pipeline (ONDEWO-CSI) inside the same container, i.e. over loopback only.
+    // Refused, and the current status left untouched, when no outgoing call is connected: the returned
+    // <code>SipStatus</code> then carries the refusal in <code>exception_name</code> and <code>description</code></p>
+    rpc SipReportAnsweringMachineDetected (SipReportAnsweringMachineDetectedRequest) returns (SipStatus) {};
 }
 
 // <p>Ends an ongoing call of the active SIP session of the active SIP account</p>
@@ -69,18 +76,33 @@ message SipEndCallRequest{
         END_CALL_REASON_UNSPECIFIED = 0;
 
         // Answering machine detection decided the callee is not a person to talk to (answering machine, fax,
-        // network announcement, ...) and ends the call. The terminal status of the call is then
-        // <code>OUTGOING_CALL_ANSWERING_MACHINE</code> instead of <code>OUTGOING_CALL_FINISHED</code>
+        // network announcement, ...) and the call is hung up WITHOUT leaving a voice message. The terminal status
+        // of the call is <code>OUTGOING_CALL_FINISHED</code> with the description
+        // <code>Answering machine detected with hang up</code>
         ANSWERING_MACHINE = 1;
+
+        // Answering machine detection decided the callee is an answering machine, a voice message was left on it,
+        // and the call is hung up afterwards (or when the voice message timeout expired). The terminal status of
+        // the call is <code>OUTGOING_CALL_FINISHED</code> with the description
+        // <code>Answering machine detected with left voice message and hang up</code>
+        ANSWERING_MACHINE_VOICE_MESSAGE_LEFT = 2;
     }
 
     // Optional: reason for ending the call. Leave unset for an ordinary hangup
     EndCallReason end_reason = 2;
 
     // Optional: result of the answering machine detection that decided to end the call. Only meaningful together with
-    // <code>end_reason = ANSWERING_MACHINE</code>; it is carried into <code>SipStatus.amd_result</code> of the
-    // terminal status of the call
+    // <code>end_reason = ANSWERING_MACHINE</code> or <code>end_reason = ANSWERING_MACHINE_VOICE_MESSAGE_LEFT</code>;
+    // it is carried into <code>SipStatus.amd_result</code> of the terminal status of the call
     AnsweringMachineDetectionResult amd_result = 3;
+}
+
+// <p>Reports the verdict of the answering machine detection of the ongoing outgoing call</p>
+message SipReportAnsweringMachineDetectedRequest{
+
+    // Result of the answering machine detection. Written to <code>SipStatus.amd_result</code> of the
+    // <code>OUTGOING_CALL_ANSWERING_MACHINE_DETECTED</code> status of the call
+    AnsweringMachineDetectionResult amd_result = 1;
 }
 
 // <p>Result of the answering machine detection (AMD) of an outbound call</p>
@@ -163,6 +185,9 @@ message AnsweringMachineDetectionResult{
 
         // Detection only: the verdict was recorded, but the call was not influenced by it
         DETECT_ONLY = 3;
+
+        // A voice message was left on the answering machine, and the call was hung up afterwards
+        LEFT_VOICE_MESSAGE = 4;
     }
 
     // Who or what answered the call
@@ -314,10 +339,15 @@ message SipStatus{
         // No ongoing call
         NO_ONGOING_CALL = 21;
 
-        // SIP account ended the ongoing outgoing call because answering machine detection decided the callee is not
-        // a person to talk to. Terminal, like <code>OUTGOING_CALL_FINISHED</code>; <code>amd_result.verdict</code>
-        // tells an answering machine, a fax, a network announcement, ... apart
-        OUTGOING_CALL_ANSWERING_MACHINE = 22;
+        // Answering machine detection decided the callee of the ongoing outgoing call is not a person to talk to.
+        // NOT terminal: the call is still up when this status is set. <code>amd_result.verdict</code> tells an
+        // answering machine, a fax, a network announcement, ... apart. The call then ends as
+        // <code>OUTGOING_CALL_FINISHED</code> carrying <code>amd_result</code> and exactly one of the descriptions
+        // <code>Answering machine detected with hang up</code>,
+        // <code>Answering machine detected with left voice message and hang up</code>,
+        // <code>Answering machine detected, call ended by the answering machine</code> or
+        // <code>Answering machine detected, call ended by the answering machine after leaving a voice message</code>
+        OUTGOING_CALL_ANSWERING_MACHINE_DETECTED = 22;
 
     }
 
@@ -345,8 +375,9 @@ message SipStatus{
     // session name of the NLU session
     string nlu_session_name = 10;
 
-    // Result of the answering machine detection of the call. Set on the terminal status of every call on which
-    // answering machine detection ran, including a <code>HUMAN</code> verdict; unset otherwise
+    // Result of the answering machine detection of the call. Set on
+    // <code>OUTGOING_CALL_ANSWERING_MACHINE_DETECTED</code> and on the terminal status of every call on which answering machine detection ran, including a
+    // <code>HUMAN</code> verdict; unset otherwise
     AnsweringMachineDetectionResult amd_result = 11;
 
 }

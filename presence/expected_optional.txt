@@ -11,16 +11,21 @@ ondewo.vtsi.AnsweringMachineDetectionConfig.action                           # n
 ondewo.vtsi.AnsweringMachineDetectionConfig.active                           # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.AnsweringMachineDetectionConfig.beep_detection_active            # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.AnsweringMachineDetectionConfig.beep_wait_after_greeting_ms      # new field in 9.0.0 (OND233-367)
+ondewo.vtsi.AnsweringMachineDetectionConfig.cadence_detection_active         # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.AnsweringMachineDetectionConfig.greeting_end_silence_ms          # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.AnsweringMachineDetectionConfig.hang_up_on_call_screening        # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.AnsweringMachineDetectionConfig.hang_up_on_fax                   # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.AnsweringMachineDetectionConfig.hang_up_on_ivr                   # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.AnsweringMachineDetectionConfig.hang_up_on_network_announcement  # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.AnsweringMachineDetectionConfig.initial_silence_ms               # new field in 9.0.0 (OND233-367)
+ondewo.vtsi.AnsweringMachineDetectionConfig.keyword_detection_active         # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.AnsweringMachineDetectionConfig.max_decision_time_ms             # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.AnsweringMachineDetectionConfig.max_human_greeting_ms            # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.AnsweringMachineDetectionConfig.max_machine_wait_ms              # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.AnsweringMachineDetectionConfig.sensitivity                      # new field in 9.0.0 (OND233-367)
+ondewo.vtsi.AnsweringMachineDetectionConfig.voice_message_intent             # new field in 9.0.0 (OND233-367)
+ondewo.vtsi.AnsweringMachineDetectionConfig.voice_message_max_beep_wait_ms   # new field in 9.0.0 (OND233-367)
+ondewo.vtsi.AnsweringMachineDetectionConfig.voice_message_timeout_ms         # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.AsteriskConfigs.asterisk_version
 ondewo.vtsi.AsteriskConfigsVariables.sip_trunk_ca_certificates_pem          # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.AsteriskConfigsVariables.sip_trunk_source_cidr                   # new field in 9.0.0 (OND233-367)
@@ -28,6 +33,7 @@ ondewo.vtsi.AsteriskConfigsVariables.sip_trunk_verify_server                 # n
 ondewo.vtsi.AudioObjectStorageConfig.activate_audio_object_storage           # keyword added in 9.0.0 (OND233-367)
 ondewo.vtsi.AudioObjectStorageServicesActivationConfig.activate_s2t          # keyword added in 9.0.0 (OND233-367)
 ondewo.vtsi.AudioObjectStorageServicesActivationConfig.activate_t2s          # keyword added in 9.0.0 (OND233-367)
+ondewo.vtsi.Call.answering_machine_detection_end_description                 # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.Call.common_services_config
 ondewo.vtsi.Call.csi_port
 ondewo.vtsi.Call.nlu_session_name

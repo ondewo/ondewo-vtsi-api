@@ -6,7 +6,7 @@
     "ondewo/vtsi/projects.proto",
     "ondewo/vtsi/softphones.proto"
   ],
-  "optional_field_count": 101,
+  "optional_field_count": 107,
   "fields": [
     {
       "message": "ondewo.vtsi.AnsweringMachineDetectionConfig",
@@ -51,6 +51,17 @@
       "file": "ondewo/vtsi/calls.proto",
       "unset_hex": "",
       "explicit_default_hex": "3000"
+    },
+    {
+      "message": "ondewo.vtsi.AnsweringMachineDetectionConfig",
+      "field": "cadence_detection_active",
+      "number": 21,
+      "type": "bool",
+      "type_name": null,
+      "json_name": "cadenceDetectionActive",
+      "file": "ondewo/vtsi/calls.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "a80100"
     },
     {
       "message": "ondewo.vtsi.AnsweringMachineDetectionConfig",
@@ -120,6 +131,17 @@
     },
     {
       "message": "ondewo.vtsi.AnsweringMachineDetectionConfig",
+      "field": "keyword_detection_active",
+      "number": 20,
+      "type": "bool",
+      "type_name": null,
+      "json_name": "keywordDetectionActive",
+      "file": "ondewo/vtsi/calls.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "a00100"
+    },
+    {
+      "message": "ondewo.vtsi.AnsweringMachineDetectionConfig",
       "field": "max_decision_time_ms",
       "number": 4,
       "type": "int32",
@@ -161,6 +183,39 @@
       "file": "ondewo/vtsi/calls.proto",
       "unset_hex": "",
       "explicit_default_hex": "1800"
+    },
+    {
+      "message": "ondewo.vtsi.AnsweringMachineDetectionConfig",
+      "field": "voice_message_intent",
+      "number": 17,
+      "type": "string",
+      "type_name": null,
+      "json_name": "voiceMessageIntent",
+      "file": "ondewo/vtsi/calls.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "8a0100"
+    },
+    {
+      "message": "ondewo.vtsi.AnsweringMachineDetectionConfig",
+      "field": "voice_message_max_beep_wait_ms",
+      "number": 18,
+      "type": "int32",
+      "type_name": null,
+      "json_name": "voiceMessageMaxBeepWaitMs",
+      "file": "ondewo/vtsi/calls.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "900100"
+    },
+    {
+      "message": "ondewo.vtsi.AnsweringMachineDetectionConfig",
+      "field": "voice_message_timeout_ms",
+      "number": 19,
+      "type": "int32",
+      "type_name": null,
+      "json_name": "voiceMessageTimeoutMs",
+      "file": "ondewo/vtsi/calls.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "980100"
     },
     {
       "message": "ondewo.vtsi.AsteriskConfigs",
@@ -238,6 +293,17 @@
       "file": "ondewo/vtsi/calls.proto",
       "unset_hex": "",
       "explicit_default_hex": "1000"
+    },
+    {
+      "message": "ondewo.vtsi.Call",
+      "field": "answering_machine_detection_end_description",
+      "number": 21,
+      "type": "string",
+      "type_name": null,
+      "json_name": "answeringMachineDetectionEndDescription",
+      "file": "ondewo/vtsi/calls.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "aa0100"
     },
     {
       "message": "ondewo.vtsi.Call",

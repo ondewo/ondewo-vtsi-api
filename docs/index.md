@@ -978,6 +978,7 @@
     - [SipEndCallRequest](#ondewo.sip.SipEndCallRequest)
     - [SipPlayWavFilesRequest](#ondewo.sip.SipPlayWavFilesRequest)
     - [SipRegisterAccountRequest](#ondewo.sip.SipRegisterAccountRequest)
+    - [SipReportAnsweringMachineDetectedRequest](#ondewo.sip.SipReportAnsweringMachineDetectedRequest)
     - [SipStartCallRequest](#ondewo.sip.SipStartCallRequest)
     - [SipStartCallRequest.HeadersEntry](#ondewo.sip.SipStartCallRequest.HeadersEntry)
     - [SipStartSessionRequest](#ondewo.sip.SipStartSessionRequest)
@@ -18961,7 +18962,7 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 | ----- | ---- | ----- | ----------- |
 | hard_hangup | [bool](#bool) |  | Set to <code>True</code> to forcefully hang up the call |
 | end_reason | [SipEndCallRequest.EndCallReason](#ondewo.sip.SipEndCallRequest.EndCallReason) |  | Optional: reason for ending the call. Leave unset for an ordinary hangup |
-| amd_result | [AnsweringMachineDetectionResult](#ondewo.sip.AnsweringMachineDetectionResult) |  | Optional: result of the answering machine detection that decided to end the call. Only meaningful together with <code>end_reason = ANSWERING_MACHINE</code>; it is carried into <code>SipStatus.amd_result</code> of the terminal status of the call |
+| amd_result | [AnsweringMachineDetectionResult](#ondewo.sip.AnsweringMachineDetectionResult) |  | Optional: result of the answering machine detection that decided to end the call. Only meaningful together with <code>end_reason = ANSWERING_MACHINE</code> or <code>end_reason = ANSWERING_MACHINE_VOICE_MESSAGE_LEFT</code>; it is carried into <code>SipStatus.amd_result</code> of the terminal status of the call |
 
 
 
@@ -18995,6 +18996,21 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 | password | [string](#string) |  | Password of the account |
 | auth_username | [string](#string) |  | Optional: authentication user name |
 | outbound_proxy | [string](#string) |  | Optional: outbound proxy address, e.g. <code>my.outbound.proxy.com</code> |
+
+
+
+
+
+
+<a name="ondewo.sip.SipReportAnsweringMachineDetectedRequest"></a>
+
+### SipReportAnsweringMachineDetectedRequest
+<p>Reports the verdict of the answering machine detection of the ongoing outgoing call</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| amd_result | [AnsweringMachineDetectionResult](#ondewo.sip.AnsweringMachineDetectionResult) |  | Result of the answering machine detection. Written to <code>SipStatus.amd_result</code> of the <code>OUTGOING_CALL_ANSWERING_MACHINE_DETECTED</code> status of the call |
 
 
 
@@ -19067,7 +19083,7 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 | exception_name | [string](#string) |  | Name of the exception |
 | exception_traceback | [string](#string) |  | Traceback of the exception |
 | nlu_session_name | [string](#string) |  | session name of the NLU session |
-| amd_result | [AnsweringMachineDetectionResult](#ondewo.sip.AnsweringMachineDetectionResult) |  | Result of the answering machine detection of the call. Set on the terminal status of every call on which answering machine detection ran, including a <code>HUMAN</code> verdict; unset otherwise |
+| amd_result | [AnsweringMachineDetectionResult](#ondewo.sip.AnsweringMachineDetectionResult) |  | Result of the answering machine detection of the call. Set on <code>OUTGOING_CALL_ANSWERING_MACHINE_DETECTED</code> and on the terminal status of every call on which answering machine detection ran, including a <code>HUMAN</code> verdict; unset otherwise |
 
 
 
@@ -19150,6 +19166,7 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 | HUNG_UP | 1 | The call was hung up |
 | CONTINUED | 2 | The call continued as normal |
 | DETECT_ONLY | 3 | Detection only: the verdict was recorded, but the call was not influenced by it |
+| LEFT_VOICE_MESSAGE | 4 | A voice message was left on the answering machine, and the call was hung up afterwards |
 
 
 
@@ -19199,7 +19216,8 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 | Name | Number | Description |
 | ---- | ------ | ----------- |
 | END_CALL_REASON_UNSPECIFIED | 0 | No specific reason given. The call ends as an ordinary hangup, exactly as before this field existed |
-| ANSWERING_MACHINE | 1 | Answering machine detection decided the callee is not a person to talk to (answering machine, fax, network announcement, ...) and ends the call. The terminal status of the call is then <code>OUTGOING_CALL_ANSWERING_MACHINE</code> instead of <code>OUTGOING_CALL_FINISHED</code> |
+| ANSWERING_MACHINE | 1 | Answering machine detection decided the callee is not a person to talk to (answering machine, fax, network announcement, ...) and the call is hung up WITHOUT leaving a voice message. The terminal status of the call is <code>OUTGOING_CALL_FINISHED</code> with the description <code>Answering machine detected with hang up</code> |
+| ANSWERING_MACHINE_VOICE_MESSAGE_LEFT | 2 | Answering machine detection decided the callee is an answering machine, a voice message was left on it, and the call is hung up afterwards (or when the voice message timeout expired). The terminal status of the call is <code>OUTGOING_CALL_FINISHED</code> with the description <code>Answering machine detected with left voice message and hang up</code> |
 
 
 
@@ -19232,7 +19250,7 @@ Types of status
 | MICROPHONE_UNMUTED | 19 | Microphone is unmuted |
 | MICROPHONE_WAV_FILES_PLAYED | 20 | Microphone has played wav files |
 | NO_ONGOING_CALL | 21 | No ongoing call |
-| OUTGOING_CALL_ANSWERING_MACHINE | 22 | SIP account ended the ongoing outgoing call because answering machine detection decided the callee is not a person to talk to. Terminal, like <code>OUTGOING_CALL_FINISHED</code>; <code>amd_result.verdict</code> tells an answering machine, a fax, a network announcement, ... apart |
+| OUTGOING_CALL_ANSWERING_MACHINE_DETECTED | 22 | Answering machine detection decided the callee of the ongoing outgoing call is not a person to talk to. NOT terminal: the call is still up when this status is set. <code>amd_result.verdict</code> tells an answering machine, a fax, a network announcement, ... apart. The call then ends as <code>OUTGOING_CALL_FINISHED</code> carrying <code>amd_result</code> and exactly one of the descriptions <code>Answering machine detected with hang up</code>, <code>Answering machine detected with left voice message and hang up</code>, <code>Answering machine detected, call ended by the answering machine</code> or <code>Answering machine detected, call ended by the answering machine after leaving a voice message</code> |
 
 
  <!-- end enums -->
@@ -19260,6 +19278,7 @@ Types of status
 | SipPlayWavFiles | [SipPlayWavFilesRequest](#ondewo.sip.SipPlayWavFilesRequest) | [SipStatus](#ondewo.sip.SipStatus) | <p>Plays wav files during an ongoing call of an active SIP session</p> |
 | SipMute | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatus](#ondewo.sip.SipStatus) | <p>Mutes the microphone in an ongoing call of an active SIP session</p> |
 | SipUnMute | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatus](#ondewo.sip.SipStatus) | <p>Un-mutes the microphone in an ongoing call of an active SIP session</p> |
+| SipReportAnsweringMachineDetected | [SipReportAnsweringMachineDetectedRequest](#ondewo.sip.SipReportAnsweringMachineDetectedRequest) | [SipStatus](#ondewo.sip.SipStatus) | <p>Reports that answering machine detection reached a verdict on the ongoing outgoing call. Sets the status <code>OUTGOING_CALL_ANSWERING_MACHINE_DETECTED</code> carrying <code>amd_result</code>; the call stays up.</p> <p>Called by the speech-to-speech pipeline (ONDEWO-CSI) inside the same container, i.e. over loopback only. Refused, and the current status left untouched, when no outgoing call is connected: the returned <code>SipStatus</code> then carries the refusal in <code>exception_name</code> and <code>description</code></p> |
 
  <!-- end services -->
 
@@ -20509,8 +20528,22 @@ Detection listens first: the bot stays silent until the verdict is reached or th
 Every field is optional: an unset field takes the default of the CSI container (listed per field below).
 Only accepted for pooled persistent callers; the settings are part of the caller container configuration,
 so callers with different AMD settings are never pooled together.
-The verdict of a call is reported as ondewo.sip.SipStatus.amd_result, and a call ended by AMD reaches
-the terminal status ondewo.sip.SipStatus.StatusType.OUTGOING_CALL_ANSWERING_MACHINE.
+The verdict of a call is reported as ondewo.sip.SipStatus.amd_result. Reaching a hang-up-eligible verdict sets
+the non-terminal status ondewo.sip.SipStatus.StatusType.OUTGOING_CALL_ANSWERING_MACHINE_DETECTED (the call is
+still up), and a call ended by AMD reaches the terminal status OUTGOING_CALL_FINISHED with one of these
+descriptions:
+<ul>
+<li>"Answering machine detected with hang up": the caller hung up without leaving a voice message</li>
+<li>"Answering machine detected with left voice message and hang up": the caller hung up after starting the
+voice message</li>
+<li>"Answering machine detected, call ended by the answering machine": the far end hung up before a voice
+message was started</li>
+<li>"Answering machine detected, call ended by the answering machine after leaving a voice message": the far
+end hung up after the voice message was started</li>
+</ul>
+The description is also recorded on the call as Call.answering_machine_detection_end_description.
+Compliance: leaving a recorded message on a consumer's mailbox for marketing purposes requires the consent of
+the callee in many jurisdictions (e.g. in Germany § 7 UWG). HANG_UP is therefore the default action.
 
 
 | Field | Type | Label | Description |
@@ -20531,6 +20564,11 @@ the terminal status ondewo.sip.SipStatus.StatusType.OUTGOING_CALL_ANSWERING_MACH
 | hang_up_on_network_announcement | [bool](#bool) | optional | Optional: Hang up on a NETWORK_ANNOUNCEMENT verdict, e.g. "the number is not reachable", when the action is HANG_UP (default: true) |
 | hang_up_on_ivr | [bool](#bool) | optional | Optional: Hang up on an IVR verdict, i.e. an automated menu, when the action is HANG_UP (default: false) |
 | hang_up_on_call_screening | [bool](#bool) | optional | Optional: Hang up on a CALL_SCREENING verdict, i.e. a call screening assistant asking for the reason of the call, when the action is HANG_UP (default: false) |
+| voice_message_intent | [string](#string) | optional | Optional: Name of the NLU intent whose fulfillment is the voice message when the action is LEAVE_VOICE_MESSAGE; it is triggered once (default: the welcome intent of the NLU project, 1 - 200 characters when set) |
+| voice_message_max_beep_wait_ms | [int32](#int32) | optional | Optional: Maximum time in milliseconds after the verdict to wait for the beep, or for the end of the machine greeting, before the voice message is spoken when the action is LEAVE_VOICE_MESSAGE; 0 speaks immediately (default: 10000, valid range: 0 - 30000) |
+| voice_message_timeout_ms | [int32](#int32) | optional | Optional: Maximum time in milliseconds after the verdict until the call is hung up when the action is LEAVE_VOICE_MESSAGE, also when the voice message has not finished playing (default: 30000, valid range: 5000 - 120000) |
+| keyword_detection_active | [bool](#bool) | optional | Optional: Enable the detection of machine and person phrases in the transcribed greeting, i.e. the built-in phrase lists plus additional_machine_phrases and additional_human_phrases; turning it off removes this evidence and the detection rules that need it (default: true) |
+| cadence_detection_active | [bool](#bool) | optional | Optional: Enable the detection based on the speech and silence cadence of the greeting, e.g. its length and the silence after it; turning it off removes this evidence and the detection rules that need it (default: true) |
 
 
 
@@ -20627,8 +20665,9 @@ Call
 | csi_port | [int32](#int32) | optional | CSI port of the call |
 | nlu_session_name | [string](#string) | optional | NLU session name |
 | platforms | [ondewo.nlu.Intent.Message.Platform](#ondewo.nlu.Intent.Message.Platform) | optional | Messages for each of the Intent.Message.Platform were sent to the user |
-| redial_recommended | [bool](#bool) | optional | Optional: Whether the callee should be called again later, set only when the answering machine detection (AMD) hung up the call: true for an answering machine or a network announcement, false for a fax. Unset when AMD did not hang up the call. The AMD verdict, cause and confidence of the call are in sip_status.amd_result. No call is redialled automatically; the marker is for the campaign logic of the client |
+| redial_recommended | [bool](#bool) | optional | Optional: Whether the callee should be called again later, set only when the answering machine detection (AMD) ended the call: true for an answering machine or a network announcement hung up on without a voice message, false once a voice message was left and false for a fax. Unset when AMD did not end the call. The AMD verdict, cause and confidence of the call are in sip_status.amd_result. No call is redialled automatically; the marker is for the campaign logic of the client |
 | redial_reason | [string](#string) | optional | Optional: Reason of redial_recommended, set together with it. One of "answering_machine", "network_announcement" or "fax" |
+| answering_machine_detection_end_description | [string](#string) | optional | Optional: Description of how a call ended by the answering machine detection (AMD) ended, i.e. the description of its terminal ondewo.sip.SipStatus.StatusType.OUTGOING_CALL_FINISHED status. One of "Answering machine detected with hang up", "Answering machine detected with left voice message and hang up", "Answering machine detected, call ended by the answering machine" or "Answering machine detected, call ended by the answering machine after leaving a voice message". Unset when AMD did not end the call |
 
 
 
@@ -21942,8 +21981,9 @@ What to do once a non-human verdict is reached
 | Name | Number | Description |
 | ---- | ------ | ----------- |
 | AMD_ACTION_UNSPECIFIED | 0 | Unspecified action defaults to HANG_UP |
-| HANG_UP | 1 | Hang up on a non-human verdict whose per-verdict hang-up switch is on (an answering machine is always hung up on) |
-| DETECT_ONLY | 2 | Only detect and record the verdict, never hang up: the call continues with the greeting (shadow mode to calibrate the detection before enabling HANG_UP) |
+| HANG_UP | 1 | Hang up at once on a non-human verdict whose per-verdict hang-up switch is on (an answering machine is always hung up on) (default) |
+| DETECT_ONLY | 2 | Only detect and record the verdict, never hang up: OUTGOING_CALL_ANSWERING_MACHINE_DETECTED is still set, then the far end is treated as a person and the call continues with the greeting and ends normally (shadow mode to calibrate the detection before enabling HANG_UP) |
+| LEAVE_VOICE_MESSAGE | 3 | Leave a voice message on a hang-up-eligible verdict, then hang up: the fulfillment of voice_message_intent is spoken once after the beep (or after the end of the machine greeting), and the call is hung up when it finished playing or when voice_message_timeout_ms elapsed, whichever comes first. A FAX verdict never gets a voice message; it is hung up on when hang_up_on_fax is on. See the compliance note above before enabling it |
 
 
 
