@@ -102,13 +102,18 @@
   up the call (`answering_machine` and `network_announcement` recommend a redial, `fax` does not). The AMD
   verdict, cause and confidence of a call are read from the existing `Call.sip_status.amd_result`, so they
   need no field of their own. No call is redialled automatically.
-* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) `AsteriskConfigsVariables` gained
-  `optional string sip_trunk_ca_certificates_pem = 9`: the PEM bundle of the CA certificate(s) the
-  carrier's TLS certificate chains to. When SET, Asterisk verifies the carrier's certificate chain and host
-  name (`verify_server=yes`); when UNSET or empty, behaviour is unchanged and the carrier's certificate is
-  not verified. It applies only to the TLS trunk transport and is refused with `INVALID_ARGUMENT` on a UDP
-  or TCP trunk, and for anything other than unexpired CA certificates (a private key in particular). It is
-  public data, not a secret. Declared in `presence/expected_optional.txt`; purely additive.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) `AsteriskConfigsVariables` gained two fields
+  that make verifying the carrier's TLS certificate a per-project choice:
+  * `optional string sip_trunk_ca_certificates_pem = 9` — the PEM bundle of the CA certificate(s) the
+    carrier's TLS certificate chains to. Refused with `INVALID_ARGUMENT` for anything other than unexpired CA
+    certificates (a private key in particular). Public data, not a secret.
+  * `optional bool sip_trunk_verify_server = 10` — default false. Asterisk verifies the carrier's certificate
+    chain and host name (`verify_server=yes`) only when this is true AND a CA bundle is given; true without a
+    bundle is refused with `INVALID_ARGUMENT`. A bundle stored with verification off changes nothing on the
+    trunk, so it can be staged before verification is switched on.
+
+  Both apply only to the TLS trunk transport (a bundle, or verification switched on, is refused on a UDP or
+  TCP trunk). Declared in `presence/expected_optional.txt`; purely additive.
 
 ### Compatibility
 

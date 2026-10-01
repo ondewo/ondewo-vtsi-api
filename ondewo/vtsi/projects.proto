@@ -174,10 +174,10 @@ message AsteriskConfigsVariables{
 
     // OPTIONAL: the PEM bundle of the CA certificate(s) the carrier's TLS certificate chains to, i.e. one
     // or more <pre><code>-----BEGIN CERTIFICATE-----</code></pre> blocks and nothing else.
-    // When SET, Asterisk verifies the carrier's certificate chain and host name
-    // (<pre><code>verify_server=yes</code></pre> against this bundle) and refuses a carrier whose
-    // certificate does not chain to it. When UNSET or empty, behaviour is unchanged: the carrier's
-    // certificate is NOT verified.
+    // Storing a bundle does NOT by itself turn verification on: Asterisk verifies the carrier's
+    // certificate chain and host name only when <pre><code>sip_trunk_verify_server</code></pre> is also
+    // true. With verification off the bundle is validated and stored, so it can be staged before
+    // verification is switched on, and the trunk behaves exactly as without it.
     // Applies only to the TLS trunk transport: setting it while <pre><code>sip_trunk_transport</code></pre>
     // is <pre><code>SIP_TRUNK_TRANSPORT_UDP</code></pre> or <pre><code>SIP_TRUNK_TRANSPORT_TCP</code></pre>
     // is REFUSED with <pre><code>INVALID_ARGUMENT</code></pre>, as is a bundle that is not PEM, contains a
@@ -185,6 +185,18 @@ message AsteriskConfigsVariables{
     // (basicConstraints CA=true) or has expired, or exceeds the server's count and size limits.
     // This is PUBLIC data, not a secret: it is returned by Get and List like every other field here.
     optional string sip_trunk_ca_certificates_pem = 9;
+
+    // OPTIONAL: verify the carrier's TLS certificate. Default false (unset == false).
+    // When true, Asterisk verifies the carrier's certificate chain against
+    // <pre><code>sip_trunk_ca_certificates_pem</code></pre> and its host name against
+    // <pre><code>sip_trunk_host</code></pre> (<pre><code>verify_server=yes</code></pre>), and refuses a
+    // carrier that fails either check. true WITHOUT a CA bundle is REFUSED with
+    // <pre><code>INVALID_ARGUMENT</code></pre>, because the verification it asks for cannot happen.
+    // false or unset: the carrier's certificate is NOT verified, whether or not a bundle is stored.
+    // Applies only to the TLS trunk transport: true on a <pre><code>SIP_TRUNK_TRANSPORT_UDP</code></pre> or
+    // <pre><code>SIP_TRUNK_TRANSPORT_TCP</code></pre> trunk is REFUSED with
+    // <pre><code>INVALID_ARGUMENT</code></pre>; false there is accepted and changes nothing.
+    optional bool sip_trunk_verify_server = 10;
 
 }
 
