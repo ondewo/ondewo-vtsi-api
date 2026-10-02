@@ -40,6 +40,91 @@ The `.proto`-files of this repository are dependent on 4 other APIs:
 
 To make development easier, use the `make build` command to pull the `.proto`-files from the API repositories and copy them into the `ondewo` folder.
 
+## VTSI Services
+
+The VTSI surface is six gRPC services in `ondewo/vtsi/` (package `ondewo.vtsi`). The rendered reference of every
+message, field and enum value is [docs/index.md](docs/index.md) (also `docs/index.html`).
+
+| Service | File | What it manages |
+| --- | --- | --- |
+| `Projects` | `projects.proto` | VTSI projects: create, update, deploy and undeploy the per-project Asterisk |
+| `Calls` | `calls.proto` | Callers (outbound), listeners (inbound), scheduled callers, calls, and the status streams |
+| `Campaigns` | `campaigns.proto` | Campaigns: batches of outbound calls with a parallel-call limit and retries |
+| `Events` | `events.proto` | `VtsiEvent` notifications: event subscriptions, webhooks and the event stream |
+| `Logs` | `logs.proto` | Captured logs of the per-call containers |
+| `Softphones` | `softphones.proto` | SIP accounts for humans using a softphone |
+
+Errors of the `Campaigns` and `Events` services, and of the campaign path of `StartCallers` /
+`StartScheduledCallers`, are reported as gRPC status codes, never in an `error_message` field.
+
+### Campaigns
+
+A **campaign** is a named set of outbound calls that VTSI places while keeping at most `max_parallel_calls` of them
+running at the same time. 100 callers added to a campaign with `max_parallel_calls = 10` are never more than 10
+calls being set up or connected at once; the next call starts when one ends.
+
+* **Creating and filling a campaign.** `CreateCampaign` creates an empty campaign in state `CREATED`. Calls are added
+  by setting `campaign_assignment` on `StartCallersRequest` or `StartScheduledCallersRequest`: either an existing
+  campaign (`campaign_name`, or `campaign_display_name` = project + display name) or a new one (`new_campaign`). The
+  request is then atomic (the campaign, every campaign call and every scheduled caller are stored, or nothing is),
+  its callers are NOT started by the request itself, and `start_mode` (`CampaignStartMode`) decides whether the
+  campaign starts dialling. A scheduled call of a campaign starts at or after its scheduled time AND when the
+  campaign has a free slot.
+* **Names.** A campaign's resource name is `projects/<project_uuid>/campaigns/<campaign_uuid>`; an empty
+  `display_name` becomes `campaign-<campaign_uuid>`. Display names are unique per project, so every RPC about one
+  campaign accepts either the resource name or a `CampaignDisplayName`.
+* **Lifecycle.** `StartCampaign` starts a `CREATED` campaign. `StopCampaign` is graceful: no new call is started, the
+  calls that are running continue to their natural end, then the campaign is `STOPPED`. `HardStopCampaign` hangs up
+  every running call of the campaign immediately; the campaign stays `HARD_STOPPING` until the end of each call is
+  confirmed, then it is `HARD_STOPPED`, and the calls it ended are `CANCELLED`. `ResumeCampaign` continues a
+  `STOPPING`, `STOPPED` or `HARD_STOPPED` campaign with the calls that have not finished. A campaign whose calls are
+  all finished is `COMPLETED`; adding calls makes it `RUNNING` again.
+* **Retries.** `max_attempts` (default 1 = no retry, at most 10) and `retry_delay` (default 60 s) apply to every call
+  of the campaign. A call counts as failed only after its last attempt; a failure that cannot succeed by repetition
+  (a rejected credential, an invalid configuration) is not retried. Both settings, `display_name` and
+  `max_parallel_calls` can be changed with `UpdateCampaign` in every state; lowering `max_parallel_calls` never ends
+  a running call.
+* **Progress.** `GetCampaignStatistics` counts every call in exactly one of `not_started`, `in_progress`,
+  `retry_pending`, `completed`, `failed` and `cancelled`, plus `total_attempts` and `calls_retried`. The four buckets
+  "completed / failed / in progress / not started" are `completed`, `failed + cancelled`,
+  `in_progress + retry_pending` and `not_started`. `ListCampaignCalls` returns each call with its SIP status type,
+  SIP status description, attempts and, on request, its attempt history. `StreamCampaignStatus` streams a snapshot of
+  the project's campaigns and then every change.
+* **Rollout.** Do not set `campaign_assignment` before every server replica runs VTSI with API 9.0.0: an older
+  replica ignores the field and starts every caller of the request at once.
+
+### Status streams
+
+`Calls.StreamCallerStatus`, `Calls.StreamListenerStatus` and `Calls.StreamScheduledCallerStatus` send a snapshot
+(`snapshot = true`) of the matching callers, listeners or scheduled callers, then every resource whose call or SIP
+status changed (`CallResourceStatus`: call, active flag, SIP status type and description, times, phone number,
+scheduled-caller state, campaign), plus keep-alive messages. `Campaigns.StreamCampaignStatus` does the same for
+campaigns and, with `include_calls`, their campaign calls. A server without a free stream slot answers
+`RESOURCE_EXHAUSTED`; a stream ends at the server's maximum stream duration with `end_reason` set.
+
+### VtsiEvents, event subscriptions and webhooks
+
+Every key event and status change of VTSI is one value of the enum `VtsiEvent`, grouped by resource in blocks of 100:
+calls (1xx), callers (2xx), listeners (3xx), scheduled callers (4xx), campaigns (5xx), VTSI projects (6xx), the
+project's Asterisk (7xx), softphone accounts (8xx) and the event system itself (9xx). Each event is delivered as a
+`VtsiEventMessage` with a unique `event_id`, the resource it is about, its time, the SIP status where there is one,
+the campaign where known and a per-resource `resource_sequence`.
+
+* **Event subscriptions** (per project) choose which events are delivered (`events`, or `all_events`), optionally
+  narrowed by `resource_name_prefixes` and `campaign_names`, and to which webhooks.
+* **Webhooks** (per project) are an `http://` or `https://` URL, `POST` (default) or `PUT`, a timeout and optional
+  **custom headers**, e.g. `Authorization`. Each event is sent as one HTTP request whose JSON body is the
+  `VtsiEventMessage`. Custom header VALUES are write-only: every RPC returns them as `********`, an update that sends
+  `********` keeps the stored value, and the server never logs them. `TestWebhook` sends one test event at once and
+  reports the outcome.
+* **`SubscribeVtsiEvents`** streams a project's events, selected by a stored subscription or an inline
+  `VtsiEventFilter`; after a disconnect, the last `resume_token` continues where the stream stopped, within the
+  server's event retention.
+* **Webhook delivery is best effort.** Each event is sent to a webhook as at most a few HTTP requests with backoff,
+  kept in the memory of the server replica that produced it; an overloaded server or a failing webhook drops events
+  rather than slowing calls down. The same event can arrive more than once and events can arrive out of order:
+  de-duplicate by `event_id`, order by `resource_sequence` per `resource_name`, and reconcile with the status RPCs.
+
 ## Discussions
 
 Please use the issue tracker in this repo for discussions about this API, or the issue tracker in the relevant client if it is language-specific.
@@ -92,6 +177,7 @@ Please use the issue tracker in this repo for discussions about this API, or the
 │       ├── calls.proto
 │       ├── campaigns.proto
 │       ├── events.proto
+│       ├── logs.proto
 │       ├── projects.proto
 │       └── softphones.proto
 ├── ondewo-nlu-api         <----- NLU API @ https://github.com/ondewo/ondewo-nlu-api
