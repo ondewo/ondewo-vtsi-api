@@ -221,20 +221,27 @@ TODOs after Pull Request was merged in:
 * Release:
    >make ondewo_release
 
-### The release now requires the proto toolchain, and fails closed without it
+### The release requires the proto toolchain, and fails closed without it
 
 `make release` — and therefore `make ondewo_release` — takes `presence_check` as its **first
 prerequisite**, so a release can no longer be cut against a proto tree the field-presence guard has
-never read. That guard runs a real `protoc`, which it gets from **`grpcio-tools`** installed on
-`${PRESENCE_PY}`, and `PRESENCE_PY` defaults to a bare `python3`.
+never read. That guard runs a real `protoc`, which it gets from **`grpcio-tools`**.
 
-**On a machine whose system `python3` does not have it, the release stops before doing anything.**
-No release branch is created, no tag is pushed, nothing is published: the first prerequisite exits
-`2` with an instruction. Exit `2` rather than `1` is the distinction the guard makes everywhere — a
-check that could not run is **BROKEN**, never a clean pass and never a finding.
+**With [uv](https://docs.astral.sh/uv/) installed, `make presence_check` works out of the box.** With
+`PRESENCE_PY` unset the targets run the guard through `PRESENCE_RUNNER`, i.e. `uv run --no-project`
+with the same `grpcio-tools` / `protobuf` pins as `.github/workflows/presence.yml` (the manifest is
+compared byte-for-byte, so the versions are pinned and change in both places together). uv builds that
+environment in its own cache; nothing is installed into the checkout or the system python.
 
-The supported fix is to point `PRESENCE_PY` at an interpreter that has the toolchain. **Do not drop
-the prerequisite**; that is the one change that puts an unread proto tree back into a release.
+**Without uv, the release stops before doing anything.** The runner is then a bare `python3`, which
+usually has no `grpcio-tools`: no release branch is created, no tag is pushed, nothing is published,
+and the first prerequisite exits `2` with an instruction. Exit `2` rather than `1` is the distinction
+the guard makes everywhere — a check that could not run is **BROKEN**, never a clean pass and never a
+finding. **Offline**, uv resolves the pins on its first run and fails with its own resolver error (uv's
+exit code, not `2`): still closed, but warm uv's cache once while online, or use the override below.
+
+`PRESENCE_PY` always wins over the runner: point it at an interpreter that has the toolchain. **Do not
+drop the prerequisite**; that is the one change that puts an unread proto tree back into a release.
 
 ```bash
 python3 -m pip install grpcio-tools protobuf   # or use a venv that already has them
@@ -251,7 +258,7 @@ but prefer the command line: that form also wins against a makefile assignment, 
 if the default ever stops being conditional.
 
 Run `make presence_check` on its own **before** `make ondewo_release`, not because the release would
-skip it, but because finding out about a missing interpreter is much cheaper than finding out about
+skip it, but because finding out about a missing toolchain is much cheaper than finding out about
 it after the version bump has been committed and pushed.
 
 `make release` also declares `.NOTPARALLEL:`, because its steps must run in the listed order and

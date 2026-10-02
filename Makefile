@@ -90,15 +90,31 @@ mypy: ## Run mypy static code checking
 # The presence guard needs a real protoc. grpcio-tools carries one and the well-known types with it,
 # which is why it is preferred over a system protoc: a system binary without the well-known .protos on
 # its include path fails on `import "google/protobuf/timestamp.proto"` and the failure reads like a
-# proto defect rather than a missing include. PRESENCE_PY lets a caller point the target at a venv
-# interpreter that already has it (e.g. `make presence_check PRESENCE_PY=.venv/bin/python`).
-PRESENCE_PY?=python3
+# proto defect rather than a missing include.
+#
+# IT WORKS OUT OF THE BOX WHEREVER uv IS INSTALLED. With PRESENCE_PY unset, the targets run the guard
+# through PRESENCE_RUNNER: `uv run --no-project` with the SAME grpcio-tools/protobuf pins as
+# .github/workflows/presence.yml (the manifest is compared byte-for-byte and those are the versions it
+# was measured with - change both places together). uv builds that throwaway environment in its cache;
+# nothing is installed into this checkout or the system python. Without uv the runner is a bare
+# `python3`, which on most machines has no grpcio-tools: the guard then exits 2 (BROKEN, not a finding)
+# with its install instruction, i.e. it still fails closed.
+#
+# OFFLINE: uv resolves and downloads the pins on its FIRST run, so on a machine with no index access the
+# default runner fails with uv's own resolver error (uv's exit code, not 2). That is still closed - the
+# release does not proceed - but it is not the documented exit 2. Either warm uv's cache once while
+# online, or point PRESENCE_PY at an interpreter that already has the toolchain, which always wins:
+#     make presence_check PRESENCE_PY=.venv/bin/python
+PRESENCE_GRPCIO_TOOLS_VERSION=1.83.0
+PRESENCE_PROTOBUF_VERSION=7.35.1
+PRESENCE_RUNNER?=$(if $(shell command -v uv 2>/dev/null),uv run --quiet --no-project --with grpcio-tools==${PRESENCE_GRPCIO_TOOLS_VERSION} --with protobuf==${PRESENCE_PROTOBUF_VERSION} python,python3)
+PRESENCE_PY?=
 
 presence_check: ## Check the proto field-presence surface against presence/expected_optional.txt
-	@${PRESENCE_PY} presence/check_presence.py
+	@$(or ${PRESENCE_PY},${PRESENCE_RUNNER}) presence/check_presence.py
 
 presence_update: ## Regenerate presence/presence-manifest.json after an intended presence change
-	@${PRESENCE_PY} presence/check_presence.py --write
+	@$(or ${PRESENCE_PY},${PRESENCE_RUNNER}) presence/check_presence.py --write
 
 help: ## Print usage info about help targets
 	# (first comment after target starting with double hashes ##)
@@ -244,14 +260,14 @@ checkout_defined_submodule_versions: ## Update submodule versions
 # or bypassed, while a make prerequisite cannot. A release must not be cut against a proto tree the
 # guard has not read.
 #
-# THIS IS A REAL OPERATIONAL CHANGE TO THE RELEASE ENTRY POINT, AND IT FAILS CLOSED. `make release`
-# and therefore `make ondewo_release` now HARD-REQUIRE grpcio-tools (or a protoc on PATH) on
-# ${PRESENCE_PY}, which defaults to a bare `python3`. A release machine whose system python3 does not
-# have it cuts NO branch and NO tag: the run stops on the first prerequisite with exit 2 and the
-# instruction printed by presence/check_presence.py. That is deliberate - a missing toolchain is a
-# BROKEN check and never a clean one - and it is loud rather than silent, so it cannot ship an
-# unread proto tree. The supported fix is to point the override at an interpreter that has the
-# toolchain, NEVER to drop the prerequisite:
+# IT FAILS CLOSED. `make release` and therefore `make ondewo_release` need grpcio-tools (or a protoc on
+# PATH). On a machine with uv that needs nothing: PRESENCE_RUNNER (see presence_check above) supplies the
+# pinned toolchain. Without uv, or offline before uv's cache is warm, the run stops on the first
+# prerequisite - exit 2 with the instruction printed by presence/check_presence.py, or uv's resolver
+# error - and cuts NO branch and NO tag. That is deliberate - a missing toolchain is a BROKEN check and
+# never a clean one - and it is loud rather than silent, so it cannot ship an unread proto tree. The
+# supported fix is to install uv or point the override at an interpreter that has the toolchain, NEVER
+# to drop the prerequisite:
 #
 #     make ondewo_release PRESENCE_PY=.venv/bin/python
 #     make release        PRESENCE_PY=/path/to/venv/bin/python
