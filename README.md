@@ -13,10 +13,10 @@ The core components of all the client libraries are built directly from files in
 For an end-user, the APIs in this repo function mostly as documentation for the endpoints. For specific implementations, look in the following repos for working implementations:
 
 * [Python](https://github.com/ondewo/ondewo-vtsi-client-python)
-* [Angular](https://github.com/ondewo/ondewo-survey-client-angular)
-* [JavaScript](https://github.com/ondewo/ondewo-survey-client-javascript)
-* [TypeScript](https://github.com/ondewo/ondewo-survey-client-typescript)
-* [NodeJS](https://github.com/ondewo/ondewo-survey-client-nodejs)
+* [Angular](https://github.com/ondewo/ondewo-vtsi-client-angular)
+* [JavaScript](https://github.com/ondewo/ondewo-vtsi-client-js)
+* [TypeScript](https://github.com/ondewo/ondewo-vtsi-client-typescript)
+* [NodeJS](https://github.com/ondewo/ondewo-vtsi-client-nodejs)
 
 Please note that some of these implementations are works-in-progress. The repo will make clear the status of the implementation.
 
