@@ -255,6 +255,14 @@ another origin (scheme, host or port) while custom headers are stored requires r
 with their real values (or an empty map) in the same request; the stored values never follow the url to a
 new origin.
 
+### Build
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) `make presence_check` works out of the box.
+  It needed `PRESENCE_PY` pointing at a python with `grpcio-tools`, and a plain `python3` without it failed
+  with exit 2. With `PRESENCE_PY` unset it now runs through a `uv run --no-project` runner with a pinned
+  `grpcio-tools`; `PRESENCE_PY` still overrides it. On a machine without index access, warm uv's cache once or
+  set `PRESENCE_PY`.
+
 *****************
 
 ## Release ONDEWO VTSI API 8.7.0
