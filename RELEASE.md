@@ -123,6 +123,65 @@
 
   Both apply only to the TLS trunk transport (a bundle, or verification switched on, is refused on a UDP or
   TCP trunk). Declared in `presence/expected_optional.txt`; purely additive.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) New service `Campaigns` in the new file
+  `ondewo/vtsi/campaigns.proto`: a CAMPAIGN is a named set of outbound calls that VTSI places while keeping
+  at most `max_parallel_calls` of them running at the same time (100 callers with `max_parallel_calls = 10`
+  means at most 10 calls are set up or connected at any moment; the next starts when one ends).
+  * CRUD: `CreateCampaign`, `GetCampaign`, `UpdateCampaign` (required `update_mask`; updatable paths
+    `display_name`, `max_parallel_calls`, `max_attempts`, `retry_delay`, in every state), `DeleteCampaign`
+    and `ListCampaigns` (`CampaignFilter` by state, display-name substring or exact display name;
+    `page_size` / `page_token`).
+  * Lifecycle: `StartCampaign`, `StopCampaign` (no new call is started, running calls finish),
+    `HardStopCampaign` (running calls are hung up immediately; `HARD_STOPPED` only once every hang-up is
+    confirmed) and `ResumeCampaign`. States: `CREATED`, `RUNNING`, `STOPPING`, `STOPPED`,
+    `HARD_STOPPING`, `HARD_STOPPED`, `COMPLETED`.
+  * Progress: `GetCampaignStatistics` (`CampaignStatistics`: `total`, `not_started`, `in_progress`,
+    `retry_pending`, `completed`, `failed`, `cancelled`, `total_attempts`, `calls_retried`,
+    `scheduled_not_due`, `progress_percent`) and `ListCampaignCalls` (`CampaignCall` with its state, SIP
+    status type and description, attempts and, on request, the `attempt_history`).
+  * Retries: `max_attempts` per campaign (default 1 = no retry, at most 10) and `retry_delay` (default
+    60 s). A call counts as failed only after its last attempt; a failure that cannot succeed by repetition
+    is never retried.
+  * Names: resource name `projects/<project_uuid>/campaigns/<campaign_uuid>`; an empty `display_name`
+    becomes `campaign-<campaign_uuid>`. Display names are unique per project, so every single-campaign RPC
+    takes either the resource name or a `CampaignDisplayName`.
+  * `StreamCampaignStatus`: a server-streaming snapshot of the project's campaigns followed by every change,
+    optionally including campaign calls.
+
+  Errors of the new RPCs are gRPC status codes, never `error_message` fields. Two new fields carry the
+  `optional` keyword (`page_token` of `ListCampaignsRequest` and `ListCampaignCallsRequest`).
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) `StartCallersRequest` and
+  `StartScheduledCallersRequest` gained `CampaignAssignment campaign_assignment = 3`: the callers are added
+  to an existing campaign (by resource name or display name) or to a new one (`new_campaign`) instead of
+  being started by the request, atomically, with `CampaignStartMode` choosing whether the campaign starts.
+  The responses gained `Campaign campaign` and `repeated string campaign_call_names`
+  (`StartCallersResponse` 4 and 5, `StartScheduledCallersResponse` 3 and 4), and `ScheduledCaller` gained
+  `string campaign_name = 12`. Unset, both RPCs behave exactly as before.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) Three status streams on `Calls`:
+  `StreamCallerStatus`, `StreamListenerStatus` and `StreamScheduledCallerStatus`, each sending a snapshot
+  and then every changed `CallResourceStatus` (call, active flag, SIP status type and description, times,
+  phone number, scheduled-caller state and campaign) in a `StreamCallResourceStatusResponse`.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) New service `Events` in the new file
+  `ondewo/vtsi/events.proto`: every key event and status change of VTSI is one value of the new enum
+  `VtsiEvent` (calls 1xx, callers 2xx, listeners 3xx, scheduled callers 4xx, campaigns 5xx, VTSI projects
+  6xx, Asterisk 7xx, softphone accounts 8xx, the event system itself 9xx; 600 is reserved), delivered as a
+  `VtsiEventMessage`.
+  * Event subscriptions per project (which events, optionally narrowed by resource-name prefixes and
+    campaign names, go to which webhooks): `CreateVtsiEventSubscription`, `GetVtsiEventSubscription`,
+    `UpdateVtsiEventSubscription`, `DeleteVtsiEventSubscription`, `ListVtsiEventSubscriptions`.
+  * Webhooks per project (an http(s) URL, `POST` or `PUT`, optional custom headers, a timeout):
+    `CreateWebhook`, `GetWebhook`, `UpdateWebhook`, `DeleteWebhook`, `ListWebhooks` and `TestWebhook`.
+    **Custom header values are write-only**: every RPC returns them as `********`, and an update that sends
+    the mask keeps the stored value. Webhook delivery is best effort: at most a few retried requests per
+    event, kept in memory, dropped rather than slowing a call down; de-duplicate by `event_id`.
+  * `SubscribeVtsiEvents`: a server stream of the project's events, selected by a stored subscription or an
+    inline `VtsiEventFilter`, resumable with `resume_token` within the server's journal retention.
+
+  Five new fields carry the `optional` keyword (`page_token` of both list requests,
+  `SubscribeVtsiEventsRequest.resume_token`, `VtsiEventMessage.sip_status_type` and
+  `.previous_sip_status_type`). No new field is an `optional bool`, because ngx-grpc cannot send `false`
+  for one; switches are plain bools whose zero value is the safe default (`disabled`) or enums whose
+  `*_UNSPECIFIED` value is the documented default.
 
 ### Compatibility
 
@@ -169,6 +228,12 @@ additive against 5.4.0 (`SipStatus.StatusType.OUTGOING_CALL_ANSWERING_MACHINE_DE
 the RPC `SipReportAnsweringMachineDetected`), and it means the vendored-proto
 lockstep rule DOES fire: a consumer installing `ondewo-vtsi-client` next to `ondewo-sip-client` must take
 the sip client generated from the same sip-api commit, or the last installed copy of `ondewo/sip` wins.
+
+**Rollout rule for the campaign fields.** `campaign_assignment` on `StartCallers` /
+`StartScheduledCallers` is an unknown field to a server replica of an older version, which skips it and
+starts every caller of the request at once, ignoring `max_parallel_calls`. Clients must not set it before
+every server replica runs VTSI 9.0.0. The new `Campaigns` and `Events` services and the three status streams
+answer `UNIMPLEMENTED` on an older replica, which is harmless.
 
 *****************
 

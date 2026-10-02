@@ -90,6 +90,8 @@ Please use the issue tracker in this repo for discussions about this API, or the
 │   │   └── text-to-speech.proto
 │   └── vtsi
 │       ├── calls.proto
+│       ├── campaigns.proto
+│       ├── events.proto
 │       ├── projects.proto
 │       └── softphones.proto
 ├── ondewo-nlu-api         <----- NLU API @ https://github.com/ondewo/ondewo-nlu-api

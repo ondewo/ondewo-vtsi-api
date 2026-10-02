@@ -1,0 +1,866 @@
+// Copyright 2021 ONDEWO GmbH
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package ondewo.vtsi;
+import "google/protobuf/duration.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "ondewo/sip/sip.proto";
+// <code>ondewo.vtsi.CampaignStatistics</code> rides on campaign events.
+import "ondewo/vtsi/campaigns.proto";
+
+// <p>ONDEWO VTSI API</p>
+// <p>Notifies other systems of VTSI events: calls, callers, listeners, scheduled callers,
+// campaigns, VTSI projects, the project&apos;s Asterisk and softphone accounts. Every event is one
+// value of <a href="index.html#ondewo.vtsi.VtsiEvent">VtsiEvent</a> and is delivered as a
+// <a href="index.html#ondewo.vtsi.VtsiEventMessage">VtsiEventMessage</a>.</p>
+// <p>Two delivery paths: the server-streaming <code>SubscribeVtsiEvents</code> RPC, and WEBHOOKS
+// (an HTTP request per event to a URL of the client&apos;s choice). Which events go to which
+// webhooks is configured per project with EVENT SUBSCRIPTIONS.</p>
+// <p><b>Webhooks are best effort.</b> Each event is sent to a webhook as at most
+// <code>ONDEWO_VTSI_WEBHOOK_MAX_ATTEMPTS</code> HTTP requests (3 by default) with backoff between
+// them; after the last one fails, the event is dropped for that webhook. Pending webhook requests
+// live in the memory of the server replica that produced the event and are lost when it restarts.
+// An overloaded server, or a webhook that keeps timing out, drops events rather than slowing calls
+// down. The same event can arrive more than once (a request whose answer was lost is sent again):
+// de-duplicate by <code>event_id</code>. Requests of one webhook can arrive out of order, because
+// several server replicas send independently: order by <code>resource_sequence</code> per
+// <code>resource_name</code>, then <code>event_time</code>.</p>
+// <p><b>Streams can be resumed.</b> While a project has an open <code>SubscribeVtsiEvents</code>
+// stream or an enabled event subscription, its events are also written to a short-lived journal
+// (24 h by default). A stream that reconnects with its last <code>resume_token</code> receives the
+// events it missed, provided they are still in the journal; nothing else is persisted for
+// redelivery.</p>
+// <p>Use the status RPCs (<code>GetCampaign</code>, <code>ListCalls</code>, the status streams) to
+// reconcile.</p>
+// <p><b>Custom header values are write-only.</b> They are returned as <code>********</code> by every
+// RPC and are never logged.</p>
+// <p>Errors are gRPC status codes: <code>INVALID_ARGUMENT</code>, <code>NOT_FOUND</code>,
+// <code>FAILED_PRECONDITION</code>, <code>RESOURCE_EXHAUSTED</code> (no free stream slot).</p>
+service Events {
+
+    //////////////////////////////////////////////////////////////////////////////
+    // Event subscription endpoints
+    //////////////////////////////////////////////////////////////////////////////
+
+    // <p>Creates an event subscription: which events of the project are delivered to which
+    // webhooks. A subscription without webhooks is usable by <code>SubscribeVtsiEvents</code>.</p>
+    // <p>Errors: <code>NOT_FOUND</code> for an unknown project or webhook; <code>INVALID_ARGUMENT</code>
+    // for no events and <code>all_events</code> unset, <code>events</code> together with
+    // <code>all_events</code>, <code>VTSI_EVENT_UNSPECIFIED</code> or a reserved value, a webhook or a
+    // campaign name of another project, a malformed campaign name, or an output-only field that was
+    // set. A campaign named in <code>campaign_names</code> need not exist (it may be created later
+    // or deleted since).</p>
+    rpc CreateVtsiEventSubscription (CreateVtsiEventSubscriptionRequest) returns (VtsiEventSubscription);
+
+    // <p>Returns an event subscription.</p>
+    rpc GetVtsiEventSubscription (GetVtsiEventSubscriptionRequest) returns (VtsiEventSubscription);
+
+    // <p>Updates the fields named in <code>update_mask</code>: <code>display_name</code>,
+    // <code>events</code>, <code>all_events</code>, <code>resource_name_prefixes</code>,
+    // <code>campaign_names</code>, <code>webhook_names</code>, <code>disabled</code>. Takes effect
+    // within a few seconds on every server replica.</p>
+    rpc UpdateVtsiEventSubscription (UpdateVtsiEventSubscriptionRequest) returns (VtsiEventSubscription);
+
+    // <p>Deletes an event subscription. Open <code>SubscribeVtsiEvents</code> streams that name it
+    // end with <code>end_reason</code> set.</p>
+    rpc DeleteVtsiEventSubscription (DeleteVtsiEventSubscriptionRequest) returns (DeleteVtsiEventSubscriptionResponse);
+
+    // <p>Lists the event subscriptions of a project, paged.</p>
+    rpc ListVtsiEventSubscriptions (ListVtsiEventSubscriptionsRequest) returns (ListVtsiEventSubscriptionsResponse);
+
+    //////////////////////////////////////////////////////////////////////////////
+    // Webhook endpoints
+    //////////////////////////////////////////////////////////////////////////////
+
+    // <p>Creates a webhook: an HTTP(S) endpoint that receives one request per event, with a JSON
+    // body holding the <code>VtsiEventMessage</code> (proto3 JSON, original field names).</p>
+    // <p>Errors: <code>NOT_FOUND</code> for an unknown project; <code>INVALID_ARGUMENT</code> for a
+    // URL that is not http(s), has no host, carries user information (use a custom header for
+    // credentials) or exceeds 2048 characters; for a reserved or malformed header name, a header
+    // value with a line break, too many or too long headers; or for a timeout outside
+    // 1 s to 30 s.</p>
+    rpc CreateWebhook (CreateWebhookRequest) returns (Webhook);
+
+    // <p>Returns a webhook. Custom header values are masked.</p>
+    rpc GetWebhook (GetWebhookRequest) returns (Webhook);
+
+    // <p>Updates the fields named in <code>update_mask</code>: <code>display_name</code>,
+    // <code>url</code>, <code>http_method</code>, <code>custom_headers</code>, <code>disabled</code>,
+    // <code>timeout</code>. <code>custom_headers</code> replaces the whole map; a value equal to the
+    // mask <code>********</code> keeps the stored value of that header, so a Get-modify-Update
+    // round trip does not overwrite secrets with the mask.</p>
+    rpc UpdateWebhook (UpdateWebhookRequest) returns (Webhook);
+
+    // <p>Deletes a webhook and removes it from every event subscription.</p>
+    rpc DeleteWebhook (DeleteWebhookRequest) returns (DeleteWebhookResponse);
+
+    // <p>Lists the webhooks of a project, paged. Custom header values are masked.</p>
+    rpc ListWebhooks (ListWebhooksRequest) returns (ListWebhooksResponse);
+
+    // <p>Sends one <code>VTSI_EVENT_WEBHOOK_TEST</code> event to a webhook now, without retries,
+    // and reports the outcome. Works on a disabled webhook too, and ignores an open circuit.</p>
+    // <p>Errors: <code>NOT_FOUND</code>. A failed delivery is reported in the response, not as an
+    // error status.</p>
+    rpc TestWebhook (TestWebhookRequest) returns (TestWebhookResponse);
+
+    //////////////////////////////////////////////////////////////////////////////
+    // Event stream endpoint
+    //////////////////////////////////////////////////////////////////////////////
+
+    // <p>Streams the events of a project as they happen, selected either by a named event
+    // subscription or by an inline filter. An empty message is sent as a keep-alive. After a
+    // disconnect, pass the last <code>resume_token</code> to continue where the stream stopped;
+    // events older than the server&apos;s retention (24 h by default) are no longer available, and
+    // the journal records a project&apos;s events only while it has an open stream (and for 1 h
+    // after the last one closed) or an enabled event subscription. A stream sees events of other
+    // server replicas from at most a few seconds after it opened. A client that stops reading for
+    // longer than the server&apos;s stall timeout (30 s by default) is disconnected; reconnect with
+    // the <code>resume_token</code>. When the project is deleted, the stream delivers
+    // <code>VTSI_EVENT_VTSI_PROJECT_DELETED</code> and ends.</p>
+    // <p>Errors: <code>NOT_FOUND</code> for an unknown project or subscription;
+    // <code>INVALID_ARGUMENT</code> for a malformed <code>resume_token</code>;
+    // <code>FAILED_PRECONDITION</code> for a disabled subscription; <code>RESOURCE_EXHAUSTED</code>
+    // when the server has no free stream slot.</p>
+    rpc SubscribeVtsiEvents (SubscribeVtsiEventsRequest) returns (stream SubscribeVtsiEventsResponse);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Enums
+//////////////////////////////////////////////////////////////////////////////
+
+// Every event VTSI reports. Values are grouped by resource in blocks of 100; numbers are stable.
+enum VtsiEvent {
+
+    // Unspecified. Never emitted; refused in a subscription.
+    VTSI_EVENT_UNSPECIFIED = 0;
+
+    // ---- Calls (resource_name: the call) ----
+
+    // A call record was created: an outbound call was placed, or a listener received a call.
+    VTSI_EVENT_CALL_CREATED = 100;
+
+    // The call is ringing: <code>INCOMING_CALL_INITIATED</code> / <code>OUTGOING_CALL_INITIATED</code>.
+    VTSI_EVENT_CALL_INITIATED = 101;
+
+    // The call was answered: <code>INCOMING_CALL_CONNECTED</code> / <code>OUTGOING_CALL_CONNECTED</code>.
+    VTSI_EVENT_CALL_CONNECTED = 102;
+
+    // The call ended normally: <code>INCOMING_CALL_FINISHED</code> / <code>OUTGOING_CALL_FINISHED</code>.
+    VTSI_EVENT_CALL_FINISHED = 103;
+
+    // The call failed: <code>INCOMING_CALL_FAILED</code> / <code>OUTGOING_CALL_FAILED</code>.
+    VTSI_EVENT_CALL_FAILED = 104;
+
+    // A transfer of the call started: <code>TRANSFER_CALL_INITIATED</code>.
+    VTSI_EVENT_CALL_TRANSFER_INITIATED = 105;
+
+    // <code>TransferCall</code> transferred the call.
+    VTSI_EVENT_CALL_TRANSFERRED = 106;
+
+    // A transfer failed: <code>TRANSFER_CALL_FAILED</code>, or <code>TransferCall</code> failed.
+    VTSI_EVENT_CALL_TRANSFER_FAILED = 107;
+
+    // A hang-up started: <code>SOFT_HANGUP_INITIATED</code> / <code>HARD_HANGUP_INITIATED</code>.
+    VTSI_EVENT_CALL_HANGUP_INITIATED = 108;
+
+    // An answering machine was detected: <code>OUTGOING_CALL_ANSWERING_MACHINE_DETECTED</code>.
+    VTSI_EVENT_CALL_ANSWERING_MACHINE_DETECTED = 109;
+
+    // The call was ended by <code>StopCall</code>, <code>StopCalls</code>, <code>StopAllCalls</code>
+    // or a campaign hard stop.
+    VTSI_EVENT_CALL_STOPPED = 110;
+
+    // The SIP status of the call changed (emitted for EVERY change, in addition to the specific
+    // events above). <code>previous_sip_status_type</code> holds the status before.
+    VTSI_EVENT_CALL_SIP_STATUS_CHANGED = 111;
+
+    // ---- Callers (resource_name: the caller) ----
+
+    // A caller started and placed its call.
+    VTSI_EVENT_CALLER_STARTED = 200;
+
+    // A caller could not be started; <code>description</code> says why.
+    VTSI_EVENT_CALLER_START_FAILED = 201;
+
+    // A caller was stopped (<code>StopCaller</code>, <code>StopCallers</code>).
+    VTSI_EVENT_CALLER_STOPPED = 202;
+
+    // A caller was deleted.
+    VTSI_EVENT_CALLER_DELETED = 203;
+
+    // A caller&apos;s container was restarted by the server.
+    VTSI_EVENT_CALLER_RESTARTED = 204;
+
+    // A caller&apos;s container was found not running or unhealthy.
+    VTSI_EVENT_CALLER_UNHEALTHY = 205;
+
+    // A caller reported unhealthy is healthy again (its container answers its health check, or its
+    // restart succeeded). Best effort: reported by the replica that reported it unhealthy.
+    VTSI_EVENT_CALLER_HEALTHY = 206;
+
+    // ---- Listeners (resource_name: the listener) ----
+
+    // A listener started and is waiting for calls.
+    VTSI_EVENT_LISTENER_STARTED = 300;
+
+    // A listener could not be started; <code>description</code> says why.
+    VTSI_EVENT_LISTENER_START_FAILED = 301;
+
+    // A listener was stopped (<code>StopListener</code>, <code>StopListeners</code>).
+    VTSI_EVENT_LISTENER_STOPPED = 302;
+
+    // A listener was deleted.
+    VTSI_EVENT_LISTENER_DELETED = 303;
+
+    // A listener&apos;s container was restarted by the server.
+    VTSI_EVENT_LISTENER_RESTARTED = 304;
+
+    // A listener&apos;s container was found not running or unhealthy.
+    VTSI_EVENT_LISTENER_UNHEALTHY = 305;
+
+    // A listener reported unhealthy is healthy again (its container answers its health check, or
+    // its restart succeeded). Best effort: reported by the replica that reported it unhealthy.
+    VTSI_EVENT_LISTENER_HEALTHY = 306;
+
+    // ---- Scheduled callers (resource_name: the scheduled caller) ----
+
+    // A scheduled caller was created.
+    VTSI_EVENT_SCHEDULED_CALLER_CREATED = 400;
+
+    // A scheduled caller fired: its call was started (<code>call_name</code> set).
+    VTSI_EVENT_SCHEDULED_CALLER_FIRED = 401;
+
+    // A scheduled caller failed for good; <code>description</code> says why.
+    VTSI_EVENT_SCHEDULED_CALLER_FAILED = 402;
+
+    // A scheduled caller was cancelled.
+    VTSI_EVENT_SCHEDULED_CALLER_CANCELLED = 403;
+
+    // A scheduled caller failed and will be retried.
+    VTSI_EVENT_SCHEDULED_CALLER_RETRY_SCHEDULED = 404;
+
+    // ---- Campaigns (resource_name: the campaign, or the campaign call for *_CALL_* events) ----
+
+    // A campaign was created.
+    VTSI_EVENT_CAMPAIGN_CREATED = 500;
+
+    // A campaign&apos;s settings were updated.
+    VTSI_EVENT_CAMPAIGN_UPDATED = 501;
+
+    // A campaign was deleted.
+    VTSI_EVENT_CAMPAIGN_DELETED = 502;
+
+    // A campaign was started.
+    VTSI_EVENT_CAMPAIGN_STARTED = 503;
+
+    // <code>StopCampaign</code> was requested; running calls continue.
+    VTSI_EVENT_CAMPAIGN_STOP_REQUESTED = 504;
+
+    // A campaign is stopped: it reached <code>STOPPED</code> (after a stop request or an automatic
+    // stop) once no call of it was running.
+    VTSI_EVENT_CAMPAIGN_STOPPED = 505;
+
+    // <code>HardStopCampaign</code> was requested.
+    VTSI_EVENT_CAMPAIGN_HARD_STOP_REQUESTED = 506;
+
+    // A campaign is hard stopped.
+    VTSI_EVENT_CAMPAIGN_HARD_STOPPED = 507;
+
+    // A campaign was resumed.
+    VTSI_EVENT_CAMPAIGN_RESUMED = 508;
+
+    // Every call of a campaign is finished.
+    VTSI_EVENT_CAMPAIGN_COMPLETED = 509;
+
+    // The statistics of a running campaign changed (throttled, at most every few seconds per
+    // campaign). <code>campaign_statistics</code> is set.
+    VTSI_EVENT_CAMPAIGN_PROGRESS = 510;
+
+    // <code>max_parallel_calls</code> changed; attributes <code>previous_max_parallel_calls</code>
+    // and <code>max_parallel_calls</code>.
+    VTSI_EVENT_CAMPAIGN_MAX_PARALLEL_CALLS_CHANGED = 511;
+
+    // Calls were added to a campaign; attribute <code>added_call_count</code>.
+    VTSI_EVENT_CAMPAIGN_CALLS_ADDED = 512;
+
+    // An attempt of a campaign call was started (<code>call_name</code> set).
+    VTSI_EVENT_CAMPAIGN_CALL_DISPATCHED = 513;
+
+    // A campaign call completed.
+    VTSI_EVENT_CAMPAIGN_CALL_COMPLETED = 514;
+
+    // A campaign call failed after its last attempt.
+    VTSI_EVENT_CAMPAIGN_CALL_FAILED = 515;
+
+    // An attempt of a campaign call failed and the call will be retried.
+    VTSI_EVENT_CAMPAIGN_CALL_RETRY_SCHEDULED = 516;
+
+    // A campaign call was cancelled.
+    VTSI_EVENT_CAMPAIGN_CALL_CANCELLED = 517;
+
+    // The SERVER stopped a campaign (it is now <code>STOPPING</code>) after repeated failures that
+    // cannot succeed by repetition, e.g. a rejected credential; <code>description</code> holds the
+    // <code>state_reason</code>. <code>VTSI_EVENT_CAMPAIGN_STOPPED</code> follows once no call runs.
+    VTSI_EVENT_CAMPAIGN_AUTO_STOPPED = 518;
+
+    // ---- VTSI projects (resource_name: the project) ----
+
+    // 600 was "project created". No subscription can exist before its project, so that event could
+    // never be delivered; it is not part of the API.
+    reserved 600;
+    reserved "VTSI_EVENT_VTSI_PROJECT_CREATED";
+
+    // A VTSI project was updated.
+    VTSI_EVENT_VTSI_PROJECT_UPDATED = 601;
+
+    // A VTSI project was deleted. Delivered to the webhooks subscribed to it at the moment of the
+    // deletion (their configuration is captured before it is deleted with the project) and to the
+    // project&apos;s open streams, which then end. It is the last event of the project.
+    VTSI_EVENT_VTSI_PROJECT_DELETED = 602;
+
+    // A VTSI project was deployed.
+    VTSI_EVENT_VTSI_PROJECT_DEPLOYED = 603;
+
+    // Deploying a VTSI project failed; <code>description</code> says why.
+    VTSI_EVENT_VTSI_PROJECT_DEPLOY_FAILED = 604;
+
+    // A VTSI project was undeployed.
+    VTSI_EVENT_VTSI_PROJECT_UNDEPLOYED = 605;
+
+    // The <code>VtsiProjectStatus</code> of a project changed; attributes
+    // <code>previous_status</code> and <code>status</code>.
+    VTSI_EVENT_VTSI_PROJECT_STATUS_CHANGED = 606;
+
+    // Undeploying a VTSI project failed; <code>description</code> says why.
+    VTSI_EVENT_VTSI_PROJECT_UNDEPLOY_FAILED = 607;
+
+    // ---- Asterisk (resource_name: the project; attribute container_name) ----
+
+    // The project&apos;s Asterisk container was deployed.
+    VTSI_EVENT_ASTERISK_DEPLOYED = 700;
+
+    // The project&apos;s Asterisk container was removed.
+    VTSI_EVENT_ASTERISK_REMOVED = 701;
+
+    // The project&apos;s Asterisk was restarted.
+    VTSI_EVENT_ASTERISK_RESTARTED = 702;
+
+    // The project&apos;s Asterisk configuration was reloaded in place.
+    VTSI_EVENT_ASTERISK_CONFIG_RELOADED = 703;
+
+    // The project&apos;s Asterisk container is not running or unhealthy.
+    VTSI_EVENT_ASTERISK_UNHEALTHY = 704;
+
+    // The project&apos;s Asterisk container is healthy again.
+    VTSI_EVENT_ASTERISK_HEALTHY = 705;
+
+    // The SIP trunk registered with the carrier.
+    VTSI_EVENT_ASTERISK_TRUNK_REGISTERED = 706;
+
+    // The SIP trunk is no longer registered (rejected, unregistered or failed); attribute
+    // <code>registration_status</code>.
+    VTSI_EVENT_ASTERISK_TRUNK_UNREGISTERED = 707;
+
+    // Deploying the project&apos;s Asterisk container failed; <code>description</code> says why.
+    VTSI_EVENT_ASTERISK_DEPLOY_FAILED = 708;
+
+    // Restarting the project&apos;s Asterisk failed; <code>description</code> says why.
+    VTSI_EVENT_ASTERISK_RESTART_FAILED = 709;
+
+    // Reloading the project&apos;s Asterisk configuration in place failed; <code>description</code>
+    // says why.
+    VTSI_EVENT_ASTERISK_CONFIG_RELOAD_FAILED = 710;
+
+    // ---- Softphone accounts (resource_name: the softphone account) ----
+
+    // A softphone account was created.
+    VTSI_EVENT_SOFTPHONE_ACCOUNT_CREATED = 800;
+
+    // A softphone account was updated.
+    VTSI_EVENT_SOFTPHONE_ACCOUNT_UPDATED = 801;
+
+    // A softphone account was deleted.
+    VTSI_EVENT_SOFTPHONE_ACCOUNT_DELETED = 802;
+
+    // The credentials of a softphone account were rotated.
+    VTSI_EVENT_SOFTPHONE_CREDENTIALS_ROTATED = 803;
+
+    // A softphone certificate was revoked.
+    VTSI_EVENT_SOFTPHONE_CERTIFICATE_REVOKED = 804;
+
+    // ---- Event system ----
+
+    // Sent by <code>TestWebhook</code> only.
+    VTSI_EVENT_WEBHOOK_TEST = 900;
+
+    // A webhook was created (resource_name: the webhook). Never carries a header value.
+    VTSI_EVENT_WEBHOOK_CREATED = 901;
+
+    // A webhook was updated; attribute <code>updated_fields</code> (the mask paths). Never carries
+    // a header value.
+    VTSI_EVENT_WEBHOOK_UPDATED = 902;
+
+    // A webhook was deleted.
+    VTSI_EVENT_WEBHOOK_DELETED = 903;
+
+    // An event subscription was created (resource_name: the subscription).
+    VTSI_EVENT_EVENT_SUBSCRIPTION_CREATED = 904;
+
+    // An event subscription was updated; attribute <code>updated_fields</code>.
+    VTSI_EVENT_EVENT_SUBSCRIPTION_UPDATED = 905;
+
+    // An event subscription was deleted.
+    VTSI_EVENT_EVENT_SUBSCRIPTION_DELETED = 906;
+}
+
+// HTTP method of a webhook request.
+enum WebhookHttpMethod {
+
+    // Unspecified: <code>POST</code>.
+    WEBHOOK_HTTP_METHOD_UNSPECIFIED = 0;
+
+    // POST.
+    WEBHOOK_HTTP_METHOD_POST = 1;
+
+    // PUT.
+    WEBHOOK_HTTP_METHOD_PUT = 2;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Resources
+//////////////////////////////////////////////////////////////////////////////
+
+// One event. This is the body of a webhook request (proto3 JSON with the original field names)
+// and the unit of the <code>SubscribeVtsiEvents</code> stream.
+message VtsiEventMessage {
+
+    // Unique id of the event (uuid). A retried webhook request carries the same id, and a call
+    // status change observed by several server replicas carries one id, so it identifies a
+    // duplicate.
+    string event_id = 1;
+
+    // The event.
+    VtsiEvent event = 2;
+
+    // VTSI project of the event.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 3;
+
+    // The resource the event is about (call, caller, listener, scheduled caller, campaign, campaign
+    // call, project, softphone account).
+    string resource_name = 4;
+
+    // When the event happened.
+    google.protobuf.Timestamp event_time = 5;
+
+    // SIP status after the change, for call and campaign call events.
+    optional ondewo.sip.SipStatus.StatusType sip_status_type = 6;
+
+    // SIP status description, where the event has one.
+    string sip_status_description = 7;
+
+    // SIP status before the change, for <code>VTSI_EVENT_CALL_SIP_STATUS_CHANGED</code>.
+    optional ondewo.sip.SipStatus.StatusType previous_sip_status_type = 8;
+
+    // The call the event is about or produced, where there is one.
+    string call_name = 9;
+
+    // The campaign the event belongs to, where known.
+    string campaign_name = 10;
+
+    // Human-readable description, e.g. why something failed.
+    string description = 11;
+
+    // Further event-specific values, e.g. <code>caller_name</code>, <code>listener_name</code>,
+    // <code>phone_number</code>, <code>container_name</code>, <code>attempt_number</code>,
+    // <code>previous_status</code>. Keys are documented per event in the VTSI documentation.
+    map<string, string> attributes = 12;
+
+    // Statistics of the campaign, on campaign events.
+    CampaignStatistics campaign_statistics = 13;
+
+    // Increases with every change of <code>resource_name</code> that produced an event, so a
+    // receiver can order events of one resource that arrived out of order. Defined (&gt; 0) for
+    // call events (the call&apos;s status change number), campaign call events and campaign state
+    // events; <code>0</code> where the resource has no such counter, then order by
+    // <code>event_time</code>.
+    int64 resource_sequence = 14;
+}
+
+// Which events of a project are delivered to which webhooks.
+message VtsiEventSubscription {
+
+    // Output only. Resource name.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/event_subscriptions/&lt;subscription_uuid&gt;</code></pre>
+    string name = 1;
+
+    // Output only. VTSI project of the subscription.
+    string vtsi_project_name = 2;
+
+    // Human-readable name, at most 128 characters. Updatable.
+    string display_name = 3;
+
+    // The events to deliver. Required unless <code>all_events</code> is set; must be empty when it
+    // is. Updatable.
+    repeated VtsiEvent events = 4;
+
+    // Deliver every event, including events added in later versions. Updatable.
+    bool all_events = 5;
+
+    // Deliver only events whose <code>resource_name</code> starts with one of these prefixes, e.g.
+    // a caller name (<code>projects/&lt;p&gt;/callers/&lt;c&gt;</code> also selects that
+    // caller&apos;s calls) or a campaign name (selects the campaign and its campaign calls, NOT the
+    // calls a campaign placed, whose resource names are under <code>callers/</code>; use
+    // <code>campaign_names</code> for those). Empty means every resource of the project. At most
+    // 50. Updatable.
+    repeated string resource_name_prefixes = 6;
+
+    // Webhooks of the same project the events are sent to. Empty means none (the subscription is
+    // then only useful to <code>SubscribeVtsiEvents</code>). At most 20. Updatable.
+    repeated string webhook_names = 7;
+
+    // <code>false</code> (the default): events are delivered. <code>true</code>: nothing is
+    // delivered and <code>SubscribeVtsiEvents</code> refuses the subscription. Updatable.
+    bool disabled = 8;
+
+    // Output only. The user who created the subscription.
+    string created_by = 9;
+
+    // Output only. Creation time.
+    google.protobuf.Timestamp created_at = 10;
+
+    // Output only. The user who last modified the subscription.
+    string modified_by = 11;
+
+    // Output only. Last modification time.
+    google.protobuf.Timestamp modified_at = 12;
+
+    // Deliver only events whose <code>campaign_name</code> is one of these campaign resource names:
+    // the campaign&apos;s own events, its campaign call events and the call, caller and scheduled
+    // caller events of the calls it placed. Call events produced while a campaign attempt is being
+    // started (<code>CALL_CREATED</code>, <code>CALL_INITIATED</code>) can lack the campaign and are
+    // then not matched; <code>VTSI_EVENT_CAMPAIGN_CALL_DISPATCHED</code> always carries both
+    // <code>campaign_name</code> and <code>call_name</code>. Empty means no constraint. Combined with
+    // <code>resource_name_prefixes</code> by AND. At most 50. Updatable.
+    repeated string campaign_names = 13;
+}
+
+// Delivery counters of a webhook. Approximate: summed over every server replica and flushed every
+// few seconds.
+message WebhookDeliveryStatistics {
+
+    // Requests answered with a 2xx status.
+    int64 delivered_count = 1;
+
+    // Events given up after the last retry.
+    int64 failed_count = 2;
+
+    // Events dropped without a request because the server&apos;s webhook queue was full, or because
+    // the webhook&apos;s circuit was open after repeated failures.
+    int64 dropped_count = 3;
+
+    // Time of the last request.
+    google.protobuf.Timestamp last_delivery_time = 4;
+
+    // Time of the last 2xx answer.
+    google.protobuf.Timestamp last_success_time = 5;
+
+    // HTTP status of the last answer, 0 when no answer was received.
+    int32 last_http_status_code = 6;
+
+    // Why the last request failed, e.g. <code>timeout</code>, <code>connection_error</code>,
+    // <code>http_503</code>. Never contains a header value or a URL query.
+    string last_error = 7;
+}
+
+// An HTTP(S) endpoint that receives one request per event.
+message Webhook {
+
+    // Output only. Resource name.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/webhooks/&lt;webhook_uuid&gt;</code></pre>
+    string name = 1;
+
+    // Output only. VTSI project of the webhook.
+    string vtsi_project_name = 2;
+
+    // Human-readable name, at most 128 characters. Updatable.
+    string display_name = 3;
+
+    // Required. http:// or https:// URL, at most 2048 characters, without user information. Any
+    // host is allowed. Updatable.
+    string url = 4;
+
+    // HTTP method. Unset means POST. Updatable.
+    WebhookHttpMethod http_method = 5;
+
+    // Optional extra request headers, e.g. <code>Authorization</code>. WRITE-ONLY VALUES: every RPC
+    // returns each value as <code>********</code>. At most 20 headers; names are HTTP tokens of at
+    // most 128 characters; values at most 4096 characters without line breaks. Reserved and refused:
+    // <code>Host</code>, <code>Content-Length</code>, <code>Content-Type</code>,
+    // <code>Transfer-Encoding</code>, <code>Connection</code> and every <code>X-Ondewo-Vtsi-*</code>
+    // name. Updatable (see <code>UpdateWebhook</code> for the mask value).
+    map<string, string> custom_headers = 6;
+
+    // <code>false</code> (the default): events are sent. <code>true</code>: nothing is sent (except
+    // by <code>TestWebhook</code>). Updatable.
+    bool disabled = 7;
+
+    // Request timeout. Unset means the server default (5 s); allowed 1 s to 30 s. Updatable.
+    google.protobuf.Duration timeout = 8;
+
+    // Output only. Delivery counters.
+    WebhookDeliveryStatistics delivery_statistics = 9;
+
+    // Output only. The user who created the webhook.
+    string created_by = 10;
+
+    // Output only. Creation time.
+    google.protobuf.Timestamp created_at = 11;
+
+    // Output only. The user who last modified the webhook.
+    string modified_by = 12;
+
+    // Output only. Last modification time.
+    google.protobuf.Timestamp modified_at = 13;
+}
+
+// Selects events for <code>SubscribeVtsiEvents</code> without a stored subscription.
+message VtsiEventFilter {
+
+    // Only these events. Empty means every event.
+    repeated VtsiEvent events = 1;
+
+    // Only events whose <code>resource_name</code> starts with one of these prefixes. Empty means
+    // every resource of the project. Same semantics as
+    // <code>VtsiEventSubscription.resource_name_prefixes</code>.
+    repeated string resource_name_prefixes = 2;
+
+    // Only events of these campaigns. Same semantics as
+    // <code>VtsiEventSubscription.campaign_names</code>.
+    repeated string campaign_names = 3;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Requests and responses
+//////////////////////////////////////////////////////////////////////////////
+
+// The request message for <code>Events.CreateVtsiEventSubscription</code>.
+message CreateVtsiEventSubscriptionRequest {
+
+    // VTSI project. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // The subscription to create.
+    VtsiEventSubscription event_subscription = 2;
+}
+
+// The request message for <code>Events.GetVtsiEventSubscription</code>.
+message GetVtsiEventSubscriptionRequest {
+
+    // Resource name of the subscription.
+    string name = 1;
+}
+
+// The request message for <code>Events.UpdateVtsiEventSubscription</code>.
+message UpdateVtsiEventSubscriptionRequest {
+
+    // The subscription, identified by <code>event_subscription.name</code>.
+    VtsiEventSubscription event_subscription = 1;
+
+    // Required. Paths without prefix: <code>display_name</code>, <code>events</code>,
+    // <code>all_events</code>, <code>resource_name_prefixes</code>, <code>campaign_names</code>,
+    // <code>webhook_names</code>, <code>disabled</code>. An empty mask or another path is rejected
+    // with <code>INVALID_ARGUMENT</code>. A path in the mask writes the sent value, including
+    // <code>false</code> and empty lists.
+    google.protobuf.FieldMask update_mask = 2;
+}
+
+// The request message for <code>Events.DeleteVtsiEventSubscription</code>.
+message DeleteVtsiEventSubscriptionRequest {
+
+    // Resource name of the subscription.
+    string name = 1;
+}
+
+// The response message for <code>Events.DeleteVtsiEventSubscription</code>.
+message DeleteVtsiEventSubscriptionResponse {
+
+    // Resource name of the deleted subscription.
+    string name = 1;
+}
+
+// The request message for <code>Events.ListVtsiEventSubscriptions</code>.
+message ListVtsiEventSubscriptionsRequest {
+
+    // VTSI project. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Optional. <code>0</code> means 20; above 1000 clamped; negative rejected.
+    int32 page_size = 2;
+
+    // Optional. The <code>next_page_token</code> of a previous response.
+    optional string page_token = 3;
+}
+
+// The response message for <code>Events.ListVtsiEventSubscriptions</code>.
+message ListVtsiEventSubscriptionsResponse {
+
+    // The subscriptions of this page, newest first.
+    repeated VtsiEventSubscription event_subscriptions = 1;
+
+    // Token for the next page. Empty when there are no more results.
+    string next_page_token = 2;
+}
+
+// The request message for <code>Events.CreateWebhook</code>.
+message CreateWebhookRequest {
+
+    // VTSI project. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // The webhook to create.
+    Webhook webhook = 2;
+}
+
+// The request message for <code>Events.GetWebhook</code>.
+message GetWebhookRequest {
+
+    // Resource name of the webhook.
+    string name = 1;
+}
+
+// The request message for <code>Events.UpdateWebhook</code>.
+message UpdateWebhookRequest {
+
+    // The webhook, identified by <code>webhook.name</code>.
+    Webhook webhook = 1;
+
+    // Required. Paths without prefix: <code>display_name</code>, <code>url</code>,
+    // <code>http_method</code>, <code>custom_headers</code>, <code>disabled</code>,
+    // <code>timeout</code>. An empty mask or another path is rejected with
+    // <code>INVALID_ARGUMENT</code>. A path in the mask writes the sent value, including
+    // <code>false</code>; an unset <code>timeout</code> writes the server default.
+    google.protobuf.FieldMask update_mask = 2;
+}
+
+// The request message for <code>Events.DeleteWebhook</code>.
+message DeleteWebhookRequest {
+
+    // Resource name of the webhook.
+    string name = 1;
+}
+
+// The response message for <code>Events.DeleteWebhook</code>.
+message DeleteWebhookResponse {
+
+    // Resource name of the deleted webhook.
+    string name = 1;
+
+    // How many event subscriptions referenced it and no longer do.
+    int32 detached_subscription_count = 2;
+}
+
+// The request message for <code>Events.ListWebhooks</code>.
+message ListWebhooksRequest {
+
+    // VTSI project. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Optional. <code>0</code> means 20; above 1000 clamped; negative rejected.
+    int32 page_size = 2;
+
+    // Optional. The <code>next_page_token</code> of a previous response.
+    optional string page_token = 3;
+}
+
+// The response message for <code>Events.ListWebhooks</code>.
+message ListWebhooksResponse {
+
+    // The webhooks of this page, newest first. Custom header values are masked.
+    repeated Webhook webhooks = 1;
+
+    // Token for the next page. Empty when there are no more results.
+    string next_page_token = 2;
+}
+
+// The request message for <code>Events.TestWebhook</code>.
+message TestWebhookRequest {
+
+    // Resource name of the webhook.
+    string name = 1;
+}
+
+// The response message for <code>Events.TestWebhook</code>.
+message TestWebhookResponse {
+
+    // True when the endpoint answered with a 2xx status.
+    bool success = 1;
+
+    // HTTP status of the answer, 0 when none was received.
+    int32 http_status_code = 2;
+
+    // Time until the answer or the failure.
+    google.protobuf.Duration latency = 3;
+
+    // Why the request failed (no header value, no URL query). Empty on success.
+    string error_message = 4;
+
+    // <code>event_id</code> of the test event that was sent.
+    string event_id = 5;
+}
+
+// The request message for <code>Events.SubscribeVtsiEvents</code>.
+message SubscribeVtsiEventsRequest {
+
+    // VTSI project. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Which events. Neither set means every event of the project.
+    oneof selector {
+
+        // Use the events and resource prefixes of this subscription (its webhooks are irrelevant
+        // here). The format is:
+        // <pre><code>projects/&lt;project_uuid&gt;/event_subscriptions/&lt;subscription_uuid&gt;</code></pre>
+        string event_subscription_name = 2;
+
+        // An inline filter.
+        VtsiEventFilter filter = 3;
+    }
+
+    // Optional. The <code>resume_token</code> of a previous response: continue after it.
+    // Unset starts with events that happen from now on.
+    optional string resume_token = 4;
+}
+
+// The response message for <code>Events.SubscribeVtsiEvents</code>.
+message SubscribeVtsiEventsResponse {
+
+    // Events, oldest first. Empty on a keep-alive.
+    repeated VtsiEventMessage events = 1;
+
+    // Pass this as <code>SubscribeVtsiEventsRequest.resume_token</code> after a disconnect. Opaque.
+    // It records every event this stream has delivered or passed over, so resuming neither skips an
+    // event that committed late nor (normally) repeats one; a stream far behind can receive an
+    // event twice, never miss one that is still in the journal.
+    string resume_token = 2;
+
+    // Events this stream skipped because the client read too slowly (the server buffer was full).
+    int64 dropped_event_count = 3;
+
+    // Set on the last message when the server ended the stream. Empty otherwise.
+    string end_reason = 4;
+}

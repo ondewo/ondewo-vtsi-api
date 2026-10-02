@@ -24,6 +24,7 @@ import "ondewo/nlu/intent.proto";
 import "ondewo/s2t/speech-to-text.proto";
 import "ondewo/t2s/text-to-speech.proto";
 import "ondewo/sip/sip.proto";
+import "ondewo/vtsi/campaigns.proto";
 
 
 // <p>ONDEWO VTSI API</p>
@@ -94,6 +95,11 @@ service Calls {
     rpc ListScheduledCallers (ListScheduledCallersRequest) returns (ListScheduledCallersResponse);
 
     // <p>Cancels a scheduled caller that has not fired yet</p>
+    // <p>A scheduled caller of a campaign can be cancelled while its campaign call is
+    // <code>CAMPAIGN_CALL_STATE_NOT_STARTED</code> or <code>CAMPAIGN_CALL_STATE_RETRY_PENDING</code>;
+    // the campaign call then becomes <code>CAMPAIGN_CALL_STATE_CANCELLED</code>. While an attempt is
+    // <code>DISPATCHING</code> or <code>IN_PROGRESS</code> the request is refused:
+    // <code>cancelled = false</code> and the scheduled caller keeps its status.</p>
     rpc CancelScheduledCaller (CancelScheduledCallerRequest) returns (CancelScheduledCallerResponse);
 
     // <p>Stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.</p>
@@ -118,6 +124,26 @@ service Calls {
 
     // <p>Get call log for all call instances</p>
     rpc ListCalls (ListCallsRequest) returns (ListCallsResponse);
+
+    //////////////////////////////////////////////////////////////////////////////
+    // Status stream endpoints
+    //////////////////////////////////////////////////////////////////////////////
+
+    // <p>Streams the status of the callers of a project: a snapshot first
+    // (<code>snapshot = true</code>), then every caller whose call or SIP status changed, plus
+    // keep-alive messages. Ends when the client disconnects or at the server-side maximum stream
+    // duration.</p>
+    // <p>Errors: <code>NOT_FOUND</code> for an unknown project; <code>RESOURCE_EXHAUSTED</code> when
+    // the server has no free stream slot.</p>
+    rpc StreamCallerStatus (StreamCallerStatusRequest) returns (stream StreamCallResourceStatusResponse);
+
+    // <p>Streams the status of the listeners of a project, like <code>StreamCallerStatus</code>.</p>
+    rpc StreamListenerStatus (StreamListenerStatusRequest) returns (stream StreamCallResourceStatusResponse);
+
+    // <p>Streams the status of the scheduled callers of a project, like
+    // <code>StreamCallerStatus</code>. The snapshot holds every PENDING and FIRING scheduled caller
+    // and those that finished in the last hour.</p>
+    rpc StreamScheduledCallerStatus (StreamScheduledCallerStatusRequest) returns (stream StreamCallResourceStatusResponse);
 
 }
 
@@ -810,6 +836,15 @@ message StartCallersRequest {
     // Callers that should be started
     repeated StartCallerRequest caller_requests = 2;
 
+    // Optional. Add the callers to a campaign instead of starting them now. The campaign then
+    // starts them, at most <code>max_parallel_calls</code> at a time. The project&apos;s caller limit
+    // is checked per started call, not for the whole request. Unset: every caller is started by this
+    // request, exactly as before. With it set, the request is atomic and every error is a gRPC
+    // status code (see <code>CampaignAssignment</code>); <code>error_message</code> stays empty.
+    // Do not set it before every server replica runs VTSI 9.0.0: an older replica ignores it and
+    // starts every caller at once.
+    CampaignAssignment campaign_assignment = 3;
+
 }
 
 // Response to the start caller request
@@ -823,6 +858,15 @@ message StartCallersResponse {
 
     // overall error message if you have any so if it's unhealthy
     string error_message = 3;
+
+    // The campaign the callers were added to, when the request set
+    // <code>campaign_assignment</code>. <code>caller_responses</code> is then empty: the calls are
+    // started by the campaign.
+    Campaign campaign = 4;
+
+    // The campaign calls created by this request, in request order, when the request set
+    // <code>campaign_assignment</code>.
+    repeated string campaign_call_names = 5;
 
 }
 
@@ -1086,8 +1130,16 @@ message StartScheduledCallersRequest {
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
-    // requests to start scheduled callers
+    // requests to start scheduled callers. With <code>campaign_assignment</code> set, a scheduled
+    // caller of the campaign can be cancelled with <code>CancelScheduledCaller</code> only while its
+    // campaign call has no attempt dispatching or in progress.
     repeated StartScheduledCallerRequest scheduled_caller_requests = 2;
+
+    // Optional. Add the scheduled callers to a campaign: each fires at or after its scheduled time
+    // AND when the campaign has a free slot, and follows the campaign&apos;s retries, stop and hard
+    // stop. Unset: the scheduled callers fire on their own, exactly as before. Same atomicity,
+    // error and rollout rules as <code>StartCallersRequest.campaign_assignment</code>.
+    CampaignAssignment campaign_assignment = 3;
 }
 
 // Response to start multiple listeners
@@ -1098,6 +1150,14 @@ message StartScheduledCallersResponse {
 
     // The call ids that were assigned to each listener
     repeated StartScheduledCallerResponse scheduled_caller_responses = 2;
+
+    // The campaign the scheduled callers were added to, when the request set
+    // <code>campaign_assignment</code>.
+    Campaign campaign = 3;
+
+    // The campaign calls created by this request, in request order, when the request set
+    // <code>campaign_assignment</code>.
+    repeated string campaign_call_names = 4;
 
 }
 
@@ -1182,6 +1242,15 @@ message ScheduledCaller {
 
     // Why starting the call failed. Only populated when the status is SCHEDULED_CALLER_STATUS_FAILED
     string error_message = 11;
+
+    // Resource name of the campaign this scheduled caller belongs to. Empty when it belongs to none.
+    // A campaign&apos;s scheduled caller mirrors its campaign call: <code>status</code> is
+    // <code>PENDING</code> while the call is not started or waits for a retry,
+    // <code>FIRING</code> while an attempt is being started or running, and <code>DONE</code> /
+    // <code>FAILED</code> / <code>CANCELLED</code> when the call is completed / failed / cancelled;
+    // <code>call_name</code> and <code>error_message</code> are those of the latest attempt. Its
+    // own retry settings are not used; the campaign&apos;s apply.
+    string campaign_name = 12;
 }
 
 // Represents a request to get a specific scheduled caller.
@@ -1630,4 +1699,108 @@ message ServiceStatus {
 
     // error messages if you have any so if it's unhealthy
     string error_message = 2;
+}
+
+// The status of one caller, listener or scheduled caller, as streamed by the status streams.
+message CallResourceStatus {
+
+    // The caller, listener or scheduled caller.
+    string resource_name = 1;
+
+    // CALLER, LISTENER or SCHEDULED_CALLER.
+    CallType call_type = 2;
+
+    // Its current or last call. Empty when it has none.
+    string call_name = 3;
+
+    // Whether its call is active.
+    bool active = 4;
+
+    // SIP status of its current or last call.
+    ondewo.sip.SipStatus.StatusType sip_status_type = 5;
+
+    // Description of that SIP status.
+    string sip_status_description = 6;
+
+    // Start of its current or last call.
+    google.protobuf.Timestamp start_time = 7;
+
+    // End of its last call. Unset while a call runs.
+    google.protobuf.Timestamp end_time = 8;
+
+    // Callee or caller number of its current or last call.
+    string phone_number = 9;
+
+    // For SCHEDULED_CALLER: its lifecycle state.
+    ScheduledCallerStatus scheduled_caller_status = 10;
+
+    // For SCHEDULED_CALLER: its scheduled time.
+    google.protobuf.Timestamp scheduled_time = 11;
+
+    // The campaign it belongs to, if any.
+    string campaign_name = 12;
+
+    // For SCHEDULED_CALLER: why it failed.
+    string error_message = 13;
+}
+
+// The request message for <code>Calls.StreamCallerStatus</code>.
+message StreamCallerStatusRequest {
+
+    // VTSI project. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Only these callers. Empty means every caller of the project.
+    repeated string caller_names = 2;
+
+    // Only callers whose call is active.
+    bool active_only = 3;
+}
+
+// The request message for <code>Calls.StreamListenerStatus</code>.
+message StreamListenerStatusRequest {
+
+    // VTSI project. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Only these listeners. Empty means every listener of the project.
+    repeated string listener_names = 2;
+
+    // Only listeners whose call is active.
+    bool active_only = 3;
+}
+
+// The request message for <code>Calls.StreamScheduledCallerStatus</code>.
+message StreamScheduledCallerStatusRequest {
+
+    // VTSI project. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Only these scheduled callers. Empty means every scheduled caller of the project.
+    repeated string scheduled_caller_names = 2;
+
+    // Only scheduled callers in these states. Empty means every state.
+    repeated ScheduledCallerStatus statuses = 3;
+
+    // Only scheduled callers of this campaign. Empty means any.
+    string campaign_name = 4;
+}
+
+// The response message of the three status streams.
+message StreamCallResourceStatusResponse {
+
+    // Resources that changed (every matching resource in the snapshot).
+    repeated CallResourceStatus statuses = 1;
+
+    // Resources that no longer exist or no longer match.
+    repeated string removed_resource_names = 2;
+
+    // True on the first message, which carries every matching resource.
+    bool snapshot = 3;
+
+    // True when the snapshot was cut at the server limit (5000 resources).
+    bool snapshot_truncated = 4;
+
+    // Set on the last message when the server ended the stream. Empty otherwise.
+    string end_reason = 5;
 }

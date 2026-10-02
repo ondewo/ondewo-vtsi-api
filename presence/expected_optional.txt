@@ -80,14 +80,18 @@ ondewo.vtsi.ListCallersRequest.page_token
 ondewo.vtsi.ListCallsRequest.call_filter
 ondewo.vtsi.ListCallsRequest.call_view
 ondewo.vtsi.ListCallsRequest.page_token
+ondewo.vtsi.ListCampaignCallsRequest.page_token                              # new field in 9.0.0 (OND233-367)
+ondewo.vtsi.ListCampaignsRequest.page_token                                  # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.ListListenersRequest.call_view
 ondewo.vtsi.ListListenersRequest.page_token
 ondewo.vtsi.ListScheduledCallersRequest.call_view
 ondewo.vtsi.ListScheduledCallersRequest.page_token
 ondewo.vtsi.ListSoftphoneAccountsRequest.page_token                          # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.ListSoftphoneCertificatesRequest.page_token                      # new field in 9.0.0 (OND233-367)
+ondewo.vtsi.ListVtsiEventSubscriptionsRequest.page_token                     # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.ListVtsiProjectsRequest.page_token
 ondewo.vtsi.ListVtsiProjectsRequest.vtsi_project_sorting
+ondewo.vtsi.ListWebhooksRequest.page_token                                   # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.MessageBrokerConfig.activate_message_broker                      # keyword added in 9.0.0 (OND233-367)
 ondewo.vtsi.MessageBrokerServicesActivationConfig.activate_nlu               # keyword added in 9.0.0 (OND233-367)
 ondewo.vtsi.MessageBrokerServicesActivationConfig.activate_s2t               # keyword added in 9.0.0 (OND233-367)
@@ -108,9 +112,12 @@ ondewo.vtsi.StreamCallLogsRequest.after_seq
 ondewo.vtsi.StreamCallLogsRequest.filter
 ondewo.vtsi.StreamCallLogsRequest.resume_token
 ondewo.vtsi.StreamCallLogsRequest.tail_lines
+ondewo.vtsi.SubscribeVtsiEventsRequest.resume_token                          # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.TurnDetectionConfig.max_endpointing_delay_seconds
 ondewo.vtsi.TurnDetectionConfig.min_endpointing_delay_seconds
 ondewo.vtsi.TurnDetectionConfig.turn_detection_system_prompt                 # keyword added in 9.0.0 (OND233-367)
 ondewo.vtsi.TurnDetectionConfig.turn_detection_user_prompt                   # keyword added in 9.0.0 (OND233-367)
+ondewo.vtsi.VtsiEventMessage.previous_sip_status_type                        # new field in 9.0.0 (OND233-367)
+ondewo.vtsi.VtsiEventMessage.sip_status_type                                 # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.VtsiProjectSorting.sorting_field
 ondewo.vtsi.VtsiProjectSorting.sorting_mode

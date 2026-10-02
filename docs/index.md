@@ -1073,6 +1073,7 @@
     - [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig)
     - [Call](#ondewo.vtsi.Call)
     - [CallFilter](#ondewo.vtsi.CallFilter)
+    - [CallResourceStatus](#ondewo.vtsi.CallResourceStatus)
     - [Caller](#ondewo.vtsi.Caller)
     - [CancelScheduledCallerRequest](#ondewo.vtsi.CancelScheduledCallerRequest)
     - [CancelScheduledCallerResponse](#ondewo.vtsi.CancelScheduledCallerResponse)
@@ -1140,6 +1141,10 @@
     - [StopListenerResponse](#ondewo.vtsi.StopListenerResponse)
     - [StopListenersRequest](#ondewo.vtsi.StopListenersRequest)
     - [StopListenersResponse](#ondewo.vtsi.StopListenersResponse)
+    - [StreamCallResourceStatusResponse](#ondewo.vtsi.StreamCallResourceStatusResponse)
+    - [StreamCallerStatusRequest](#ondewo.vtsi.StreamCallerStatusRequest)
+    - [StreamListenerStatusRequest](#ondewo.vtsi.StreamListenerStatusRequest)
+    - [StreamScheduledCallerStatusRequest](#ondewo.vtsi.StreamScheduledCallerStatusRequest)
     - [T2sVtsiCallbacks](#ondewo.vtsi.T2sVtsiCallbacks)
     - [T2sVtsiConfig](#ondewo.vtsi.T2sVtsiConfig)
     - [TransferCallRequest](#ondewo.vtsi.TransferCallRequest)
@@ -1159,6 +1164,71 @@
     - [TurnDetectionConfig.TurnEagerness](#ondewo.vtsi.TurnDetectionConfig.TurnEagerness)
   
     - [Calls](#ondewo.vtsi.Calls)
+  
+- [ondewo/vtsi/campaigns.proto](#ondewo/vtsi/campaigns.proto)
+    - [Campaign](#ondewo.vtsi.Campaign)
+    - [CampaignAssignment](#ondewo.vtsi.CampaignAssignment)
+    - [CampaignCall](#ondewo.vtsi.CampaignCall)
+    - [CampaignCallAttempt](#ondewo.vtsi.CampaignCallAttempt)
+    - [CampaignDisplayName](#ondewo.vtsi.CampaignDisplayName)
+    - [CampaignFilter](#ondewo.vtsi.CampaignFilter)
+    - [CampaignStatistics](#ondewo.vtsi.CampaignStatistics)
+    - [CreateCampaignRequest](#ondewo.vtsi.CreateCampaignRequest)
+    - [DeleteCampaignRequest](#ondewo.vtsi.DeleteCampaignRequest)
+    - [DeleteCampaignResponse](#ondewo.vtsi.DeleteCampaignResponse)
+    - [GetCampaignRequest](#ondewo.vtsi.GetCampaignRequest)
+    - [GetCampaignStatisticsRequest](#ondewo.vtsi.GetCampaignStatisticsRequest)
+    - [HardStopCampaignRequest](#ondewo.vtsi.HardStopCampaignRequest)
+    - [ListCampaignCallsRequest](#ondewo.vtsi.ListCampaignCallsRequest)
+    - [ListCampaignCallsResponse](#ondewo.vtsi.ListCampaignCallsResponse)
+    - [ListCampaignsRequest](#ondewo.vtsi.ListCampaignsRequest)
+    - [ListCampaignsResponse](#ondewo.vtsi.ListCampaignsResponse)
+    - [ResumeCampaignRequest](#ondewo.vtsi.ResumeCampaignRequest)
+    - [StartCampaignRequest](#ondewo.vtsi.StartCampaignRequest)
+    - [StopCampaignRequest](#ondewo.vtsi.StopCampaignRequest)
+    - [StreamCampaignStatusRequest](#ondewo.vtsi.StreamCampaignStatusRequest)
+    - [StreamCampaignStatusResponse](#ondewo.vtsi.StreamCampaignStatusResponse)
+    - [UpdateCampaignRequest](#ondewo.vtsi.UpdateCampaignRequest)
+  
+    - [CampaignCallAttemptOutcome](#ondewo.vtsi.CampaignCallAttemptOutcome)
+    - [CampaignCallSource](#ondewo.vtsi.CampaignCallSource)
+    - [CampaignCallState](#ondewo.vtsi.CampaignCallState)
+    - [CampaignStartMode](#ondewo.vtsi.CampaignStartMode)
+    - [CampaignState](#ondewo.vtsi.CampaignState)
+  
+    - [Campaigns](#ondewo.vtsi.Campaigns)
+  
+- [ondewo/vtsi/events.proto](#ondewo/vtsi/events.proto)
+    - [CreateVtsiEventSubscriptionRequest](#ondewo.vtsi.CreateVtsiEventSubscriptionRequest)
+    - [CreateWebhookRequest](#ondewo.vtsi.CreateWebhookRequest)
+    - [DeleteVtsiEventSubscriptionRequest](#ondewo.vtsi.DeleteVtsiEventSubscriptionRequest)
+    - [DeleteVtsiEventSubscriptionResponse](#ondewo.vtsi.DeleteVtsiEventSubscriptionResponse)
+    - [DeleteWebhookRequest](#ondewo.vtsi.DeleteWebhookRequest)
+    - [DeleteWebhookResponse](#ondewo.vtsi.DeleteWebhookResponse)
+    - [GetVtsiEventSubscriptionRequest](#ondewo.vtsi.GetVtsiEventSubscriptionRequest)
+    - [GetWebhookRequest](#ondewo.vtsi.GetWebhookRequest)
+    - [ListVtsiEventSubscriptionsRequest](#ondewo.vtsi.ListVtsiEventSubscriptionsRequest)
+    - [ListVtsiEventSubscriptionsResponse](#ondewo.vtsi.ListVtsiEventSubscriptionsResponse)
+    - [ListWebhooksRequest](#ondewo.vtsi.ListWebhooksRequest)
+    - [ListWebhooksResponse](#ondewo.vtsi.ListWebhooksResponse)
+    - [SubscribeVtsiEventsRequest](#ondewo.vtsi.SubscribeVtsiEventsRequest)
+    - [SubscribeVtsiEventsResponse](#ondewo.vtsi.SubscribeVtsiEventsResponse)
+    - [TestWebhookRequest](#ondewo.vtsi.TestWebhookRequest)
+    - [TestWebhookResponse](#ondewo.vtsi.TestWebhookResponse)
+    - [UpdateVtsiEventSubscriptionRequest](#ondewo.vtsi.UpdateVtsiEventSubscriptionRequest)
+    - [UpdateWebhookRequest](#ondewo.vtsi.UpdateWebhookRequest)
+    - [VtsiEventFilter](#ondewo.vtsi.VtsiEventFilter)
+    - [VtsiEventMessage](#ondewo.vtsi.VtsiEventMessage)
+    - [VtsiEventMessage.AttributesEntry](#ondewo.vtsi.VtsiEventMessage.AttributesEntry)
+    - [VtsiEventSubscription](#ondewo.vtsi.VtsiEventSubscription)
+    - [Webhook](#ondewo.vtsi.Webhook)
+    - [Webhook.CustomHeadersEntry](#ondewo.vtsi.Webhook.CustomHeadersEntry)
+    - [WebhookDeliveryStatistics](#ondewo.vtsi.WebhookDeliveryStatistics)
+  
+    - [VtsiEvent](#ondewo.vtsi.VtsiEvent)
+    - [WebhookHttpMethod](#ondewo.vtsi.WebhookHttpMethod)
+  
+    - [Events](#ondewo.vtsi.Events)
   
 - [ondewo/vtsi/logs.proto](#ondewo/vtsi/logs.proto)
     - [CallLogEntry](#ondewo.vtsi.CallLogEntry)
@@ -20703,6 +20773,33 @@ Definition of a CallFilter, representing filters for querying calls.
 
 
 
+<a name="ondewo.vtsi.CallResourceStatus"></a>
+
+### CallResourceStatus
+The status of one caller, listener or scheduled caller, as streamed by the status streams.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| resource_name | [string](#string) |  | The caller, listener or scheduled caller. |
+| call_type | [CallType](#ondewo.vtsi.CallType) |  | CALLER, LISTENER or SCHEDULED_CALLER. |
+| call_name | [string](#string) |  | Its current or last call. Empty when it has none. |
+| active | [bool](#bool) |  | Whether its call is active. |
+| sip_status_type | [ondewo.sip.SipStatus.StatusType](#ondewo.sip.SipStatus.StatusType) |  | SIP status of its current or last call. |
+| sip_status_description | [string](#string) |  | Description of that SIP status. |
+| start_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Start of its current or last call. |
+| end_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | End of its last call. Unset while a call runs. |
+| phone_number | [string](#string) |  | Callee or caller number of its current or last call. |
+| scheduled_caller_status | [ScheduledCallerStatus](#ondewo.vtsi.ScheduledCallerStatus) |  | For SCHEDULED_CALLER: its lifecycle state. |
+| scheduled_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | For SCHEDULED_CALLER: its scheduled time. |
+| campaign_name | [string](#string) |  | The campaign it belongs to, if any. |
+| error_message | [string](#string) |  | For SCHEDULED_CALLER: why it failed. |
+
+
+
+
+
+
 <a name="ondewo.vtsi.Caller"></a>
 
 ### Caller
@@ -21339,6 +21436,7 @@ ScheduledCaller message - a Caller with a schedule when to start calling
 | created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Time the scheduled caller was created |
 | fired_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Time the call was actually started, or the attempt failed. Unset while the status is SCHEDULED_CALLER_STATUS_PENDING, SCHEDULED_CALLER_STATUS_FIRING or SCHEDULED_CALLER_STATUS_CANCELLED |
 | error_message | [string](#string) |  | Why starting the call failed. Only populated when the status is SCHEDULED_CALLER_STATUS_FAILED |
+| campaign_name | [string](#string) |  | Resource name of the campaign this scheduled caller belongs to. Empty when it belongs to none. A campaign&apos;s scheduled caller mirrors its campaign call: <code>status</code> is <code>PENDING</code> while the call is not started or waits for a retry, <code>FIRING</code> while an attempt is being started or running, and <code>DONE</code> / <code>FAILED</code> / <code>CANCELLED</code> when the call is completed / failed / cancelled; <code>call_name</code> and <code>error_message</code> are those of the latest attempt. Its own retry settings are not used; the campaign&apos;s apply. |
 
 
 
@@ -21472,6 +21570,7 @@ Request to start multiple callers
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | caller_requests | [StartCallerRequest](#ondewo.vtsi.StartCallerRequest) | repeated | Callers that should be started |
+| campaign_assignment | [CampaignAssignment](#ondewo.vtsi.CampaignAssignment) |  | Optional. Add the callers to a campaign instead of starting them now. The campaign then starts them, at most <code>max_parallel_calls</code> at a time. The project&apos;s caller limit is checked per started call, not for the whole request. Unset: every caller is started by this request, exactly as before. With it set, the request is atomic and every error is a gRPC status code (see <code>CampaignAssignment</code>); <code>error_message</code> stays empty. Do not set it before every server replica runs VTSI 9.0.0: an older replica ignores it and starts every caller at once. |
 
 
 
@@ -21489,6 +21588,8 @@ Response to the start caller request
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | caller_responses | [StartCallerResponse](#ondewo.vtsi.StartCallerResponse) | repeated | The call ids that were assigned to each listener |
 | error_message | [string](#string) |  | overall error message if you have any so if it's unhealthy |
+| campaign | [Campaign](#ondewo.vtsi.Campaign) |  | The campaign the callers were added to, when the request set <code>campaign_assignment</code>. <code>caller_responses</code> is then empty: the calls are started by the campaign. |
+| campaign_call_names | [string](#string) | repeated | The campaign calls created by this request, in request order, when the request set <code>campaign_assignment</code>. |
 
 
 
@@ -21605,7 +21706,8 @@ Request to start scheduled callers
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
-| scheduled_caller_requests | [StartScheduledCallerRequest](#ondewo.vtsi.StartScheduledCallerRequest) | repeated | requests to start scheduled callers |
+| scheduled_caller_requests | [StartScheduledCallerRequest](#ondewo.vtsi.StartScheduledCallerRequest) | repeated | requests to start scheduled callers. With <code>campaign_assignment</code> set, a scheduled caller of the campaign can be cancelled with <code>CancelScheduledCaller</code> only while its campaign call has no attempt dispatching or in progress. |
+| campaign_assignment | [CampaignAssignment](#ondewo.vtsi.CampaignAssignment) |  | Optional. Add the scheduled callers to a campaign: each fires at or after its scheduled time AND when the campaign has a free slot, and follows the campaign&apos;s retries, stop and hard stop. Unset: the scheduled callers fire on their own, exactly as before. Same atomicity, error and rollout rules as <code>StartCallersRequest.campaign_assignment</code>. |
 
 
 
@@ -21622,6 +21724,8 @@ Response to start multiple listeners
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | scheduled_caller_responses | [StartScheduledCallerResponse](#ondewo.vtsi.StartScheduledCallerResponse) | repeated | The call ids that were assigned to each listener |
+| campaign | [Campaign](#ondewo.vtsi.Campaign) |  | The campaign the scheduled callers were added to, when the request set <code>campaign_assignment</code>. |
+| campaign_call_names | [string](#string) | repeated | The campaign calls created by this request, in request order, when the request set <code>campaign_assignment</code>. |
 
 
 
@@ -21826,6 +21930,77 @@ Response to stop multiple listeners
 | ----- | ---- | ----- | ----------- |
 | stop_listener_responses | [StopListenerResponse](#ondewo.vtsi.StopListenerResponse) | repeated | responses to stop listeners |
 | error_message | [string](#string) |  | error message if there are any. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StreamCallResourceStatusResponse"></a>
+
+### StreamCallResourceStatusResponse
+The response message of the three status streams.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| statuses | [CallResourceStatus](#ondewo.vtsi.CallResourceStatus) | repeated | Resources that changed (every matching resource in the snapshot). |
+| removed_resource_names | [string](#string) | repeated | Resources that no longer exist or no longer match. |
+| snapshot | [bool](#bool) |  | True on the first message, which carries every matching resource. |
+| snapshot_truncated | [bool](#bool) |  | True when the snapshot was cut at the server limit (5000 resources). |
+| end_reason | [string](#string) |  | Set on the last message when the server ended the stream. Empty otherwise. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StreamCallerStatusRequest"></a>
+
+### StreamCallerStatusRequest
+The request message for <code>Calls.StreamCallerStatus</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| caller_names | [string](#string) | repeated | Only these callers. Empty means every caller of the project. |
+| active_only | [bool](#bool) |  | Only callers whose call is active. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StreamListenerStatusRequest"></a>
+
+### StreamListenerStatusRequest
+The request message for <code>Calls.StreamListenerStatus</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| listener_names | [string](#string) | repeated | Only these listeners. Empty means every listener of the project. |
+| active_only | [bool](#bool) |  | Only listeners whose call is active. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StreamScheduledCallerStatusRequest"></a>
+
+### StreamScheduledCallerStatusRequest
+The request message for <code>Calls.StreamScheduledCallerStatus</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| scheduled_caller_names | [string](#string) | repeated | Only these scheduled callers. Empty means every scheduled caller of the project. |
+| statuses | [ScheduledCallerStatus](#ondewo.vtsi.ScheduledCallerStatus) | repeated | Only scheduled callers in these states. Empty means every state. |
+| campaign_name | [string](#string) |  | Only scheduled callers of this campaign. Empty means any. |
 
 
 
@@ -22116,7 +22291,7 @@ Eagerness of the turn detection
 | StartScheduledCallers | [StartScheduledCallersRequest](#ondewo.vtsi.StartScheduledCallersRequest) | [StartScheduledCallersResponse](#ondewo.vtsi.StartScheduledCallersResponse) | <p>Start multiple ondewo-sip caller instances, each at its own scheduled time</p> |
 | GetScheduledCaller | [GetScheduledCallerRequest](#ondewo.vtsi.GetScheduledCallerRequest) | [ScheduledCaller](#ondewo.vtsi.ScheduledCaller) | <p>Gets a scheduled caller</p> |
 | ListScheduledCallers | [ListScheduledCallersRequest](#ondewo.vtsi.ListScheduledCallersRequest) | [ListScheduledCallersResponse](#ondewo.vtsi.ListScheduledCallersResponse) | <p>Lists the scheduled callers of a vtsi-project</p> |
-| CancelScheduledCaller | [CancelScheduledCallerRequest](#ondewo.vtsi.CancelScheduledCallerRequest) | [CancelScheduledCallerResponse](#ondewo.vtsi.CancelScheduledCallerResponse) | <p>Cancels a scheduled caller that has not fired yet</p> |
+| CancelScheduledCaller | [CancelScheduledCallerRequest](#ondewo.vtsi.CancelScheduledCallerRequest) | [CancelScheduledCallerResponse](#ondewo.vtsi.CancelScheduledCallerResponse) | <p>Cancels a scheduled caller that has not fired yet</p> <p>A scheduled caller of a campaign can be cancelled while its campaign call is <code>CAMPAIGN_CALL_STATE_NOT_STARTED</code> or <code>CAMPAIGN_CALL_STATE_RETRY_PENDING</code>; the campaign call then becomes <code>CAMPAIGN_CALL_STATE_CANCELLED</code>. While an attempt is <code>DISPATCHING</code> or <code>IN_PROGRESS</code> the request is refused: <code>cancelled = false</code> and the scheduled caller keeps its status.</p> |
 | StopCall | [StopCallRequest](#ondewo.vtsi.StopCallRequest) | [StopCallResponse](#ondewo.vtsi.StopCallResponse) | <p>Stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.</p> |
 | StopCalls | [StopCallsRequest](#ondewo.vtsi.StopCallsRequest) | [StopCallsResponse](#ondewo.vtsi.StopCallsResponse) | <p>Stop/kill a list of ondewo-sip listener or caller instances for a specific vtsi-project.</p> <p>Stops both Listener and Caller calls</p> |
 | StopAllCalls | [StopAllCallsRequest](#ondewo.vtsi.StopAllCallsRequest) | [StopCallsResponse](#ondewo.vtsi.StopCallsResponse) | <p>Stop/kill all ondewo-sip listener or caller instance for a specific nlu-project.</p> <p>Stops all Listener and Caller calls</p> |
@@ -22124,6 +22299,1245 @@ Eagerness of the turn detection
 | TransferCalls | [TransferCallsRequest](#ondewo.vtsi.TransferCallsRequest) | [TransferCallsResponse](#ondewo.vtsi.TransferCallsResponse) | <p>Transfer a call from a listener to another</p> |
 | GetCall | [GetCallRequest](#ondewo.vtsi.GetCallRequest) | [Call](#ondewo.vtsi.Call) | <p>Get call log for single call instance</p> |
 | ListCalls | [ListCallsRequest](#ondewo.vtsi.ListCallsRequest) | [ListCallsResponse](#ondewo.vtsi.ListCallsResponse) | <p>Get call log for all call instances</p> |
+| StreamCallerStatus | [StreamCallerStatusRequest](#ondewo.vtsi.StreamCallerStatusRequest) | [StreamCallResourceStatusResponse](#ondewo.vtsi.StreamCallResourceStatusResponse) stream | <p>Streams the status of the callers of a project: a snapshot first (<code>snapshot = true</code>), then every caller whose call or SIP status changed, plus keep-alive messages. Ends when the client disconnects or at the server-side maximum stream duration.</p> <p>Errors: <code>NOT_FOUND</code> for an unknown project; <code>RESOURCE_EXHAUSTED</code> when the server has no free stream slot.</p> |
+| StreamListenerStatus | [StreamListenerStatusRequest](#ondewo.vtsi.StreamListenerStatusRequest) | [StreamCallResourceStatusResponse](#ondewo.vtsi.StreamCallResourceStatusResponse) stream | <p>Streams the status of the listeners of a project, like <code>StreamCallerStatus</code>.</p> |
+| StreamScheduledCallerStatus | [StreamScheduledCallerStatusRequest](#ondewo.vtsi.StreamScheduledCallerStatusRequest) | [StreamCallResourceStatusResponse](#ondewo.vtsi.StreamCallResourceStatusResponse) stream | <p>Streams the status of the scheduled callers of a project, like <code>StreamCallerStatus</code>. The snapshot holds every PENDING and FIRING scheduled caller and those that finished in the last hour.</p> |
+
+ <!-- end services -->
+
+
+
+<a name="ondewo/vtsi/campaigns.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## ondewo/vtsi/campaigns.proto
+
+
+
+<a name="ondewo.vtsi.Campaign"></a>
+
+### Campaign
+A campaign: a set of outbound calls started with a limit on how many run at the same time.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Output only. Resource name of the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre> Ignored on create; identifies the campaign on update. |
+| campaign_id | [string](#string) |  | Output only. The <code>&lt;campaign_uuid&gt;</code> part of <code>name</code>. |
+| vtsi_project_name | [string](#string) |  | Output only. Resource name of the VTSI project the campaign belongs to. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| display_name | [string](#string) |  | Human-readable name, unique within the project, at most 128 characters. Empty on create means <code>campaign-&lt;campaign_uuid&gt;</code>. Updatable. |
+| max_parallel_calls | [int32](#int32) |  | Maximum number of calls of this campaign that are being started or are running at the same time. <code>0</code> on create means the server default (1); the allowed range is 1 to the server limit (1000 by default). The project&apos;s <code>max_callers</code> still bounds the number of callers that exist at all. Updatable; lowering it never ends a running call. |
+| max_attempts | [int32](#int32) |  | Maximum number of attempts per call, the first one included. <code>0</code> on create means the server default of 1, i.e. no retry; the allowed range is 1 to 10. Updatable. It is read LIVE, never snapshotted per call: every decision after an attempt fails uses the value current at that moment, and a call waiting in <code>RETRY_PENDING</code> whose <code>attempts</code> is no longer below a lowered value becomes <code>FAILED</code> at the next check (its last error stays). Raising it never revives a <code>FAILED</code> call. |
+| retry_delay | [google.protobuf.Duration](#google.protobuf.Duration) |  | Time to wait after a failed attempt before the next one is started. Unset on create means the server default (60 s); allowed range 0 s to 7 days. Updatable. |
+| state | [CampaignState](#ondewo.vtsi.CampaignState) |  | Output only. Lifecycle state. |
+| state_reason | [string](#string) |  | Output only. Why the campaign is in its state when the server changed it on its own, e.g. <code>stopped after 3 consecutive failures that cannot succeed by repetition: ...</code>. Empty otherwise. |
+| statistics | [CampaignStatistics](#ondewo.vtsi.CampaignStatistics) |  | Output only. Progress of the campaign. |
+| created_by | [string](#string) |  | Output only. The user who created the campaign. |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only. Creation time. |
+| modified_by | [string](#string) |  | Output only. The user who last modified the campaign. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only. Last modification time, including state changes made by the server. |
+| started_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only. When the campaign was first started. |
+| stopped_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only. When the campaign last reached <code>STOPPED</code> or <code>HARD_STOPPED</code>. |
+| completed_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only. When the campaign reached <code>COMPLETED</code>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CampaignAssignment"></a>
+
+### CampaignAssignment
+Assigns the callers of a <code>StartCallers</code> / <code>StartScheduledCallers</code> request
+to a campaign. Set on the request: the calls are then NOT started by the request itself but
+added to the campaign, which starts them under its <code>max_parallel_calls</code> limit.
+<p>The whole request is applied atomically: either the campaign (when new), every campaign call
+and every scheduled caller of the request are stored, or nothing is.</p>
+<p>Effect per state of an EXISTING campaign: <code>CREATED</code>, <code>RUNNING</code>,
+<code>STOPPING</code>, <code>STOPPED</code>, <code>HARD_STOPPING</code> and
+<code>HARD_STOPPED</code> accept the calls as <code>NOT_STARTED</code> and keep their state (a
+stopped campaign runs them after <code>ResumeCampaign</code>; see <code>start_mode</code> for
+<code>CREATED</code>); <code>COMPLETED</code> accepts them and becomes <code>RUNNING</code>.</p>
+<p>Errors, as gRPC status codes of the <code>StartCallers</code> / <code>StartScheduledCallers</code>
+RPC (the response&apos;s <code>error_message</code> fields are not used for campaign requests):
+<code>NOT_FOUND</code> for an unknown <code>campaign_name</code> / <code>campaign_display_name</code>
+or a campaign deleted while the request ran; <code>INVALID_ARGUMENT</code> for a campaign of
+another project, an invalid <code>new_campaign</code> (an output-only field set, a value out of
+range) or an invalid caller entry (the message names its index); <code>ALREADY_EXISTS</code> for a
+<code>new_campaign.display_name</code> used in the project; <code>FAILED_PRECONDITION</code> when
+the campaign would exceed the server&apos;s maximum number of calls per campaign.</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| campaign_name | [string](#string) |  | Add the calls to this existing campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre> |
+| new_campaign | [Campaign](#ondewo.vtsi.Campaign) |  | Create a new campaign with these settings and add the calls to it. Only <code>display_name</code>, <code>max_parallel_calls</code>, <code>max_attempts</code> and <code>retry_delay</code> are read; output-only fields must be unset. |
+| campaign_display_name | [CampaignDisplayName](#ondewo.vtsi.CampaignDisplayName) |  | Add the calls to the existing campaign with this display name. Its <code>vtsi_project_name</code> must be the request&apos;s project. |
+| start_mode | [CampaignStartMode](#ondewo.vtsi.CampaignStartMode) |  | Whether the campaign starts dialling; see <code>CampaignStartMode</code>. The default starts a new campaign and leaves an existing one in its state. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CampaignCall"></a>
+
+### CampaignCall
+One call of a campaign. Every field is output only.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the campaign call. The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;/campaign_calls/&lt;campaign_call_uuid&gt;</code></pre> |
+| campaign_name | [string](#string) |  | Resource name of the campaign. |
+| position | [int32](#int32) |  | Position of the call in the campaign, in the order calls were added, starting at 1. |
+| state | [CampaignCallState](#ondewo.vtsi.CampaignCallState) |  | State of the call. |
+| phone_number | [string](#string) |  | The callee: <code>SipCallerConfig.callee_id</code> of the call&apos;s request. |
+| source | [CampaignCallSource](#ondewo.vtsi.CampaignCallSource) |  | How the call was added. |
+| scheduled_caller_name | [string](#string) |  | For <code>CAMPAIGN_CALL_SOURCE_SCHEDULED_CALLER</code>: resource name of its scheduled caller. |
+| scheduled_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | For <code>CAMPAIGN_CALL_SOURCE_SCHEDULED_CALLER</code>: the scheduled time. |
+| attempts | [int32](#int32) |  | Attempts started so far. |
+| max_attempts | [int32](#int32) |  | The campaign&apos;s CURRENT <code>max_attempts</code> (read live, see <code>Campaign.max_attempts</code>); repeated here so a page of calls is readable alone. |
+| caller_name | [string](#string) |  | Caller of the current or last attempt. |
+| call_name | [string](#string) |  | Call of the current or last attempt. |
+| sip_status_type | [ondewo.sip.SipStatus.StatusType](#ondewo.sip.SipStatus.StatusType) |  | Current or last SIP status of the call. |
+| sip_status_description | [string](#string) |  | Description of the current or last SIP status of the call. |
+| last_error | [string](#string) |  | Why the last attempt failed, empty otherwise. |
+| next_attempt_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | For <code>CAMPAIGN_CALL_STATE_RETRY_PENDING</code>: when the next attempt may start. |
+| first_attempt_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the first attempt started. |
+| last_attempt_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the last attempt started. |
+| finish_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the call reached <code>COMPLETED</code>, <code>FAILED</code> or <code>CANCELLED</code>. |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the call was added to the campaign. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Last change of any field above. |
+| attempt_history | [CampaignCallAttempt](#ondewo.vtsi.CampaignCallAttempt) | repeated | The attempts, oldest first. Populated only when requested (<code>ListCampaignCallsRequest.include_attempts</code>). |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CampaignCallAttempt"></a>
+
+### CampaignCallAttempt
+One attempt of a campaign call.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| attempt_number | [int32](#int32) |  | 1 for the first attempt. |
+| caller_name | [string](#string) |  | Resource name of the caller that placed the attempt, empty when starting it failed. |
+| call_name | [string](#string) |  | Resource name of the call of the attempt, empty when starting it failed. The format is: <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
+| start_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the attempt was started. |
+| end_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the attempt ended. Unset while it is in progress. |
+| outcome | [CampaignCallAttemptOutcome](#ondewo.vtsi.CampaignCallAttemptOutcome) |  | Outcome of the attempt. |
+| sip_status_type | [ondewo.sip.SipStatus.StatusType](#ondewo.sip.SipStatus.StatusType) |  | Last SIP status of the attempt&apos;s call. |
+| sip_status_description | [string](#string) |  | Description of the last SIP status of the attempt&apos;s call. |
+| error_message | [string](#string) |  | Why the attempt failed. Empty unless <code>outcome</code> is <code>FAILED</code>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CampaignDisplayName"></a>
+
+### CampaignDisplayName
+Identifies a campaign by its display name, which is unique within a project.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project of the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| display_name | [string](#string) |  | Exact, case-sensitive <code>display_name</code> of the campaign. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CampaignFilter"></a>
+
+### CampaignFilter
+Filter of a campaign listing.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| states | [CampaignState](#ondewo.vtsi.CampaignState) | repeated | Only campaigns in one of these states. Empty means every state. |
+| display_name_contains | [string](#string) |  | Only campaigns whose <code>display_name</code> contains this text, case-insensitive. |
+| display_name | [string](#string) |  | Only the campaign whose <code>display_name</code> is exactly this (case-sensitive). Empty means no constraint. Combined with the other fields by AND. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CampaignStatistics"></a>
+
+### CampaignStatistics
+Progress of a campaign. Every call of the campaign is counted in exactly one of
+<code>not_started</code>, <code>in_progress</code>, <code>retry_pending</code>,
+<code>completed</code>, <code>failed</code> and <code>cancelled</code>; their sum is
+<code>total</code>.
+<p>Read as the four buckets "completed / failed / in progress / not started" (e.g. 100 calls:
+20 completed, 30 failed, 10 in progress, 40 not started):</p>
+<ul>
+<li>completed = <code>completed</code></li>
+<li>failed = <code>failed</code> + <code>cancelled</code> (finished without completing; a hard
+stop or a cancelled schedule is reported separately in <code>cancelled</code>)</li>
+<li>in progress = <code>in_progress</code> + <code>retry_pending</code> (started at least once and
+not finished: a call waiting for its next attempt is still being worked on)</li>
+<li>not started = <code>not_started</code></li>
+</ul>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| campaign_name | [string](#string) |  | Resource name of the campaign. |
+| total | [int32](#int32) |  | Number of calls in the campaign. |
+| not_started | [int32](#int32) |  | Calls with no attempt started yet (<code>CAMPAIGN_CALL_STATE_NOT_STARTED</code>). |
+| in_progress | [int32](#int32) |  | Calls being started or running (<code>DISPATCHING</code> + <code>IN_PROGRESS</code>). |
+| retry_pending | [int32](#int32) |  | Calls whose attempt failed and that wait for their next attempt. |
+| completed | [int32](#int32) |  | Calls that connected and ended normally. |
+| failed | [int32](#int32) |  | Calls that failed after their last attempt. |
+| cancelled | [int32](#int32) |  | Calls cancelled by a hard stop or by cancelling their scheduled caller. |
+| total_attempts | [int32](#int32) |  | Attempts started in total, over every call. |
+| progress_percent | [float](#float) |  | Share of calls that are finished (completed + failed + cancelled), 0 to 100. |
+| scheduled_not_due | [int32](#int32) |  | Of <code>not_started</code>: scheduled calls whose scheduled time has not come yet. |
+| calls_retried | [int32](#int32) |  | Calls that needed more than one attempt (<code>attempts</code> &gt; 1), whatever their state. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CreateCampaignRequest"></a>
+
+### CreateCampaignRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Campaigns.CreateCampaign">Campaigns.CreateCampaign</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project in which to create the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| campaign | [Campaign](#ondewo.vtsi.Campaign) |  | The campaign to create. Output-only fields must be unset. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DeleteCampaignRequest"></a>
+
+### DeleteCampaignRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Campaigns.DeleteCampaign">Campaigns.DeleteCampaign</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the campaign. |
+| display_name | [CampaignDisplayName](#ondewo.vtsi.CampaignDisplayName) |  | The campaign with this display name. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DeleteCampaignResponse"></a>
+
+### DeleteCampaignResponse
+The response message for
+<a href="index.html#ondewo.vtsi.Campaigns.DeleteCampaign">Campaigns.DeleteCampaign</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the deleted campaign. |
+| deleted_campaign_call_count | [int32](#int32) |  | How many campaign calls were deleted with it. |
+| cancelled_scheduled_caller_count | [int32](#int32) |  | How many pending scheduled callers of the campaign were cancelled. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.GetCampaignRequest"></a>
+
+### GetCampaignRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Campaigns.GetCampaign">Campaigns.GetCampaign</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the campaign. |
+| display_name | [CampaignDisplayName](#ondewo.vtsi.CampaignDisplayName) |  | The campaign with this display name. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.GetCampaignStatisticsRequest"></a>
+
+### GetCampaignStatisticsRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Campaigns.GetCampaignStatistics">Campaigns.GetCampaignStatistics</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the campaign. |
+| display_name | [CampaignDisplayName](#ondewo.vtsi.CampaignDisplayName) |  | The campaign with this display name. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.HardStopCampaignRequest"></a>
+
+### HardStopCampaignRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Campaigns.HardStopCampaign">Campaigns.HardStopCampaign</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the campaign. |
+| display_name | [CampaignDisplayName](#ondewo.vtsi.CampaignDisplayName) |  | The campaign with this display name. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListCampaignCallsRequest"></a>
+
+### ListCampaignCallsRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Campaigns.ListCampaignCalls">Campaigns.ListCampaignCalls</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| campaign_name | [string](#string) |  | Resource name of the campaign. |
+| campaign_display_name | [CampaignDisplayName](#ondewo.vtsi.CampaignDisplayName) |  | The campaign with this display name. |
+| states | [CampaignCallState](#ondewo.vtsi.CampaignCallState) | repeated | Only calls in one of these states. Empty means every state. |
+| phone_number | [string](#string) |  | Only calls to this callee (exact match on <code>phone_number</code>). Empty means every callee. |
+| page_size | [int32](#int32) |  | Optional. Maximum calls per page. <code>0</code> means 50; values above 1000 are clamped to 1000; negative values are rejected with <code>INVALID_ARGUMENT</code>. |
+| page_token | [string](#string) | optional | Optional. The <code>next_page_token</code> of a previous response; valid only with the same campaign and filter. |
+| include_attempts | [bool](#bool) |  | Populate <code>CampaignCall.attempt_history</code>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListCampaignCallsResponse"></a>
+
+### ListCampaignCallsResponse
+The response message for
+<a href="index.html#ondewo.vtsi.Campaigns.ListCampaignCalls">Campaigns.ListCampaignCalls</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| campaign_calls | [CampaignCall](#ondewo.vtsi.CampaignCall) | repeated | The calls of this page, by <code>position</code>. |
+| next_page_token | [string](#string) |  | Token for the next page. Empty when there are no more results. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListCampaignsRequest"></a>
+
+### ListCampaignsRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Campaigns.ListCampaigns">Campaigns.ListCampaigns</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project whose campaigns to list. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| filter | [CampaignFilter](#ondewo.vtsi.CampaignFilter) |  | Optional. Narrows the listing. |
+| page_size | [int32](#int32) |  | Optional. Maximum campaigns per page. <code>0</code> means 20; values above 1000 are clamped to 1000; negative values are rejected with <code>INVALID_ARGUMENT</code>. |
+| page_token | [string](#string) | optional | Optional. The <code>next_page_token</code> of a previous response; valid only with the same project and filter. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListCampaignsResponse"></a>
+
+### ListCampaignsResponse
+The response message for
+<a href="index.html#ondewo.vtsi.Campaigns.ListCampaigns">Campaigns.ListCampaigns</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| campaigns | [Campaign](#ondewo.vtsi.Campaign) | repeated | The campaigns of this page, newest first. |
+| next_page_token | [string](#string) |  | Token for the next page. Empty when there are no more results. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ResumeCampaignRequest"></a>
+
+### ResumeCampaignRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Campaigns.ResumeCampaign">Campaigns.ResumeCampaign</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the campaign. |
+| display_name | [CampaignDisplayName](#ondewo.vtsi.CampaignDisplayName) |  | The campaign with this display name. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StartCampaignRequest"></a>
+
+### StartCampaignRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Campaigns.StartCampaign">Campaigns.StartCampaign</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the campaign. |
+| display_name | [CampaignDisplayName](#ondewo.vtsi.CampaignDisplayName) |  | The campaign with this display name. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StopCampaignRequest"></a>
+
+### StopCampaignRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Campaigns.StopCampaign">Campaigns.StopCampaign</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the campaign. |
+| display_name | [CampaignDisplayName](#ondewo.vtsi.CampaignDisplayName) |  | The campaign with this display name. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StreamCampaignStatusRequest"></a>
+
+### StreamCampaignStatusRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Campaigns.StreamCampaignStatus">Campaigns.StreamCampaignStatus</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project whose campaigns to stream. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| campaign_names | [string](#string) | repeated | Only these campaigns (resource names). Empty, together with an empty <code>campaign_display_names</code>, means every campaign of the project, including campaigns created while the stream is open. |
+| campaign_display_names | [string](#string) | repeated | Only the campaigns with these exact display names (in this project). A name that matches no campaign yet matches a campaign created later under it. Combined with <code>campaign_names</code> by OR. |
+| include_calls | [bool](#bool) |  | Also stream every campaign call that changes after the stream opened. The snapshot never contains campaign calls; read them with <code>ListCampaignCalls</code>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StreamCampaignStatusResponse"></a>
+
+### StreamCampaignStatusResponse
+The response message for
+<a href="index.html#ondewo.vtsi.Campaigns.StreamCampaignStatus">Campaigns.StreamCampaignStatus</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| campaigns | [Campaign](#ondewo.vtsi.Campaign) | repeated | Campaigns that changed (every matching campaign in the snapshot), with their statistics. |
+| campaign_calls | [CampaignCall](#ondewo.vtsi.CampaignCall) | repeated | Campaign calls that changed, when <code>include_calls</code> is set. |
+| deleted_campaign_names | [string](#string) | repeated | Campaigns deleted since the previous message. |
+| snapshot | [bool](#bool) |  | True on the first message, which carries every matching campaign. |
+| end_reason | [string](#string) |  | Set on the last message when the server ended the stream, e.g. at the maximum stream duration. Empty otherwise. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.UpdateCampaignRequest"></a>
+
+### UpdateCampaignRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Campaigns.UpdateCampaign">Campaigns.UpdateCampaign</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| campaign | [Campaign](#ondewo.vtsi.Campaign) |  | The campaign to update, identified by <code>campaign.name</code>, carrying the new values of the fields named in <code>update_mask</code>. |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Required. Paths WITHOUT a <code>campaign.</code> prefix. Updatable paths: <code>display_name</code>, <code>max_parallel_calls</code>, <code>max_attempts</code>, <code>retry_delay</code>. An empty mask, or an unknown, output-only or immutable path, is rejected with <code>INVALID_ARGUMENT</code> naming the path. A path in the mask with an unset value writes the create default (<code>display_name</code> empty writes <code>campaign-&lt;campaign_uuid&gt;</code>). |
+
+
+
+
+
+ <!-- end messages -->
+
+
+<a name="ondewo.vtsi.CampaignCallAttemptOutcome"></a>
+
+### CampaignCallAttemptOutcome
+Outcome of one attempt of a campaign call.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| CAMPAIGN_CALL_ATTEMPT_OUTCOME_UNSPECIFIED | 0 | Unspecified. |
+| CAMPAIGN_CALL_ATTEMPT_OUTCOME_IN_PROGRESS | 1 | The attempt is being started or its call is running. |
+| CAMPAIGN_CALL_ATTEMPT_OUTCOME_COMPLETED | 2 | The call connected and ended normally. |
+| CAMPAIGN_CALL_ATTEMPT_OUTCOME_FAILED | 3 | Starting the call failed, or the call ended without being connected. |
+| CAMPAIGN_CALL_ATTEMPT_OUTCOME_CANCELLED | 4 | Its call was ended by <code>HardStopCampaign</code> (the attempt counts). |
+
+
+
+<a name="ondewo.vtsi.CampaignCallSource"></a>
+
+### CampaignCallSource
+How a call was added to a campaign.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| CAMPAIGN_CALL_SOURCE_UNSPECIFIED | 0 | Unspecified. |
+| CAMPAIGN_CALL_SOURCE_CALLER | 1 | Added by <code>StartCallers</code>: started as soon as the campaign has a free slot. |
+| CAMPAIGN_CALL_SOURCE_SCHEDULED_CALLER | 2 | Added by <code>StartScheduledCallers</code>: started at or after its scheduled time when the campaign has a free slot. Its <code>ScheduledCaller</code> follows the campaign call. |
+
+
+
+<a name="ondewo.vtsi.CampaignCallState"></a>
+
+### CampaignCallState
+State of one call of a campaign.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| CAMPAIGN_CALL_STATE_UNSPECIFIED | 0 | Unspecified. |
+| CAMPAIGN_CALL_STATE_NOT_STARTED | 1 | No attempt has been started yet (includes scheduled calls whose time has not come). |
+| CAMPAIGN_CALL_STATE_DISPATCHING | 2 | A server replica is starting the call right now. |
+| CAMPAIGN_CALL_STATE_IN_PROGRESS | 3 | The call was started and has not ended yet. |
+| CAMPAIGN_CALL_STATE_RETRY_PENDING | 4 | An attempt failed and another one will be started at <code>next_attempt_time</code>. |
+| CAMPAIGN_CALL_STATE_COMPLETED | 5 | The call was connected and ended normally. |
+| CAMPAIGN_CALL_STATE_FAILED | 6 | The last attempt failed, or a failure that cannot succeed by repetition occurred. |
+| CAMPAIGN_CALL_STATE_CANCELLED | 7 | Its running call was ended by <code>HardStopCampaign</code> (confirmed), or its scheduled caller was cancelled before an attempt was running. |
+
+
+
+<a name="ondewo.vtsi.CampaignStartMode"></a>
+
+### CampaignStartMode
+Whether adding calls to a campaign also starts it.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| CAMPAIGN_START_MODE_UNSPECIFIED | 0 | The default: a NEW campaign is created <code>RUNNING</code>; an EXISTING campaign keeps its state (except that a <code>COMPLETED</code> one becomes <code>RUNNING</code> again). |
+| CAMPAIGN_START_MODE_START | 1 | Start the campaign: a new one is created <code>RUNNING</code>, an existing <code>CREATED</code> one is started. Does NOT resume a stopped campaign. |
+| CAMPAIGN_START_MODE_DO_NOT_START | 2 | Do not start: a new campaign is created <code>CREATED</code>; an existing one keeps its state (a <code>COMPLETED</code> one still becomes <code>RUNNING</code>, because it has unfinished calls again). |
+
+
+
+<a name="ondewo.vtsi.CampaignState"></a>
+
+### CampaignState
+Lifecycle state of a campaign.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| CAMPAIGN_STATE_UNSPECIFIED | 0 | Unspecified. |
+| CAMPAIGN_STATE_CREATED | 1 | Created; calls may be added, nothing is dialled until <code>StartCampaign</code>. |
+| CAMPAIGN_STATE_RUNNING | 2 | Calls are being started, at most <code>max_parallel_calls</code> at a time. |
+| CAMPAIGN_STATE_STOPPING | 3 | <code>StopCampaign</code> was requested, or the server stopped the campaign after repeated failures that cannot succeed by repetition (see <code>state_reason</code>): no new call is started, running calls continue. |
+| CAMPAIGN_STATE_STOPPED | 4 | Stopped (reached from <code>STOPPING</code> once no call of the campaign is running). No call is running. Can be resumed. |
+| CAMPAIGN_STATE_HARD_STOPPING | 5 | <code>HardStopCampaign</code> was requested: running calls are being ended. |
+| CAMPAIGN_STATE_HARD_STOPPED | 6 | Hard stopped. No call is running. Can be resumed. |
+| CAMPAIGN_STATE_COMPLETED | 7 | Every call of the campaign is completed, failed or cancelled. Adding calls to a completed campaign makes it <code>RUNNING</code> again. |
+
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="ondewo.vtsi.Campaigns"></a>
+
+### Campaigns
+<p>ONDEWO VTSI API</p>
+<p>Manages the CAMPAIGNS of a VTSI project. A campaign is a named set of outbound calls that VTSI
+places for the client while keeping at most <code>max_parallel_calls</code> of them running at
+the same time. If 100 callers are added to a campaign with <code>max_parallel_calls = 10</code>,
+at any moment at most 10 of those calls are being set up or are connected; the next one starts
+when one ends.</p>
+<p>Calls are added to a campaign by setting <code>campaign_assignment</code> on
+<a href="index.html#ondewo.vtsi.StartCallersRequest">StartCallersRequest</a> or
+<a href="index.html#ondewo.vtsi.StartScheduledCallersRequest">StartScheduledCallersRequest</a>;
+a scheduled call of a campaign is started at or after its scheduled time AND when the campaign has
+a free slot.</p>
+<p>A call that fails is retried up to <code>max_attempts</code> times in total, waiting
+<code>retry_delay</code> between attempts. A call counts as failed only after its last attempt.
+A failure that cannot succeed by repetition (for example a rejected credential, an invalid
+configuration) is never retried.</p>
+<p>Lifecycle: <code>StartCampaign</code> starts a created campaign; <code>StopCampaign</code> lets
+the ongoing calls finish and starts no new ones; <code>HardStopCampaign</code> ends the ongoing
+calls immediately and starts no new ones; <code>ResumeCampaign</code> continues a stopped or hard
+stopped campaign with the calls that have not finished yet.</p>
+<p>Every RPC about ONE campaign accepts either its resource name or its display name
+(<a href="index.html#ondewo.vtsi.CampaignDisplayName">CampaignDisplayName</a>); display names are
+unique within a project.</p>
+<p>Errors are reported as gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed name,
+filter, field mask or value; <code>NOT_FOUND</code> for an unknown project, campaign or campaign
+call; <code>ALREADY_EXISTS</code> for a <code>display_name</code> already used in the project;
+<code>FAILED_PRECONDITION</code> for a state that does not allow the operation (each RPC names its
+cases); <code>ABORTED</code> when a concurrent change won, nothing was stored and the request can
+be retried; <code>RESOURCE_EXHAUSTED</code> when the server has no free stream slot.</p>
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| CreateCampaign | [CreateCampaignRequest](#ondewo.vtsi.CreateCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Creates a campaign in state <code>CAMPAIGN_STATE_CREATED</code>. Calls are added with <code>StartCallers</code> / <code>StartScheduledCallers</code>; nothing is dialled before <code>StartCampaign</code>.</p> <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>ALREADY_EXISTS</code> if the <code>display_name</code> is used in the project; <code>INVALID_ARGUMENT</code> for an output-only field that was set or an out-of-range value.</p> |
+| GetCampaign | [GetCampaignRequest](#ondewo.vtsi.GetCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Returns a campaign including its statistics.</p> <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for a malformed name.</p> |
+| UpdateCampaign | [UpdateCampaignRequest](#ondewo.vtsi.UpdateCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Updates the fields named in <code>update_mask</code>: <code>display_name</code>, <code>max_parallel_calls</code>, <code>max_attempts</code>, <code>retry_delay</code>. Allowed in every state. Lowering <code>max_parallel_calls</code> never ends a running call: the campaign starts no new call until fewer than the new maximum are running.</p> <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for an empty mask, an unknown, output-only or immutable path, or an out-of-range value; <code>ALREADY_EXISTS</code> for a <code>display_name</code> used by another campaign of the project.</p> |
+| DeleteCampaign | [DeleteCampaignRequest](#ondewo.vtsi.DeleteCampaignRequest) | [DeleteCampaignResponse](#ondewo.vtsi.DeleteCampaignResponse) | <p>Deletes a campaign and its campaign calls. Its scheduled callers that have not fired yet are cancelled. Calls that already ran are not touched and stay visible through <code>ListCalls</code>.</p> <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> while the campaign is <code>RUNNING</code>, <code>STOPPING</code> or <code>HARD_STOPPING</code> (stop or hard stop it first).</p> |
+| ListCampaigns | [ListCampaignsRequest](#ondewo.vtsi.ListCampaignsRequest) | [ListCampaignsResponse](#ondewo.vtsi.ListCampaignsResponse) | <p>Lists the campaigns of a project, newest first, filtered and paged, each with its statistics.</p> <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>INVALID_ARGUMENT</code> for a negative <code>page_size</code> or a foreign <code>page_token</code>.</p> |
+| GetCampaignStatistics | [GetCampaignStatisticsRequest](#ondewo.vtsi.GetCampaignStatisticsRequest) | [CampaignStatistics](#ondewo.vtsi.CampaignStatistics) | <p>Returns the progress of a campaign: how many of its calls are not started, in progress, waiting for a retry, completed, failed and cancelled, and how many attempts were made.</p> <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for a malformed name.</p> |
+| ListCampaignCalls | [ListCampaignCallsRequest](#ondewo.vtsi.ListCampaignCallsRequest) | [ListCampaignCallsResponse](#ondewo.vtsi.ListCampaignCallsResponse) | <p>Lists the calls of a campaign in the order they were added, filtered and paged, each with its current SIP status, the SIP status description and its attempts.</p> <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for a negative <code>page_size</code> or a foreign <code>page_token</code>.</p> |
+| StartCampaign | [StartCampaignRequest](#ondewo.vtsi.StartCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Starts a <code>CAMPAIGN_STATE_CREATED</code> campaign. Idempotent on a <code>RUNNING</code> campaign.</p> <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> in any other state (use <code>ResumeCampaign</code> for a stopped campaign).</p> |
+| StopCampaign | [StopCampaignRequest](#ondewo.vtsi.StopCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Stops a campaign gracefully: no new call is started, the calls that are running continue until they end, then the campaign is <code>CAMPAIGN_STATE_STOPPED</code>. Returns the campaign in <code>STOPPING</code> (or already <code>STOPPED</code> when no call was running). Idempotent on <code>STOPPING</code>, <code>STOPPED</code>, <code>HARD_STOPPING</code> and <code>HARD_STOPPED</code>.</p> <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> on a <code>COMPLETED</code> campaign.</p> |
+| HardStopCampaign | [HardStopCampaignRequest](#ondewo.vtsi.HardStopCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Stops a campaign immediately: no new call is started and the server hangs up every running call of the campaign right away. The campaign stays <code>CAMPAIGN_STATE_HARD_STOPPING</code> until the end of each of those calls is CONFIRMED (its call record is no longer active), then becomes <code>CAMPAIGN_STATE_HARD_STOPPED</code>; with a reachable call infrastructure this takes seconds, scaled by the number of running calls. A hang-up that fails is repeated every few seconds, and the campaign does not report <code>HARD_STOPPED</code> while one of its calls is still up. Calls ended this way are <code>CAMPAIGN_CALL_STATE_CANCELLED</code>; a call that finished on its own before the hard stop keeps its own outcome. Calls not started yet stay <code>NOT_STARTED</code> / <code>RETRY_PENDING</code> and run after <code>ResumeCampaign</code>. Returns the campaign in <code>HARD_STOPPING</code> (or already <code>HARD_STOPPED</code>). Idempotent on <code>HARD_STOPPING</code> and <code>HARD_STOPPED</code>.</p> <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> on a <code>COMPLETED</code> campaign.</p> |
+| ResumeCampaign | [ResumeCampaignRequest](#ondewo.vtsi.ResumeCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Resumes a <code>STOPPING</code>, <code>STOPPED</code> or <code>HARD_STOPPED</code> campaign: it becomes <code>RUNNING</code> and continues with the calls that are not finished. Idempotent on <code>RUNNING</code>.</p> <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> on <code>CREATED</code> (use <code>StartCampaign</code>), <code>HARD_STOPPING</code> (wait until it is <code>HARD_STOPPED</code>) and <code>COMPLETED</code>.</p> |
+| StreamCampaignStatus | [StreamCampaignStatusRequest](#ondewo.vtsi.StreamCampaignStatusRequest) | [StreamCampaignStatusResponse](#ondewo.vtsi.StreamCampaignStatusResponse) stream | <p>Streams the status and progress of the campaigns of a project. The first message is a snapshot (<code>snapshot = true</code>) of every matching campaign; every later message carries only the campaigns (and, with <code>include_calls</code>, the campaign calls) that changed. An empty message is sent as a keep-alive. The stream ends when the client disconnects or the server-side maximum stream duration is reached (<code>end_reason</code> set on the last message).</p> <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>RESOURCE_EXHAUSTED</code> when the server has no free stream slot.</p> |
+
+ <!-- end services -->
+
+
+
+<a name="ondewo/vtsi/events.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## ondewo/vtsi/events.proto
+
+
+
+<a name="ondewo.vtsi.CreateVtsiEventSubscriptionRequest"></a>
+
+### CreateVtsiEventSubscriptionRequest
+The request message for <code>Events.CreateVtsiEventSubscription</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| event_subscription | [VtsiEventSubscription](#ondewo.vtsi.VtsiEventSubscription) |  | The subscription to create. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CreateWebhookRequest"></a>
+
+### CreateWebhookRequest
+The request message for <code>Events.CreateWebhook</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| webhook | [Webhook](#ondewo.vtsi.Webhook) |  | The webhook to create. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DeleteVtsiEventSubscriptionRequest"></a>
+
+### DeleteVtsiEventSubscriptionRequest
+The request message for <code>Events.DeleteVtsiEventSubscription</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the subscription. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DeleteVtsiEventSubscriptionResponse"></a>
+
+### DeleteVtsiEventSubscriptionResponse
+The response message for <code>Events.DeleteVtsiEventSubscription</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the deleted subscription. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DeleteWebhookRequest"></a>
+
+### DeleteWebhookRequest
+The request message for <code>Events.DeleteWebhook</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the webhook. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DeleteWebhookResponse"></a>
+
+### DeleteWebhookResponse
+The response message for <code>Events.DeleteWebhook</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the deleted webhook. |
+| detached_subscription_count | [int32](#int32) |  | How many event subscriptions referenced it and no longer do. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.GetVtsiEventSubscriptionRequest"></a>
+
+### GetVtsiEventSubscriptionRequest
+The request message for <code>Events.GetVtsiEventSubscription</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the subscription. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.GetWebhookRequest"></a>
+
+### GetWebhookRequest
+The request message for <code>Events.GetWebhook</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the webhook. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListVtsiEventSubscriptionsRequest"></a>
+
+### ListVtsiEventSubscriptionsRequest
+The request message for <code>Events.ListVtsiEventSubscriptions</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| page_size | [int32](#int32) |  | Optional. <code>0</code> means 20; above 1000 clamped; negative rejected. |
+| page_token | [string](#string) | optional | Optional. The <code>next_page_token</code> of a previous response. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListVtsiEventSubscriptionsResponse"></a>
+
+### ListVtsiEventSubscriptionsResponse
+The response message for <code>Events.ListVtsiEventSubscriptions</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| event_subscriptions | [VtsiEventSubscription](#ondewo.vtsi.VtsiEventSubscription) | repeated | The subscriptions of this page, newest first. |
+| next_page_token | [string](#string) |  | Token for the next page. Empty when there are no more results. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListWebhooksRequest"></a>
+
+### ListWebhooksRequest
+The request message for <code>Events.ListWebhooks</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| page_size | [int32](#int32) |  | Optional. <code>0</code> means 20; above 1000 clamped; negative rejected. |
+| page_token | [string](#string) | optional | Optional. The <code>next_page_token</code> of a previous response. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListWebhooksResponse"></a>
+
+### ListWebhooksResponse
+The response message for <code>Events.ListWebhooks</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| webhooks | [Webhook](#ondewo.vtsi.Webhook) | repeated | The webhooks of this page, newest first. Custom header values are masked. |
+| next_page_token | [string](#string) |  | Token for the next page. Empty when there are no more results. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.SubscribeVtsiEventsRequest"></a>
+
+### SubscribeVtsiEventsRequest
+The request message for <code>Events.SubscribeVtsiEvents</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| event_subscription_name | [string](#string) |  | Use the events and resource prefixes of this subscription (its webhooks are irrelevant here). The format is: <pre><code>projects/&lt;project_uuid&gt;/event_subscriptions/&lt;subscription_uuid&gt;</code></pre> |
+| filter | [VtsiEventFilter](#ondewo.vtsi.VtsiEventFilter) |  | An inline filter. |
+| resume_token | [string](#string) | optional | Optional. The <code>resume_token</code> of a previous response: continue after it. Unset starts with events that happen from now on. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.SubscribeVtsiEventsResponse"></a>
+
+### SubscribeVtsiEventsResponse
+The response message for <code>Events.SubscribeVtsiEvents</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| events | [VtsiEventMessage](#ondewo.vtsi.VtsiEventMessage) | repeated | Events, oldest first. Empty on a keep-alive. |
+| resume_token | [string](#string) |  | Pass this as <code>SubscribeVtsiEventsRequest.resume_token</code> after a disconnect. Opaque. It records every event this stream has delivered or passed over, so resuming neither skips an event that committed late nor (normally) repeats one; a stream far behind can receive an event twice, never miss one that is still in the journal. |
+| dropped_event_count | [int64](#int64) |  | Events this stream skipped because the client read too slowly (the server buffer was full). |
+| end_reason | [string](#string) |  | Set on the last message when the server ended the stream. Empty otherwise. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.TestWebhookRequest"></a>
+
+### TestWebhookRequest
+The request message for <code>Events.TestWebhook</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the webhook. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.TestWebhookResponse"></a>
+
+### TestWebhookResponse
+The response message for <code>Events.TestWebhook</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| success | [bool](#bool) |  | True when the endpoint answered with a 2xx status. |
+| http_status_code | [int32](#int32) |  | HTTP status of the answer, 0 when none was received. |
+| latency | [google.protobuf.Duration](#google.protobuf.Duration) |  | Time until the answer or the failure. |
+| error_message | [string](#string) |  | Why the request failed (no header value, no URL query). Empty on success. |
+| event_id | [string](#string) |  | <code>event_id</code> of the test event that was sent. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.UpdateVtsiEventSubscriptionRequest"></a>
+
+### UpdateVtsiEventSubscriptionRequest
+The request message for <code>Events.UpdateVtsiEventSubscription</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| event_subscription | [VtsiEventSubscription](#ondewo.vtsi.VtsiEventSubscription) |  | The subscription, identified by <code>event_subscription.name</code>. |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Required. Paths without prefix: <code>display_name</code>, <code>events</code>, <code>all_events</code>, <code>resource_name_prefixes</code>, <code>campaign_names</code>, <code>webhook_names</code>, <code>disabled</code>. An empty mask or another path is rejected with <code>INVALID_ARGUMENT</code>. A path in the mask writes the sent value, including <code>false</code> and empty lists. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.UpdateWebhookRequest"></a>
+
+### UpdateWebhookRequest
+The request message for <code>Events.UpdateWebhook</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| webhook | [Webhook](#ondewo.vtsi.Webhook) |  | The webhook, identified by <code>webhook.name</code>. |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Required. Paths without prefix: <code>display_name</code>, <code>url</code>, <code>http_method</code>, <code>custom_headers</code>, <code>disabled</code>, <code>timeout</code>. An empty mask or another path is rejected with <code>INVALID_ARGUMENT</code>. A path in the mask writes the sent value, including <code>false</code>; an unset <code>timeout</code> writes the server default. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.VtsiEventFilter"></a>
+
+### VtsiEventFilter
+Selects events for <code>SubscribeVtsiEvents</code> without a stored subscription.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| events | [VtsiEvent](#ondewo.vtsi.VtsiEvent) | repeated | Only these events. Empty means every event. |
+| resource_name_prefixes | [string](#string) | repeated | Only events whose <code>resource_name</code> starts with one of these prefixes. Empty means every resource of the project. Same semantics as <code>VtsiEventSubscription.resource_name_prefixes</code>. |
+| campaign_names | [string](#string) | repeated | Only events of these campaigns. Same semantics as <code>VtsiEventSubscription.campaign_names</code>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.VtsiEventMessage"></a>
+
+### VtsiEventMessage
+One event. This is the body of a webhook request (proto3 JSON with the original field names)
+and the unit of the <code>SubscribeVtsiEvents</code> stream.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| event_id | [string](#string) |  | Unique id of the event (uuid). A retried webhook request carries the same id, and a call status change observed by several server replicas carries one id, so it identifies a duplicate. |
+| event | [VtsiEvent](#ondewo.vtsi.VtsiEvent) |  | The event. |
+| vtsi_project_name | [string](#string) |  | VTSI project of the event. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| resource_name | [string](#string) |  | The resource the event is about (call, caller, listener, scheduled caller, campaign, campaign call, project, softphone account). |
+| event_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the event happened. |
+| sip_status_type | [ondewo.sip.SipStatus.StatusType](#ondewo.sip.SipStatus.StatusType) | optional | SIP status after the change, for call and campaign call events. |
+| sip_status_description | [string](#string) |  | SIP status description, where the event has one. |
+| previous_sip_status_type | [ondewo.sip.SipStatus.StatusType](#ondewo.sip.SipStatus.StatusType) | optional | SIP status before the change, for <code>VTSI_EVENT_CALL_SIP_STATUS_CHANGED</code>. |
+| call_name | [string](#string) |  | The call the event is about or produced, where there is one. |
+| campaign_name | [string](#string) |  | The campaign the event belongs to, where known. |
+| description | [string](#string) |  | Human-readable description, e.g. why something failed. |
+| attributes | [VtsiEventMessage.AttributesEntry](#ondewo.vtsi.VtsiEventMessage.AttributesEntry) | repeated | Further event-specific values, e.g. <code>caller_name</code>, <code>listener_name</code>, <code>phone_number</code>, <code>container_name</code>, <code>attempt_number</code>, <code>previous_status</code>. Keys are documented per event in the VTSI documentation. |
+| campaign_statistics | [CampaignStatistics](#ondewo.vtsi.CampaignStatistics) |  | Statistics of the campaign, on campaign events. |
+| resource_sequence | [int64](#int64) |  | Increases with every change of <code>resource_name</code> that produced an event, so a receiver can order events of one resource that arrived out of order. Defined (&gt; 0) for call events (the call&apos;s status change number), campaign call events and campaign state events; <code>0</code> where the resource has no such counter, then order by <code>event_time</code>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.VtsiEventMessage.AttributesEntry"></a>
+
+### VtsiEventMessage.AttributesEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.vtsi.VtsiEventSubscription"></a>
+
+### VtsiEventSubscription
+Which events of a project are delivered to which webhooks.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Output only. Resource name. The format is: <pre><code>projects/&lt;project_uuid&gt;/event_subscriptions/&lt;subscription_uuid&gt;</code></pre> |
+| vtsi_project_name | [string](#string) |  | Output only. VTSI project of the subscription. |
+| display_name | [string](#string) |  | Human-readable name, at most 128 characters. Updatable. |
+| events | [VtsiEvent](#ondewo.vtsi.VtsiEvent) | repeated | The events to deliver. Required unless <code>all_events</code> is set; must be empty when it is. Updatable. |
+| all_events | [bool](#bool) |  | Deliver every event, including events added in later versions. Updatable. |
+| resource_name_prefixes | [string](#string) | repeated | Deliver only events whose <code>resource_name</code> starts with one of these prefixes, e.g. a caller name (<code>projects/&lt;p&gt;/callers/&lt;c&gt;</code> also selects that caller&apos;s calls) or a campaign name (selects the campaign and its campaign calls, NOT the calls a campaign placed, whose resource names are under <code>callers/</code>; use <code>campaign_names</code> for those). Empty means every resource of the project. At most 50. Updatable. |
+| webhook_names | [string](#string) | repeated | Webhooks of the same project the events are sent to. Empty means none (the subscription is then only useful to <code>SubscribeVtsiEvents</code>). At most 20. Updatable. |
+| disabled | [bool](#bool) |  | <code>false</code> (the default): events are delivered. <code>true</code>: nothing is delivered and <code>SubscribeVtsiEvents</code> refuses the subscription. Updatable. |
+| created_by | [string](#string) |  | Output only. The user who created the subscription. |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only. Creation time. |
+| modified_by | [string](#string) |  | Output only. The user who last modified the subscription. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only. Last modification time. |
+| campaign_names | [string](#string) | repeated | Deliver only events whose <code>campaign_name</code> is one of these campaign resource names: the campaign&apos;s own events, its campaign call events and the call, caller and scheduled caller events of the calls it placed. Call events produced while a campaign attempt is being started (<code>CALL_CREATED</code>, <code>CALL_INITIATED</code>) can lack the campaign and are then not matched; <code>VTSI_EVENT_CAMPAIGN_CALL_DISPATCHED</code> always carries both <code>campaign_name</code> and <code>call_name</code>. Empty means no constraint. Combined with <code>resource_name_prefixes</code> by AND. At most 50. Updatable. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.Webhook"></a>
+
+### Webhook
+An HTTP(S) endpoint that receives one request per event.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Output only. Resource name. The format is: <pre><code>projects/&lt;project_uuid&gt;/webhooks/&lt;webhook_uuid&gt;</code></pre> |
+| vtsi_project_name | [string](#string) |  | Output only. VTSI project of the webhook. |
+| display_name | [string](#string) |  | Human-readable name, at most 128 characters. Updatable. |
+| url | [string](#string) |  | Required. http:// or https:// URL, at most 2048 characters, without user information. Any host is allowed. Updatable. |
+| http_method | [WebhookHttpMethod](#ondewo.vtsi.WebhookHttpMethod) |  | HTTP method. Unset means POST. Updatable. |
+| custom_headers | [Webhook.CustomHeadersEntry](#ondewo.vtsi.Webhook.CustomHeadersEntry) | repeated | Optional extra request headers, e.g. <code>Authorization</code>. WRITE-ONLY VALUES: every RPC returns each value as <code>********</code>. At most 20 headers; names are HTTP tokens of at most 128 characters; values at most 4096 characters without line breaks. Reserved and refused: <code>Host</code>, <code>Content-Length</code>, <code>Content-Type</code>, <code>Transfer-Encoding</code>, <code>Connection</code> and every <code>X-Ondewo-Vtsi-*</code> name. Updatable (see <code>UpdateWebhook</code> for the mask value). |
+| disabled | [bool](#bool) |  | <code>false</code> (the default): events are sent. <code>true</code>: nothing is sent (except by <code>TestWebhook</code>). Updatable. |
+| timeout | [google.protobuf.Duration](#google.protobuf.Duration) |  | Request timeout. Unset means the server default (5 s); allowed 1 s to 30 s. Updatable. |
+| delivery_statistics | [WebhookDeliveryStatistics](#ondewo.vtsi.WebhookDeliveryStatistics) |  | Output only. Delivery counters. |
+| created_by | [string](#string) |  | Output only. The user who created the webhook. |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only. Creation time. |
+| modified_by | [string](#string) |  | Output only. The user who last modified the webhook. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only. Last modification time. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.Webhook.CustomHeadersEntry"></a>
+
+### Webhook.CustomHeadersEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.vtsi.WebhookDeliveryStatistics"></a>
+
+### WebhookDeliveryStatistics
+Delivery counters of a webhook. Approximate: summed over every server replica and flushed every
+few seconds.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| delivered_count | [int64](#int64) |  | Requests answered with a 2xx status. |
+| failed_count | [int64](#int64) |  | Events given up after the last retry. |
+| dropped_count | [int64](#int64) |  | Events dropped without a request because the server&apos;s webhook queue was full, or because the webhook&apos;s circuit was open after repeated failures. |
+| last_delivery_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Time of the last request. |
+| last_success_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Time of the last 2xx answer. |
+| last_http_status_code | [int32](#int32) |  | HTTP status of the last answer, 0 when no answer was received. |
+| last_error | [string](#string) |  | Why the last request failed, e.g. <code>timeout</code>, <code>connection_error</code>, <code>http_503</code>. Never contains a header value or a URL query. |
+
+
+
+
+
+ <!-- end messages -->
+
+
+<a name="ondewo.vtsi.VtsiEvent"></a>
+
+### VtsiEvent
+Every event VTSI reports. Values are grouped by resource in blocks of 100; numbers are stable.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| VTSI_EVENT_UNSPECIFIED | 0 | Unspecified. Never emitted; refused in a subscription. |
+| VTSI_EVENT_CALL_CREATED | 100 | A call record was created: an outbound call was placed, or a listener received a call. |
+| VTSI_EVENT_CALL_INITIATED | 101 | The call is ringing: <code>INCOMING_CALL_INITIATED</code> / <code>OUTGOING_CALL_INITIATED</code>. |
+| VTSI_EVENT_CALL_CONNECTED | 102 | The call was answered: <code>INCOMING_CALL_CONNECTED</code> / <code>OUTGOING_CALL_CONNECTED</code>. |
+| VTSI_EVENT_CALL_FINISHED | 103 | The call ended normally: <code>INCOMING_CALL_FINISHED</code> / <code>OUTGOING_CALL_FINISHED</code>. |
+| VTSI_EVENT_CALL_FAILED | 104 | The call failed: <code>INCOMING_CALL_FAILED</code> / <code>OUTGOING_CALL_FAILED</code>. |
+| VTSI_EVENT_CALL_TRANSFER_INITIATED | 105 | A transfer of the call started: <code>TRANSFER_CALL_INITIATED</code>. |
+| VTSI_EVENT_CALL_TRANSFERRED | 106 | <code>TransferCall</code> transferred the call. |
+| VTSI_EVENT_CALL_TRANSFER_FAILED | 107 | A transfer failed: <code>TRANSFER_CALL_FAILED</code>, or <code>TransferCall</code> failed. |
+| VTSI_EVENT_CALL_HANGUP_INITIATED | 108 | A hang-up started: <code>SOFT_HANGUP_INITIATED</code> / <code>HARD_HANGUP_INITIATED</code>. |
+| VTSI_EVENT_CALL_ANSWERING_MACHINE_DETECTED | 109 | An answering machine was detected: <code>OUTGOING_CALL_ANSWERING_MACHINE_DETECTED</code>. |
+| VTSI_EVENT_CALL_STOPPED | 110 | The call was ended by <code>StopCall</code>, <code>StopCalls</code>, <code>StopAllCalls</code> or a campaign hard stop. |
+| VTSI_EVENT_CALL_SIP_STATUS_CHANGED | 111 | The SIP status of the call changed (emitted for EVERY change, in addition to the specific events above). <code>previous_sip_status_type</code> holds the status before. |
+| VTSI_EVENT_CALLER_STARTED | 200 | A caller started and placed its call. |
+| VTSI_EVENT_CALLER_START_FAILED | 201 | A caller could not be started; <code>description</code> says why. |
+| VTSI_EVENT_CALLER_STOPPED | 202 | A caller was stopped (<code>StopCaller</code>, <code>StopCallers</code>). |
+| VTSI_EVENT_CALLER_DELETED | 203 | A caller was deleted. |
+| VTSI_EVENT_CALLER_RESTARTED | 204 | A caller&apos;s container was restarted by the server. |
+| VTSI_EVENT_CALLER_UNHEALTHY | 205 | A caller&apos;s container was found not running or unhealthy. |
+| VTSI_EVENT_CALLER_HEALTHY | 206 | A caller reported unhealthy is healthy again (its container answers its health check, or its restart succeeded). Best effort: reported by the replica that reported it unhealthy. |
+| VTSI_EVENT_LISTENER_STARTED | 300 | A listener started and is waiting for calls. |
+| VTSI_EVENT_LISTENER_START_FAILED | 301 | A listener could not be started; <code>description</code> says why. |
+| VTSI_EVENT_LISTENER_STOPPED | 302 | A listener was stopped (<code>StopListener</code>, <code>StopListeners</code>). |
+| VTSI_EVENT_LISTENER_DELETED | 303 | A listener was deleted. |
+| VTSI_EVENT_LISTENER_RESTARTED | 304 | A listener&apos;s container was restarted by the server. |
+| VTSI_EVENT_LISTENER_UNHEALTHY | 305 | A listener&apos;s container was found not running or unhealthy. |
+| VTSI_EVENT_LISTENER_HEALTHY | 306 | A listener reported unhealthy is healthy again (its container answers its health check, or its restart succeeded). Best effort: reported by the replica that reported it unhealthy. |
+| VTSI_EVENT_SCHEDULED_CALLER_CREATED | 400 | A scheduled caller was created. |
+| VTSI_EVENT_SCHEDULED_CALLER_FIRED | 401 | A scheduled caller fired: its call was started (<code>call_name</code> set). |
+| VTSI_EVENT_SCHEDULED_CALLER_FAILED | 402 | A scheduled caller failed for good; <code>description</code> says why. |
+| VTSI_EVENT_SCHEDULED_CALLER_CANCELLED | 403 | A scheduled caller was cancelled. |
+| VTSI_EVENT_SCHEDULED_CALLER_RETRY_SCHEDULED | 404 | A scheduled caller failed and will be retried. |
+| VTSI_EVENT_CAMPAIGN_CREATED | 500 | A campaign was created. |
+| VTSI_EVENT_CAMPAIGN_UPDATED | 501 | A campaign&apos;s settings were updated. |
+| VTSI_EVENT_CAMPAIGN_DELETED | 502 | A campaign was deleted. |
+| VTSI_EVENT_CAMPAIGN_STARTED | 503 | A campaign was started. |
+| VTSI_EVENT_CAMPAIGN_STOP_REQUESTED | 504 | <code>StopCampaign</code> was requested; running calls continue. |
+| VTSI_EVENT_CAMPAIGN_STOPPED | 505 | A campaign is stopped: it reached <code>STOPPED</code> (after a stop request or an automatic stop) once no call of it was running. |
+| VTSI_EVENT_CAMPAIGN_HARD_STOP_REQUESTED | 506 | <code>HardStopCampaign</code> was requested. |
+| VTSI_EVENT_CAMPAIGN_HARD_STOPPED | 507 | A campaign is hard stopped. |
+| VTSI_EVENT_CAMPAIGN_RESUMED | 508 | A campaign was resumed. |
+| VTSI_EVENT_CAMPAIGN_COMPLETED | 509 | Every call of a campaign is finished. |
+| VTSI_EVENT_CAMPAIGN_PROGRESS | 510 | The statistics of a running campaign changed (throttled, at most every few seconds per campaign). <code>campaign_statistics</code> is set. |
+| VTSI_EVENT_CAMPAIGN_MAX_PARALLEL_CALLS_CHANGED | 511 | <code>max_parallel_calls</code> changed; attributes <code>previous_max_parallel_calls</code> and <code>max_parallel_calls</code>. |
+| VTSI_EVENT_CAMPAIGN_CALLS_ADDED | 512 | Calls were added to a campaign; attribute <code>added_call_count</code>. |
+| VTSI_EVENT_CAMPAIGN_CALL_DISPATCHED | 513 | An attempt of a campaign call was started (<code>call_name</code> set). |
+| VTSI_EVENT_CAMPAIGN_CALL_COMPLETED | 514 | A campaign call completed. |
+| VTSI_EVENT_CAMPAIGN_CALL_FAILED | 515 | A campaign call failed after its last attempt. |
+| VTSI_EVENT_CAMPAIGN_CALL_RETRY_SCHEDULED | 516 | An attempt of a campaign call failed and the call will be retried. |
+| VTSI_EVENT_CAMPAIGN_CALL_CANCELLED | 517 | A campaign call was cancelled. |
+| VTSI_EVENT_CAMPAIGN_AUTO_STOPPED | 518 | The SERVER stopped a campaign (it is now <code>STOPPING</code>) after repeated failures that cannot succeed by repetition, e.g. a rejected credential; <code>description</code> holds the <code>state_reason</code>. <code>VTSI_EVENT_CAMPAIGN_STOPPED</code> follows once no call runs. |
+| VTSI_EVENT_VTSI_PROJECT_UPDATED | 601 | A VTSI project was updated. |
+| VTSI_EVENT_VTSI_PROJECT_DELETED | 602 | A VTSI project was deleted. Delivered to the webhooks subscribed to it at the moment of the deletion (their configuration is captured before it is deleted with the project) and to the project&apos;s open streams, which then end. It is the last event of the project. |
+| VTSI_EVENT_VTSI_PROJECT_DEPLOYED | 603 | A VTSI project was deployed. |
+| VTSI_EVENT_VTSI_PROJECT_DEPLOY_FAILED | 604 | Deploying a VTSI project failed; <code>description</code> says why. |
+| VTSI_EVENT_VTSI_PROJECT_UNDEPLOYED | 605 | A VTSI project was undeployed. |
+| VTSI_EVENT_VTSI_PROJECT_STATUS_CHANGED | 606 | The <code>VtsiProjectStatus</code> of a project changed; attributes <code>previous_status</code> and <code>status</code>. |
+| VTSI_EVENT_VTSI_PROJECT_UNDEPLOY_FAILED | 607 | Undeploying a VTSI project failed; <code>description</code> says why. |
+| VTSI_EVENT_ASTERISK_DEPLOYED | 700 | The project&apos;s Asterisk container was deployed. |
+| VTSI_EVENT_ASTERISK_REMOVED | 701 | The project&apos;s Asterisk container was removed. |
+| VTSI_EVENT_ASTERISK_RESTARTED | 702 | The project&apos;s Asterisk was restarted. |
+| VTSI_EVENT_ASTERISK_CONFIG_RELOADED | 703 | The project&apos;s Asterisk configuration was reloaded in place. |
+| VTSI_EVENT_ASTERISK_UNHEALTHY | 704 | The project&apos;s Asterisk container is not running or unhealthy. |
+| VTSI_EVENT_ASTERISK_HEALTHY | 705 | The project&apos;s Asterisk container is healthy again. |
+| VTSI_EVENT_ASTERISK_TRUNK_REGISTERED | 706 | The SIP trunk registered with the carrier. |
+| VTSI_EVENT_ASTERISK_TRUNK_UNREGISTERED | 707 | The SIP trunk is no longer registered (rejected, unregistered or failed); attribute <code>registration_status</code>. |
+| VTSI_EVENT_ASTERISK_DEPLOY_FAILED | 708 | Deploying the project&apos;s Asterisk container failed; <code>description</code> says why. |
+| VTSI_EVENT_ASTERISK_RESTART_FAILED | 709 | Restarting the project&apos;s Asterisk failed; <code>description</code> says why. |
+| VTSI_EVENT_ASTERISK_CONFIG_RELOAD_FAILED | 710 | Reloading the project&apos;s Asterisk configuration in place failed; <code>description</code> says why. |
+| VTSI_EVENT_SOFTPHONE_ACCOUNT_CREATED | 800 | A softphone account was created. |
+| VTSI_EVENT_SOFTPHONE_ACCOUNT_UPDATED | 801 | A softphone account was updated. |
+| VTSI_EVENT_SOFTPHONE_ACCOUNT_DELETED | 802 | A softphone account was deleted. |
+| VTSI_EVENT_SOFTPHONE_CREDENTIALS_ROTATED | 803 | The credentials of a softphone account were rotated. |
+| VTSI_EVENT_SOFTPHONE_CERTIFICATE_REVOKED | 804 | A softphone certificate was revoked. |
+| VTSI_EVENT_WEBHOOK_TEST | 900 | Sent by <code>TestWebhook</code> only. |
+| VTSI_EVENT_WEBHOOK_CREATED | 901 | A webhook was created (resource_name: the webhook). Never carries a header value. |
+| VTSI_EVENT_WEBHOOK_UPDATED | 902 | A webhook was updated; attribute <code>updated_fields</code> (the mask paths). Never carries a header value. |
+| VTSI_EVENT_WEBHOOK_DELETED | 903 | A webhook was deleted. |
+| VTSI_EVENT_EVENT_SUBSCRIPTION_CREATED | 904 | An event subscription was created (resource_name: the subscription). |
+| VTSI_EVENT_EVENT_SUBSCRIPTION_UPDATED | 905 | An event subscription was updated; attribute <code>updated_fields</code>. |
+| VTSI_EVENT_EVENT_SUBSCRIPTION_DELETED | 906 | An event subscription was deleted. |
+
+
+
+<a name="ondewo.vtsi.WebhookHttpMethod"></a>
+
+### WebhookHttpMethod
+HTTP method of a webhook request.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| WEBHOOK_HTTP_METHOD_UNSPECIFIED | 0 | Unspecified: <code>POST</code>. |
+| WEBHOOK_HTTP_METHOD_POST | 1 | POST. |
+| WEBHOOK_HTTP_METHOD_PUT | 2 | PUT. |
+
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="ondewo.vtsi.Events"></a>
+
+### Events
+<p>ONDEWO VTSI API</p>
+<p>Notifies other systems of VTSI events: calls, callers, listeners, scheduled callers,
+campaigns, VTSI projects, the project&apos;s Asterisk and softphone accounts. Every event is one
+value of <a href="index.html#ondewo.vtsi.VtsiEvent">VtsiEvent</a> and is delivered as a
+<a href="index.html#ondewo.vtsi.VtsiEventMessage">VtsiEventMessage</a>.</p>
+<p>Two delivery paths: the server-streaming <code>SubscribeVtsiEvents</code> RPC, and WEBHOOKS
+(an HTTP request per event to a URL of the client&apos;s choice). Which events go to which
+webhooks is configured per project with EVENT SUBSCRIPTIONS.</p>
+<p><b>Webhooks are best effort.</b> Each event is sent to a webhook as at most
+<code>ONDEWO_VTSI_WEBHOOK_MAX_ATTEMPTS</code> HTTP requests (3 by default) with backoff between
+them; after the last one fails, the event is dropped for that webhook. Pending webhook requests
+live in the memory of the server replica that produced the event and are lost when it restarts.
+An overloaded server, or a webhook that keeps timing out, drops events rather than slowing calls
+down. The same event can arrive more than once (a request whose answer was lost is sent again):
+de-duplicate by <code>event_id</code>. Requests of one webhook can arrive out of order, because
+several server replicas send independently: order by <code>resource_sequence</code> per
+<code>resource_name</code>, then <code>event_time</code>.</p>
+<p><b>Streams can be resumed.</b> While a project has an open <code>SubscribeVtsiEvents</code>
+stream or an enabled event subscription, its events are also written to a short-lived journal
+(24 h by default). A stream that reconnects with its last <code>resume_token</code> receives the
+events it missed, provided they are still in the journal; nothing else is persisted for
+redelivery.</p>
+<p>Use the status RPCs (<code>GetCampaign</code>, <code>ListCalls</code>, the status streams) to
+reconcile.</p>
+<p><b>Custom header values are write-only.</b> They are returned as <code>********</code> by every
+RPC and are never logged.</p>
+<p>Errors are gRPC status codes: <code>INVALID_ARGUMENT</code>, <code>NOT_FOUND</code>,
+<code>FAILED_PRECONDITION</code>, <code>RESOURCE_EXHAUSTED</code> (no free stream slot).</p>
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| CreateVtsiEventSubscription | [CreateVtsiEventSubscriptionRequest](#ondewo.vtsi.CreateVtsiEventSubscriptionRequest) | [VtsiEventSubscription](#ondewo.vtsi.VtsiEventSubscription) | <p>Creates an event subscription: which events of the project are delivered to which webhooks. A subscription without webhooks is usable by <code>SubscribeVtsiEvents</code>.</p> <p>Errors: <code>NOT_FOUND</code> for an unknown project or webhook; <code>INVALID_ARGUMENT</code> for no events and <code>all_events</code> unset, <code>events</code> together with <code>all_events</code>, <code>VTSI_EVENT_UNSPECIFIED</code> or a reserved value, a webhook or a campaign name of another project, a malformed campaign name, or an output-only field that was set. A campaign named in <code>campaign_names</code> need not exist (it may be created later or deleted since).</p> |
+| GetVtsiEventSubscription | [GetVtsiEventSubscriptionRequest](#ondewo.vtsi.GetVtsiEventSubscriptionRequest) | [VtsiEventSubscription](#ondewo.vtsi.VtsiEventSubscription) | <p>Returns an event subscription.</p> |
+| UpdateVtsiEventSubscription | [UpdateVtsiEventSubscriptionRequest](#ondewo.vtsi.UpdateVtsiEventSubscriptionRequest) | [VtsiEventSubscription](#ondewo.vtsi.VtsiEventSubscription) | <p>Updates the fields named in <code>update_mask</code>: <code>display_name</code>, <code>events</code>, <code>all_events</code>, <code>resource_name_prefixes</code>, <code>campaign_names</code>, <code>webhook_names</code>, <code>disabled</code>. Takes effect within a few seconds on every server replica.</p> |
+| DeleteVtsiEventSubscription | [DeleteVtsiEventSubscriptionRequest](#ondewo.vtsi.DeleteVtsiEventSubscriptionRequest) | [DeleteVtsiEventSubscriptionResponse](#ondewo.vtsi.DeleteVtsiEventSubscriptionResponse) | <p>Deletes an event subscription. Open <code>SubscribeVtsiEvents</code> streams that name it end with <code>end_reason</code> set.</p> |
+| ListVtsiEventSubscriptions | [ListVtsiEventSubscriptionsRequest](#ondewo.vtsi.ListVtsiEventSubscriptionsRequest) | [ListVtsiEventSubscriptionsResponse](#ondewo.vtsi.ListVtsiEventSubscriptionsResponse) | <p>Lists the event subscriptions of a project, paged.</p> |
+| CreateWebhook | [CreateWebhookRequest](#ondewo.vtsi.CreateWebhookRequest) | [Webhook](#ondewo.vtsi.Webhook) | <p>Creates a webhook: an HTTP(S) endpoint that receives one request per event, with a JSON body holding the <code>VtsiEventMessage</code> (proto3 JSON, original field names).</p> <p>Errors: <code>NOT_FOUND</code> for an unknown project; <code>INVALID_ARGUMENT</code> for a URL that is not http(s), has no host, carries user information (use a custom header for credentials) or exceeds 2048 characters; for a reserved or malformed header name, a header value with a line break, too many or too long headers; or for a timeout outside 1 s to 30 s.</p> |
+| GetWebhook | [GetWebhookRequest](#ondewo.vtsi.GetWebhookRequest) | [Webhook](#ondewo.vtsi.Webhook) | <p>Returns a webhook. Custom header values are masked.</p> |
+| UpdateWebhook | [UpdateWebhookRequest](#ondewo.vtsi.UpdateWebhookRequest) | [Webhook](#ondewo.vtsi.Webhook) | <p>Updates the fields named in <code>update_mask</code>: <code>display_name</code>, <code>url</code>, <code>http_method</code>, <code>custom_headers</code>, <code>disabled</code>, <code>timeout</code>. <code>custom_headers</code> replaces the whole map; a value equal to the mask <code>********</code> keeps the stored value of that header, so a Get-modify-Update round trip does not overwrite secrets with the mask.</p> |
+| DeleteWebhook | [DeleteWebhookRequest](#ondewo.vtsi.DeleteWebhookRequest) | [DeleteWebhookResponse](#ondewo.vtsi.DeleteWebhookResponse) | <p>Deletes a webhook and removes it from every event subscription.</p> |
+| ListWebhooks | [ListWebhooksRequest](#ondewo.vtsi.ListWebhooksRequest) | [ListWebhooksResponse](#ondewo.vtsi.ListWebhooksResponse) | <p>Lists the webhooks of a project, paged. Custom header values are masked.</p> |
+| TestWebhook | [TestWebhookRequest](#ondewo.vtsi.TestWebhookRequest) | [TestWebhookResponse](#ondewo.vtsi.TestWebhookResponse) | <p>Sends one <code>VTSI_EVENT_WEBHOOK_TEST</code> event to a webhook now, without retries, and reports the outcome. Works on a disabled webhook too, and ignores an open circuit.</p> <p>Errors: <code>NOT_FOUND</code>. A failed delivery is reported in the response, not as an error status.</p> |
+| SubscribeVtsiEvents | [SubscribeVtsiEventsRequest](#ondewo.vtsi.SubscribeVtsiEventsRequest) | [SubscribeVtsiEventsResponse](#ondewo.vtsi.SubscribeVtsiEventsResponse) stream | <p>Streams the events of a project as they happen, selected either by a named event subscription or by an inline filter. An empty message is sent as a keep-alive. After a disconnect, pass the last <code>resume_token</code> to continue where the stream stopped; events older than the server&apos;s retention (24 h by default) are no longer available, and the journal records a project&apos;s events only while it has an open stream (and for 1 h after the last one closed) or an enabled event subscription. A stream sees events of other server replicas from at most a few seconds after it opened. A client that stops reading for longer than the server&apos;s stall timeout (30 s by default) is disconnected; reconnect with the <code>resume_token</code>. When the project is deleted, the stream delivers <code>VTSI_EVENT_VTSI_PROJECT_DELETED</code> and ends.</p> <p>Errors: <code>NOT_FOUND</code> for an unknown project or subscription; <code>INVALID_ARGUMENT</code> for a malformed <code>resume_token</code>; <code>FAILED_PRECONDITION</code> for a disabled subscription; <code>RESOURCE_EXHAUSTED</code> when the server has no free stream slot.</p> |
 
  <!-- end services -->
 
