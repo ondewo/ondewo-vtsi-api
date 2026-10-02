@@ -103,6 +103,12 @@ service Events {
     // <code>timeout</code>. <code>custom_headers</code> replaces the whole map; a value equal to the
     // mask <code>********</code> keeps the stored value of that header, so a Get-modify-Update
     // round trip does not overwrite secrets with the mask.</p>
+    // <p>Moving the webhook to another origin (scheme, host or port of <code>url</code>) while custom
+    // headers are stored requires re-sending <code>custom_headers</code> in the same request, with
+    // their REAL values (or an empty map to drop them): the stored values are never carried to a new
+    // origin, and an update that leaves <code>custom_headers</code> out of the mask or sends the mask
+    // value <code>********</code> for any header is rejected with <code>INVALID_ARGUMENT</code> naming
+    // the headers. A new path on the same origin keeps the stored values.</p>
     rpc UpdateWebhook (UpdateWebhookRequest) returns (Webhook);
 
     // <p>Deletes a webhook and removes it from every event subscription.</p>
@@ -612,7 +618,8 @@ message Webhook {
     // most 128 characters; values at most 4096 characters without line breaks. Reserved and refused:
     // <code>Host</code>, <code>Content-Length</code>, <code>Content-Type</code>,
     // <code>Transfer-Encoding</code>, <code>Connection</code> and every <code>X-Ondewo-Vtsi-*</code>
-    // name. Updatable (see <code>UpdateWebhook</code> for the mask value).
+    // name. Updatable (see <code>UpdateWebhook</code> for the mask value and for moving the url to
+    // another origin).
     map<string, string> custom_headers = 6;
 
     // <code>false</code> (the default): events are sent. <code>true</code>: nothing is sent (except
@@ -753,7 +760,10 @@ message UpdateWebhookRequest {
     // <code>http_method</code>, <code>custom_headers</code>, <code>disabled</code>,
     // <code>timeout</code>. An empty mask or another path is rejected with
     // <code>INVALID_ARGUMENT</code>. A path in the mask writes the sent value, including
-    // <code>false</code>; an unset <code>timeout</code> writes the server default.
+    // <code>false</code>; an unset <code>timeout</code> writes the server default. When
+    // <code>url</code> moves to another origin and the webhook has stored headers,
+    // <code>custom_headers</code> must be in the mask with real values (see
+    // <code>UpdateWebhook</code>).
     google.protobuf.FieldMask update_mask = 2;
 }
 

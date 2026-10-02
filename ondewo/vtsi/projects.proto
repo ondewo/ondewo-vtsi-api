@@ -198,6 +198,22 @@ message AsteriskConfigsVariables{
     // <pre><code>INVALID_ARGUMENT</code></pre>; false there is accepted and changes nothing.
     optional bool sip_trunk_verify_server = 10;
 
+    // Optional: Source addresses that may reach this project&apos;s SOFTPHONE accounts, as IPv4/IPv6 CIDR networks
+    // written in full with an explicit prefix length (e.g. <code>203.0.113.0/24</code>). Every softphone account gets
+    // <code>deny</code> for every IPv4 and IPv6 source plus one <code>permit</code> per entry. This is the source
+    // allow-list of the project&apos;s EXTERNAL TLS port for softphones; it applies to every softphone account on
+    // BOTH TLS ports, because an account&apos;s ACL cannot tell ports apart and its transport restricts nothing
+    // inbound. Empty: the server&apos;s <code>ONDEWO_VTSI_ASTERISK_SOFTPHONE_PERMIT_CIDRS</code>, by default the
+    // private networks (<code>10.0.0.0/8</code>, <code>172.16.0.0/12</code>, <code>192.168.0.0/16</code>,
+    // <code>fc00::/7</code>). That server value is a CEILING: every entry here must lie inside it, so a project can
+    // only narrow the list; only the operator can open the port to every source. Entries outside the ceiling, a
+    // default route (<code>0.0.0.0/0</code>), entries that together cover a whole address family and shorthand
+    // spellings are refused with <code>INVALID_ARGUMENT</code>. The list is only effective when the port sees the real
+    // client addresses (no SNAT or proxy in front of it). The carrier trunk is not affected (it is matched by
+    // <code>sip_trunk_source_cidr</code> or authenticated by its registration); VTSI&apos;s own call containers are
+    // scoped separately by the server. Updatable with the rest of <code>asterisk_configs</code>.
+    repeated string softphone_permit_cidrs = 11;
+
 }
 
 // Transport for the SIP trunk of an Asterisk server.

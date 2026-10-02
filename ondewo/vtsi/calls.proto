@@ -88,6 +88,18 @@ service Calls {
     // <p>Start multiple ondewo-sip caller instances, each at its own scheduled time</p>
     rpc StartScheduledCallers (StartScheduledCallersRequest) returns (StartScheduledCallersResponse);
 
+    // <p>Adds callers to a campaign instead of starting them. The campaign then starts them, at most
+    // <code>max_parallel_calls</code> at a time. The request is atomic: either the campaign (when new), every
+    // campaign call is stored, or nothing is. Errors are gRPC status codes (see <code>CampaignAssignment</code>).</p>
+    // <p>Rolling updates: a VTSI server that predates this RPC answers <code>UNIMPLEMENTED</code> and starts
+    // nothing. Do not fall back to <code>StartCallers</code> on <code>UNIMPLEMENTED</code>; retry later.</p>
+    rpc AddCallersToCampaign (AddCallersToCampaignRequest) returns (AddCallersToCampaignResponse);
+
+    // <p>Adds scheduled callers to a campaign: each fires at or after its scheduled time AND when the campaign has a
+    // free slot, and follows the campaign&apos;s retries, stop and hard stop. Same atomicity, errors and rolling-update
+    // behaviour as <code>AddCallersToCampaign</code>.</p>
+    rpc AddScheduledCallersToCampaign (AddScheduledCallersToCampaignRequest) returns (AddScheduledCallersToCampaignResponse);
+
     // <p>Gets a scheduled caller</p>
     rpc GetScheduledCaller (GetScheduledCallerRequest) returns (ScheduledCaller);
 
@@ -156,7 +168,10 @@ message BaseServiceConfig{
     // service port
     int32 port = 2;
 
-    // Optional: GRPC cert for the given service
+    // PEM certificate(s) the service&apos;s gRPC server certificate chains to (CA or self-signed leaf), with real or
+    // escaped newlines; never a private key. Required for the S2T, NLU and T2S configs of a call unless the VTSI
+    // server runs with ONDEWO_VTSI_ALLOW_INSECURE_UPSTREAM=True (lab and CI only); an empty value is otherwise
+    // refused with FAILED_PRECONDITION (UPSTREAM_TLS_REQUIRED).
     string grpc_cert = 3;
 }
 
@@ -836,14 +851,10 @@ message StartCallersRequest {
     // Callers that should be started
     repeated StartCallerRequest caller_requests = 2;
 
-    // Optional. Add the callers to a campaign instead of starting them now. The campaign then
-    // starts them, at most <code>max_parallel_calls</code> at a time. The project&apos;s caller limit
-    // is checked per started call, not for the whole request. Unset: every caller is started by this
-    // request, exactly as before. With it set, the request is atomic and every error is a gRPC
-    // status code (see <code>CampaignAssignment</code>); <code>error_message</code> stays empty.
-    // Do not set it before every server replica runs VTSI 9.0.0: an older replica ignores it and
-    // starts every caller at once.
-    CampaignAssignment campaign_assignment = 3;
+    // Field 3 was campaign_assignment in unreleased 9.0.0 development builds; use AddCallersToCampaign. A
+    // request that still carries it is refused with INVALID_ARGUMENT.
+    reserved 3;
+    reserved "campaign_assignment";
 
 }
 
@@ -859,14 +870,10 @@ message StartCallersResponse {
     // overall error message if you have any so if it's unhealthy
     string error_message = 3;
 
-    // The campaign the callers were added to, when the request set
-    // <code>campaign_assignment</code>. <code>caller_responses</code> is then empty: the calls are
-    // started by the campaign.
-    Campaign campaign = 4;
-
-    // The campaign calls created by this request, in request order, when the request set
-    // <code>campaign_assignment</code>.
-    repeated string campaign_call_names = 5;
+    // Fields 4 and 5 carried the campaign result in unreleased 9.0.0 development builds; see
+    // AddCallersToCampaignResponse.
+    reserved 4, 5;
+    reserved "campaign", "campaign_call_names";
 
 }
 
@@ -1130,16 +1137,13 @@ message StartScheduledCallersRequest {
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
-    // requests to start scheduled callers. With <code>campaign_assignment</code> set, a scheduled
-    // caller of the campaign can be cancelled with <code>CancelScheduledCaller</code> only while its
-    // campaign call has no attempt dispatching or in progress.
+    // requests to start scheduled callers
     repeated StartScheduledCallerRequest scheduled_caller_requests = 2;
 
-    // Optional. Add the scheduled callers to a campaign: each fires at or after its scheduled time
-    // AND when the campaign has a free slot, and follows the campaign&apos;s retries, stop and hard
-    // stop. Unset: the scheduled callers fire on their own, exactly as before. Same atomicity,
-    // error and rollout rules as <code>StartCallersRequest.campaign_assignment</code>.
-    CampaignAssignment campaign_assignment = 3;
+    // Field 3 was campaign_assignment in unreleased 9.0.0 development builds; use
+    // AddScheduledCallersToCampaign. A request that still carries it is refused with INVALID_ARGUMENT.
+    reserved 3;
+    reserved "campaign_assignment";
 }
 
 // Response to start multiple listeners
@@ -1151,14 +1155,73 @@ message StartScheduledCallersResponse {
     // The call ids that were assigned to each listener
     repeated StartScheduledCallerResponse scheduled_caller_responses = 2;
 
-    // The campaign the scheduled callers were added to, when the request set
-    // <code>campaign_assignment</code>.
+    // Fields 3 and 4 carried the campaign result in unreleased 9.0.0 development builds; see
+    // AddScheduledCallersToCampaignResponse.
+    reserved 3, 4;
+    reserved "campaign", "campaign_call_names";
+
+}
+
+// The request message for <a href="index.html#ondewo.vtsi.Calls.AddCallersToCampaign">Calls.AddCallersToCampaign</a>.
+message AddCallersToCampaignRequest {
+
+    // VTSI project of the callers and the campaign.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Callers to add, at least one. The project&apos;s caller limit is checked per started call, not for the request.
+    repeated StartCallerRequest caller_requests = 2;
+
+    // Required. Which campaign, and whether it starts dialling.
+    CampaignAssignment campaign_assignment = 3;
+}
+
+// The response message for <a href="index.html#ondewo.vtsi.Calls.AddCallersToCampaign">Calls.AddCallersToCampaign</a>.
+message AddCallersToCampaignResponse {
+
+    // VTSI project of the callers and the campaign.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // The campaign the callers were added to.
+    Campaign campaign = 2;
+
+    // The campaign calls created by this request, in request order.
+    repeated string campaign_call_names = 3;
+}
+
+// The request message for
+// <a href="index.html#ondewo.vtsi.Calls.AddScheduledCallersToCampaign">Calls.AddScheduledCallersToCampaign</a>.
+message AddScheduledCallersToCampaignRequest {
+
+    // VTSI project of the scheduled callers and the campaign.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Scheduled callers to add, at least one. A scheduled caller of a campaign can be cancelled with
+    // <code>CancelScheduledCaller</code> only while its campaign call has no attempt dispatching or in progress.
+    repeated StartScheduledCallerRequest scheduled_caller_requests = 2;
+
+    // Required. Which campaign, and whether it starts dialling.
+    CampaignAssignment campaign_assignment = 3;
+}
+
+// The response message for
+// <a href="index.html#ondewo.vtsi.Calls.AddScheduledCallersToCampaign">Calls.AddScheduledCallersToCampaign</a>.
+message AddScheduledCallersToCampaignResponse {
+
+    // VTSI project of the scheduled callers and the campaign.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // The scheduled callers created, in request order.
+    repeated StartScheduledCallerResponse scheduled_caller_responses = 2;
+
+    // The campaign the scheduled callers were added to.
     Campaign campaign = 3;
 
-    // The campaign calls created by this request, in request order, when the request set
-    // <code>campaign_assignment</code>.
+    // The campaign calls created by this request, in request order.
     repeated string campaign_call_names = 4;
-
 }
 
 

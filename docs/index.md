@@ -1065,6 +1065,10 @@
     - [Text2Speech](#ondewo.t2s.Text2Speech)
   
 - [ondewo/vtsi/calls.proto](#ondewo/vtsi/calls.proto)
+    - [AddCallersToCampaignRequest](#ondewo.vtsi.AddCallersToCampaignRequest)
+    - [AddCallersToCampaignResponse](#ondewo.vtsi.AddCallersToCampaignResponse)
+    - [AddScheduledCallersToCampaignRequest](#ondewo.vtsi.AddScheduledCallersToCampaignRequest)
+    - [AddScheduledCallersToCampaignResponse](#ondewo.vtsi.AddScheduledCallersToCampaignResponse)
     - [AllServicesStatuses](#ondewo.vtsi.AllServicesStatuses)
     - [AnsweringMachineDetectionConfig](#ondewo.vtsi.AnsweringMachineDetectionConfig)
     - [AsteriskConfig](#ondewo.vtsi.AsteriskConfig)
@@ -20569,6 +20573,77 @@ UpdateMethod enum defines the method for updating custom phonemizers.
 
 
 
+<a name="ondewo.vtsi.AddCallersToCampaignRequest"></a>
+
+### AddCallersToCampaignRequest
+The request message for <a href="index.html#ondewo.vtsi.Calls.AddCallersToCampaign">Calls.AddCallersToCampaign</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project of the callers and the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| caller_requests | [StartCallerRequest](#ondewo.vtsi.StartCallerRequest) | repeated | Callers to add, at least one. The project&apos;s caller limit is checked per started call, not for the request. |
+| campaign_assignment | [CampaignAssignment](#ondewo.vtsi.CampaignAssignment) |  | Required. Which campaign, and whether it starts dialling. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.AddCallersToCampaignResponse"></a>
+
+### AddCallersToCampaignResponse
+The response message for <a href="index.html#ondewo.vtsi.Calls.AddCallersToCampaign">Calls.AddCallersToCampaign</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project of the callers and the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| campaign | [Campaign](#ondewo.vtsi.Campaign) |  | The campaign the callers were added to. |
+| campaign_call_names | [string](#string) | repeated | The campaign calls created by this request, in request order. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.AddScheduledCallersToCampaignRequest"></a>
+
+### AddScheduledCallersToCampaignRequest
+The request message for
+<a href="index.html#ondewo.vtsi.Calls.AddScheduledCallersToCampaign">Calls.AddScheduledCallersToCampaign</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project of the scheduled callers and the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| scheduled_caller_requests | [StartScheduledCallerRequest](#ondewo.vtsi.StartScheduledCallerRequest) | repeated | Scheduled callers to add, at least one. A scheduled caller of a campaign can be cancelled with <code>CancelScheduledCaller</code> only while its campaign call has no attempt dispatching or in progress. |
+| campaign_assignment | [CampaignAssignment](#ondewo.vtsi.CampaignAssignment) |  | Required. Which campaign, and whether it starts dialling. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.AddScheduledCallersToCampaignResponse"></a>
+
+### AddScheduledCallersToCampaignResponse
+The response message for
+<a href="index.html#ondewo.vtsi.Calls.AddScheduledCallersToCampaign">Calls.AddScheduledCallersToCampaign</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project of the scheduled callers and the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| scheduled_caller_responses | [StartScheduledCallerResponse](#ondewo.vtsi.StartScheduledCallerResponse) | repeated | The scheduled callers created, in request order. |
+| campaign | [Campaign](#ondewo.vtsi.Campaign) |  | The campaign the scheduled callers were added to. |
+| campaign_call_names | [string](#string) | repeated | The campaign calls created by this request, in request order. |
+
+
+
+
+
+
 <a name="ondewo.vtsi.AllServicesStatuses"></a>
 
 ### AllServicesStatuses
@@ -20702,7 +20777,7 @@ Base configuration of services (ondewo-nlu, text-to-speech, speech-to-text, aste
 | ----- | ---- | ----- | ----------- |
 | host | [string](#string) |  | service host IP |
 | port | [int32](#int32) |  | service port |
-| grpc_cert | [string](#string) |  | Optional: GRPC cert for the given service |
+| grpc_cert | [string](#string) |  | PEM certificate(s) the service&apos;s gRPC server certificate chains to (CA or self-signed leaf), with real or escaped newlines; never a private key. Required for the S2T, NLU and T2S configs of a call unless the VTSI server runs with ONDEWO_VTSI_ALLOW_INSECURE_UPSTREAM=True (lab and CI only); an empty value is otherwise refused with FAILED_PRECONDITION (UPSTREAM_TLS_REQUIRED). |
 
 
 
@@ -21570,7 +21645,6 @@ Request to start multiple callers
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | caller_requests | [StartCallerRequest](#ondewo.vtsi.StartCallerRequest) | repeated | Callers that should be started |
-| campaign_assignment | [CampaignAssignment](#ondewo.vtsi.CampaignAssignment) |  | Optional. Add the callers to a campaign instead of starting them now. The campaign then starts them, at most <code>max_parallel_calls</code> at a time. The project&apos;s caller limit is checked per started call, not for the whole request. Unset: every caller is started by this request, exactly as before. With it set, the request is atomic and every error is a gRPC status code (see <code>CampaignAssignment</code>); <code>error_message</code> stays empty. Do not set it before every server replica runs VTSI 9.0.0: an older replica ignores it and starts every caller at once. |
 
 
 
@@ -21588,8 +21662,6 @@ Response to the start caller request
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | caller_responses | [StartCallerResponse](#ondewo.vtsi.StartCallerResponse) | repeated | The call ids that were assigned to each listener |
 | error_message | [string](#string) |  | overall error message if you have any so if it's unhealthy |
-| campaign | [Campaign](#ondewo.vtsi.Campaign) |  | The campaign the callers were added to, when the request set <code>campaign_assignment</code>. <code>caller_responses</code> is then empty: the calls are started by the campaign. |
-| campaign_call_names | [string](#string) | repeated | The campaign calls created by this request, in request order, when the request set <code>campaign_assignment</code>. |
 
 
 
@@ -21706,8 +21778,7 @@ Request to start scheduled callers
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
-| scheduled_caller_requests | [StartScheduledCallerRequest](#ondewo.vtsi.StartScheduledCallerRequest) | repeated | requests to start scheduled callers. With <code>campaign_assignment</code> set, a scheduled caller of the campaign can be cancelled with <code>CancelScheduledCaller</code> only while its campaign call has no attempt dispatching or in progress. |
-| campaign_assignment | [CampaignAssignment](#ondewo.vtsi.CampaignAssignment) |  | Optional. Add the scheduled callers to a campaign: each fires at or after its scheduled time AND when the campaign has a free slot, and follows the campaign&apos;s retries, stop and hard stop. Unset: the scheduled callers fire on their own, exactly as before. Same atomicity, error and rollout rules as <code>StartCallersRequest.campaign_assignment</code>. |
+| scheduled_caller_requests | [StartScheduledCallerRequest](#ondewo.vtsi.StartScheduledCallerRequest) | repeated | requests to start scheduled callers |
 
 
 
@@ -21724,8 +21795,6 @@ Response to start multiple listeners
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | scheduled_caller_responses | [StartScheduledCallerResponse](#ondewo.vtsi.StartScheduledCallerResponse) | repeated | The call ids that were assigned to each listener |
-| campaign | [Campaign](#ondewo.vtsi.Campaign) |  | The campaign the scheduled callers were added to, when the request set <code>campaign_assignment</code>. |
-| campaign_call_names | [string](#string) | repeated | The campaign calls created by this request, in request order, when the request set <code>campaign_assignment</code>. |
 
 
 
@@ -22289,6 +22358,8 @@ Eagerness of the turn detection
 | DeleteListeners | [DeleteListenersRequest](#ondewo.vtsi.DeleteListenersRequest) | [DeleteListenersResponse](#ondewo.vtsi.DeleteListenersResponse) | <p>Deletes multiple listeners</p> |
 | StartScheduledCaller | [StartScheduledCallerRequest](#ondewo.vtsi.StartScheduledCallerRequest) | [StartScheduledCallerResponse](#ondewo.vtsi.StartScheduledCallerResponse) | <p>Start a single ondewo-sip caller instance at a scheduled time</p> |
 | StartScheduledCallers | [StartScheduledCallersRequest](#ondewo.vtsi.StartScheduledCallersRequest) | [StartScheduledCallersResponse](#ondewo.vtsi.StartScheduledCallersResponse) | <p>Start multiple ondewo-sip caller instances, each at its own scheduled time</p> |
+| AddCallersToCampaign | [AddCallersToCampaignRequest](#ondewo.vtsi.AddCallersToCampaignRequest) | [AddCallersToCampaignResponse](#ondewo.vtsi.AddCallersToCampaignResponse) | <p>Adds callers to a campaign instead of starting them. The campaign then starts them, at most <code>max_parallel_calls</code> at a time. The request is atomic: either the campaign (when new), every campaign call is stored, or nothing is. Errors are gRPC status codes (see <code>CampaignAssignment</code>).</p> <p>Rolling updates: a VTSI server that predates this RPC answers <code>UNIMPLEMENTED</code> and starts nothing. Do not fall back to <code>StartCallers</code> on <code>UNIMPLEMENTED</code>; retry later.</p> |
+| AddScheduledCallersToCampaign | [AddScheduledCallersToCampaignRequest](#ondewo.vtsi.AddScheduledCallersToCampaignRequest) | [AddScheduledCallersToCampaignResponse](#ondewo.vtsi.AddScheduledCallersToCampaignResponse) | <p>Adds scheduled callers to a campaign: each fires at or after its scheduled time AND when the campaign has a free slot, and follows the campaign&apos;s retries, stop and hard stop. Same atomicity, errors and rolling-update behaviour as <code>AddCallersToCampaign</code>.</p> |
 | GetScheduledCaller | [GetScheduledCallerRequest](#ondewo.vtsi.GetScheduledCallerRequest) | [ScheduledCaller](#ondewo.vtsi.ScheduledCaller) | <p>Gets a scheduled caller</p> |
 | ListScheduledCallers | [ListScheduledCallersRequest](#ondewo.vtsi.ListScheduledCallersRequest) | [ListScheduledCallersResponse](#ondewo.vtsi.ListScheduledCallersResponse) | <p>Lists the scheduled callers of a vtsi-project</p> |
 | CancelScheduledCaller | [CancelScheduledCallerRequest](#ondewo.vtsi.CancelScheduledCallerRequest) | [CancelScheduledCallerResponse](#ondewo.vtsi.CancelScheduledCallerResponse) | <p>Cancels a scheduled caller that has not fired yet</p> <p>A scheduled caller of a campaign can be cancelled while its campaign call is <code>CAMPAIGN_CALL_STATE_NOT_STARTED</code> or <code>CAMPAIGN_CALL_STATE_RETRY_PENDING</code>; the campaign call then becomes <code>CAMPAIGN_CALL_STATE_CANCELLED</code>. While an attempt is <code>DISPATCHING</code> or <code>IN_PROGRESS</code> the request is refused: <code>cancelled = false</code> and the scheduled caller keeps its status.</p> |
@@ -22348,9 +22419,9 @@ A campaign: a set of outbound calls started with a limit on how many run at the 
 <a name="ondewo.vtsi.CampaignAssignment"></a>
 
 ### CampaignAssignment
-Assigns the callers of a <code>StartCallers</code> / <code>StartScheduledCallers</code> request
-to a campaign. Set on the request: the calls are then NOT started by the request itself but
-added to the campaign, which starts them under its <code>max_parallel_calls</code> limit.
+Assigns the callers of an <code>AddCallersToCampaign</code> / <code>AddScheduledCallersToCampaign</code>
+request to a campaign. The calls are NOT started by the request itself but added to the
+campaign, which starts them under its <code>max_parallel_calls</code> limit.
 <p>The whole request is applied atomically: either the campaign (when new), every campaign call
 and every scheduled caller of the request are stored, or nothing is.</p>
 <p>Effect per state of an EXISTING campaign: <code>CREATED</code>, <code>RUNNING</code>,
@@ -22358,9 +22429,9 @@ and every scheduled caller of the request are stored, or nothing is.</p>
 <code>HARD_STOPPED</code> accept the calls as <code>NOT_STARTED</code> and keep their state (a
 stopped campaign runs them after <code>ResumeCampaign</code>; see <code>start_mode</code> for
 <code>CREATED</code>); <code>COMPLETED</code> accepts them and becomes <code>RUNNING</code>.</p>
-<p>Errors, as gRPC status codes of the <code>StartCallers</code> / <code>StartScheduledCallers</code>
-RPC (the response&apos;s <code>error_message</code> fields are not used for campaign requests):
-<code>NOT_FOUND</code> for an unknown <code>campaign_name</code> / <code>campaign_display_name</code>
+<p>Errors, as gRPC status codes of the <code>AddCallersToCampaign</code> /
+<code>AddScheduledCallersToCampaign</code> RPC: <code>NOT_FOUND</code> for an unknown
+<code>campaign_name</code> / <code>campaign_display_name</code>
 or a campaign deleted while the request ran; <code>INVALID_ARGUMENT</code> for a campaign of
 another project, an invalid <code>new_campaign</code> (an output-only field set, a value out of
 range) or an invalid caller entry (the message names its index); <code>ALREADY_EXISTS</code> for a
@@ -22821,8 +22892,8 @@ How a call was added to a campaign.
 | Name | Number | Description |
 | ---- | ------ | ----------- |
 | CAMPAIGN_CALL_SOURCE_UNSPECIFIED | 0 | Unspecified. |
-| CAMPAIGN_CALL_SOURCE_CALLER | 1 | Added by <code>StartCallers</code>: started as soon as the campaign has a free slot. |
-| CAMPAIGN_CALL_SOURCE_SCHEDULED_CALLER | 2 | Added by <code>StartScheduledCallers</code>: started at or after its scheduled time when the campaign has a free slot. Its <code>ScheduledCaller</code> follows the campaign call. |
+| CAMPAIGN_CALL_SOURCE_CALLER | 1 | Added by <code>AddCallersToCampaign</code>: started as soon as the campaign has a free slot. |
+| CAMPAIGN_CALL_SOURCE_SCHEDULED_CALLER | 2 | Added by <code>AddScheduledCallersToCampaign</code>: started at or after its scheduled time when the campaign has a free slot. Its <code>ScheduledCaller</code> follows the campaign call. |
 
 
 
@@ -22888,10 +22959,10 @@ places for the client while keeping at most <code>max_parallel_calls</code> of t
 the same time. If 100 callers are added to a campaign with <code>max_parallel_calls = 10</code>,
 at any moment at most 10 of those calls are being set up or are connected; the next one starts
 when one ends.</p>
-<p>Calls are added to a campaign by setting <code>campaign_assignment</code> on
-<a href="index.html#ondewo.vtsi.StartCallersRequest">StartCallersRequest</a> or
-<a href="index.html#ondewo.vtsi.StartScheduledCallersRequest">StartScheduledCallersRequest</a>;
-a scheduled call of a campaign is started at or after its scheduled time AND when the campaign has
+<p>Calls are added to a campaign with
+<a href="index.html#ondewo.vtsi.Calls.AddCallersToCampaign">Calls.AddCallersToCampaign</a> or
+<a href="index.html#ondewo.vtsi.Calls.AddScheduledCallersToCampaign">Calls.AddScheduledCallersToCampaign</a>
+(a server that predates them answers <code>UNIMPLEMENTED</code> and starts nothing); a scheduled call of a campaign is started at or after its scheduled time AND when the campaign has
 a free slot.</p>
 <p>A call that fails is retried up to <code>max_attempts</code> times in total, waiting
 <code>retry_delay</code> between attempts. A call counts as failed only after its last attempt.
@@ -22913,7 +22984,7 @@ be retried; <code>RESOURCE_EXHAUSTED</code> when the server has no free stream s
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| CreateCampaign | [CreateCampaignRequest](#ondewo.vtsi.CreateCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Creates a campaign in state <code>CAMPAIGN_STATE_CREATED</code>. Calls are added with <code>StartCallers</code> / <code>StartScheduledCallers</code>; nothing is dialled before <code>StartCampaign</code>.</p> <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>ALREADY_EXISTS</code> if the <code>display_name</code> is used in the project; <code>INVALID_ARGUMENT</code> for an output-only field that was set or an out-of-range value.</p> |
+| CreateCampaign | [CreateCampaignRequest](#ondewo.vtsi.CreateCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Creates a campaign in state <code>CAMPAIGN_STATE_CREATED</code>. Calls are added with <code>AddCallersToCampaign</code> / <code>AddScheduledCallersToCampaign</code>; nothing is dialled before <code>StartCampaign</code>.</p> <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>ALREADY_EXISTS</code> if the <code>display_name</code> is used in the project; <code>INVALID_ARGUMENT</code> for an output-only field that was set or an out-of-range value.</p> |
 | GetCampaign | [GetCampaignRequest](#ondewo.vtsi.GetCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Returns a campaign including its statistics.</p> <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for a malformed name.</p> |
 | UpdateCampaign | [UpdateCampaignRequest](#ondewo.vtsi.UpdateCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Updates the fields named in <code>update_mask</code>: <code>display_name</code>, <code>max_parallel_calls</code>, <code>max_attempts</code>, <code>retry_delay</code>. Allowed in every state. Lowering <code>max_parallel_calls</code> never ends a running call: the campaign starts no new call until fewer than the new maximum are running.</p> <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for an empty mask, an unknown, output-only or immutable path, or an out-of-range value; <code>ALREADY_EXISTS</code> for a <code>display_name</code> used by another campaign of the project.</p> |
 | DeleteCampaign | [DeleteCampaignRequest](#ondewo.vtsi.DeleteCampaignRequest) | [DeleteCampaignResponse](#ondewo.vtsi.DeleteCampaignResponse) | <p>Deletes a campaign and its campaign calls. Its scheduled callers that have not fired yet are cancelled. Calls that already ran are not touched and stay visible through <code>ListCalls</code>.</p> <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> while the campaign is <code>RUNNING</code>, <code>STOPPING</code> or <code>HARD_STOPPING</code> (stop or hard stop it first).</p> |
@@ -23221,7 +23292,7 @@ The request message for <code>Events.UpdateWebhook</code>.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | webhook | [Webhook](#ondewo.vtsi.Webhook) |  | The webhook, identified by <code>webhook.name</code>. |
-| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Required. Paths without prefix: <code>display_name</code>, <code>url</code>, <code>http_method</code>, <code>custom_headers</code>, <code>disabled</code>, <code>timeout</code>. An empty mask or another path is rejected with <code>INVALID_ARGUMENT</code>. A path in the mask writes the sent value, including <code>false</code>; an unset <code>timeout</code> writes the server default. |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Required. Paths without prefix: <code>display_name</code>, <code>url</code>, <code>http_method</code>, <code>custom_headers</code>, <code>disabled</code>, <code>timeout</code>. An empty mask or another path is rejected with <code>INVALID_ARGUMENT</code>. A path in the mask writes the sent value, including <code>false</code>; an unset <code>timeout</code> writes the server default. When <code>url</code> moves to another origin and the webhook has stored headers, <code>custom_headers</code> must be in the mask with real values (see <code>UpdateWebhook</code>). |
 
 
 
@@ -23330,7 +23401,7 @@ An HTTP(S) endpoint that receives one request per event.
 | display_name | [string](#string) |  | Human-readable name, at most 128 characters. Updatable. |
 | url | [string](#string) |  | Required. http:// or https:// URL, at most 2048 characters, without user information. Any host is allowed. Updatable. |
 | http_method | [WebhookHttpMethod](#ondewo.vtsi.WebhookHttpMethod) |  | HTTP method. Unset means POST. Updatable. |
-| custom_headers | [Webhook.CustomHeadersEntry](#ondewo.vtsi.Webhook.CustomHeadersEntry) | repeated | Optional extra request headers, e.g. <code>Authorization</code>. WRITE-ONLY VALUES: every RPC returns each value as <code>********</code>. At most 20 headers; names are HTTP tokens of at most 128 characters; values at most 4096 characters without line breaks. Reserved and refused: <code>Host</code>, <code>Content-Length</code>, <code>Content-Type</code>, <code>Transfer-Encoding</code>, <code>Connection</code> and every <code>X-Ondewo-Vtsi-*</code> name. Updatable (see <code>UpdateWebhook</code> for the mask value). |
+| custom_headers | [Webhook.CustomHeadersEntry](#ondewo.vtsi.Webhook.CustomHeadersEntry) | repeated | Optional extra request headers, e.g. <code>Authorization</code>. WRITE-ONLY VALUES: every RPC returns each value as <code>********</code>. At most 20 headers; names are HTTP tokens of at most 128 characters; values at most 4096 characters without line breaks. Reserved and refused: <code>Host</code>, <code>Content-Length</code>, <code>Content-Type</code>, <code>Transfer-Encoding</code>, <code>Connection</code> and every <code>X-Ondewo-Vtsi-*</code> name. Updatable (see <code>UpdateWebhook</code> for the mask value and for moving the url to another origin). |
 | disabled | [bool](#bool) |  | <code>false</code> (the default): events are sent. <code>true</code>: nothing is sent (except by <code>TestWebhook</code>). Updatable. |
 | timeout | [google.protobuf.Duration](#google.protobuf.Duration) |  | Request timeout. Unset means the server default (5 s); allowed 1 s to 30 s. Updatable. |
 | delivery_statistics | [WebhookDeliveryStatistics](#ondewo.vtsi.WebhookDeliveryStatistics) |  | Output only. Delivery counters. |
@@ -23533,7 +23604,7 @@ RPC and are never logged.</p>
 | ListVtsiEventSubscriptions | [ListVtsiEventSubscriptionsRequest](#ondewo.vtsi.ListVtsiEventSubscriptionsRequest) | [ListVtsiEventSubscriptionsResponse](#ondewo.vtsi.ListVtsiEventSubscriptionsResponse) | <p>Lists the event subscriptions of a project, paged.</p> |
 | CreateWebhook | [CreateWebhookRequest](#ondewo.vtsi.CreateWebhookRequest) | [Webhook](#ondewo.vtsi.Webhook) | <p>Creates a webhook: an HTTP(S) endpoint that receives one request per event, with a JSON body holding the <code>VtsiEventMessage</code> (proto3 JSON, original field names).</p> <p>Errors: <code>NOT_FOUND</code> for an unknown project; <code>INVALID_ARGUMENT</code> for a URL that is not http(s), has no host, carries user information (use a custom header for credentials) or exceeds 2048 characters; for a reserved or malformed header name, a header value with a line break, too many or too long headers; or for a timeout outside 1 s to 30 s.</p> |
 | GetWebhook | [GetWebhookRequest](#ondewo.vtsi.GetWebhookRequest) | [Webhook](#ondewo.vtsi.Webhook) | <p>Returns a webhook. Custom header values are masked.</p> |
-| UpdateWebhook | [UpdateWebhookRequest](#ondewo.vtsi.UpdateWebhookRequest) | [Webhook](#ondewo.vtsi.Webhook) | <p>Updates the fields named in <code>update_mask</code>: <code>display_name</code>, <code>url</code>, <code>http_method</code>, <code>custom_headers</code>, <code>disabled</code>, <code>timeout</code>. <code>custom_headers</code> replaces the whole map; a value equal to the mask <code>********</code> keeps the stored value of that header, so a Get-modify-Update round trip does not overwrite secrets with the mask.</p> |
+| UpdateWebhook | [UpdateWebhookRequest](#ondewo.vtsi.UpdateWebhookRequest) | [Webhook](#ondewo.vtsi.Webhook) | <p>Updates the fields named in <code>update_mask</code>: <code>display_name</code>, <code>url</code>, <code>http_method</code>, <code>custom_headers</code>, <code>disabled</code>, <code>timeout</code>. <code>custom_headers</code> replaces the whole map; a value equal to the mask <code>********</code> keeps the stored value of that header, so a Get-modify-Update round trip does not overwrite secrets with the mask.</p> <p>Moving the webhook to another origin (scheme, host or port of <code>url</code>) while custom headers are stored requires re-sending <code>custom_headers</code> in the same request, with their REAL values (or an empty map to drop them): the stored values are never carried to a new origin, and an update that leaves <code>custom_headers</code> out of the mask or sends the mask value <code>********</code> for any header is rejected with <code>INVALID_ARGUMENT</code> naming the headers. A new path on the same origin keeps the stored values.</p> |
 | DeleteWebhook | [DeleteWebhookRequest](#ondewo.vtsi.DeleteWebhookRequest) | [DeleteWebhookResponse](#ondewo.vtsi.DeleteWebhookResponse) | <p>Deletes a webhook and removes it from every event subscription.</p> |
 | ListWebhooks | [ListWebhooksRequest](#ondewo.vtsi.ListWebhooksRequest) | [ListWebhooksResponse](#ondewo.vtsi.ListWebhooksResponse) | <p>Lists the webhooks of a project, paged. Custom header values are masked.</p> |
 | TestWebhook | [TestWebhookRequest](#ondewo.vtsi.TestWebhookRequest) | [TestWebhookResponse](#ondewo.vtsi.TestWebhookResponse) | <p>Sends one <code>VTSI_EVENT_WEBHOOK_TEST</code> event to a webhook now, without retries, and reports the outcome. Works on a disabled webhook too, and ignores an open circuit.</p> <p>Errors: <code>NOT_FOUND</code>. A failed delivery is reported in the response, not as an error status.</p> |
@@ -24010,6 +24081,7 @@ Configuration variables for the Asterisk server
 | sip_trunk_source_cidr | [string](#string) | optional | OPTIONAL: the source address or CIDR the carrier sends from, e.g. <pre><code>203.0.113.7/32</code></pre>. REQUIRED when <pre><code>sip_trunk_transport</code></pre> is <pre><code>SIP_TRUNK_TRANSPORT_UDP</code></pre> or <pre><code>SIP_TRUNK_TRANSPORT_TCP</code></pre>, where the trunk is matched by source address rather than authenticated by a TLS certificate; ignored otherwise. A hostname is REFUSED with <pre><code>INVALID_ARGUMENT</code></pre>: Asterisk drops a <pre><code>type=identify</code></pre> section whose <pre><code>match=</code></pre> does not resolve, and it does so silently, so an unresolvable name would read as a working trunk that never matches an inbound call. |
 | sip_trunk_ca_certificates_pem | [string](#string) | optional | OPTIONAL: the PEM bundle of the CA certificate(s) the carrier's TLS certificate chains to, i.e. one or more <pre><code>-----BEGIN CERTIFICATE-----</code></pre> blocks and nothing else. Storing a bundle does NOT by itself turn verification on: Asterisk verifies the carrier's certificate chain and host name only when <pre><code>sip_trunk_verify_server</code></pre> is also true. With verification off the bundle is validated and stored, so it can be staged before verification is switched on, and the trunk behaves exactly as without it. Applies only to the TLS trunk transport: setting it while <pre><code>sip_trunk_transport</code></pre> is <pre><code>SIP_TRUNK_TRANSPORT_UDP</code></pre> or <pre><code>SIP_TRUNK_TRANSPORT_TCP</code></pre> is REFUSED with <pre><code>INVALID_ARGUMENT</code></pre>, as is a bundle that is not PEM, contains a private key or any block other than a certificate, contains a certificate that is not a CA (basicConstraints CA=true) or has expired, or exceeds the server's count and size limits. This is PUBLIC data, not a secret: it is returned by Get and List like every other field here. |
 | sip_trunk_verify_server | [bool](#bool) | optional | OPTIONAL: verify the carrier's TLS certificate. Default false (unset == false). When true, Asterisk verifies the carrier's certificate chain against <pre><code>sip_trunk_ca_certificates_pem</code></pre> and its host name against <pre><code>sip_trunk_host</code></pre> (<pre><code>verify_server=yes</code></pre>), and refuses a carrier that fails either check. true WITHOUT a CA bundle is REFUSED with <pre><code>INVALID_ARGUMENT</code></pre>, because the verification it asks for cannot happen. false or unset: the carrier's certificate is NOT verified, whether or not a bundle is stored. Applies only to the TLS trunk transport: true on a <pre><code>SIP_TRUNK_TRANSPORT_UDP</code></pre> or <pre><code>SIP_TRUNK_TRANSPORT_TCP</code></pre> trunk is REFUSED with <pre><code>INVALID_ARGUMENT</code></pre>; false there is accepted and changes nothing. |
+| softphone_permit_cidrs | [string](#string) | repeated | Optional: Source addresses that may reach this project&apos;s SOFTPHONE accounts, as IPv4/IPv6 CIDR networks written in full with an explicit prefix length (e.g. <code>203.0.113.0/24</code>). Every softphone account gets <code>deny</code> for every IPv4 and IPv6 source plus one <code>permit</code> per entry. This is the source allow-list of the project&apos;s EXTERNAL TLS port for softphones; it applies to every softphone account on BOTH TLS ports, because an account&apos;s ACL cannot tell ports apart and its transport restricts nothing inbound. Empty: the server&apos;s <code>ONDEWO_VTSI_ASTERISK_SOFTPHONE_PERMIT_CIDRS</code>, by default the private networks (<code>10.0.0.0/8</code>, <code>172.16.0.0/12</code>, <code>192.168.0.0/16</code>, <code>fc00::/7</code>). That server value is a CEILING: every entry here must lie inside it, so a project can only narrow the list; only the operator can open the port to every source. Entries outside the ceiling, a default route (<code>0.0.0.0/0</code>), entries that together cover a whole address family and shorthand spellings are refused with <code>INVALID_ARGUMENT</code>. The list is only effective when the port sees the real client addresses (no SNAT or proxy in front of it). The carrier trunk is not affected (it is matched by <code>sip_trunk_source_cidr</code> or authenticated by its registration); VTSI&apos;s own call containers are scoped separately by the server. Updatable with the rest of <code>asterisk_configs</code>. |
 
 
 
@@ -24955,9 +25027,9 @@ the next successful change or deployment. <code>CreateSoftphoneAccount</code> an
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| CreateSoftphoneAccount | [CreateSoftphoneAccountRequest](#ondewo.vtsi.CreateSoftphoneAccountRequest) | [CreateSoftphoneAccountResponse](#ondewo.vtsi.CreateSoftphoneAccountResponse) | <p>Creates a softphone account in a VTSI project, generates its SIP password and, for <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code>, issues its first client certificate. The response carries the ONE-TIME secrets; they cannot be retrieved again.</p> <p>If the project is deployed the account is applied to the running Asterisk; otherwise it is applied on the next deployment.</p> <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>ALREADY_EXISTS</code> if the <code>sip_username</code> is taken in the project; <code>INVALID_ARGUMENT</code> for an invalid or reserved <code>sip_username</code>, an output-only field that was set, or an out-of-range value; <code>FAILED_PRECONDITION</code> if the project is being deleted, or, for <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code>, if the project has no Asterisk port yet or its SOFTPHONE certificate authority is unusable (a redeployment mints a new one).</p> |
+| CreateSoftphoneAccount | [CreateSoftphoneAccountRequest](#ondewo.vtsi.CreateSoftphoneAccountRequest) | [CreateSoftphoneAccountResponse](#ondewo.vtsi.CreateSoftphoneAccountResponse) | <p>Creates a softphone account in a VTSI project, generates its SIP password and, for <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code>, issues its first client certificate. The response carries the ONE-TIME secrets; they cannot be retrieved again.</p> <p>If the project is deployed the account is applied to the running Asterisk; otherwise it is applied on the next deployment.</p> <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>ALREADY_EXISTS</code> if the <code>sip_username</code> is taken in the project; <code>INVALID_ARGUMENT</code> for an invalid or reserved <code>sip_username</code>, an output-only field that was set, or an out-of-range value; <code>FAILED_PRECONDITION</code> if the project is being deleted, or, for <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code>, if the project has no Asterisk port yet or its SOFTPHONE certificate authority is unusable (a redeployment mints a new one).</p> <p>The account is reachable on either TLS port only from the project&apos;s <code>softphone_permit_cidrs</code> (default: the server&apos;s list, private networks unless the operator changed it); see <code>AsteriskConfigsVariables.softphone_permit_cidrs</code>.</p> |
 | GetSoftphoneAccount | [GetSoftphoneAccountRequest](#ondewo.vtsi.GetSoftphoneAccountRequest) | [SoftphoneAccount](#ondewo.vtsi.SoftphoneAccount) | <p>Returns a softphone account. Never returns a secret.</p> <p>Errors: <code>NOT_FOUND</code> if the account does not exist; <code>INVALID_ARGUMENT</code> for a malformed name or an unknown <code>field_mask</code> path.</p> |
-| UpdateSoftphoneAccount | [UpdateSoftphoneAccountRequest](#ondewo.vtsi.UpdateSoftphoneAccountRequest) | [SoftphoneAccount](#ondewo.vtsi.SoftphoneAccount) | <p>Updates the mutable fields of a softphone account named by <code>update_mask</code>. Credentials are not changed here; use <code>RotateSoftphoneCredentials</code>.</p> <p>Errors: <code>NOT_FOUND</code> if the account does not exist; <code>INVALID_ARGUMENT</code> for an empty mask, an unknown, output-only or immutable path, or an out-of-range value; <code>FAILED_PRECONDITION</code> when switching to <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code> while the account has no <code>SOFTPHONE_CERTIFICATE_STATUS_ACTIVE</code> certificate, or if the project is being deleted.</p> |
+| UpdateSoftphoneAccount | [UpdateSoftphoneAccountRequest](#ondewo.vtsi.UpdateSoftphoneAccountRequest) | [SoftphoneAccount](#ondewo.vtsi.SoftphoneAccount) | <p>Updates the mutable fields of a softphone account named by <code>update_mask</code>. Credentials are not changed here; use <code>RotateSoftphoneCredentials</code>.</p> <p>Errors: <code>NOT_FOUND</code> if the account does not exist; <code>INVALID_ARGUMENT</code> for an empty mask, an unknown, output-only or immutable path, or an out-of-range value; <code>FAILED_PRECONDITION</code> when switching to <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code> while the account has no <code>SOFTPHONE_CERTIFICATE_STATUS_ACTIVE</code> certificate, or if the project is being deleted.</p> <p>The account is reachable on either TLS port only from the project&apos;s <code>softphone_permit_cidrs</code> (default: the server&apos;s list, private networks unless the operator changed it); see <code>AsteriskConfigsVariables.softphone_permit_cidrs</code>.</p> |
 | DeleteSoftphoneAccount | [DeleteSoftphoneAccountRequest](#ondewo.vtsi.DeleteSoftphoneAccountRequest) | [DeleteSoftphoneAccountResponse](#ondewo.vtsi.DeleteSoftphoneAccountResponse) | <p>Deletes a softphone account. Its endpoint is removed from the Asterisk, its registrations are dropped and every certificate it holds is revoked. Deletion is permanent.</p> <p>Errors: <code>NOT_FOUND</code> if the account does not exist.</p> |
 | ListSoftphoneAccounts | [ListSoftphoneAccountsRequest](#ondewo.vtsi.ListSoftphoneAccountsRequest) | [ListSoftphoneAccountsResponse](#ondewo.vtsi.ListSoftphoneAccountsResponse) | <p>Lists the softphone accounts of a VTSI project, filtered, sorted and paged. Never returns a secret.</p> <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>INVALID_ARGUMENT</code> for an invalid filter, an unknown <code>field_mask</code> path, a negative <code>page_size</code> or a <code>page_token</code> that was not issued for the same project, filter and sorting.</p> |
 | RotateSoftphoneCredentials | [RotateSoftphoneCredentialsRequest](#ondewo.vtsi.RotateSoftphoneCredentialsRequest) | [RotateSoftphoneCredentialsResponse](#ondewo.vtsi.RotateSoftphoneCredentialsResponse) | <p>Rotates the SIP password and/or the client certificate of a softphone account and returns the new ONE-TIME secrets. <b>Every rotation rotates the SIP password</b>, including one that asked only for <code>rotate_certificate</code>: the Asterisk has no certificate revocation list, so a previous certificate stops being usable for this account only because the password it was issued with stops working. The new password takes effect immediately and drops the account&apos;s current registrations, so every softphone using it must be reconfigured. A rotated certificate moves the previous <code>SOFTPHONE_CERTIFICATE_STATUS_ACTIVE</code> certificate to <code>SOFTPHONE_CERTIFICATE_STATUS_SUPERSEDED</code>. A rotation also unlocks an account that <code>RevokeSoftphoneCertificate</code> locked (a <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code> account only once it again holds an ACTIVE certificate).</p> <p>Rotating the certificate of a <code>SOFTPHONE_TRANSPORT_SECURITY_SERVER_TLS_ONLY</code> account is allowed: it issues the certificate that a later switch to <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code> requires, and rotates the password too.</p> <p>Errors: <code>NOT_FOUND</code> if the account does not exist; <code>INVALID_ARGUMENT</code> if neither <code>rotate_sip_password</code> nor <code>rotate_certificate</code> is set; <code>FAILED_PRECONDITION</code> if the project is being deleted, or, for <code>rotate_certificate</code>, if the project has no Asterisk port yet or its SOFTPHONE certificate authority is unusable.</p> |

@@ -150,13 +150,25 @@
 
   Errors of the new RPCs are gRPC status codes, never `error_message` fields. Two new fields carry the
   `optional` keyword (`page_token` of `ListCampaignsRequest` and `ListCampaignCallsRequest`).
-* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) `StartCallersRequest` and
-  `StartScheduledCallersRequest` gained `CampaignAssignment campaign_assignment = 3`: the callers are added
-  to an existing campaign (by resource name or display name) or to a new one (`new_campaign`) instead of
-  being started by the request, atomically, with `CampaignStartMode` choosing whether the campaign starts.
-  The responses gained `Campaign campaign` and `repeated string campaign_call_names`
-  (`StartCallersResponse` 4 and 5, `StartScheduledCallersResponse` 3 and 4), and `ScheduledCaller` gained
-  `string campaign_name = 12`. Unset, both RPCs behave exactly as before.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) Two new `Calls` RPCs add callers to a
+  campaign instead of starting them: `AddCallersToCampaign` (`AddCallersToCampaignRequest` /
+  `AddCallersToCampaignResponse`) and `AddScheduledCallersToCampaign` (`AddScheduledCallersToCampaignRequest`
+  / `AddScheduledCallersToCampaignResponse`). Each request carries a REQUIRED `CampaignAssignment
+  campaign_assignment`: an existing campaign (by resource name or display name) or a new one (`new_campaign`),
+  stored atomically, with `CampaignStartMode` choosing whether the campaign starts. The responses carry the
+  `Campaign` and the created `campaign_call_names` (the scheduled variant also the
+  `scheduled_caller_responses`), and `ScheduledCaller` gained `string campaign_name = 12`. `StartCallers` and
+  `StartScheduledCallers` are unchanged against 8.7.x.
+  Development builds of 9.0.0 carried the assignment as field 3 of `StartCallersRequest` /
+  `StartScheduledCallersRequest` (and the campaign result as fields 4-5 / 3-4 of their responses). Those
+  numbers and names are now `reserved`, and a server refuses a `StartCallers` / `StartScheduledCallers`
+  request that still carries field 3 with `INVALID_ARGUMENT` instead of starting every caller.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) `AsteriskConfigsVariables` gained
+  `repeated string softphone_permit_cidrs = 11`: the source allow-list (IPv4/IPv6 CIDRs) of the project's
+  softphone accounts on both TLS ports, i.e. of the external TLS port for softphones. Empty means the
+  server's `ONDEWO_VTSI_ASTERISK_SOFTPHONE_PERMIT_CIDRS` (default: the private networks); that server value
+  is a ceiling a project can only narrow, and an entry outside it is refused with `INVALID_ARGUMENT`.
+  `CreateSoftphoneAccount` and `UpdateSoftphoneAccount` document it.
 * [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) Three status streams on `Calls`:
   `StreamCallerStatus`, `StreamListenerStatus` and `StreamScheduledCallerStatus`, each sending a snapshot
   and then every changed `CallResourceStatus` (call, active flag, SIP status type and description, times,
@@ -229,11 +241,19 @@ the RPC `SipReportAnsweringMachineDetected`), and it means the vendored-proto
 lockstep rule DOES fire: a consumer installing `ondewo-vtsi-client` next to `ondewo-sip-client` must take
 the sip client generated from the same sip-api commit, or the last installed copy of `ondewo/sip` wins.
 
-**Rollout rule for the campaign fields.** `campaign_assignment` on `StartCallers` /
-`StartScheduledCallers` is an unknown field to a server replica of an older version, which skips it and
-starts every caller of the request at once, ignoring `max_parallel_calls`. Clients must not set it before
-every server replica runs VTSI 9.0.0. The new `Campaigns` and `Events` services and the three status streams
-answer `UNIMPLEMENTED` on an older replica, which is harmless.
+**Campaign enrollment fails closed during a rolling update.** A server replica that predates
+`AddCallersToCampaign` / `AddScheduledCallersToCampaign` answers them with `UNIMPLEMENTED` and starts
+nothing, so a campaign can never be dialled all at once by an old replica. Clients must NOT fall back to
+`StartCallers` on `UNIMPLEMENTED`; retry later. The new `Campaigns` and `Events` services and the three
+status streams answer `UNIMPLEMENTED` on an older replica too, which is harmless.
+
+**Server behaviour documented in this release (no wire change).** `BaseServiceConfig.grpc_cert` is now
+REQUIRED for the S2T, NLU and T2S configs of a call unless the VTSI server runs with
+`ONDEWO_VTSI_ALLOW_INSECURE_UPSTREAM=True` (lab and CI only); an empty value is otherwise refused with
+`FAILED_PRECONDITION` (`UPSTREAM_TLS_REQUIRED`). `UpdateWebhook` documents that moving a webhook's `url` to
+another origin (scheme, host or port) while custom headers are stored requires re-sending `custom_headers`
+with their real values (or an empty map) in the same request; the stored values never follow the url to a
+new origin.
 
 *****************
 

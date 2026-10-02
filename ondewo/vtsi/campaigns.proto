@@ -27,10 +27,10 @@ import "ondewo/sip/sip.proto";
 // the same time. If 100 callers are added to a campaign with <code>max_parallel_calls = 10</code>,
 // at any moment at most 10 of those calls are being set up or are connected; the next one starts
 // when one ends.</p>
-// <p>Calls are added to a campaign by setting <code>campaign_assignment</code> on
-// <a href="index.html#ondewo.vtsi.StartCallersRequest">StartCallersRequest</a> or
-// <a href="index.html#ondewo.vtsi.StartScheduledCallersRequest">StartScheduledCallersRequest</a>;
-// a scheduled call of a campaign is started at or after its scheduled time AND when the campaign has
+// <p>Calls are added to a campaign with
+// <a href="index.html#ondewo.vtsi.Calls.AddCallersToCampaign">Calls.AddCallersToCampaign</a> or
+// <a href="index.html#ondewo.vtsi.Calls.AddScheduledCallersToCampaign">Calls.AddScheduledCallersToCampaign</a>
+// (a server that predates them answers <code>UNIMPLEMENTED</code> and starts nothing); a scheduled call of a campaign is started at or after its scheduled time AND when the campaign has
 // a free slot.</p>
 // <p>A call that fails is retried up to <code>max_attempts</code> times in total, waiting
 // <code>retry_delay</code> between attempts. A call counts as failed only after its last attempt.
@@ -56,7 +56,7 @@ service Campaigns {
     //////////////////////////////////////////////////////////////////////////////
 
     // <p>Creates a campaign in state <code>CAMPAIGN_STATE_CREATED</code>. Calls are added with
-    // <code>StartCallers</code> / <code>StartScheduledCallers</code>; nothing is dialled before
+    // <code>AddCallersToCampaign</code> / <code>AddScheduledCallersToCampaign</code>; nothing is dialled before
     // <code>StartCampaign</code>.</p>
     // <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>ALREADY_EXISTS</code> if
     // the <code>display_name</code> is used in the project; <code>INVALID_ARGUMENT</code> for an
@@ -238,10 +238,10 @@ enum CampaignCallSource {
     // Unspecified.
     CAMPAIGN_CALL_SOURCE_UNSPECIFIED = 0;
 
-    // Added by <code>StartCallers</code>: started as soon as the campaign has a free slot.
+    // Added by <code>AddCallersToCampaign</code>: started as soon as the campaign has a free slot.
     CAMPAIGN_CALL_SOURCE_CALLER = 1;
 
-    // Added by <code>StartScheduledCallers</code>: started at or after its scheduled time when the
+    // Added by <code>AddScheduledCallersToCampaign</code>: started at or after its scheduled time when the
     // campaign has a free slot. Its <code>ScheduledCaller</code> follows the campaign call.
     CAMPAIGN_CALL_SOURCE_SCHEDULED_CALLER = 2;
 }
@@ -508,9 +508,9 @@ message CampaignDisplayName {
     string display_name = 2;
 }
 
-// Assigns the callers of a <code>StartCallers</code> / <code>StartScheduledCallers</code> request
-// to a campaign. Set on the request: the calls are then NOT started by the request itself but
-// added to the campaign, which starts them under its <code>max_parallel_calls</code> limit.
+// Assigns the callers of an <code>AddCallersToCampaign</code> / <code>AddScheduledCallersToCampaign</code>
+// request to a campaign. The calls are NOT started by the request itself but added to the
+// campaign, which starts them under its <code>max_parallel_calls</code> limit.
 // <p>The whole request is applied atomically: either the campaign (when new), every campaign call
 // and every scheduled caller of the request are stored, or nothing is.</p>
 // <p>Effect per state of an EXISTING campaign: <code>CREATED</code>, <code>RUNNING</code>,
@@ -518,9 +518,9 @@ message CampaignDisplayName {
 // <code>HARD_STOPPED</code> accept the calls as <code>NOT_STARTED</code> and keep their state (a
 // stopped campaign runs them after <code>ResumeCampaign</code>; see <code>start_mode</code> for
 // <code>CREATED</code>); <code>COMPLETED</code> accepts them and becomes <code>RUNNING</code>.</p>
-// <p>Errors, as gRPC status codes of the <code>StartCallers</code> / <code>StartScheduledCallers</code>
-// RPC (the response&apos;s <code>error_message</code> fields are not used for campaign requests):
-// <code>NOT_FOUND</code> for an unknown <code>campaign_name</code> / <code>campaign_display_name</code>
+// <p>Errors, as gRPC status codes of the <code>AddCallersToCampaign</code> /
+// <code>AddScheduledCallersToCampaign</code> RPC: <code>NOT_FOUND</code> for an unknown
+// <code>campaign_name</code> / <code>campaign_display_name</code>
 // or a campaign deleted while the request ran; <code>INVALID_ARGUMENT</code> for a campaign of
 // another project, an invalid <code>new_campaign</code> (an output-only field set, a value out of
 // range) or an invalid caller entry (the message names its index); <code>ALREADY_EXISTS</code> for a

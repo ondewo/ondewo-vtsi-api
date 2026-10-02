@@ -54,8 +54,8 @@ message, field and enum value is [docs/index.md](docs/index.md) (also `docs/inde
 | `Logs` | `logs.proto` | Captured logs of the per-call containers |
 | `Softphones` | `softphones.proto` | SIP accounts for humans using a softphone |
 
-Errors of the `Campaigns` and `Events` services, and of the campaign path of `StartCallers` /
-`StartScheduledCallers`, are reported as gRPC status codes, never in an `error_message` field.
+Errors of the `Campaigns` and `Events` services, and of `Calls.AddCallersToCampaign` /
+`Calls.AddScheduledCallersToCampaign`, are reported as gRPC status codes, never in an `error_message` field.
 
 ### Campaigns
 
@@ -64,10 +64,10 @@ running at the same time. 100 callers added to a campaign with `max_parallel_cal
 calls being set up or connected at once; the next call starts when one ends.
 
 * **Creating and filling a campaign.** `CreateCampaign` creates an empty campaign in state `CREATED`. Calls are added
-  by setting `campaign_assignment` on `StartCallersRequest` or `StartScheduledCallersRequest`: either an existing
-  campaign (`campaign_name`, or `campaign_display_name` = project + display name) or a new one (`new_campaign`). The
-  request is then atomic (the campaign, every campaign call and every scheduled caller are stored, or nothing is),
-  its callers are NOT started by the request itself, and `start_mode` (`CampaignStartMode`) decides whether the
+  with `Calls.AddCallersToCampaign` or `Calls.AddScheduledCallersToCampaign`, whose required `campaign_assignment`
+  names either an existing campaign (`campaign_name`, or `campaign_display_name` = project + display name) or a new
+  one (`new_campaign`). The request is atomic (the campaign, every campaign call and every scheduled caller are
+  stored, or nothing is), its callers are NOT started by the request itself, and `start_mode` (`CampaignStartMode`) decides whether the
   campaign starts dialling. A scheduled call of a campaign starts at or after its scheduled time AND when the
   campaign has a free slot.
 * **Names.** A campaign's resource name is `projects/<project_uuid>/campaigns/<campaign_uuid>`; an empty
@@ -90,8 +90,11 @@ calls being set up or connected at once; the next call starts when one ends.
   `in_progress + retry_pending` and `not_started`. `ListCampaignCalls` returns each call with its SIP status type,
   SIP status description, attempts and, on request, its attempt history. `StreamCampaignStatus` streams a snapshot of
   the project's campaigns and then every change.
-* **Rollout.** Do not set `campaign_assignment` before every server replica runs VTSI with API 9.0.0: an older
-  replica ignores the field and starts every caller of the request at once.
+* **Rolling updates fail closed.** A server replica that predates `AddCallersToCampaign` /
+  `AddScheduledCallersToCampaign` answers them with `UNIMPLEMENTED` and starts nothing. Do not fall back to
+  `StartCallers` on `UNIMPLEMENTED`; retry later. `StartCallers` / `StartScheduledCallers` no longer carry a
+  campaign field: development builds of 9.0.0 used field 3 for it, the number is `reserved`, and a server refuses
+  a request that still carries it with `INVALID_ARGUMENT` instead of starting every caller.
 
 ### Status streams
 
@@ -115,7 +118,9 @@ the campaign where known and a per-resource `resource_sequence`.
 * **Webhooks** (per project) are an `http://` or `https://` URL, `POST` (default) or `PUT`, a timeout and optional
   **custom headers**, e.g. `Authorization`. Each event is sent as one HTTP request whose JSON body is the
   `VtsiEventMessage`. Custom header VALUES are write-only: every RPC returns them as `********`, an update that sends
-  `********` keeps the stored value, and the server never logs them. `TestWebhook` sends one test event at once and
+  `********` keeps the stored value, and the server never logs them. Moving a webhook's `url` to another origin
+  (scheme, host or port) while headers are stored requires re-sending `custom_headers` with their real values (or
+  an empty map) in the same update; the stored values never follow the url to a new origin. `TestWebhook` sends one test event at once and
   reports the outcome.
 * **`SubscribeVtsiEvents`** streams a project's events, selected by a stored subscription or an inline
   `VtsiEventFilter`; after a disconnect, the last `resume_token` continues where the stream stopped, within the
