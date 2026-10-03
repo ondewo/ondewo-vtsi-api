@@ -20584,6 +20584,7 @@ The request message for <a href="index.html#ondewo.vtsi.Calls.AddCallersToCampai
 | vtsi_project_name | [string](#string) |  | VTSI project of the callers and the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | caller_requests | [StartCallerRequest](#ondewo.vtsi.StartCallerRequest) | repeated | Callers to add, at least one. The project&apos;s caller limit is checked per started call, not for the request. |
 | campaign_assignment | [CampaignAssignment](#ondewo.vtsi.CampaignAssignment) |  | Required. Which campaign, and whether it starts dialling. |
+| idempotency_key | [string](#string) |  | Optional client idempotency key: at most 255 printable ASCII characters, no whitespace; empty means no deduplication. A retry carrying the same key returns the response of the first successful attempt instead of running the request a second time, whichever server replica it reaches, for as long as the server retains the key (24 hours by default). The key is scoped to the VTSI project and to this RPC. Reusing a key with a different request is refused with <code>INVALID_ARGUMENT</code>. A retry that arrives while the first attempt is still running is answered <code>ABORTED</code> and may be retried later. A first attempt that fails stores nothing, so a retry after a failure runs the request again. A replayed response carries no <code>common_services_config</code>: the server keeps no second copy of the credentials it holds. To make a single caller or listener idempotent, send it as a batch of one. |
 
 
 
@@ -20619,6 +20620,7 @@ The request message for
 | vtsi_project_name | [string](#string) |  | VTSI project of the scheduled callers and the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | scheduled_caller_requests | [StartScheduledCallerRequest](#ondewo.vtsi.StartScheduledCallerRequest) | repeated | Scheduled callers to add, at least one. A scheduled caller of a campaign can be cancelled with <code>CancelScheduledCaller</code> only while its campaign call has no attempt dispatching or in progress. |
 | campaign_assignment | [CampaignAssignment](#ondewo.vtsi.CampaignAssignment) |  | Required. Which campaign, and whether it starts dialling. |
+| idempotency_key | [string](#string) |  | Optional client idempotency key: at most 255 printable ASCII characters, no whitespace; empty means no deduplication. A retry carrying the same key returns the response of the first successful attempt instead of running the request a second time, whichever server replica it reaches, for as long as the server retains the key (24 hours by default). The key is scoped to the VTSI project and to this RPC. Reusing a key with a different request is refused with <code>INVALID_ARGUMENT</code>. A retry that arrives while the first attempt is still running is answered <code>ABORTED</code> and may be retried later. A first attempt that fails stores nothing, so a retry after a failure runs the request again. A replayed response carries no <code>common_services_config</code>: the server keeps no second copy of the credentials it holds. To make a single caller or listener idempotent, send it as a batch of one. |
 
 
 
@@ -21645,6 +21647,7 @@ Request to start multiple callers
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | caller_requests | [StartCallerRequest](#ondewo.vtsi.StartCallerRequest) | repeated | Callers that should be started |
+| idempotency_key | [string](#string) |  | Optional client idempotency key: at most 255 printable ASCII characters, no whitespace; empty means no deduplication. A retry carrying the same key returns the response of the first successful attempt instead of running the request a second time, whichever server replica it reaches, for as long as the server retains the key (24 hours by default). The key is scoped to the VTSI project and to this RPC. Reusing a key with a different request is refused with <code>INVALID_ARGUMENT</code>. A retry that arrives while the first attempt is still running is answered <code>ABORTED</code> and may be retried later. A first attempt that fails stores nothing, so a retry after a failure runs the request again. A replayed response carries no <code>common_services_config</code>: the server keeps no second copy of the credentials it holds. To make a single caller or listener idempotent, send it as a batch of one. |
 
 
 
@@ -21712,6 +21715,7 @@ Request to start multiple listeners
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | listener_requests | [StartListenerRequest](#ondewo.vtsi.StartListenerRequest) | repeated | Listeners that should be started |
+| idempotency_key | [string](#string) |  | Optional client idempotency key: at most 255 printable ASCII characters, no whitespace; empty means no deduplication. A retry carrying the same key returns the response of the first successful attempt instead of running the request a second time, whichever server replica it reaches, for as long as the server retains the key (24 hours by default). The key is scoped to the VTSI project and to this RPC. Reusing a key with a different request is refused with <code>INVALID_ARGUMENT</code>. A retry that arrives while the first attempt is still running is answered <code>ABORTED</code> and may be retried later. A first attempt that fails stores nothing, so a retry after a failure runs the request again. A replayed response carries no <code>common_services_config</code>: the server keeps no second copy of the credentials it holds. To make a single caller or listener idempotent, send it as a batch of one. |
 
 
 
@@ -21779,6 +21783,7 @@ Request to start scheduled callers
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | scheduled_caller_requests | [StartScheduledCallerRequest](#ondewo.vtsi.StartScheduledCallerRequest) | repeated | requests to start scheduled callers |
+| idempotency_key | [string](#string) |  | Optional client idempotency key: at most 255 printable ASCII characters, no whitespace; empty means no deduplication. A retry carrying the same key returns the response of the first successful attempt instead of running the request a second time, whichever server replica it reaches, for as long as the server retains the key (24 hours by default). The key is scoped to the VTSI project and to this RPC. Reusing a key with a different request is refused with <code>INVALID_ARGUMENT</code>. A retry that arrives while the first attempt is still running is answered <code>ABORTED</code> and may be retried later. A first attempt that fails stores nothing, so a retry after a failure runs the request again. A replayed response carries no <code>common_services_config</code>: the server keeps no second copy of the credentials it holds. To make a single caller or listener idempotent, send it as a batch of one. |
 
 
 

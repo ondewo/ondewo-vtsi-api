@@ -96,6 +96,17 @@ calls being set up or connected at once; the next call starts when one ends.
   campaign field: development builds of 9.0.0 used field 3 for it, the number is `reserved`, and a server refuses
   a request that still carries it with `INVALID_ARGUMENT` instead of starting every caller.
 
+### Idempotent retries of batch requests
+
+`StartCallers`, `StartListeners`, `StartScheduledCallers`, `AddCallersToCampaign` and
+`AddScheduledCallersToCampaign` accept an optional `idempotency_key` (at most 255 printable ASCII characters, no
+whitespace). Send a fresh key, e.g. a UUID, with every new batch and the SAME key with every retry of it: a retry
+after a timeout or `UNAVAILABLE` then returns the first attempt's response instead of starting a second batch, on
+whichever server replica it lands. The same key with a different request is refused with `INVALID_ARGUMENT`; a retry
+while the first attempt is still running is answered `ABORTED` and should be retried after a pause. A failed first
+attempt stores nothing. A replayed response carries no `common_services_config`. The server keeps a key for 24 hours
+by default.
+
 ### Status streams
 
 `Calls.StreamCallerStatus`, `Calls.StreamListenerStatus` and `Calls.StreamScheduledCallerStatus` send a snapshot

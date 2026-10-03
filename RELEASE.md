@@ -195,6 +195,20 @@
   for one; switches are plain bools whose zero value is the safe default (`disabled`) or enums whose
   `*_UNSPECIFIED` value is the documented default.
 
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) Client idempotency keys for the five
+  batch-creating `Calls` RPCs: `string idempotency_key` on `StartCallersRequest` (field 4),
+  `StartListenersRequest` (3), `StartScheduledCallersRequest` (4), `AddCallersToCampaignRequest` (4) and
+  `AddScheduledCallersToCampaignRequest` (4). A client that retries after a timeout or `UNAVAILABLE` (when the
+  first attempt may in fact have succeeded) sends the same key and gets the FIRST attempt's response back
+  instead of a second batch, whichever server replica the retry reaches. The key is scoped to the project and
+  the RPC and retained by the server for 24 hours by default; the same key with a different request is
+  `INVALID_ARGUMENT`, a retry while the first attempt still runs is `ABORTED` (retry later), and a failed
+  first attempt stores nothing. A replayed response carries no `common_services_config`. Empty = no
+  deduplication, byte-for-byte the previous behaviour. The single-resource RPCs take no key: their request
+  messages are also the ITEMS of the batch requests, where a key would have no meaning; send a batch of one.
+  No `optional` keyword (the empty string already means "no key"), so `presence/expected_optional.txt` is
+  unchanged.
+
 ### Compatibility
 
 **Binary wire-compatible in BOTH directions. Source-breaking in every language. This is a MAJOR release
@@ -246,6 +260,10 @@ the sip client generated from the same sip-api commit, or the last installed cop
 nothing, so a campaign can never be dialled all at once by an old replica. Clients must NOT fall back to
 `StartCallers` on `UNIMPLEMENTED`; retry later. The new `Campaigns` and `Events` services and the three
 status streams answer `UNIMPLEMENTED` on an older replica too, which is harmless.
+
+**Idempotency keys are ignored by an older server replica.** A replica that predates `idempotency_key`
+skips it as an unknown field and runs the request, i.e. a retry reaching it during a rolling update behaves as
+before this release. Deduplication is guaranteed once every replica runs a server that reads the key.
 
 **Server behaviour documented in this release (no wire change).** `BaseServiceConfig.grpc_cert` is now
 REQUIRED for the S2T, NLU and T2S configs of a call unless the VTSI server runs with
