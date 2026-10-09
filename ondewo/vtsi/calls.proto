@@ -2327,11 +2327,12 @@ message Call {
     // Participants invited into the call. FULL view: all of them; SHALLOW view: those still ringing or joined
     repeated CallParticipant participants = 23;
 
-    // The last transfer attempt of the call; unset if there was none
+    // The last transfer attempt of the call; unset if there was none. Set in the SHALLOW and FULL views
     CallTransferRecord last_transfer = 24;
 
     // Identifier the call&apos;s SIP container minted for the call (<code>ondewo.sip.SipStatus.call_id</code>). Empty until
-    // the call was identified; call control requests are refused (<code>call-not-yet-identified</code>) until then
+    // the call was identified; call control requests are refused (<code>call-not-yet-identified</code>) until then.
+    // Set in the SHALLOW and FULL views
     string sip_call_id = 25;
 
 }

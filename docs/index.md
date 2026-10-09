@@ -21065,8 +21065,8 @@ Call
 | answering_machine_detection_end_description | [string](#string) | optional | Optional: Description of how a call ended by the answering machine detection (AMD) ended, i.e. the description of its terminal ondewo.sip.SipStatus.StatusType.OUTGOING_CALL_FINISHED status. One of "Answering machine detected with hang up", "Answering machine detected with left voice message and hang up", "Answering machine detected, call ended by the answering machine" or "Answering machine detected, call ended by the answering machine after leaving a voice message". Unset when AMD did not end the call |
 | media_control | [CallMediaControlState](#ondewo.vtsi.CallMediaControlState) |  | Media control state of the call (bot muted, listening paused, connected audio streams, joined participants). Set in the SHALLOW and FULL views |
 | participants | [CallParticipant](#ondewo.vtsi.CallParticipant) | repeated | Participants invited into the call. FULL view: all of them; SHALLOW view: those still ringing or joined |
-| last_transfer | [CallTransferRecord](#ondewo.vtsi.CallTransferRecord) |  | The last transfer attempt of the call; unset if there was none |
-| sip_call_id | [string](#string) |  | Identifier the call&apos;s SIP container minted for the call (<code>ondewo.sip.SipStatus.call_id</code>). Empty until the call was identified; call control requests are refused (<code>call-not-yet-identified</code>) until then |
+| last_transfer | [CallTransferRecord](#ondewo.vtsi.CallTransferRecord) |  | The last transfer attempt of the call; unset if there was none. Set in the SHALLOW and FULL views |
+| sip_call_id | [string](#string) |  | Identifier the call&apos;s SIP container minted for the call (<code>ondewo.sip.SipStatus.call_id</code>). Empty until the call was identified; call control requests are refused (<code>call-not-yet-identified</code>) until then. Set in the SHALLOW and FULL views |
 
 
 
