@@ -209,6 +209,55 @@
   No `optional` keyword (the empty string already means "no key"), so `presence/expected_optional.txt` is
   unchanged.
 
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) Call control on `Calls`, five new RPCs:
+  * `InviteToCall` / `RemoveCallParticipant`: invite a registered softphone account of the project into a
+    connected call (`ParticipantMode` `CONFERENCE`, the default, or `MONITOR`), and hang a participant up
+    again. `CallParticipant` carries the participant's id, account, mode, `ParticipantState`
+    (`RINGING`, `JOINED`, `FAILED`, `LEFT`), times, end reason, inviter and `BotPolicyOnJoin`. The default
+    policy is `KEEP`: Asterisk mixes caller, bot and participant and the bot keeps talking; `PAUSE` and
+    `PAUSE_LISTENING` silence or deafen it while a participant rings or is joined. When the bot's leg ends
+    every participant is hung up. Idempotent per `request_id`.
+  * `SetCallMediaControl`: mute the bot of a connected call and/or stop it listening, as a desired level
+    (`CallMediaSetting` `UNCHANGED` / `ON` / `OFF`, never a toggle); the response carries the effective
+    `CallMediaControlState` and `changed`.
+  * `StreamCallAudio` (bidirectional, native gRPC clients only) and `ListenCallAudio` (server stream,
+    grpc-web safe): live call audio, LINEAR16 mono 20 ms frames at 8 or 16 kHz, LISTEN or TALK; TALK requires
+    `take_over` (the bot is muted and deaf while the agent talks). Messages `StreamCallAudioConfig`,
+    `CallAudioFrame`, `StreamCallAudioRequest`, `StreamCallAudioResponse`, `CallAudioStarted`,
+    `CallAudioStats`, `CallAudioEnded`, `ListenCallAudioRequest`, enums `CallAudioMode`,
+    `CallAudioEndReason`. Browsers get listen-only plus a softphone to talk.
+
+  The supervision RPCs (`InviteToCall`, `SetCallMediaControl`, `StreamCallAudio`, `ListenCallAudio` and
+  `TransferCall` / `TransferCalls`) require the role `PROJECT_DEVELOPER` or higher and the Keycloak auth mode
+  `ENFORCE`; every action is audited. Refusals are real gRPC status codes with `reason=<token>` in the status
+  details, documented per RPC.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) Typed, truthful transfers.
+  `TransferCallRequest` gained `CallTarget target = 4` (one of `phone_number` in E.164, `softphone_account_name`,
+  `listener_name`, `listener_queue`; mutually exclusive with the legacy `transfer_id`, which is now validated
+  against `^\+?[A-Za-z0-9._-]{1,64}$`), `TransferMode mode = 5` (`BLIND`, the default, or `WARM`: ring the
+  target in first and leave only after it joined; Asterisk 22 only), `map<string, string> headers = 6`
+  (`X-ondewo-*` only, delivered through the dialplan) and `int32 ring_timeout_s = 7`.
+  `TransferCallResponse` gained `TransferOutcome outcome = 5` (`ACCEPTED`, `PENDING`, `TARGET_INVALID`,
+  `REFER_REJECTED`, `TIMEOUT`, `CALL_ENDED`, `CALL_SCOPE_MISMATCH`, `SIP_UNREACHABLE`), `resolved_target = 6`,
+  `sip_response_code = 7` and `error_reason = 8`. A refused REFER now keeps the call with the bot.
+  `VtsiProject` gained `repeated string transfer_phone_number_allowlist = 17` (E.164 numbers or prefixes;
+  empty = any E.164 number).
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) `Call` gained
+  `CallMediaControlState media_control = 22`, `repeated CallParticipant participants = 23`,
+  `CallTransferRecord last_transfer = 24` and `string sip_call_id = 25` (the per-call id minted by the call's
+  SIP container; call control is refused as `call-not-yet-identified` until it is known).
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) `VtsiEvent` gained
+  `VTSI_EVENT_CALL_PARTICIPANT_INVITED` (112), `_JOINED` (113), `_FAILED` (114), `_LEFT` (115),
+  `VTSI_EVENT_CALL_BOT_MUTED` (116), `_BOT_UNMUTED` (117), `VTSI_EVENT_CALL_LISTENING_PAUSED` (118),
+  `_LISTENING_RESUMED` (119), `VTSI_EVENT_CALL_AUDIO_STREAM_CONNECTED` (120) and `_DISCONNECTED` (121).
+  `VTSI_EVENT_CALL_TRANSFER_INITIATED` (105) is emitted on BLIND acceptance or when a WARM target starts
+  ringing, `VTSI_EVENT_CALL_TRANSFERRED` (106) at the terminal `Call transferred` edge, and
+  `VTSI_EVENT_CALL_TRANSFER_FAILED` (107) whenever the call was kept.
+
+  None of the call-control fields carries the `optional` keyword (tri-state enums instead, because ngx-grpc
+  flattens presence), so `presence/expected_optional.txt` is unchanged. Purely additive: no field, enum
+  value or RPC was renumbered or removed.
+
 ### Compatibility
 
 **Binary wire-compatible in BOTH directions. Source-breaking in every language. This is a MAJOR release
@@ -247,11 +296,13 @@ with `HasField` crashes on exactly the messages it is meant to classify. The det
 
 Three vendored API submodule pins do not move in this release: `ondewo-nlu-api` stays at `tags/7.1.0`,
 `ondewo-s2t-api` at `tags/7.5.0` and `ondewo-t2s-api` at `tags/6.6.0`. `ondewo-sip-api` moves from
-`tags/5.4.0` to the answering-machine-detection commit `33d03678221f6bef6bfa1216c5808f99b7d8573d`
-(a development pin, replaced by the released sip-api tag at release). That sip-api change is purely
-additive against 5.4.0 (`SipStatus.StatusType.OUTGOING_CALL_ANSWERING_MACHINE_DETECTED = 22`, non-terminal;
+`tags/5.4.0` to the sip-api 5.5.0 development line (a development commit pin, replaced by the released
+`tags/5.5.0` at release). That sip-api change is purely additive against 5.4.0: answering machine detection
+(`SipStatus.StatusType.OUTGOING_CALL_ANSWERING_MACHINE_DETECTED = 22`, non-terminal;
 `AnsweringMachineDetectionResult`, `SipStatus.amd_result`, `SipEndCallRequest.end_reason` and `amd_result`,
-the RPC `SipReportAnsweringMachineDetected`), and it means the vendored-proto
+the RPC `SipReportAnsweringMachineDetected`) and call control (`SipStatus.call_id`, `bot_muted`,
+`listening_paused`, `call_audio_streams`, `sip_response_code`, `SipTransferCallRequest.outcome_timeout_ms`,
+`END_CALL_REASON_TRANSFERRED`, the RPCs `SipSetCallMediaControl` and `SipStreamCallAudio`), and it means the vendored-proto
 lockstep rule DOES fire: a consumer installing `ondewo-vtsi-client` next to `ondewo-sip-client` must take
 the sip client generated from the same sip-api commit, or the last installed copy of `ondewo/sip` wins.
 
@@ -264,6 +315,12 @@ status streams answer `UNIMPLEMENTED` on an older replica too, which is harmless
 **Idempotency keys are ignored by an older server replica.** A replica that predates `idempotency_key`
 skips it as an unknown field and runs the request, i.e. a retry reaching it during a rolling update behaves as
 before this release. Deduplication is guaranteed once every replica runs a server that reads the key.
+
+**`TransferCall` / `TransferCalls` are supervision RPCs now.** They require `PROJECT_DEVELOPER` or higher
+and the auth mode `ENFORCE`; a technical user holding only `PROJECT_EXECUTOR` that transferred calls before
+is refused with `PERMISSION_DENIED`. A call container deployed before the server had a call-control key
+refuses the new call-control RPCs until it is recycled, and an older SIP image answers them as
+`FAILED_PRECONDITION` `reason=sip-image-too-old`.
 
 **Server behaviour documented in this release (no wire change).** `BaseServiceConfig.grpc_cert` is now
 REQUIRED for the S2T, NLU and T2S configs of a call unless the VTSI server runs with

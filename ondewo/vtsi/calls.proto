@@ -125,10 +125,31 @@ service Calls {
     // <p>Stops all Listener and Caller calls</p>
     rpc StopAllCalls (StopAllCallsRequest) returns (StopCallsResponse);
 
-    // <p>Transfer a call from a listener to another</p>
+    // <p>Transfer a call to a phone number, a softphone account, another listener or the listener queue.</p>
+    // <p>The target is either the typed <code>target</code> or the legacy raw <code>transfer_id</code>, never both. It is
+    // resolved and validated before anything is sent; an invalid target is answered with
+    // <code>TRANSFER_OUTCOME_TARGET_INVALID</code> and an <code>error_reason</code>, and the call is untouched.</p>
+    // <p><code>TRANSFER_MODE_BLIND</code> (default) sends a SIP REFER and reports its outcome: a refused REFER keeps the
+    // call with the bot. <code>TRANSFER_MODE_WARM</code> rings the target into the call first, and the bot leaves only
+    // after the target joined (Asterisk 22 only).</p>
+    // <p>Telephony outcomes (busy, no answer, REFER rejected) are successful RPCs carrying an <code>outcome</code>.
+    // Refusals before any side effect also return a gRPC status with <code>reason=&lt;token&gt;</code> in its details:
+    // <code>INVALID_ARGUMENT</code> (both targets set, malformed target), <code>NOT_FOUND</code> (call or target not
+    // found, including another project&apos;s), <code>FAILED_PRECONDITION</code> (<code>call-not-connected</code>,
+    // <code>amd-in-progress</code>, <code>call-not-yet-identified</code>, <code>participants-present</code>,
+    // <code>asterisk-version-unsupported</code>, <code>sip-image-too-old</code>), <code>ABORTED</code>
+    // (<code>transfer-in-progress</code>), <code>UNAVAILABLE</code> (<code>sip-unreachable</code>).</p>
+    // <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s
+    // Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or
+    // <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced.
+    // Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p>
     rpc TransferCall (TransferCallRequest) returns (TransferCallResponse);
 
-    // <p>Transfer a call from a listener to another</p>
+    // <p>Transfer several calls, each like <code>TransferCall</code>.</p>
+    // <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s
+    // Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or
+    // <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced.
+    // Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p>
     rpc TransferCalls (TransferCallsRequest) returns (TransferCallsResponse);
 
     // <p>Get call log for single call instance</p>
@@ -156,6 +177,78 @@ service Calls {
     // <code>StreamCallerStatus</code>. The snapshot holds every PENDING and FIRING scheduled caller
     // and those that finished in the last hour.</p>
     rpc StreamScheduledCallerStatus (StreamScheduledCallerStatusRequest) returns (stream StreamCallResourceStatusResponse);
+
+    //////////////////////////////////////////////////////////////////////////////
+    // Call control endpoints
+    //////////////////////////////////////////////////////////////////////////////
+
+    // <p>Invite a registered softphone account of the project into a connected call. Returns the participant in
+    // <code>PARTICIPANT_STATE_RINGING</code>; follow <code>Call.participants</code> or the events
+    // <code>VTSI_EVENT_CALL_PARTICIPANT_*</code> for JOINED, FAILED and LEFT.</p>
+    // <p><code>PARTICIPANT_MODE_CONFERENCE</code> (default) joins the softphone into the call: Asterisk mixes the caller,
+    // the bot and the participant, and by default the bot keeps talking and listening
+    // (<code>BOT_POLICY_ON_JOIN_KEEP</code>). <code>PARTICIPANT_MODE_MONITOR</code> lets the participant listen only.
+    // When the bot&apos;s leg ends, every participant is hung up; the caller is handed over only by a WARM
+    // <code>TransferCall</code>. Idempotent per <code>request_id</code>.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code>, <code>NOT_FOUND</code> (call or softphone account, including another
+    // project&apos;s), <code>FAILED_PRECONDITION</code> (<code>call-not-connected</code>, <code>amd-in-progress</code>,
+    // <code>softphone-not-registered</code>, <code>softphone-disabled</code>, <code>softphone-unrouted</code>,
+    // <code>call-not-yet-identified</code>, <code>bot-channel-ambiguous</code>, <code>asterisk-not-local</code>,
+    // <code>asterisk-version-unsupported</code>), <code>ALREADY_EXISTS</code> (the softphone is already ringing or joined),
+    // <code>ABORTED</code> (<code>transfer-in-progress</code>), <code>RESOURCE_EXHAUSTED</code> (participant cap),
+    // <code>UNAVAILABLE</code> (<code>asterisk-unreachable</code>).</p>
+    // <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s
+    // Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or
+    // <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced.
+    // Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p>
+    rpc InviteToCall (InviteToCallRequest) returns (InviteToCallResponse);
+
+    // <p>Hang up a participant of a call (ringing or joined). The participant ends as
+    // <code>PARTICIPANT_STATE_LEFT</code> with <code>end_reason = REMOVED</code>; the call and the bot are not
+    // affected.</p>
+    // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher. Audited like <code>InviteToCall</code>.</p>
+    rpc RemoveCallParticipant (RemoveCallParticipantRequest) returns (RemoveCallParticipantResponse);
+
+    // <p>Mute the bot of a connected call and/or stop it listening to the caller, or undo either. Every request sets a
+    // desired level and never toggles: a repeat answers <code>changed = false</code>. The bot stays muted while
+    // anything else (a TALK take-over of <code>StreamCallAudio</code>, a participant bot policy) also holds it muted.</p>
+    // <p>Errors as for <code>InviteToCall</code>, plus <code>FAILED_PRECONDITION</code> <code>reason=sip-image-too-old</code>,
+    // <code>ABORTED</code> <code>reason=call-control-busy</code> (another call-control request for the call is running)
+    // and <code>UNAVAILABLE</code> <code>reason=sip-unreachable</code> or <code>reason=csi-media-control-failed</code> (the
+    // bot did not apply the level: a requested pause is rolled back, a requested mute is kept).</p>
+    // <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s
+    // Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or
+    // <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced.
+    // Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p>
+    rpc SetCallMediaControl (SetCallMediaControlRequest) returns (SetCallMediaControlResponse);
+
+    // <p>Live audio of a connected call, both ways. The first request MUST be <code>config</code> (within 2 seconds).
+    // LISTEN receives the caller mixed with the bot. TALK sends the agent&apos;s audio to the caller and REQUIRES
+    // <code>take_over</code>: the bot is muted and does not listen while the stream is connected, and resumes when it
+    // ends; in TALK the agent hears the caller only. Audio is LINEAR16 little-endian mono in 20 ms frames.</p>
+    // <p>Bidirectional streaming: available to native gRPC clients (python, nodejs) only. Browser (grpc-web) clients
+    // use <code>ListenCallAudio</code>, plus a softphone (<code>InviteToCall</code>) to talk.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> (no or invalid <code>config</code>, TALK without
+    // <code>take_over</code>, wrong frame size), <code>NOT_FOUND</code>, <code>FAILED_PRECONDITION</code>
+    // (<code>call-not-connected</code>, <code>amd-in-progress</code>, <code>call-not-yet-identified</code>,
+    // <code>bot-still-speaking</code>, <code>sip-image-too-old</code>), <code>RESOURCE_EXHAUSTED</code> (stream cap, a
+    // second TALK). A normal end sends one <code>ended</code> message, then OK. A second <code>config</code> or audio
+    // sent in LISTEN mode ends the stream with <code>INVALID_ARGUMENT</code>. A client half-close ends the stream
+    // (<code>CALL_AUDIO_END_REASON_CLIENT_CLOSED</code>), so a listening client keeps its request stream open.</p>
+    // <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s
+    // Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or
+    // <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced.
+    // Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p>
+    rpc StreamCallAudio (stream StreamCallAudioRequest) returns (stream StreamCallAudioResponse);
+
+    // <p>Listen-only live audio of a connected call, like <code>StreamCallAudio</code> in LISTEN mode, as a server
+    // stream that grpc-web (browser) clients can consume. <code>config.mode</code> must be LISTEN or unspecified and
+    // <code>config.take_over</code> must be false, otherwise <code>INVALID_ARGUMENT</code> <code>reason=listen-only</code>.</p>
+    // <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s
+    // Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or
+    // <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced.
+    // Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p>
+    rpc ListenCallAudio (ListenCallAudioRequest) returns (stream StreamCallAudioResponse);
 
 }
 
@@ -1519,9 +1612,105 @@ message TransferCallRequest{
     // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     string call_name = 2;
 
-    // transfer_id to transfer the call to, so the number or voip number you want to be transferred too
+    // LEGACY raw target: the dialplan extension, voip number or phone number to transfer the call to. Validated against
+    // <code>^\+?[A-Za-z0-9._-]{1,64}$</code>. Mutually exclusive with <code>target</code>: setting both is
+    // <code>INVALID_ARGUMENT</code>
     string transfer_id = 3;
 
+    // Typed target of the transfer, resolved and validated by the server. Mutually exclusive with <code>transfer_id</code>
+    CallTarget target = 4;
+
+    // How to transfer. Unspecified means <code>TRANSFER_MODE_BLIND</code>
+    TransferMode mode = 5;
+
+    // Optional headers handed to the transfer target. Keys must match <code>X-ondewo-[A-Za-z0-9-]{1,64}</code>, at most 16
+    // entries, values at most 256 bytes. Merged over the call&apos;s own headers. They are delivered through the
+    // dialplan, not on the SIP REFER (Asterisk does not forward REFER headers to the target). Not delivered to a phone
+    // number target
+    map<string, string> headers = 6;
+
+    // WARM only: how long the target may ring, in seconds, <code>5</code> to <code>120</code>. <code>0</code> means
+    // <code>30</code>
+    int32 ring_timeout_s = 7;
+
+}
+
+// <p>Target of a transfer</p>
+message CallTarget {
+
+    // One of the following
+    oneof target {
+
+        // Phone number in E.164 form, e.g. <code>+4312345678</code> (<code>^\+[1-9][0-9]{6,14}$</code>). Any E.164 number
+        // is allowed unless the project configures <code>VtsiProject.transfer_phone_number_allowlist</code>
+        string phone_number = 1;
+
+        // A softphone account of the same project:
+        // <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;account_uuid&gt;</code></pre>. It must be enabled,
+        // routed and registered
+        string softphone_account_name = 2;
+
+        // A listener of the same project: <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>.
+        // The call goes to that listener&apos;s idle container; a busy listener is refused (<code>listener-busy</code>)
+        string listener_name = 3;
+
+        // The project&apos;s listener queue: any idle listener of the project takes the call
+        ListenerQueueTarget listener_queue = 4;
+    }
+}
+
+// <p>The project&apos;s listener queue as a transfer target. Carries no fields</p>
+message ListenerQueueTarget {}
+
+// <p>How a call is transferred</p>
+enum TransferMode {
+
+    // Same as <code>TRANSFER_MODE_BLIND</code>
+    TRANSFER_MODE_UNSPECIFIED = 0;
+
+    // SIP REFER: the caller is handed to the dialplan, which dials the target. A refused REFER keeps the call with the
+    // bot; once the REFER is accepted the bot leaves, and a target that is then busy or does not answer loses the
+    // caller
+    TRANSFER_MODE_BLIND = 1;
+
+    // The target is rung into the call first; the bot leaves only after the target joined, and keeps the call when the
+    // target is busy or does not answer. Requires an Asterisk 22 project
+    TRANSFER_MODE_WARM = 2;
+}
+
+// <p>Outcome of a transfer</p>
+enum TransferOutcome {
+
+    // No outcome recorded
+    TRANSFER_OUTCOME_UNSPECIFIED = 0;
+
+    // BLIND: the REFER was accepted and the bot left the call. WARM: the target answered and was bridged, and the bot
+    // left the call
+    TRANSFER_OUTCOME_ACCEPTED = 1;
+
+    // WARM: the target is ringing. Follow <code>VTSI_EVENT_CALL_TRANSFERRED</code> /
+    // <code>VTSI_EVENT_CALL_TRANSFER_FAILED</code> or <code>Call.last_transfer</code>
+    TRANSFER_OUTCOME_PENDING = 2;
+
+    // Refused before anything was sent; the call is untouched. <code>error_reason</code> says why
+    TRANSFER_OUTCOME_TARGET_INVALID = 3;
+
+    // The SIP server refused the REFER (including an unknown target extension); the call is KEPT with the bot.
+    // <code>sip_response_code</code> carries the code where known
+    TRANSFER_OUTCOME_REFER_REJECTED = 4;
+
+    // No answer to the REFER in time, or (WARM) the target did not answer; the call is KEPT with the bot
+    TRANSFER_OUTCOME_TIMEOUT = 5;
+
+    // The far end left the call during the attempt
+    TRANSFER_OUTCOME_CALL_ENDED = 6;
+
+    // The call this request names is no longer the call the container is serving (e.g. the next call of a persistent
+    // listener); nothing was sent
+    TRANSFER_OUTCOME_CALL_SCOPE_MISMATCH = 7;
+
+    // The call&apos;s SIP container could not be reached
+    TRANSFER_OUTCOME_SIP_UNREACHABLE = 8;
 }
 
 // Response to transfer a call to a phone number or voip number
@@ -1541,6 +1730,431 @@ message TransferCallResponse {
     // error message if you have any so if it's unhealthy
     string error_message = 4;
 
+    // Outcome of the transfer
+    TransferOutcome outcome = 5;
+
+    // The dialplan extension the target resolved to, e.g. <code>ondewo0007</code>, a softphone user name,
+    // <code>ondewoqueue</code> or the E.164 number
+    string resolved_target = 6;
+
+    // SIP response code of the REFER where known (<code>202</code> accepted, the refusal code otherwise), else
+    // <code>0</code>
+    int32 sip_response_code = 7;
+
+    // Stable reason token of a refusal or failure, e.g. <code>target-not-registered</code>, <code>listener-busy</code>,
+    // <code>queue-empty</code>, <code>self-transfer</code>, <code>number-not-allowed</code>; empty on success
+    string error_reason = 8;
+
+}
+
+// <p>Record of the last transfer attempt of a call</p>
+message CallTransferRecord {
+
+    // Requested typed target; unset for a legacy <code>transfer_id</code> transfer
+    CallTarget target = 1;
+
+    // The dialplan extension the target resolved to
+    string resolved_target = 2;
+
+    // Mode of the transfer
+    TransferMode mode = 3;
+
+    // Outcome of the transfer
+    TransferOutcome outcome = 4;
+
+    // SIP response code of the REFER where known, else <code>0</code>
+    int32 sip_response_code = 5;
+
+    // When the outcome was recorded
+    google.protobuf.Timestamp time = 6;
+}
+
+// <p>Desired setting of one media control flag of a call</p>
+enum CallMediaSetting {
+
+    // Leave the flag as it is
+    CALL_MEDIA_SETTING_UNCHANGED = 0;
+
+    // On: the bot speaks (<code>bot_voice</code>) or listens (<code>bot_listening</code>)
+    CALL_MEDIA_SETTING_ON = 1;
+
+    // Off: the bot is muted (<code>bot_voice</code>) or does not listen (<code>bot_listening</code>)
+    CALL_MEDIA_SETTING_OFF = 2;
+}
+
+// <p>Effective media control state of a call</p>
+message CallMediaControlState {
+
+    // The bot is muted (by an operator, a TALK take-over or a participant bot policy)
+    bool bot_muted = 1;
+
+    // The bot does not listen to the caller
+    bool listening_paused = 2;
+
+    // Number of connected <code>StreamCallAudio</code> / <code>ListenCallAudio</code> streams
+    int32 connected_audio_streams = 3;
+
+    // Number of joined participants
+    int32 joined_participants = 4;
+}
+
+// <p>How an invited participant takes part in a call</p>
+enum ParticipantMode {
+
+    // Same as <code>PARTICIPANT_MODE_CONFERENCE</code>
+    PARTICIPANT_MODE_UNSPECIFIED = 0;
+
+    // The participant is joined into the call: Asterisk mixes the caller, the bot and the participant
+    PARTICIPANT_MODE_CONFERENCE = 1;
+
+    // The participant listens only; the caller and the bot do not hear it
+    PARTICIPANT_MODE_MONITOR = 2;
+}
+
+// <p>What the bot does while a CONFERENCE participant is ringing or joined</p>
+enum BotPolicyOnJoin {
+
+    // Same as <code>BOT_POLICY_ON_JOIN_KEEP</code>: the bot keeps talking
+    BOT_POLICY_ON_JOIN_UNSPECIFIED = 0;
+
+    // The bot is muted and does not listen while at least one participant is ringing or joined
+    BOT_POLICY_ON_JOIN_PAUSE = 1;
+
+    // The bot may still speak, but does not hear the participant (nor the caller)
+    BOT_POLICY_ON_JOIN_PAUSE_LISTENING = 2;
+
+    // The bot keeps talking and listening, and it WILL answer what the participant says
+    BOT_POLICY_ON_JOIN_KEEP = 3;
+}
+
+// <p>State of an invited participant</p>
+enum ParticipantState {
+
+    // No state recorded
+    PARTICIPANT_STATE_UNSPECIFIED = 0;
+
+    // The participant&apos;s softphone is ringing
+    PARTICIPANT_STATE_RINGING = 1;
+
+    // The participant answered and is in the call
+    PARTICIPANT_STATE_JOINED = 2;
+
+    // The participant never joined; <code>end_reason</code> says why
+    PARTICIPANT_STATE_FAILED = 3;
+
+    // The participant left the call; <code>end_reason</code> says why
+    PARTICIPANT_STATE_LEFT = 4;
+}
+
+// <p>A participant invited into a call</p>
+message CallParticipant {
+
+    // Identifier of the participant, 9 digits, unique among the project&apos;s live invites
+    string participant_id = 1;
+
+    // The invited softphone account:
+    // <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;account_uuid&gt;</code></pre>
+    string softphone_account_name = 2;
+
+    // How the participant takes part
+    ParticipantMode mode = 3;
+
+    // State of the participant
+    ParticipantState state = 4;
+
+    // When the participant was invited
+    google.protobuf.Timestamp invited_at = 5;
+
+    // When the participant joined; unset if it never joined
+    google.protobuf.Timestamp joined_at = 6;
+
+    // When the participant failed or left; unset while ringing or joined
+    google.protobuf.Timestamp left_at = 7;
+
+    // Why the participant failed or left: <code>NOANSWER</code>, <code>BUSY</code>, <code>CHANUNAVAIL</code>,
+    // <code>CALL_ENDED</code>, <code>REMOVED</code>, <code>HANGUP</code>, <code>HANDED_OVER</code>,
+    // <code>JOIN_FAILED</code> or <code>TIMEOUT</code>
+    string end_reason = 8;
+
+    // Identity of who invited the participant (audit)
+    string invited_by = 9;
+
+    // Bot policy applied while this participant is ringing or joined
+    BotPolicyOnJoin bot_policy = 10;
+}
+
+// <p>Request to invite a softphone account into a call</p>
+message InviteToCallRequest {
+
+    // VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Name of the connected call to invite into
+    // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
+    // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
+    string call_name = 2;
+
+    // Softphone account of the same project to invite:
+    // <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;account_uuid&gt;</code></pre>
+    string softphone_account_name = 3;
+
+    // How the participant takes part. Unspecified means <code>PARTICIPANT_MODE_CONFERENCE</code>
+    ParticipantMode mode = 4;
+
+    // How long the softphone may ring, in seconds, <code>5</code> to <code>120</code>. <code>0</code> means <code>30</code>
+    int32 ring_timeout_s = 5;
+
+    // What the bot does while the participant is ringing or joined. Unspecified means <code>BOT_POLICY_ON_JOIN_KEEP</code>
+    // (the bot keeps talking)
+    BotPolicyOnJoin bot_policy = 6;
+
+    // Caller-ID display name shown on the softphone. Sanitized by the server; default
+    // <code>ONDEWO &lt;listener or caller name&gt;</code>
+    string caller_id_display_name = 7;
+
+    // Optional idempotency key: a repeated request with the same <code>call_name</code> and <code>request_id</code>
+    // returns the participant of the first request instead of inviting again
+    string request_id = 8;
+}
+
+// <p>Response of <code>InviteToCall</code></p>
+message InviteToCallResponse {
+
+    // VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Name of the call
+    string call_name = 2;
+
+    // The invited participant
+    CallParticipant participant = 3;
+
+    // error message if you have any
+    string error_message = 4;
+}
+
+// <p>Request to hang up a participant of a call</p>
+message RemoveCallParticipantRequest {
+
+    // VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Name of the call
+    string call_name = 2;
+
+    // Identifier of the participant (<code>CallParticipant.participant_id</code>)
+    string participant_id = 3;
+}
+
+// <p>Response of <code>RemoveCallParticipant</code></p>
+message RemoveCallParticipantResponse {
+
+    // VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Name of the call
+    string call_name = 2;
+
+    // The participant after the request
+    CallParticipant participant = 3;
+
+    // error message if you have any
+    string error_message = 4;
+}
+
+// <p>Request to mute the bot of a call and/or stop it listening</p>
+message SetCallMediaControlRequest {
+
+    // VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Name of the connected call
+    string call_name = 2;
+
+    // <code>CALL_MEDIA_SETTING_OFF</code> mutes the bot, <code>CALL_MEDIA_SETTING_ON</code> lets it speak again
+    CallMediaSetting bot_voice = 3;
+
+    // <code>CALL_MEDIA_SETTING_OFF</code> stops the bot listening, <code>CALL_MEDIA_SETTING_ON</code> resumes it
+    CallMediaSetting bot_listening = 4;
+}
+
+// <p>Response of <code>SetCallMediaControl</code></p>
+message SetCallMediaControlResponse {
+
+    // VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Name of the call
+    string call_name = 2;
+
+    // Effective media control state after the request
+    CallMediaControlState state = 3;
+
+    // <code>true</code> if the effective state changed
+    bool changed = 4;
+
+    // error message if you have any
+    string error_message = 5;
+}
+
+// <p>Mode of a call audio stream</p>
+enum CallAudioMode {
+
+    // Same as <code>CALL_AUDIO_MODE_LISTEN</code>
+    CALL_AUDIO_MODE_UNSPECIFIED = 0;
+
+    // Receive the call audio only
+    CALL_AUDIO_MODE_LISTEN = 1;
+
+    // Receive the caller&apos;s audio and send audio to the caller. Requires <code>take_over</code>
+    CALL_AUDIO_MODE_TALK = 2;
+}
+
+// <p>Configuration of a call audio stream. The first request of <code>StreamCallAudio</code></p>
+message StreamCallAudioConfig {
+
+    // VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Name of the connected call
+    string call_name = 2;
+
+    // Mode of the stream. Unspecified means LISTEN
+    CallAudioMode mode = 3;
+
+    // Sample rate in Hz in both directions: <code>8000</code> or <code>16000</code>; <code>0</code> means <code>16000</code>.
+    // Audio is LINEAR16 little-endian mono in 20 ms frames
+    int32 sample_rate_hz = 4;
+
+    // REQUIRED for TALK: the bot is muted and does not listen while the stream is connected
+    bool take_over = 5;
+
+    // Maximum duration of the stream in seconds. <code>0</code> means the server maximum
+    int32 max_duration_s = 6;
+}
+
+// <p>One 20 ms frame of call audio</p>
+message CallAudioFrame {
+
+    // LINEAR16 little-endian mono samples, <code>sample_rate_hz * 0.02 * 2</code> bytes
+    bytes pcm_s16le = 1;
+
+    // Monotonic sequence number of the frame within its direction of the stream
+    uint64 sequence = 2;
+}
+
+// <p>Request of <code>StreamCallAudio</code></p>
+message StreamCallAudioRequest {
+
+    // One of the following
+    oneof request {
+
+        // Configuration; must be the first request and is accepted only once
+        StreamCallAudioConfig config = 1;
+
+        // Agent audio to send to the caller (TALK only)
+        CallAudioFrame audio = 2;
+
+        // <code>true</code>: the agent&apos;s audio is not sent to the caller until set to <code>false</code>
+        bool agent_muted = 3;
+    }
+}
+
+// <p>Why a call audio stream ended</p>
+enum CallAudioEndReason {
+
+    // No reason recorded
+    CALL_AUDIO_END_REASON_UNSPECIFIED = 0;
+
+    // The client cancelled or half-closed the stream
+    CALL_AUDIO_END_REASON_CLIENT_CLOSED = 1;
+
+    // The call ended
+    CALL_AUDIO_END_REASON_CALL_ENDED = 2;
+
+    // The call was transferred
+    CALL_AUDIO_END_REASON_CALL_TRANSFERRED = 3;
+
+    // The maximum duration was reached
+    CALL_AUDIO_END_REASON_MAX_DURATION = 4;
+
+    // The client did not read the audio in time
+    CALL_AUDIO_END_REASON_STALLED = 5;
+
+    // An internal error ended the stream
+    CALL_AUDIO_END_REASON_INTERNAL = 6;
+}
+
+// <p>Sent once when a call audio stream is connected</p>
+message CallAudioStarted {
+
+    // Identifier of the stream (audit correlation)
+    string stream_id = 1;
+
+    // Sample rate in Hz in both directions
+    int32 sample_rate_hz = 2;
+
+    // Frame length in milliseconds
+    int32 frame_ms = 3;
+
+    // Mode of the stream
+    CallAudioMode mode = 4;
+}
+
+// <p>Counters of a call audio stream, sent periodically</p>
+message CallAudioStats {
+
+    // Frames sent to the client
+    uint64 frames_sent = 1;
+
+    // Frames to the client dropped because the client read too slowly
+    uint64 frames_dropped = 2;
+
+    // Frames received from the client
+    uint64 frames_received = 3;
+
+    // Playback underruns of the agent audio
+    uint64 underruns = 4;
+
+    // Frames from the client discarded because the playback buffer was full
+    uint64 frames_discarded = 5;
+}
+
+// <p>Sent once when a call audio stream ends normally</p>
+message CallAudioEnded {
+
+    // Why the stream ended
+    CallAudioEndReason reason = 1;
+
+    // Optional detail, a stable token
+    string detail = 2;
+}
+
+// <p>Response of <code>StreamCallAudio</code> and <code>ListenCallAudio</code></p>
+message StreamCallAudioResponse {
+
+    // One of the following
+    oneof response {
+
+        // The stream is connected
+        CallAudioStarted started = 1;
+
+        // Call audio
+        CallAudioFrame audio = 2;
+
+        // Stream counters
+        CallAudioStats stats = 3;
+
+        // The stream ended
+        CallAudioEnded ended = 4;
+    }
+}
+
+// <p>Request of <code>ListenCallAudio</code></p>
+message ListenCallAudioRequest {
+
+    // Configuration of the stream; <code>mode</code> must be LISTEN or unspecified and <code>take_over</code> false
+    StreamCallAudioConfig config = 1;
 }
 
 // Request to transfer multiple calls
@@ -1705,6 +2319,20 @@ message Call {
     // "Answering machine detected, call ended by the answering machine after leaving a voice message".
     // Unset when AMD did not end the call
     optional string answering_machine_detection_end_description = 21;
+
+    // Media control state of the call (bot muted, listening paused, connected audio streams, joined participants).
+    // Set in the SHALLOW and FULL views
+    CallMediaControlState media_control = 22;
+
+    // Participants invited into the call. FULL view: all of them; SHALLOW view: those still ringing or joined
+    repeated CallParticipant participants = 23;
+
+    // The last transfer attempt of the call; unset if there was none
+    CallTransferRecord last_transfer = 24;
+
+    // Identifier the call&apos;s SIP container minted for the call (<code>ondewo.sip.SipStatus.call_id</code>). Empty until
+    // the call was identified; call control requests are refused (<code>call-not-yet-identified</code>) until then
+    string sip_call_id = 25;
 
 }
 

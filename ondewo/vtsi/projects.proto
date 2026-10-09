@@ -105,6 +105,15 @@ message VtsiProject{
     // The number of deployed listeners in this project.
     int32 deployed_listeners = 16;
 
+    // OPTIONAL: Restricts the phone numbers a call of this project may be transferred to with
+    // <pre><code>TransferCall</code></pre> and a <pre><code>CallTarget.phone_number</code></pre>. Each entry is an E.164
+    // number or number prefix (<pre><code>^\+[1-9][0-9]{0,14}$</code></pre>), e.g. <pre><code>+43</code></pre> or
+    // <pre><code>+4312345678</code></pre>; a number is allowed when it starts with any entry. Empty: any valid E.164
+    // number is allowed. A refused number answers <pre><code>TRANSFER_OUTCOME_TARGET_INVALID</code></pre> with
+    // <pre><code>error_reason = number-not-allowed</code></pre> and nothing is sent.
+    // Updatable with the update mask path <pre><code>transfer_phone_number_allowlist</code></pre>.
+    repeated string transfer_phone_number_allowlist = 17;
+
 }
 
 // Status of a VtsiProject.

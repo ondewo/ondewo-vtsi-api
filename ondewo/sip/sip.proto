@@ -35,6 +35,17 @@ service Sip {
     rpc SipEndCall (SipEndCallRequest) returns (SipStatus) {};
 
     // <p>Transfers a call in an active SIP session for an account registered at a SIP server to another SIP account or phone number specified by <code>transfer_id</code></p>
+    // <p>Call scoping: when the gRPC metadatum <code>x-ondewo-expected-call-id</code> is present it must equal
+    // <code>SipStatus.call_id</code> of the ongoing call, otherwise the request is refused with
+    // <code>exception_name=CallScopeMismatch</code> and nothing is assigned to the status. When it is absent the request is
+    // accepted for backward compatibility (unless the server requires call scoping).</p>
+    // <p>With <code>outcome_timeout_ms = 0</code> the call is transferred as before (REFER, then an immediate hangup).
+    // With <code>outcome_timeout_ms &gt; 0</code> see <code>SipTransferCallRequest.outcome_timeout_ms</code>.</p>
+    // <p>Refused while invited participants are present (see
+    // <code>SipSetCallMediaControlRequest.participants_present</code>): a REFER into a conference bridge transfers every
+    // party in it, the invited participant included. The refusal is RETURNED as <code>TRANSFER_CALL_FAILED</code> with
+    // <code>exception_name=ParticipantsPresent</code> and <code>description = reason=participants-present</code>; nothing
+    // is sent and the call is kept.</p>
     rpc SipTransferCall (SipTransferCallRequest) returns (SipStatus) {};
 
     // <p>Registers s SIP account at a SIP server</p>
@@ -47,12 +58,18 @@ service Sip {
     rpc SipGetSipStatusHistory (google.protobuf.Empty) returns (SipStatusHistoryResponse) {};
 
     // <p>Plays wav files during an ongoing call of an active SIP session</p>
+    // <p>Call scoping as for <code>SipTransferCall</code>: a present <code>x-ondewo-expected-call-id</code> metadatum must
+    // match <code>SipStatus.call_id</code>.</p>
     rpc SipPlayWavFiles (SipPlayWavFilesRequest) returns (SipStatus) {};
 
     // <p>Mutes the microphone in an ongoing call of an active SIP session</p>
+    // <p>Call scoping as for <code>SipTransferCall</code>. Sent by the in-container speech-to-speech pipeline it mutes only
+    // the bot's own mixer slot; sent by a remote client it sets the operator mute of
+    // <code>SipSetCallMediaControl</code>, which the pipeline cannot undo.</p>
     rpc SipMute (google.protobuf.Empty) returns (SipStatus) {};
 
     // <p>Un-mutes the microphone in an ongoing call of an active SIP session</p>
+    // <p>Call scoping and the split between the pipeline's own mute and the operator mute as for <code>SipMute</code>.</p>
     rpc SipUnMute (google.protobuf.Empty) returns (SipStatus) {};
 
     // <p>Reports that answering machine detection reached a verdict on the ongoing outgoing call. Sets the status
@@ -61,6 +78,32 @@ service Sip {
     // Refused, and the current status left untouched, when no outgoing call is connected: the returned
     // <code>SipStatus</code> then carries the refusal in <code>exception_name</code> and <code>description</code></p>
     rpc SipReportAnsweringMachineDetected (SipReportAnsweringMachineDetectedRequest) returns (SipStatus) {};
+
+    // <p>Call-scoped operator media control of the ongoing call: mute the bot and/or pause its listening.</p>
+    // <p>Metadata REQUIRED: <code>x-ondewo-expected-call-id</code> (must equal <code>SipStatus.call_id</code> of the ongoing
+    // call) and <code>x-ondewo-sip-call-control-token</code> (the per-container call-control token).</p>
+    // <p>Every request sets a desired level per owner and never toggles; a repeat leaves the level unchanged. The bot is
+    // muted while ANY owner holds a mute, and its listening is paused while ANY owner holds a pause.</p>
+    // <p>Returns the live status with <code>call_id</code>, <code>bot_muted</code>, <code>listening_paused</code> and
+    // <code>call_audio_streams</code> filled. Refusals are RETURNED in <code>exception_name</code> /
+    // <code>description</code> (<code>CallScopeMismatch</code>, <code>CallControlUnauthenticated</code>,
+    // <code>NoOngoingCall</code>, <code>AmdInProgress</code>, <code>CsiMediaControlFailed</code>) and never assigned to
+    // the shared status. When the pipeline refuses or fails, a requested pause is rolled back and a requested mute is
+    // kept (the safe direction); the returned fields carry the actual level.</p>
+    rpc SipSetCallMediaControl (SipSetCallMediaControlRequest) returns (SipStatus) {};
+
+    // <p>Bidirectional live audio of the ongoing call.</p>
+    // <p>The first request MUST be <code>config</code> and must arrive within 2 seconds. Metadata as for
+    // <code>SipSetCallMediaControl</code>.</p>
+    // <p>LISTEN receives the caller (plus any conference participants) mixed with the bot. TALK sends the agent's audio to
+    // the caller; it REQUIRES <code>take_over</code>, i.e. the bot is muted and does not listen while the stream is
+    // connected, and in TALK the agent hears the caller only. Audio is LINEAR16 little-endian mono in 20 ms frames.</p>
+    // <p>gRPC status codes: <code>UNAUTHENTICATED</code> (token), <code>FAILED_PRECONDITION</code> (call id mismatch, no
+    // connected call, answering machine detection in progress, bot still speaking at TALK start),
+    // <code>INVALID_ARGUMENT</code> (missing or invalid <code>config</code>, wrong frame size),
+    // <code>RESOURCE_EXHAUSTED</code> (stream cap reached, a second TALK). A normal end sends one <code>ended</code>
+    // message and then OK.</p>
+    rpc SipStreamCallAudio (stream SipCallAudioRequest) returns (stream SipCallAudioResponse) {};
 }
 
 // <p>Ends an ongoing call of the active SIP session of the active SIP account</p>
@@ -86,6 +129,11 @@ message SipEndCallRequest{
         // the call is <code>OUTGOING_CALL_FINISHED</code> with the description
         // <code>Answering machine detected with left voice message and hang up</code>
         ANSWERING_MACHINE_VOICE_MESSAGE_LEFT = 2;
+
+        // A WARM transfer completed: the transfer target joined the call and the bot leaves it. The terminal status of
+        // the call is <code>*_CALL_FINISHED</code> with the description <code>Call transferred</code> and
+        // <code>transfer_call_id</code> set to the transfer target
+        END_CALL_REASON_TRANSFERRED = 3;
     }
 
     // Optional: reason for ending the call. Leave unset for an ordinary hangup
@@ -257,8 +305,32 @@ message SipTransferCallRequest{
     // The account name or phone number to transfer the call to
     string transfer_id = 1;
 
-    // The headers to include when transferring the call
+    // The headers to include when transferring the call. They are sent on the REFER. Note that Asterisk (res_pjsip,
+    // measured on 18.6 and 22) does NOT forward headers of a REFER to the transfer target: the target receives the
+    // headers of the transferred caller's original INVITE. Hand headers to the target through the dialplan instead
     map<string, string> headers = 2;
+
+    // <p>Optional. How long to wait, in milliseconds, for the SIP server's answer to the REFER before reporting the outcome.
+    // Clamped to 10000.</p>
+    // <p><code>0</code> (default): legacy behaviour, unchanged: REFER, then an immediate hangup.</p>
+    // <p><code>&gt; 0</code>: the call is kept until the outcome is known:</p>
+    // <ul>
+    //   <li>REFER accepted (<code>202</code>): the hangup is held for a short grace in which a terminal NOTIFY with a
+    //   <code>404</code> sipfrag (unknown target) still counts as a refusal; any other sipfrag, or none, means accepted.
+    //   The bot then hangs up and <code>TRANSFER_CALL_INITIATED</code> is returned with
+    //   <code>sip_response_code = 202</code>. The call ends as <code>*_CALL_FINISHED</code> with the description
+    //   <code>Call transferred</code>.</li>
+    //   <li>REFER refused (a final response <code>&gt;= 400</code>, or the <code>404</code> sipfrag above): the call is KEPT
+    //   with the bot, nothing is assigned to the shared status, and <code>TRANSFER_CALL_FAILED</code> is returned with
+    //   <code>description = reason=refer-rejected</code> and <code>sip_response_code</code> (<code>0</code> when the SIP
+    //   stack did not report the code, e.g. a declined REFER).</li>
+    //   <li>No answer within the timeout: the call is KEPT and <code>TRANSFER_CALL_FAILED</code> is returned with
+    //   <code>description = reason=refer-timeout</code>. A late acceptance still ends the bot's leg.</li>
+    //   <li>The call ended while waiting: <code>NO_ONGOING_CALL</code> is returned.</li>
+    // </ul>
+    // <p>A <code>202</code> does not mean the target answered: when the dialplan's dial to the target then fails (busy, no
+    // answer, unreachable) the caller is lost. Validate targets up front, or use a WARM transfer.</p>
+    uint32 outcome_timeout_ms = 3;
 }
 
 // <p>Status information for a SIP account, session, or call</p>
@@ -380,6 +452,28 @@ message SipStatus{
     // <code>HUMAN</code> verdict; unset otherwise
     AnsweringMachineDetectionResult amd_result = 11;
 
+    // Identifier of the ongoing call, minted per call: the value of the <code>X-ondewo-vtsi-caller-call-id</code> header of
+    // an outgoing call when present, otherwise a random UUID. Empty when no call is ongoing. Set on every status of the
+    // call, including the entries of <code>SipGetSipStatusHistory</code>. Clients send it back as the
+    // <code>x-ondewo-expected-call-id</code> metadatum to scope a request to this call
+    string call_id = 12;
+
+    // <code>true</code> while the bot is muted by an operator, a conference participant policy or a TALK take-over of
+    // <code>SipSetCallMediaControl</code> / <code>SipStreamCallAudio</code>. Not the bot's own pipeline mute
+    // (<code>MICROPHONE_MUTED</code>). Cleared when the call ends
+    bool bot_muted = 13;
+
+    // <code>true</code> while the bot does not listen to the caller (see <code>bot_muted</code> for who sets it). Cleared
+    // when the call ends
+    bool listening_paused = 14;
+
+    // Number of connected <code>SipStreamCallAudio</code> streams of the ongoing call
+    int32 call_audio_streams = 15;
+
+    // SIP response code of the last transfer attempt of the ongoing call (<code>202</code> when accepted, the refusal code
+    // otherwise, <code>0</code> when unknown). Call-scoped
+    int32 sip_response_code = 16;
+
 }
 
 // <p>History of SIP status</p>
@@ -387,6 +481,213 @@ message SipStatusHistoryResponse{
 
     // History of SIP status
     repeated SipStatus status_history = 1;
+}
+
+// <p>Desired setting of one media control flag</p>
+enum MediaControlSetting{
+
+    // Leave the flag as it is for this owner
+    MEDIA_CONTROL_SETTING_UNCHANGED = 0;
+
+    // The flag is on: the bot speaks (<code>bot_voice</code>) or the bot listens (<code>bot_listening</code>)
+    MEDIA_CONTROL_SETTING_ON = 1;
+
+    // The flag is off: the bot is muted (<code>bot_voice</code>) or the bot's listening is paused (<code>bot_listening</code>)
+    MEDIA_CONTROL_SETTING_OFF = 2;
+}
+
+// <p>Owner of a media control hold. Each owner holds its own mute and pause; releasing one owner's hold never releases
+// another owner's</p>
+enum MediaControlOwner{
+
+    // Same as <code>MEDIA_CONTROL_OWNER_OPERATOR</code>
+    MEDIA_CONTROL_OWNER_UNSPECIFIED = 0;
+
+    // An operator, e.g. a supervisor muting the bot
+    MEDIA_CONTROL_OWNER_OPERATOR = 1;
+
+    // The bot policy of invited conference participants, set while at least one participant is ringing or joined. Its
+    // hold mutes or pauses the bot only when a participant's bot policy asks for it; it also carries
+    // <code>SipSetCallMediaControlRequest.participants_present</code>
+    MEDIA_CONTROL_OWNER_PARTICIPANT = 2;
+}
+
+// <p>Request of <code>SipSetCallMediaControl</code></p>
+message SipSetCallMediaControlRequest{
+
+    // <code>MEDIA_CONTROL_SETTING_ON</code>: the bot speaks. <code>MEDIA_CONTROL_SETTING_OFF</code>: the bot is muted
+    MediaControlSetting bot_voice = 1;
+
+    // <code>MEDIA_CONTROL_SETTING_ON</code>: caller audio reaches speech-to-text. <code>MEDIA_CONTROL_SETTING_OFF</code>:
+    // listening is paused
+    MediaControlSetting bot_listening = 2;
+
+    // Owner whose hold is set
+    MediaControlOwner owner = 3;
+
+    // <p>Only for <code>MEDIA_CONTROL_OWNER_PARTICIPANT</code>, ignored for every other owner: whether at least one
+    // invited participant is ringing or joined. Every participant request carries the full value, so the request that
+    // reports the last participant gone sends <code>false</code>.</p>
+    // <p>While participants are present (this flag, or a mute or pause held by the participant owner)
+    // <code>SipTransferCall</code> is refused with <code>exception_name=ParticipantsPresent</code>, because a REFER
+    // into a conference bridge transfers every party in it. A request that would mark participants present while a
+    // transfer of the call is in flight is refused with <code>exception_name=TransferInProgress</code> and changes
+    // nothing. Cleared when the call ends</p>
+    bool participants_present = 4;
+}
+
+// <p>Mode of a <code>SipStreamCallAudio</code> stream</p>
+enum SipCallAudioMode{
+
+    // Same as <code>SIP_CALL_AUDIO_MODE_LISTEN</code>
+    SIP_CALL_AUDIO_MODE_UNSPECIFIED = 0;
+
+    // Receive the call audio only
+    SIP_CALL_AUDIO_MODE_LISTEN = 1;
+
+    // Receive the caller's audio and send audio to the caller. Requires <code>take_over</code>
+    SIP_CALL_AUDIO_MODE_TALK = 2;
+}
+
+// <p>Configuration of a <code>SipStreamCallAudio</code> stream. Must be the first request of the stream</p>
+message SipCallAudioConfig{
+
+    // Mode of the stream. Unspecified means LISTEN
+    SipCallAudioMode mode = 1;
+
+    // Sample rate in Hz of the audio in both directions: <code>8000</code> or <code>16000</code>. <code>0</code> means
+    // <code>16000</code>
+    int32 sample_rate_hz = 2;
+
+    // Frame length in milliseconds. Only <code>20</code> is supported; <code>0</code> means <code>20</code>
+    int32 frame_ms = 3;
+
+    // REQUIRED for TALK: the bot is muted and does not listen while the stream is connected. Released when the stream
+    // ends
+    bool take_over = 4;
+
+    // Identifier of the stream for logs and audit correlation, minted by the client (a UUID)
+    string stream_id = 5;
+
+    // Maximum duration of the stream in seconds. <code>0</code> means the server default (3600)
+    int32 max_duration_s = 6;
+}
+
+// <p>One frame of call audio</p>
+message SipCallAudioFrame{
+
+    // LINEAR16 little-endian mono samples of one frame, i.e. <code>sample_rate_hz * frame_ms / 1000 * 2</code> bytes
+    bytes pcm_s16le = 1;
+
+    // Monotonic sequence number of the frame within its direction of the stream
+    uint64 sequence = 2;
+}
+
+// <p>Request of <code>SipStreamCallAudio</code></p>
+message SipCallAudioRequest{
+
+    // One of the following
+    oneof request{
+
+        // Configuration; must be the first request and is accepted only once
+        SipCallAudioConfig config = 1;
+
+        // Agent audio to send to the caller (TALK only)
+        SipCallAudioFrame audio = 2;
+
+        // <code>true</code>: the agent's audio is not sent to the caller (silence instead) until set to <code>false</code>
+        bool agent_muted = 3;
+    }
+}
+
+// <p>Why a <code>SipStreamCallAudio</code> stream ended</p>
+enum SipCallAudioEndReason{
+
+    // No reason recorded
+    SIP_CALL_AUDIO_END_REASON_UNSPECIFIED = 0;
+
+    // The client cancelled or half-closed the stream
+    SIP_CALL_AUDIO_END_REASON_CLIENT_CLOSED = 1;
+
+    // The call ended
+    SIP_CALL_AUDIO_END_REASON_CALL_ENDED = 2;
+
+    // The call was transferred
+    SIP_CALL_AUDIO_END_REASON_CALL_TRANSFERRED = 3;
+
+    // <code>max_duration_s</code> was reached
+    SIP_CALL_AUDIO_END_REASON_MAX_DURATION = 4;
+
+    // The client did not read the audio in time
+    SIP_CALL_AUDIO_END_REASON_STALLED = 5;
+
+    // An internal error ended the stream
+    SIP_CALL_AUDIO_END_REASON_INTERNAL = 6;
+}
+
+// <p>Sent once when a <code>SipStreamCallAudio</code> stream is connected</p>
+message SipCallAudioStarted{
+
+    // Identifier of the stream
+    string stream_id = 1;
+
+    // Sample rate in Hz of the audio in both directions
+    int32 sample_rate_hz = 2;
+
+    // Frame length in milliseconds
+    int32 frame_ms = 3;
+
+    // Mode of the stream
+    SipCallAudioMode mode = 4;
+}
+
+// <p>Counters of a <code>SipStreamCallAudio</code> stream, sent periodically</p>
+message SipCallAudioStats{
+
+    // Frames sent to the client
+    uint64 frames_sent = 1;
+
+    // Frames to the client dropped because the client read too slowly
+    uint64 frames_dropped = 2;
+
+    // Frames received from the client
+    uint64 frames_received = 3;
+
+    // Playback underruns of the agent audio (silence was played)
+    uint64 underruns = 4;
+
+    // Frames from the client discarded because the playback buffer was full
+    uint64 frames_discarded = 5;
+}
+
+// <p>Sent once when a <code>SipStreamCallAudio</code> stream ends normally</p>
+message SipCallAudioEnded{
+
+    // Why the stream ended
+    SipCallAudioEndReason reason = 1;
+
+    // Optional detail, a stable token
+    string detail = 2;
+}
+
+// <p>Response of <code>SipStreamCallAudio</code></p>
+message SipCallAudioResponse{
+
+    // One of the following
+    oneof response{
+
+        // The stream is connected
+        SipCallAudioStarted started = 1;
+
+        // Call audio
+        SipCallAudioFrame audio = 2;
+
+        // Stream counters
+        SipCallAudioStats stats = 3;
+
+        // The stream ended
+        SipCallAudioEnded ended = 4;
+    }
 }
 
 // <p>Plays a list of wav files</p>

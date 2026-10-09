@@ -975,10 +975,18 @@
   
 - [ondewo/sip/sip.proto](#ondewo/sip/sip.proto)
     - [AnsweringMachineDetectionResult](#ondewo.sip.AnsweringMachineDetectionResult)
+    - [SipCallAudioConfig](#ondewo.sip.SipCallAudioConfig)
+    - [SipCallAudioEnded](#ondewo.sip.SipCallAudioEnded)
+    - [SipCallAudioFrame](#ondewo.sip.SipCallAudioFrame)
+    - [SipCallAudioRequest](#ondewo.sip.SipCallAudioRequest)
+    - [SipCallAudioResponse](#ondewo.sip.SipCallAudioResponse)
+    - [SipCallAudioStarted](#ondewo.sip.SipCallAudioStarted)
+    - [SipCallAudioStats](#ondewo.sip.SipCallAudioStats)
     - [SipEndCallRequest](#ondewo.sip.SipEndCallRequest)
     - [SipPlayWavFilesRequest](#ondewo.sip.SipPlayWavFilesRequest)
     - [SipRegisterAccountRequest](#ondewo.sip.SipRegisterAccountRequest)
     - [SipReportAnsweringMachineDetectedRequest](#ondewo.sip.SipReportAnsweringMachineDetectedRequest)
+    - [SipSetCallMediaControlRequest](#ondewo.sip.SipSetCallMediaControlRequest)
     - [SipStartCallRequest](#ondewo.sip.SipStartCallRequest)
     - [SipStartCallRequest.HeadersEntry](#ondewo.sip.SipStartCallRequest.HeadersEntry)
     - [SipStartSessionRequest](#ondewo.sip.SipStartSessionRequest)
@@ -991,6 +999,10 @@
     - [AnsweringMachineDetectionResult.ActionTaken](#ondewo.sip.AnsweringMachineDetectionResult.ActionTaken)
     - [AnsweringMachineDetectionResult.Cause](#ondewo.sip.AnsweringMachineDetectionResult.Cause)
     - [AnsweringMachineDetectionResult.Verdict](#ondewo.sip.AnsweringMachineDetectionResult.Verdict)
+    - [MediaControlOwner](#ondewo.sip.MediaControlOwner)
+    - [MediaControlSetting](#ondewo.sip.MediaControlSetting)
+    - [SipCallAudioEndReason](#ondewo.sip.SipCallAudioEndReason)
+    - [SipCallAudioMode](#ondewo.sip.SipCallAudioMode)
     - [SipEndCallRequest.EndCallReason](#ondewo.sip.SipEndCallRequest.EndCallReason)
     - [SipStatus.StatusType](#ondewo.sip.SipStatus.StatusType)
   
@@ -1076,8 +1088,16 @@
     - [AudioObjectStorageServicesActivationConfig](#ondewo.vtsi.AudioObjectStorageServicesActivationConfig)
     - [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig)
     - [Call](#ondewo.vtsi.Call)
+    - [CallAudioEnded](#ondewo.vtsi.CallAudioEnded)
+    - [CallAudioFrame](#ondewo.vtsi.CallAudioFrame)
+    - [CallAudioStarted](#ondewo.vtsi.CallAudioStarted)
+    - [CallAudioStats](#ondewo.vtsi.CallAudioStats)
     - [CallFilter](#ondewo.vtsi.CallFilter)
+    - [CallMediaControlState](#ondewo.vtsi.CallMediaControlState)
+    - [CallParticipant](#ondewo.vtsi.CallParticipant)
     - [CallResourceStatus](#ondewo.vtsi.CallResourceStatus)
+    - [CallTarget](#ondewo.vtsi.CallTarget)
+    - [CallTransferRecord](#ondewo.vtsi.CallTransferRecord)
     - [Caller](#ondewo.vtsi.Caller)
     - [CancelScheduledCallerRequest](#ondewo.vtsi.CancelScheduledCallerRequest)
     - [CancelScheduledCallerResponse](#ondewo.vtsi.CancelScheduledCallerResponse)
@@ -1097,6 +1117,8 @@
     - [GetListenerRequest](#ondewo.vtsi.GetListenerRequest)
     - [GetScheduledCallerRequest](#ondewo.vtsi.GetScheduledCallerRequest)
     - [InterruptionHandlingConfig](#ondewo.vtsi.InterruptionHandlingConfig)
+    - [InviteToCallRequest](#ondewo.vtsi.InviteToCallRequest)
+    - [InviteToCallResponse](#ondewo.vtsi.InviteToCallResponse)
     - [ListCallersRequest](#ondewo.vtsi.ListCallersRequest)
     - [ListCallersResponse](#ondewo.vtsi.ListCallersResponse)
     - [ListCallsRequest](#ondewo.vtsi.ListCallsRequest)
@@ -1105,17 +1127,23 @@
     - [ListListenersResponse](#ondewo.vtsi.ListListenersResponse)
     - [ListScheduledCallersRequest](#ondewo.vtsi.ListScheduledCallersRequest)
     - [ListScheduledCallersResponse](#ondewo.vtsi.ListScheduledCallersResponse)
+    - [ListenCallAudioRequest](#ondewo.vtsi.ListenCallAudioRequest)
     - [Listener](#ondewo.vtsi.Listener)
+    - [ListenerQueueTarget](#ondewo.vtsi.ListenerQueueTarget)
     - [MessageBrokerConfig](#ondewo.vtsi.MessageBrokerConfig)
     - [MessageBrokerServicesActivationConfig](#ondewo.vtsi.MessageBrokerServicesActivationConfig)
     - [NluVtsiCallbacks](#ondewo.vtsi.NluVtsiCallbacks)
     - [NluVtsiConfig](#ondewo.vtsi.NluVtsiConfig)
     - [RabbitMqConfig](#ondewo.vtsi.RabbitMqConfig)
+    - [RemoveCallParticipantRequest](#ondewo.vtsi.RemoveCallParticipantRequest)
+    - [RemoveCallParticipantResponse](#ondewo.vtsi.RemoveCallParticipantResponse)
     - [ResponseTimingConfig](#ondewo.vtsi.ResponseTimingConfig)
     - [S2tVtsiCallbacks](#ondewo.vtsi.S2tVtsiCallbacks)
     - [S2tVtsiConfig](#ondewo.vtsi.S2tVtsiConfig)
     - [ScheduledCaller](#ondewo.vtsi.ScheduledCaller)
     - [ServiceStatus](#ondewo.vtsi.ServiceStatus)
+    - [SetCallMediaControlRequest](#ondewo.vtsi.SetCallMediaControlRequest)
+    - [SetCallMediaControlResponse](#ondewo.vtsi.SetCallMediaControlResponse)
     - [SipBaseConfig](#ondewo.vtsi.SipBaseConfig)
     - [SipCallerConfig](#ondewo.vtsi.SipCallerConfig)
     - [SipCallerConfig.SipHeadersEntry](#ondewo.vtsi.SipCallerConfig.SipHeadersEntry)
@@ -1145,6 +1173,9 @@
     - [StopListenerResponse](#ondewo.vtsi.StopListenerResponse)
     - [StopListenersRequest](#ondewo.vtsi.StopListenersRequest)
     - [StopListenersResponse](#ondewo.vtsi.StopListenersResponse)
+    - [StreamCallAudioConfig](#ondewo.vtsi.StreamCallAudioConfig)
+    - [StreamCallAudioRequest](#ondewo.vtsi.StreamCallAudioRequest)
+    - [StreamCallAudioResponse](#ondewo.vtsi.StreamCallAudioResponse)
     - [StreamCallResourceStatusResponse](#ondewo.vtsi.StreamCallResourceStatusResponse)
     - [StreamCallerStatusRequest](#ondewo.vtsi.StreamCallerStatusRequest)
     - [StreamListenerStatusRequest](#ondewo.vtsi.StreamListenerStatusRequest)
@@ -1152,6 +1183,7 @@
     - [T2sVtsiCallbacks](#ondewo.vtsi.T2sVtsiCallbacks)
     - [T2sVtsiConfig](#ondewo.vtsi.T2sVtsiConfig)
     - [TransferCallRequest](#ondewo.vtsi.TransferCallRequest)
+    - [TransferCallRequest.HeadersEntry](#ondewo.vtsi.TransferCallRequest.HeadersEntry)
     - [TransferCallResponse](#ondewo.vtsi.TransferCallResponse)
     - [TransferCallsRequest](#ondewo.vtsi.TransferCallsRequest)
     - [TransferCallsResponse](#ondewo.vtsi.TransferCallsResponse)
@@ -1160,10 +1192,18 @@
   
     - [AnsweringMachineDetectionConfig.AmdAction](#ondewo.vtsi.AnsweringMachineDetectionConfig.AmdAction)
     - [AnsweringMachineDetectionConfig.AmdSensitivity](#ondewo.vtsi.AnsweringMachineDetectionConfig.AmdSensitivity)
+    - [BotPolicyOnJoin](#ondewo.vtsi.BotPolicyOnJoin)
+    - [CallAudioEndReason](#ondewo.vtsi.CallAudioEndReason)
+    - [CallAudioMode](#ondewo.vtsi.CallAudioMode)
+    - [CallMediaSetting](#ondewo.vtsi.CallMediaSetting)
     - [CallStatus](#ondewo.vtsi.CallStatus)
     - [CallType](#ondewo.vtsi.CallType)
     - [CallView](#ondewo.vtsi.CallView)
+    - [ParticipantMode](#ondewo.vtsi.ParticipantMode)
+    - [ParticipantState](#ondewo.vtsi.ParticipantState)
     - [ScheduledCallerStatus](#ondewo.vtsi.ScheduledCallerStatus)
+    - [TransferMode](#ondewo.vtsi.TransferMode)
+    - [TransferOutcome](#ondewo.vtsi.TransferOutcome)
     - [TurnDetectionConfig.TurnDetectionMode](#ondewo.vtsi.TurnDetectionConfig.TurnDetectionMode)
     - [TurnDetectionConfig.TurnEagerness](#ondewo.vtsi.TurnDetectionConfig.TurnEagerness)
   
@@ -19026,6 +19066,130 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 
 
 
+<a name="ondewo.sip.SipCallAudioConfig"></a>
+
+### SipCallAudioConfig
+<p>Configuration of a <code>SipStreamCallAudio</code> stream. Must be the first request of the stream</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| mode | [SipCallAudioMode](#ondewo.sip.SipCallAudioMode) |  | Mode of the stream. Unspecified means LISTEN |
+| sample_rate_hz | [int32](#int32) |  | Sample rate in Hz of the audio in both directions: <code>8000</code> or <code>16000</code>. <code>0</code> means <code>16000</code> |
+| frame_ms | [int32](#int32) |  | Frame length in milliseconds. Only <code>20</code> is supported; <code>0</code> means <code>20</code> |
+| take_over | [bool](#bool) |  | REQUIRED for TALK: the bot is muted and does not listen while the stream is connected. Released when the stream ends |
+| stream_id | [string](#string) |  | Identifier of the stream for logs and audit correlation, minted by the client (a UUID) |
+| max_duration_s | [int32](#int32) |  | Maximum duration of the stream in seconds. <code>0</code> means the server default (3600) |
+
+
+
+
+
+
+<a name="ondewo.sip.SipCallAudioEnded"></a>
+
+### SipCallAudioEnded
+<p>Sent once when a <code>SipStreamCallAudio</code> stream ends normally</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| reason | [SipCallAudioEndReason](#ondewo.sip.SipCallAudioEndReason) |  | Why the stream ended |
+| detail | [string](#string) |  | Optional detail, a stable token |
+
+
+
+
+
+
+<a name="ondewo.sip.SipCallAudioFrame"></a>
+
+### SipCallAudioFrame
+<p>One frame of call audio</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| pcm_s16le | [bytes](#bytes) |  | LINEAR16 little-endian mono samples of one frame, i.e. <code>sample_rate_hz * frame_ms / 1000 * 2</code> bytes |
+| sequence | [uint64](#uint64) |  | Monotonic sequence number of the frame within its direction of the stream |
+
+
+
+
+
+
+<a name="ondewo.sip.SipCallAudioRequest"></a>
+
+### SipCallAudioRequest
+<p>Request of <code>SipStreamCallAudio</code></p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| config | [SipCallAudioConfig](#ondewo.sip.SipCallAudioConfig) |  | Configuration; must be the first request and is accepted only once |
+| audio | [SipCallAudioFrame](#ondewo.sip.SipCallAudioFrame) |  | Agent audio to send to the caller (TALK only) |
+| agent_muted | [bool](#bool) |  | <code>true</code>: the agent's audio is not sent to the caller (silence instead) until set to <code>false</code> |
+
+
+
+
+
+
+<a name="ondewo.sip.SipCallAudioResponse"></a>
+
+### SipCallAudioResponse
+<p>Response of <code>SipStreamCallAudio</code></p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| started | [SipCallAudioStarted](#ondewo.sip.SipCallAudioStarted) |  | The stream is connected |
+| audio | [SipCallAudioFrame](#ondewo.sip.SipCallAudioFrame) |  | Call audio |
+| stats | [SipCallAudioStats](#ondewo.sip.SipCallAudioStats) |  | Stream counters |
+| ended | [SipCallAudioEnded](#ondewo.sip.SipCallAudioEnded) |  | The stream ended |
+
+
+
+
+
+
+<a name="ondewo.sip.SipCallAudioStarted"></a>
+
+### SipCallAudioStarted
+<p>Sent once when a <code>SipStreamCallAudio</code> stream is connected</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| stream_id | [string](#string) |  | Identifier of the stream |
+| sample_rate_hz | [int32](#int32) |  | Sample rate in Hz of the audio in both directions |
+| frame_ms | [int32](#int32) |  | Frame length in milliseconds |
+| mode | [SipCallAudioMode](#ondewo.sip.SipCallAudioMode) |  | Mode of the stream |
+
+
+
+
+
+
+<a name="ondewo.sip.SipCallAudioStats"></a>
+
+### SipCallAudioStats
+<p>Counters of a <code>SipStreamCallAudio</code> stream, sent periodically</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| frames_sent | [uint64](#uint64) |  | Frames sent to the client |
+| frames_dropped | [uint64](#uint64) |  | Frames to the client dropped because the client read too slowly |
+| frames_received | [uint64](#uint64) |  | Frames received from the client |
+| underruns | [uint64](#uint64) |  | Playback underruns of the agent audio (silence was played) |
+| frames_discarded | [uint64](#uint64) |  | Frames from the client discarded because the playback buffer was full |
+
+
+
+
+
+
 <a name="ondewo.sip.SipEndCallRequest"></a>
 
 ### SipEndCallRequest
@@ -19085,6 +19249,24 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | amd_result | [AnsweringMachineDetectionResult](#ondewo.sip.AnsweringMachineDetectionResult) |  | Result of the answering machine detection. Written to <code>SipStatus.amd_result</code> of the <code>OUTGOING_CALL_ANSWERING_MACHINE_DETECTED</code> status of the call |
+
+
+
+
+
+
+<a name="ondewo.sip.SipSetCallMediaControlRequest"></a>
+
+### SipSetCallMediaControlRequest
+<p>Request of <code>SipSetCallMediaControl</code></p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| bot_voice | [MediaControlSetting](#ondewo.sip.MediaControlSetting) |  | <code>MEDIA_CONTROL_SETTING_ON</code>: the bot speaks. <code>MEDIA_CONTROL_SETTING_OFF</code>: the bot is muted |
+| bot_listening | [MediaControlSetting](#ondewo.sip.MediaControlSetting) |  | <code>MEDIA_CONTROL_SETTING_ON</code>: caller audio reaches speech-to-text. <code>MEDIA_CONTROL_SETTING_OFF</code>: listening is paused |
+| owner | [MediaControlOwner](#ondewo.sip.MediaControlOwner) |  | Owner whose hold is set |
+| participants_present | [bool](#bool) |  | <p>Only for <code>MEDIA_CONTROL_OWNER_PARTICIPANT</code>, ignored for every other owner: whether at least one invited participant is ringing or joined. Every participant request carries the full value, so the request that reports the last participant gone sends <code>false</code>.</p> <p>While participants are present (this flag, or a mute or pause held by the participant owner) <code>SipTransferCall</code> is refused with <code>exception_name=ParticipantsPresent</code>, because a REFER into a conference bridge transfers every party in it. A request that would mark participants present while a transfer of the call is in flight is refused with <code>exception_name=TransferInProgress</code> and changes nothing. Cleared when the call ends</p> |
 
 
 
@@ -19158,6 +19340,11 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 | exception_traceback | [string](#string) |  | Traceback of the exception |
 | nlu_session_name | [string](#string) |  | session name of the NLU session |
 | amd_result | [AnsweringMachineDetectionResult](#ondewo.sip.AnsweringMachineDetectionResult) |  | Result of the answering machine detection of the call. Set on <code>OUTGOING_CALL_ANSWERING_MACHINE_DETECTED</code> and on the terminal status of every call on which answering machine detection ran, including a <code>HUMAN</code> verdict; unset otherwise |
+| call_id | [string](#string) |  | Identifier of the ongoing call, minted per call: the value of the <code>X-ondewo-vtsi-caller-call-id</code> header of an outgoing call when present, otherwise a random UUID. Empty when no call is ongoing. Set on every status of the call, including the entries of <code>SipGetSipStatusHistory</code>. Clients send it back as the <code>x-ondewo-expected-call-id</code> metadatum to scope a request to this call |
+| bot_muted | [bool](#bool) |  | <code>true</code> while the bot is muted by an operator, a conference participant policy or a TALK take-over of <code>SipSetCallMediaControl</code> / <code>SipStreamCallAudio</code>. Not the bot's own pipeline mute (<code>MICROPHONE_MUTED</code>). Cleared when the call ends |
+| listening_paused | [bool](#bool) |  | <code>true</code> while the bot does not listen to the caller (see <code>bot_muted</code> for who sets it). Cleared when the call ends |
+| call_audio_streams | [int32](#int32) |  | Number of connected <code>SipStreamCallAudio</code> streams of the ongoing call |
+| sip_response_code | [int32](#int32) |  | SIP response code of the last transfer attempt of the ongoing call (<code>202</code> when accepted, the refusal code otherwise, <code>0</code> when unknown). Call-scoped |
 
 
 
@@ -19204,7 +19391,8 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | transfer_id | [string](#string) |  | The account name or phone number to transfer the call to |
-| headers | [SipTransferCallRequest.HeadersEntry](#ondewo.sip.SipTransferCallRequest.HeadersEntry) | repeated | The headers to include when transferring the call |
+| headers | [SipTransferCallRequest.HeadersEntry](#ondewo.sip.SipTransferCallRequest.HeadersEntry) | repeated | The headers to include when transferring the call. They are sent on the REFER. Note that Asterisk (res_pjsip, measured on 18.6 and 22) does NOT forward headers of a REFER to the transfer target: the target receives the headers of the transferred caller's original INVITE. Hand headers to the target through the dialplan instead |
+| outcome_timeout_ms | [uint32](#uint32) |  | <p>Optional. How long to wait, in milliseconds, for the SIP server's answer to the REFER before reporting the outcome. Clamped to 10000.</p> <p><code>0</code> (default): legacy behaviour, unchanged: REFER, then an immediate hangup.</p> <p><code>&gt; 0</code>: the call is kept until the outcome is known:</p> <ul> <li>REFER accepted (<code>202</code>): the hangup is held for a short grace in which a terminal NOTIFY with a <code>404</code> sipfrag (unknown target) still counts as a refusal; any other sipfrag, or none, means accepted. The bot then hangs up and <code>TRANSFER_CALL_INITIATED</code> is returned with <code>sip_response_code = 202</code>. The call ends as <code>*_CALL_FINISHED</code> with the description <code>Call transferred</code>.</li> <li>REFER refused (a final response <code>&gt;= 400</code>, or the <code>404</code> sipfrag above): the call is KEPT with the bot, nothing is assigned to the shared status, and <code>TRANSFER_CALL_FAILED</code> is returned with <code>description = reason=refer-rejected</code> and <code>sip_response_code</code> (<code>0</code> when the SIP stack did not report the code, e.g. a declined REFER).</li> <li>No answer within the timeout: the call is KEPT and <code>TRANSFER_CALL_FAILED</code> is returned with <code>description = reason=refer-timeout</code>. A late acceptance still ends the bot's leg.</li> <li>The call ended while waiting: <code>NO_ONGOING_CALL</code> is returned.</li> </ul> <p>A <code>202</code> does not mean the target answered: when the dialplan's dial to the target then fails (busy, no answer, unreachable) the caller is lost. Validate targets up front, or use a WARM transfer.</p> |
 
 
 
@@ -19282,6 +19470,63 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 
 
 
+<a name="ondewo.sip.MediaControlOwner"></a>
+
+### MediaControlOwner
+<p>Owner of a media control hold. Each owner holds its own mute and pause; releasing one owner's hold never releases
+another owner's</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| MEDIA_CONTROL_OWNER_UNSPECIFIED | 0 | Same as <code>MEDIA_CONTROL_OWNER_OPERATOR</code> |
+| MEDIA_CONTROL_OWNER_OPERATOR | 1 | An operator, e.g. a supervisor muting the bot |
+| MEDIA_CONTROL_OWNER_PARTICIPANT | 2 | The bot policy of invited conference participants, set while at least one participant is ringing or joined. Its hold mutes or pauses the bot only when a participant's bot policy asks for it; it also carries <code>SipSetCallMediaControlRequest.participants_present</code> |
+
+
+
+<a name="ondewo.sip.MediaControlSetting"></a>
+
+### MediaControlSetting
+<p>Desired setting of one media control flag</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| MEDIA_CONTROL_SETTING_UNCHANGED | 0 | Leave the flag as it is for this owner |
+| MEDIA_CONTROL_SETTING_ON | 1 | The flag is on: the bot speaks (<code>bot_voice</code>) or the bot listens (<code>bot_listening</code>) |
+| MEDIA_CONTROL_SETTING_OFF | 2 | The flag is off: the bot is muted (<code>bot_voice</code>) or the bot's listening is paused (<code>bot_listening</code>) |
+
+
+
+<a name="ondewo.sip.SipCallAudioEndReason"></a>
+
+### SipCallAudioEndReason
+<p>Why a <code>SipStreamCallAudio</code> stream ended</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| SIP_CALL_AUDIO_END_REASON_UNSPECIFIED | 0 | No reason recorded |
+| SIP_CALL_AUDIO_END_REASON_CLIENT_CLOSED | 1 | The client cancelled or half-closed the stream |
+| SIP_CALL_AUDIO_END_REASON_CALL_ENDED | 2 | The call ended |
+| SIP_CALL_AUDIO_END_REASON_CALL_TRANSFERRED | 3 | The call was transferred |
+| SIP_CALL_AUDIO_END_REASON_MAX_DURATION | 4 | <code>max_duration_s</code> was reached |
+| SIP_CALL_AUDIO_END_REASON_STALLED | 5 | The client did not read the audio in time |
+| SIP_CALL_AUDIO_END_REASON_INTERNAL | 6 | An internal error ended the stream |
+
+
+
+<a name="ondewo.sip.SipCallAudioMode"></a>
+
+### SipCallAudioMode
+<p>Mode of a <code>SipStreamCallAudio</code> stream</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| SIP_CALL_AUDIO_MODE_UNSPECIFIED | 0 | Same as <code>SIP_CALL_AUDIO_MODE_LISTEN</code> |
+| SIP_CALL_AUDIO_MODE_LISTEN | 1 | Receive the call audio only |
+| SIP_CALL_AUDIO_MODE_TALK | 2 | Receive the caller's audio and send audio to the caller. Requires <code>take_over</code> |
+
+
+
 <a name="ondewo.sip.SipEndCallRequest.EndCallReason"></a>
 
 ### SipEndCallRequest.EndCallReason
@@ -19292,6 +19537,7 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 | END_CALL_REASON_UNSPECIFIED | 0 | No specific reason given. The call ends as an ordinary hangup, exactly as before this field existed |
 | ANSWERING_MACHINE | 1 | Answering machine detection decided the callee is not a person to talk to (answering machine, fax, network announcement, ...) and the call is hung up WITHOUT leaving a voice message. The terminal status of the call is <code>OUTGOING_CALL_FINISHED</code> with the description <code>Answering machine detected with hang up</code> |
 | ANSWERING_MACHINE_VOICE_MESSAGE_LEFT | 2 | Answering machine detection decided the callee is an answering machine, a voice message was left on it, and the call is hung up afterwards (or when the voice message timeout expired). The terminal status of the call is <code>OUTGOING_CALL_FINISHED</code> with the description <code>Answering machine detected with left voice message and hang up</code> |
+| END_CALL_REASON_TRANSFERRED | 3 | A WARM transfer completed: the transfer target joined the call and the bot leaves it. The terminal status of the call is <code>*_CALL_FINISHED</code> with the description <code>Call transferred</code> and <code>transfer_call_id</code> set to the transfer target |
 
 
 
@@ -19345,14 +19591,16 @@ Types of status
 | SipEndSession | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatus](#ondewo.sip.SipStatus) | <p>Ends a SIP session for an account registered at a SIP server</p> |
 | SipStartCall | [SipStartCallRequest](#ondewo.sip.SipStartCallRequest) | [SipStatus](#ondewo.sip.SipStatus) | <p>Starts a call in an active SIP session for an account registered at a SIP server</p> |
 | SipEndCall | [SipEndCallRequest](#ondewo.sip.SipEndCallRequest) | [SipStatus](#ondewo.sip.SipStatus) | <p>Ends a call in an active SIP session for an account registered at a SIP server</p> |
-| SipTransferCall | [SipTransferCallRequest](#ondewo.sip.SipTransferCallRequest) | [SipStatus](#ondewo.sip.SipStatus) | <p>Transfers a call in an active SIP session for an account registered at a SIP server to another SIP account or phone number specified by <code>transfer_id</code></p> |
+| SipTransferCall | [SipTransferCallRequest](#ondewo.sip.SipTransferCallRequest) | [SipStatus](#ondewo.sip.SipStatus) | <p>Transfers a call in an active SIP session for an account registered at a SIP server to another SIP account or phone number specified by <code>transfer_id</code></p> <p>Call scoping: when the gRPC metadatum <code>x-ondewo-expected-call-id</code> is present it must equal <code>SipStatus.call_id</code> of the ongoing call, otherwise the request is refused with <code>exception_name=CallScopeMismatch</code> and nothing is assigned to the status. When it is absent the request is accepted for backward compatibility (unless the server requires call scoping).</p> <p>With <code>outcome_timeout_ms = 0</code> the call is transferred as before (REFER, then an immediate hangup). With <code>outcome_timeout_ms &gt; 0</code> see <code>SipTransferCallRequest.outcome_timeout_ms</code>.</p> <p>Refused while invited participants are present (see <code>SipSetCallMediaControlRequest.participants_present</code>): a REFER into a conference bridge transfers every party in it, the invited participant included. The refusal is RETURNED as <code>TRANSFER_CALL_FAILED</code> with <code>exception_name=ParticipantsPresent</code> and <code>description = reason=participants-present</code>; nothing is sent and the call is kept.</p> |
 | SipRegisterAccount | [SipRegisterAccountRequest](#ondewo.sip.SipRegisterAccountRequest) | [SipStatus](#ondewo.sip.SipStatus) | <p>Registers s SIP account at a SIP server</p> |
 | SipGetSipStatus | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatus](#ondewo.sip.SipStatus) | <p>Gets the current SIP status</p> |
 | SipGetSipStatusHistory | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatusHistoryResponse](#ondewo.sip.SipStatusHistoryResponse) | <p>Gets the history of SIP status</p> |
-| SipPlayWavFiles | [SipPlayWavFilesRequest](#ondewo.sip.SipPlayWavFilesRequest) | [SipStatus](#ondewo.sip.SipStatus) | <p>Plays wav files during an ongoing call of an active SIP session</p> |
-| SipMute | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatus](#ondewo.sip.SipStatus) | <p>Mutes the microphone in an ongoing call of an active SIP session</p> |
-| SipUnMute | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatus](#ondewo.sip.SipStatus) | <p>Un-mutes the microphone in an ongoing call of an active SIP session</p> |
+| SipPlayWavFiles | [SipPlayWavFilesRequest](#ondewo.sip.SipPlayWavFilesRequest) | [SipStatus](#ondewo.sip.SipStatus) | <p>Plays wav files during an ongoing call of an active SIP session</p> <p>Call scoping as for <code>SipTransferCall</code>: a present <code>x-ondewo-expected-call-id</code> metadatum must match <code>SipStatus.call_id</code>.</p> |
+| SipMute | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatus](#ondewo.sip.SipStatus) | <p>Mutes the microphone in an ongoing call of an active SIP session</p> <p>Call scoping as for <code>SipTransferCall</code>. Sent by the in-container speech-to-speech pipeline it mutes only the bot's own mixer slot; sent by a remote client it sets the operator mute of <code>SipSetCallMediaControl</code>, which the pipeline cannot undo.</p> |
+| SipUnMute | [.google.protobuf.Empty](#google.protobuf.Empty) | [SipStatus](#ondewo.sip.SipStatus) | <p>Un-mutes the microphone in an ongoing call of an active SIP session</p> <p>Call scoping and the split between the pipeline's own mute and the operator mute as for <code>SipMute</code>.</p> |
 | SipReportAnsweringMachineDetected | [SipReportAnsweringMachineDetectedRequest](#ondewo.sip.SipReportAnsweringMachineDetectedRequest) | [SipStatus](#ondewo.sip.SipStatus) | <p>Reports that answering machine detection reached a verdict on the ongoing outgoing call. Sets the status <code>OUTGOING_CALL_ANSWERING_MACHINE_DETECTED</code> carrying <code>amd_result</code>; the call stays up.</p> <p>Called by the speech-to-speech pipeline (ONDEWO-CSI) inside the same container, i.e. over loopback only. Refused, and the current status left untouched, when no outgoing call is connected: the returned <code>SipStatus</code> then carries the refusal in <code>exception_name</code> and <code>description</code></p> |
+| SipSetCallMediaControl | [SipSetCallMediaControlRequest](#ondewo.sip.SipSetCallMediaControlRequest) | [SipStatus](#ondewo.sip.SipStatus) | <p>Call-scoped operator media control of the ongoing call: mute the bot and/or pause its listening.</p> <p>Metadata REQUIRED: <code>x-ondewo-expected-call-id</code> (must equal <code>SipStatus.call_id</code> of the ongoing call) and <code>x-ondewo-sip-call-control-token</code> (the per-container call-control token).</p> <p>Every request sets a desired level per owner and never toggles; a repeat leaves the level unchanged. The bot is muted while ANY owner holds a mute, and its listening is paused while ANY owner holds a pause.</p> <p>Returns the live status with <code>call_id</code>, <code>bot_muted</code>, <code>listening_paused</code> and <code>call_audio_streams</code> filled. Refusals are RETURNED in <code>exception_name</code> / <code>description</code> (<code>CallScopeMismatch</code>, <code>CallControlUnauthenticated</code>, <code>NoOngoingCall</code>, <code>AmdInProgress</code>, <code>CsiMediaControlFailed</code>) and never assigned to the shared status. When the pipeline refuses or fails, a requested pause is rolled back and a requested mute is kept (the safe direction); the returned fields carry the actual level.</p> |
+| SipStreamCallAudio | [SipCallAudioRequest](#ondewo.sip.SipCallAudioRequest) stream | [SipCallAudioResponse](#ondewo.sip.SipCallAudioResponse) stream | <p>Bidirectional live audio of the ongoing call.</p> <p>The first request MUST be <code>config</code> and must arrive within 2 seconds. Metadata as for <code>SipSetCallMediaControl</code>.</p> <p>LISTEN receives the caller (plus any conference participants) mixed with the bot. TALK sends the agent's audio to the caller; it REQUIRES <code>take_over</code>, i.e. the bot is muted and does not listen while the stream is connected, and in TALK the agent hears the caller only. Audio is LINEAR16 little-endian mono in 20 ms frames.</p> <p>gRPC status codes: <code>UNAUTHENTICATED</code> (token), <code>FAILED_PRECONDITION</code> (call id mismatch, no connected call, answering machine detection in progress, bot still speaking at TALK start), <code>INVALID_ARGUMENT</code> (missing or invalid <code>config</code>, wrong frame size), <code>RESOURCE_EXHAUSTED</code> (stream cap reached, a second TALK). A normal end sends one <code>ended</code> message and then OK.</p> |
 
  <!-- end services -->
 
@@ -20815,6 +21063,79 @@ Call
 | redial_recommended | [bool](#bool) | optional | Optional: Whether the callee should be called again later, set only when the answering machine detection (AMD) ended the call: true for an answering machine or a network announcement hung up on without a voice message, false once a voice message was left and false for a fax. Unset when AMD did not end the call. The AMD verdict, cause and confidence of the call are in sip_status.amd_result. No call is redialled automatically; the marker is for the campaign logic of the client |
 | redial_reason | [string](#string) | optional | Optional: Reason of redial_recommended, set together with it. One of "answering_machine", "network_announcement" or "fax" |
 | answering_machine_detection_end_description | [string](#string) | optional | Optional: Description of how a call ended by the answering machine detection (AMD) ended, i.e. the description of its terminal ondewo.sip.SipStatus.StatusType.OUTGOING_CALL_FINISHED status. One of "Answering machine detected with hang up", "Answering machine detected with left voice message and hang up", "Answering machine detected, call ended by the answering machine" or "Answering machine detected, call ended by the answering machine after leaving a voice message". Unset when AMD did not end the call |
+| media_control | [CallMediaControlState](#ondewo.vtsi.CallMediaControlState) |  | Media control state of the call (bot muted, listening paused, connected audio streams, joined participants). Set in the SHALLOW and FULL views |
+| participants | [CallParticipant](#ondewo.vtsi.CallParticipant) | repeated | Participants invited into the call. FULL view: all of them; SHALLOW view: those still ringing or joined |
+| last_transfer | [CallTransferRecord](#ondewo.vtsi.CallTransferRecord) |  | The last transfer attempt of the call; unset if there was none |
+| sip_call_id | [string](#string) |  | Identifier the call&apos;s SIP container minted for the call (<code>ondewo.sip.SipStatus.call_id</code>). Empty until the call was identified; call control requests are refused (<code>call-not-yet-identified</code>) until then |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CallAudioEnded"></a>
+
+### CallAudioEnded
+<p>Sent once when a call audio stream ends normally</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| reason | [CallAudioEndReason](#ondewo.vtsi.CallAudioEndReason) |  | Why the stream ended |
+| detail | [string](#string) |  | Optional detail, a stable token |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CallAudioFrame"></a>
+
+### CallAudioFrame
+<p>One 20 ms frame of call audio</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| pcm_s16le | [bytes](#bytes) |  | LINEAR16 little-endian mono samples, <code>sample_rate_hz * 0.02 * 2</code> bytes |
+| sequence | [uint64](#uint64) |  | Monotonic sequence number of the frame within its direction of the stream |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CallAudioStarted"></a>
+
+### CallAudioStarted
+<p>Sent once when a call audio stream is connected</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| stream_id | [string](#string) |  | Identifier of the stream (audit correlation) |
+| sample_rate_hz | [int32](#int32) |  | Sample rate in Hz in both directions |
+| frame_ms | [int32](#int32) |  | Frame length in milliseconds |
+| mode | [CallAudioMode](#ondewo.vtsi.CallAudioMode) |  | Mode of the stream |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CallAudioStats"></a>
+
+### CallAudioStats
+<p>Counters of a call audio stream, sent periodically</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| frames_sent | [uint64](#uint64) |  | Frames sent to the client |
+| frames_dropped | [uint64](#uint64) |  | Frames to the client dropped because the client read too slowly |
+| frames_received | [uint64](#uint64) |  | Frames received from the client |
+| underruns | [uint64](#uint64) |  | Playback underruns of the agent audio |
+| frames_discarded | [uint64](#uint64) |  | Frames from the client discarded because the playback buffer was full |
 
 
 
@@ -20850,6 +21171,48 @@ Definition of a CallFilter, representing filters for querying calls.
 
 
 
+<a name="ondewo.vtsi.CallMediaControlState"></a>
+
+### CallMediaControlState
+<p>Effective media control state of a call</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| bot_muted | [bool](#bool) |  | The bot is muted (by an operator, a TALK take-over or a participant bot policy) |
+| listening_paused | [bool](#bool) |  | The bot does not listen to the caller |
+| connected_audio_streams | [int32](#int32) |  | Number of connected <code>StreamCallAudio</code> / <code>ListenCallAudio</code> streams |
+| joined_participants | [int32](#int32) |  | Number of joined participants |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CallParticipant"></a>
+
+### CallParticipant
+<p>A participant invited into a call</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| participant_id | [string](#string) |  | Identifier of the participant, 9 digits, unique among the project&apos;s live invites |
+| softphone_account_name | [string](#string) |  | The invited softphone account: <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;account_uuid&gt;</code></pre> |
+| mode | [ParticipantMode](#ondewo.vtsi.ParticipantMode) |  | How the participant takes part |
+| state | [ParticipantState](#ondewo.vtsi.ParticipantState) |  | State of the participant |
+| invited_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the participant was invited |
+| joined_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the participant joined; unset if it never joined |
+| left_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the participant failed or left; unset while ringing or joined |
+| end_reason | [string](#string) |  | Why the participant failed or left: <code>NOANSWER</code>, <code>BUSY</code>, <code>CHANUNAVAIL</code>, <code>CALL_ENDED</code>, <code>REMOVED</code>, <code>HANGUP</code>, <code>HANDED_OVER</code>, <code>JOIN_FAILED</code> or <code>TIMEOUT</code> |
+| invited_by | [string](#string) |  | Identity of who invited the participant (audit) |
+| bot_policy | [BotPolicyOnJoin](#ondewo.vtsi.BotPolicyOnJoin) |  | Bot policy applied while this participant is ringing or joined |
+
+
+
+
+
+
 <a name="ondewo.vtsi.CallResourceStatus"></a>
 
 ### CallResourceStatus
@@ -20871,6 +21234,44 @@ The status of one caller, listener or scheduled caller, as streamed by the statu
 | scheduled_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | For SCHEDULED_CALLER: its scheduled time. |
 | campaign_name | [string](#string) |  | The campaign it belongs to, if any. |
 | error_message | [string](#string) |  | For SCHEDULED_CALLER: why it failed. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CallTarget"></a>
+
+### CallTarget
+<p>Target of a transfer</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| phone_number | [string](#string) |  | Phone number in E.164 form, e.g. <code>+4312345678</code> (<code>^\+[1-9][0-9]{6,14}$</code>). Any E.164 number is allowed unless the project configures <code>VtsiProject.transfer_phone_number_allowlist</code> |
+| softphone_account_name | [string](#string) |  | A softphone account of the same project: <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;account_uuid&gt;</code></pre>. It must be enabled, routed and registered |
+| listener_name | [string](#string) |  | A listener of the same project: <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>. The call goes to that listener&apos;s idle container; a busy listener is refused (<code>listener-busy</code>) |
+| listener_queue | [ListenerQueueTarget](#ondewo.vtsi.ListenerQueueTarget) |  | The project&apos;s listener queue: any idle listener of the project takes the call |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CallTransferRecord"></a>
+
+### CallTransferRecord
+<p>Record of the last transfer attempt of a call</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| target | [CallTarget](#ondewo.vtsi.CallTarget) |  | Requested typed target; unset for a legacy <code>transfer_id</code> transfer |
+| resolved_target | [string](#string) |  | The dialplan extension the target resolved to |
+| mode | [TransferMode](#ondewo.vtsi.TransferMode) |  | Mode of the transfer |
+| outcome | [TransferOutcome](#ondewo.vtsi.TransferOutcome) |  | Outcome of the transfer |
+| sip_response_code | [int32](#int32) |  | SIP response code of the REFER where known, else <code>0</code> |
+| time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the outcome was recorded |
 
 
 
@@ -21198,6 +21599,46 @@ Configuration of the interruption (barge-in) handling, i.e. the caller speaking 
 
 
 
+<a name="ondewo.vtsi.InviteToCallRequest"></a>
+
+### InviteToCallRequest
+<p>Request to invite a softphone account into a call</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| call_name | [string](#string) |  | Name of the connected call to invite into For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
+| softphone_account_name | [string](#string) |  | Softphone account of the same project to invite: <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;account_uuid&gt;</code></pre> |
+| mode | [ParticipantMode](#ondewo.vtsi.ParticipantMode) |  | How the participant takes part. Unspecified means <code>PARTICIPANT_MODE_CONFERENCE</code> |
+| ring_timeout_s | [int32](#int32) |  | How long the softphone may ring, in seconds, <code>5</code> to <code>120</code>. <code>0</code> means <code>30</code> |
+| bot_policy | [BotPolicyOnJoin](#ondewo.vtsi.BotPolicyOnJoin) |  | What the bot does while the participant is ringing or joined. Unspecified means <code>BOT_POLICY_ON_JOIN_KEEP</code> (the bot keeps talking) |
+| caller_id_display_name | [string](#string) |  | Caller-ID display name shown on the softphone. Sanitized by the server; default <code>ONDEWO &lt;listener or caller name&gt;</code> |
+| request_id | [string](#string) |  | Optional idempotency key: a repeated request with the same <code>call_name</code> and <code>request_id</code> returns the participant of the first request instead of inviting again |
+
+
+
+
+
+
+<a name="ondewo.vtsi.InviteToCallResponse"></a>
+
+### InviteToCallResponse
+<p>Response of <code>InviteToCall</code></p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| call_name | [string](#string) |  | Name of the call |
+| participant | [CallParticipant](#ondewo.vtsi.CallParticipant) |  | The invited participant |
+| error_message | [string](#string) |  | error message if you have any |
+
+
+
+
+
+
 <a name="ondewo.vtsi.ListCallersRequest"></a>
 
 ### ListCallersRequest
@@ -21332,6 +21773,21 @@ Represents the response for listing scheduled callers.
 
 
 
+<a name="ondewo.vtsi.ListenCallAudioRequest"></a>
+
+### ListenCallAudioRequest
+<p>Request of <code>ListenCallAudio</code></p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| config | [StreamCallAudioConfig](#ondewo.vtsi.StreamCallAudioConfig) |  | Configuration of the stream; <code>mode</code> must be LISTEN or unspecified and <code>take_over</code> false |
+
+
+
+
+
+
 <a name="ondewo.vtsi.Listener"></a>
 
 ### Listener
@@ -21344,6 +21800,16 @@ Listener represents a listener instance that waits for incoming calls
 | call_name | [string](#string) |  | The call name that was assigned to the call <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
 | sip_base_config | [SipBaseConfig](#ondewo.vtsi.SipBaseConfig) |  | SIP service configuration |
 | common_services_config | [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig) |  | Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListenerQueueTarget"></a>
+
+### ListenerQueueTarget
+<p>The project&apos;s listener queue as a transfer target. Carries no fields</p>
 
 
 
@@ -21443,6 +21909,41 @@ Configuration of the RabbitMQ Message Broker
 
 
 
+<a name="ondewo.vtsi.RemoveCallParticipantRequest"></a>
+
+### RemoveCallParticipantRequest
+<p>Request to hang up a participant of a call</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| call_name | [string](#string) |  | Name of the call |
+| participant_id | [string](#string) |  | Identifier of the participant (<code>CallParticipant.participant_id</code>) |
+
+
+
+
+
+
+<a name="ondewo.vtsi.RemoveCallParticipantResponse"></a>
+
+### RemoveCallParticipantResponse
+<p>Response of <code>RemoveCallParticipant</code></p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| call_name | [string](#string) |  | Name of the call |
+| participant | [CallParticipant](#ondewo.vtsi.CallParticipant) |  | The participant after the request |
+| error_message | [string](#string) |  | error message if you have any |
+
+
+
+
+
+
 <a name="ondewo.vtsi.ResponseTimingConfig"></a>
 
 ### ResponseTimingConfig
@@ -21530,6 +22031,43 @@ Status of service
 | ----- | ---- | ----- | ----------- |
 | healthy | [bool](#bool) |  | health status |
 | error_message | [string](#string) |  | error messages if you have any so if it's unhealthy |
+
+
+
+
+
+
+<a name="ondewo.vtsi.SetCallMediaControlRequest"></a>
+
+### SetCallMediaControlRequest
+<p>Request to mute the bot of a call and/or stop it listening</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| call_name | [string](#string) |  | Name of the connected call |
+| bot_voice | [CallMediaSetting](#ondewo.vtsi.CallMediaSetting) |  | <code>CALL_MEDIA_SETTING_OFF</code> mutes the bot, <code>CALL_MEDIA_SETTING_ON</code> lets it speak again |
+| bot_listening | [CallMediaSetting](#ondewo.vtsi.CallMediaSetting) |  | <code>CALL_MEDIA_SETTING_OFF</code> stops the bot listening, <code>CALL_MEDIA_SETTING_ON</code> resumes it |
+
+
+
+
+
+
+<a name="ondewo.vtsi.SetCallMediaControlResponse"></a>
+
+### SetCallMediaControlResponse
+<p>Response of <code>SetCallMediaControl</code></p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| call_name | [string](#string) |  | Name of the call |
+| state | [CallMediaControlState](#ondewo.vtsi.CallMediaControlState) |  | Effective media control state after the request |
+| changed | [bool](#bool) |  | <code>true</code> if the effective state changed |
+| error_message | [string](#string) |  | error message if you have any |
 
 
 
@@ -22010,6 +22548,61 @@ Response to stop multiple listeners
 
 
 
+<a name="ondewo.vtsi.StreamCallAudioConfig"></a>
+
+### StreamCallAudioConfig
+<p>Configuration of a call audio stream. The first request of <code>StreamCallAudio</code></p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| call_name | [string](#string) |  | Name of the connected call |
+| mode | [CallAudioMode](#ondewo.vtsi.CallAudioMode) |  | Mode of the stream. Unspecified means LISTEN |
+| sample_rate_hz | [int32](#int32) |  | Sample rate in Hz in both directions: <code>8000</code> or <code>16000</code>; <code>0</code> means <code>16000</code>. Audio is LINEAR16 little-endian mono in 20 ms frames |
+| take_over | [bool](#bool) |  | REQUIRED for TALK: the bot is muted and does not listen while the stream is connected |
+| max_duration_s | [int32](#int32) |  | Maximum duration of the stream in seconds. <code>0</code> means the server maximum |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StreamCallAudioRequest"></a>
+
+### StreamCallAudioRequest
+<p>Request of <code>StreamCallAudio</code></p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| config | [StreamCallAudioConfig](#ondewo.vtsi.StreamCallAudioConfig) |  | Configuration; must be the first request and is accepted only once |
+| audio | [CallAudioFrame](#ondewo.vtsi.CallAudioFrame) |  | Agent audio to send to the caller (TALK only) |
+| agent_muted | [bool](#bool) |  | <code>true</code>: the agent&apos;s audio is not sent to the caller until set to <code>false</code> |
+
+
+
+
+
+
+<a name="ondewo.vtsi.StreamCallAudioResponse"></a>
+
+### StreamCallAudioResponse
+<p>Response of <code>StreamCallAudio</code> and <code>ListenCallAudio</code></p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| started | [CallAudioStarted](#ondewo.vtsi.CallAudioStarted) |  | The stream is connected |
+| audio | [CallAudioFrame](#ondewo.vtsi.CallAudioFrame) |  | Call audio |
+| stats | [CallAudioStats](#ondewo.vtsi.CallAudioStats) |  | Stream counters |
+| ended | [CallAudioEnded](#ondewo.vtsi.CallAudioEnded) |  | The stream ended |
+
+
+
+
+
+
 <a name="ondewo.vtsi.StreamCallResourceStatusResponse"></a>
 
 ### StreamCallResourceStatusResponse
@@ -22123,7 +22716,27 @@ Request to transfer calls
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | call_name | [string](#string) |  | call name to transfer For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
-| transfer_id | [string](#string) |  | transfer_id to transfer the call to, so the number or voip number you want to be transferred too |
+| transfer_id | [string](#string) |  | LEGACY raw target: the dialplan extension, voip number or phone number to transfer the call to. Validated against <code>^\+?[A-Za-z0-9._-]{1,64}$</code>. Mutually exclusive with <code>target</code>: setting both is <code>INVALID_ARGUMENT</code> |
+| target | [CallTarget](#ondewo.vtsi.CallTarget) |  | Typed target of the transfer, resolved and validated by the server. Mutually exclusive with <code>transfer_id</code> |
+| mode | [TransferMode](#ondewo.vtsi.TransferMode) |  | How to transfer. Unspecified means <code>TRANSFER_MODE_BLIND</code> |
+| headers | [TransferCallRequest.HeadersEntry](#ondewo.vtsi.TransferCallRequest.HeadersEntry) | repeated | Optional headers handed to the transfer target. Keys must match <code>X-ondewo-[A-Za-z0-9-]{1,64}</code>, at most 16 entries, values at most 256 bytes. Merged over the call&apos;s own headers. They are delivered through the dialplan, not on the SIP REFER (Asterisk does not forward REFER headers to the target). Not delivered to a phone number target |
+| ring_timeout_s | [int32](#int32) |  | WARM only: how long the target may ring, in seconds, <code>5</code> to <code>120</code>. <code>0</code> means <code>30</code> |
+
+
+
+
+
+
+<a name="ondewo.vtsi.TransferCallRequest.HeadersEntry"></a>
+
+### TransferCallRequest.HeadersEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [string](#string) |  |  |
 
 
 
@@ -22142,6 +22755,10 @@ Response to transfer a call to a phone number or voip number
 | call_name | [string](#string) |  | call name to transfer For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
 | transfer_id | [string](#string) |  | transfer id to transfer the calls to, so the phone number or voip number you want to be transferred too |
 | error_message | [string](#string) |  | error message if you have any so if it's unhealthy |
+| outcome | [TransferOutcome](#ondewo.vtsi.TransferOutcome) |  | Outcome of the transfer |
+| resolved_target | [string](#string) |  | The dialplan extension the target resolved to, e.g. <code>ondewo0007</code>, a softphone user name, <code>ondewoqueue</code> or the E.164 number |
+| sip_response_code | [int32](#int32) |  | SIP response code of the REFER where known (<code>202</code> accepted, the refusal code otherwise), else <code>0</code> |
+| error_reason | [string](#string) |  | Stable reason token of a refusal or failure, e.g. <code>target-not-registered</code>, <code>listener-busy</code>, <code>queue-empty</code>, <code>self-transfer</code>, <code>number-not-allowed</code>; empty on success |
 
 
 
@@ -22250,6 +22867,63 @@ Sensitivity of the detection: selects the enabled detection rules and their inte
 
 
 
+<a name="ondewo.vtsi.BotPolicyOnJoin"></a>
+
+### BotPolicyOnJoin
+<p>What the bot does while a CONFERENCE participant is ringing or joined</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| BOT_POLICY_ON_JOIN_UNSPECIFIED | 0 | Same as <code>BOT_POLICY_ON_JOIN_KEEP</code>: the bot keeps talking |
+| BOT_POLICY_ON_JOIN_PAUSE | 1 | The bot is muted and does not listen while at least one participant is ringing or joined |
+| BOT_POLICY_ON_JOIN_PAUSE_LISTENING | 2 | The bot may still speak, but does not hear the participant (nor the caller) |
+| BOT_POLICY_ON_JOIN_KEEP | 3 | The bot keeps talking and listening, and it WILL answer what the participant says |
+
+
+
+<a name="ondewo.vtsi.CallAudioEndReason"></a>
+
+### CallAudioEndReason
+<p>Why a call audio stream ended</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| CALL_AUDIO_END_REASON_UNSPECIFIED | 0 | No reason recorded |
+| CALL_AUDIO_END_REASON_CLIENT_CLOSED | 1 | The client cancelled or half-closed the stream |
+| CALL_AUDIO_END_REASON_CALL_ENDED | 2 | The call ended |
+| CALL_AUDIO_END_REASON_CALL_TRANSFERRED | 3 | The call was transferred |
+| CALL_AUDIO_END_REASON_MAX_DURATION | 4 | The maximum duration was reached |
+| CALL_AUDIO_END_REASON_STALLED | 5 | The client did not read the audio in time |
+| CALL_AUDIO_END_REASON_INTERNAL | 6 | An internal error ended the stream |
+
+
+
+<a name="ondewo.vtsi.CallAudioMode"></a>
+
+### CallAudioMode
+<p>Mode of a call audio stream</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| CALL_AUDIO_MODE_UNSPECIFIED | 0 | Same as <code>CALL_AUDIO_MODE_LISTEN</code> |
+| CALL_AUDIO_MODE_LISTEN | 1 | Receive the call audio only |
+| CALL_AUDIO_MODE_TALK | 2 | Receive the caller&apos;s audio and send audio to the caller. Requires <code>take_over</code> |
+
+
+
+<a name="ondewo.vtsi.CallMediaSetting"></a>
+
+### CallMediaSetting
+<p>Desired setting of one media control flag of a call</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| CALL_MEDIA_SETTING_UNCHANGED | 0 | Leave the flag as it is |
+| CALL_MEDIA_SETTING_ON | 1 | On: the bot speaks (<code>bot_voice</code>) or listens (<code>bot_listening</code>) |
+| CALL_MEDIA_SETTING_OFF | 2 | Off: the bot is muted (<code>bot_voice</code>) or does not listen (<code>bot_listening</code>) |
+
+
+
 <a name="ondewo.vtsi.CallStatus"></a>
 
 ### CallStatus
@@ -22290,6 +22964,34 @@ Call view options
 
 
 
+<a name="ondewo.vtsi.ParticipantMode"></a>
+
+### ParticipantMode
+<p>How an invited participant takes part in a call</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| PARTICIPANT_MODE_UNSPECIFIED | 0 | Same as <code>PARTICIPANT_MODE_CONFERENCE</code> |
+| PARTICIPANT_MODE_CONFERENCE | 1 | The participant is joined into the call: Asterisk mixes the caller, the bot and the participant |
+| PARTICIPANT_MODE_MONITOR | 2 | The participant listens only; the caller and the bot do not hear it |
+
+
+
+<a name="ondewo.vtsi.ParticipantState"></a>
+
+### ParticipantState
+<p>State of an invited participant</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| PARTICIPANT_STATE_UNSPECIFIED | 0 | No state recorded |
+| PARTICIPANT_STATE_RINGING | 1 | The participant&apos;s softphone is ringing |
+| PARTICIPANT_STATE_JOINED | 2 | The participant answered and is in the call |
+| PARTICIPANT_STATE_FAILED | 3 | The participant never joined; <code>end_reason</code> says why |
+| PARTICIPANT_STATE_LEFT | 4 | The participant left the call; <code>end_reason</code> says why |
+
+
+
 <a name="ondewo.vtsi.ScheduledCallerStatus"></a>
 
 ### ScheduledCallerStatus
@@ -22303,6 +23005,38 @@ Lifecycle state of a ScheduledCaller
 | SCHEDULED_CALLER_STATUS_DONE | 3 | The call was started successfully |
 | SCHEDULED_CALLER_STATUS_FAILED | 4 | Starting the call failed; see error_message |
 | SCHEDULED_CALLER_STATUS_CANCELLED | 5 | Cancelled before it fired |
+
+
+
+<a name="ondewo.vtsi.TransferMode"></a>
+
+### TransferMode
+<p>How a call is transferred</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| TRANSFER_MODE_UNSPECIFIED | 0 | Same as <code>TRANSFER_MODE_BLIND</code> |
+| TRANSFER_MODE_BLIND | 1 | SIP REFER: the caller is handed to the dialplan, which dials the target. A refused REFER keeps the call with the bot; once the REFER is accepted the bot leaves, and a target that is then busy or does not answer loses the caller |
+| TRANSFER_MODE_WARM | 2 | The target is rung into the call first; the bot leaves only after the target joined, and keeps the call when the target is busy or does not answer. Requires an Asterisk 22 project |
+
+
+
+<a name="ondewo.vtsi.TransferOutcome"></a>
+
+### TransferOutcome
+<p>Outcome of a transfer</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| TRANSFER_OUTCOME_UNSPECIFIED | 0 | No outcome recorded |
+| TRANSFER_OUTCOME_ACCEPTED | 1 | BLIND: the REFER was accepted and the bot left the call. WARM: the target answered and was bridged, and the bot left the call |
+| TRANSFER_OUTCOME_PENDING | 2 | WARM: the target is ringing. Follow <code>VTSI_EVENT_CALL_TRANSFERRED</code> / <code>VTSI_EVENT_CALL_TRANSFER_FAILED</code> or <code>Call.last_transfer</code> |
+| TRANSFER_OUTCOME_TARGET_INVALID | 3 | Refused before anything was sent; the call is untouched. <code>error_reason</code> says why |
+| TRANSFER_OUTCOME_REFER_REJECTED | 4 | The SIP server refused the REFER (including an unknown target extension); the call is KEPT with the bot. <code>sip_response_code</code> carries the code where known |
+| TRANSFER_OUTCOME_TIMEOUT | 5 | No answer to the REFER in time, or (WARM) the target did not answer; the call is KEPT with the bot |
+| TRANSFER_OUTCOME_CALL_ENDED | 6 | The far end left the call during the attempt |
+| TRANSFER_OUTCOME_CALL_SCOPE_MISMATCH | 7 | The call this request names is no longer the call the container is serving (e.g. the next call of a persistent listener); nothing was sent |
+| TRANSFER_OUTCOME_SIP_UNREACHABLE | 8 | The call&apos;s SIP container could not be reached |
 
 
 
@@ -22371,13 +23105,18 @@ Eagerness of the turn detection
 | StopCall | [StopCallRequest](#ondewo.vtsi.StopCallRequest) | [StopCallResponse](#ondewo.vtsi.StopCallResponse) | <p>Stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.</p> |
 | StopCalls | [StopCallsRequest](#ondewo.vtsi.StopCallsRequest) | [StopCallsResponse](#ondewo.vtsi.StopCallsResponse) | <p>Stop/kill a list of ondewo-sip listener or caller instances for a specific vtsi-project.</p> <p>Stops both Listener and Caller calls</p> |
 | StopAllCalls | [StopAllCallsRequest](#ondewo.vtsi.StopAllCallsRequest) | [StopCallsResponse](#ondewo.vtsi.StopCallsResponse) | <p>Stop/kill all ondewo-sip listener or caller instance for a specific nlu-project.</p> <p>Stops all Listener and Caller calls</p> |
-| TransferCall | [TransferCallRequest](#ondewo.vtsi.TransferCallRequest) | [TransferCallResponse](#ondewo.vtsi.TransferCallResponse) | <p>Transfer a call from a listener to another</p> |
-| TransferCalls | [TransferCallsRequest](#ondewo.vtsi.TransferCallsRequest) | [TransferCallsResponse](#ondewo.vtsi.TransferCallsResponse) | <p>Transfer a call from a listener to another</p> |
+| TransferCall | [TransferCallRequest](#ondewo.vtsi.TransferCallRequest) | [TransferCallResponse](#ondewo.vtsi.TransferCallResponse) | <p>Transfer a call to a phone number, a softphone account, another listener or the listener queue.</p> <p>The target is either the typed <code>target</code> or the legacy raw <code>transfer_id</code>, never both. It is resolved and validated before anything is sent; an invalid target is answered with <code>TRANSFER_OUTCOME_TARGET_INVALID</code> and an <code>error_reason</code>, and the call is untouched.</p> <p><code>TRANSFER_MODE_BLIND</code> (default) sends a SIP REFER and reports its outcome: a refused REFER keeps the call with the bot. <code>TRANSFER_MODE_WARM</code> rings the target into the call first, and the bot leaves only after the target joined (Asterisk 22 only).</p> <p>Telephony outcomes (busy, no answer, REFER rejected) are successful RPCs carrying an <code>outcome</code>. Refusals before any side effect also return a gRPC status with <code>reason=&lt;token&gt;</code> in its details: <code>INVALID_ARGUMENT</code> (both targets set, malformed target), <code>NOT_FOUND</code> (call or target not found, including another project&apos;s), <code>FAILED_PRECONDITION</code> (<code>call-not-connected</code>, <code>amd-in-progress</code>, <code>call-not-yet-identified</code>, <code>participants-present</code>, <code>asterisk-version-unsupported</code>, <code>sip-image-too-old</code>), <code>ABORTED</code> (<code>transfer-in-progress</code>), <code>UNAVAILABLE</code> (<code>sip-unreachable</code>).</p> <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced. Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p> |
+| TransferCalls | [TransferCallsRequest](#ondewo.vtsi.TransferCallsRequest) | [TransferCallsResponse](#ondewo.vtsi.TransferCallsResponse) | <p>Transfer several calls, each like <code>TransferCall</code>.</p> <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced. Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p> |
 | GetCall | [GetCallRequest](#ondewo.vtsi.GetCallRequest) | [Call](#ondewo.vtsi.Call) | <p>Get call log for single call instance</p> |
 | ListCalls | [ListCallsRequest](#ondewo.vtsi.ListCallsRequest) | [ListCallsResponse](#ondewo.vtsi.ListCallsResponse) | <p>Get call log for all call instances</p> |
 | StreamCallerStatus | [StreamCallerStatusRequest](#ondewo.vtsi.StreamCallerStatusRequest) | [StreamCallResourceStatusResponse](#ondewo.vtsi.StreamCallResourceStatusResponse) stream | <p>Streams the status of the callers of a project: a snapshot first (<code>snapshot = true</code>), then every caller whose call or SIP status changed, plus keep-alive messages. Ends when the client disconnects or at the server-side maximum stream duration.</p> <p>Errors: <code>NOT_FOUND</code> for an unknown project; <code>RESOURCE_EXHAUSTED</code> when the server has no free stream slot.</p> |
 | StreamListenerStatus | [StreamListenerStatusRequest](#ondewo.vtsi.StreamListenerStatusRequest) | [StreamCallResourceStatusResponse](#ondewo.vtsi.StreamCallResourceStatusResponse) stream | <p>Streams the status of the listeners of a project, like <code>StreamCallerStatus</code>.</p> |
 | StreamScheduledCallerStatus | [StreamScheduledCallerStatusRequest](#ondewo.vtsi.StreamScheduledCallerStatusRequest) | [StreamCallResourceStatusResponse](#ondewo.vtsi.StreamCallResourceStatusResponse) stream | <p>Streams the status of the scheduled callers of a project, like <code>StreamCallerStatus</code>. The snapshot holds every PENDING and FIRING scheduled caller and those that finished in the last hour.</p> |
+| InviteToCall | [InviteToCallRequest](#ondewo.vtsi.InviteToCallRequest) | [InviteToCallResponse](#ondewo.vtsi.InviteToCallResponse) | <p>Invite a registered softphone account of the project into a connected call. Returns the participant in <code>PARTICIPANT_STATE_RINGING</code>; follow <code>Call.participants</code> or the events <code>VTSI_EVENT_CALL_PARTICIPANT_*</code> for JOINED, FAILED and LEFT.</p> <p><code>PARTICIPANT_MODE_CONFERENCE</code> (default) joins the softphone into the call: Asterisk mixes the caller, the bot and the participant, and by default the bot keeps talking and listening (<code>BOT_POLICY_ON_JOIN_KEEP</code>). <code>PARTICIPANT_MODE_MONITOR</code> lets the participant listen only. When the bot&apos;s leg ends, every participant is hung up; the caller is handed over only by a WARM <code>TransferCall</code>. Idempotent per <code>request_id</code>.</p> <p>Errors: <code>INVALID_ARGUMENT</code>, <code>NOT_FOUND</code> (call or softphone account, including another project&apos;s), <code>FAILED_PRECONDITION</code> (<code>call-not-connected</code>, <code>amd-in-progress</code>, <code>softphone-not-registered</code>, <code>softphone-disabled</code>, <code>softphone-unrouted</code>, <code>call-not-yet-identified</code>, <code>bot-channel-ambiguous</code>, <code>asterisk-not-local</code>, <code>asterisk-version-unsupported</code>), <code>ALREADY_EXISTS</code> (the softphone is already ringing or joined), <code>ABORTED</code> (<code>transfer-in-progress</code>), <code>RESOURCE_EXHAUSTED</code> (participant cap), <code>UNAVAILABLE</code> (<code>asterisk-unreachable</code>).</p> <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced. Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p> |
+| RemoveCallParticipant | [RemoveCallParticipantRequest](#ondewo.vtsi.RemoveCallParticipantRequest) | [RemoveCallParticipantResponse](#ondewo.vtsi.RemoveCallParticipantResponse) | <p>Hang up a participant of a call (ringing or joined). The participant ends as <code>PARTICIPANT_STATE_LEFT</code> with <code>end_reason = REMOVED</code>; the call and the bot are not affected.</p> <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher. Audited like <code>InviteToCall</code>.</p> |
+| SetCallMediaControl | [SetCallMediaControlRequest](#ondewo.vtsi.SetCallMediaControlRequest) | [SetCallMediaControlResponse](#ondewo.vtsi.SetCallMediaControlResponse) | <p>Mute the bot of a connected call and/or stop it listening to the caller, or undo either. Every request sets a desired level and never toggles: a repeat answers <code>changed = false</code>. The bot stays muted while anything else (a TALK take-over of <code>StreamCallAudio</code>, a participant bot policy) also holds it muted.</p> <p>Errors as for <code>InviteToCall</code>, plus <code>FAILED_PRECONDITION</code> <code>reason=sip-image-too-old</code>, <code>ABORTED</code> <code>reason=call-control-busy</code> (another call-control request for the call is running) and <code>UNAVAILABLE</code> <code>reason=sip-unreachable</code> or <code>reason=csi-media-control-failed</code> (the bot did not apply the level: a requested pause is rolled back, a requested mute is kept).</p> <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced. Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p> |
+| StreamCallAudio | [StreamCallAudioRequest](#ondewo.vtsi.StreamCallAudioRequest) stream | [StreamCallAudioResponse](#ondewo.vtsi.StreamCallAudioResponse) stream | <p>Live audio of a connected call, both ways. The first request MUST be <code>config</code> (within 2 seconds). LISTEN receives the caller mixed with the bot. TALK sends the agent&apos;s audio to the caller and REQUIRES <code>take_over</code>: the bot is muted and does not listen while the stream is connected, and resumes when it ends; in TALK the agent hears the caller only. Audio is LINEAR16 little-endian mono in 20 ms frames.</p> <p>Bidirectional streaming: available to native gRPC clients (python, nodejs) only. Browser (grpc-web) clients use <code>ListenCallAudio</code>, plus a softphone (<code>InviteToCall</code>) to talk.</p> <p>Errors: <code>INVALID_ARGUMENT</code> (no or invalid <code>config</code>, TALK without <code>take_over</code>, wrong frame size), <code>NOT_FOUND</code>, <code>FAILED_PRECONDITION</code> (<code>call-not-connected</code>, <code>amd-in-progress</code>, <code>call-not-yet-identified</code>, <code>bot-still-speaking</code>, <code>sip-image-too-old</code>), <code>RESOURCE_EXHAUSTED</code> (stream cap, a second TALK). A normal end sends one <code>ended</code> message, then OK. A second <code>config</code> or audio sent in LISTEN mode ends the stream with <code>INVALID_ARGUMENT</code>. A client half-close ends the stream (<code>CALL_AUDIO_END_REASON_CLIENT_CLOSED</code>), so a listening client keeps its request stream open.</p> <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced. Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p> |
+| ListenCallAudio | [ListenCallAudioRequest](#ondewo.vtsi.ListenCallAudioRequest) | [StreamCallAudioResponse](#ondewo.vtsi.StreamCallAudioResponse) stream | <p>Listen-only live audio of a connected call, like <code>StreamCallAudio</code> in LISTEN mode, as a server stream that grpc-web (browser) clients can consume. <code>config.mode</code> must be LISTEN or unspecified and <code>config.take_over</code> must be false, otherwise <code>INVALID_ARGUMENT</code> <code>reason=listen-only</code>.</p> <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced. Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p> |
 
  <!-- end services -->
 
@@ -23473,13 +24212,23 @@ Every event VTSI reports. Values are grouped by resource in blocks of 100; numbe
 | VTSI_EVENT_CALL_CONNECTED | 102 | The call was answered: <code>INCOMING_CALL_CONNECTED</code> / <code>OUTGOING_CALL_CONNECTED</code>. |
 | VTSI_EVENT_CALL_FINISHED | 103 | The call ended normally: <code>INCOMING_CALL_FINISHED</code> / <code>OUTGOING_CALL_FINISHED</code>. |
 | VTSI_EVENT_CALL_FAILED | 104 | The call failed: <code>INCOMING_CALL_FAILED</code> / <code>OUTGOING_CALL_FAILED</code>. |
-| VTSI_EVENT_CALL_TRANSFER_INITIATED | 105 | A transfer of the call started: <code>TRANSFER_CALL_INITIATED</code>. |
-| VTSI_EVENT_CALL_TRANSFERRED | 106 | <code>TransferCall</code> transferred the call. |
-| VTSI_EVENT_CALL_TRANSFER_FAILED | 107 | A transfer failed: <code>TRANSFER_CALL_FAILED</code>, or <code>TransferCall</code> failed. |
+| VTSI_EVENT_CALL_TRANSFER_INITIATED | 105 | A transfer of the call started: <code>TRANSFER_CALL_INITIATED</code>. Emitted when a BLIND transfer was accepted, or when the target of a WARM transfer starts ringing. |
+| VTSI_EVENT_CALL_TRANSFERRED | 106 | <code>TransferCall</code> transferred the call. Emitted at the call&apos;s terminal edge: a <code>*_CALL_FINISHED</code> status whose description is <code>Call transferred</code>. |
+| VTSI_EVENT_CALL_TRANSFER_FAILED | 107 | A transfer failed and the call was KEPT with the bot: <code>TRANSFER_CALL_FAILED</code>, a refused or unanswered REFER, or a WARM target that was busy or did not answer. |
 | VTSI_EVENT_CALL_HANGUP_INITIATED | 108 | A hang-up started: <code>SOFT_HANGUP_INITIATED</code> / <code>HARD_HANGUP_INITIATED</code>. |
 | VTSI_EVENT_CALL_ANSWERING_MACHINE_DETECTED | 109 | An answering machine was detected: <code>OUTGOING_CALL_ANSWERING_MACHINE_DETECTED</code>. |
 | VTSI_EVENT_CALL_STOPPED | 110 | The call was ended by <code>StopCall</code>, <code>StopCalls</code>, <code>StopAllCalls</code> or a campaign hard stop. |
 | VTSI_EVENT_CALL_SIP_STATUS_CHANGED | 111 | The SIP status of the call changed (emitted for EVERY change, in addition to the specific events above). <code>previous_sip_status_type</code> holds the status before. |
+| VTSI_EVENT_CALL_PARTICIPANT_INVITED | 112 | A participant was invited into the call (<code>InviteToCall</code>). <code>attributes</code> carry <code>participant_id</code>, <code>mode</code> and <code>actor</code> (who invited). |
+| VTSI_EVENT_CALL_PARTICIPANT_JOINED | 113 | An invited participant answered and joined the call. <code>attributes</code> carry <code>participant_id</code>. |
+| VTSI_EVENT_CALL_PARTICIPANT_FAILED | 114 | An invited participant never joined (busy, no answer, unavailable, the call ended, ...). <code>attributes</code> carry <code>participant_id</code> and <code>end_reason</code>. |
+| VTSI_EVENT_CALL_PARTICIPANT_LEFT | 115 | A joined participant left the call. <code>attributes</code> carry <code>participant_id</code> and <code>end_reason</code>. |
+| VTSI_EVENT_CALL_BOT_MUTED | 116 | The bot of the call was muted. <code>attributes</code> carry <code>actor</code> where a person caused it. |
+| VTSI_EVENT_CALL_BOT_UNMUTED | 117 | The bot of the call was unmuted. <code>attributes</code> carry <code>actor</code> where a person caused it. |
+| VTSI_EVENT_CALL_LISTENING_PAUSED | 118 | The bot of the call stopped listening to the caller. <code>attributes</code> carry <code>actor</code> where a person caused it. |
+| VTSI_EVENT_CALL_LISTENING_RESUMED | 119 | The bot of the call listens to the caller again. <code>attributes</code> carry <code>actor</code> where a person caused it. |
+| VTSI_EVENT_CALL_AUDIO_STREAM_CONNECTED | 120 | A live call audio stream (<code>StreamCallAudio</code> / <code>ListenCallAudio</code>) connected. <code>attributes</code> carry <code>stream_id</code>, <code>mode</code> and <code>actor</code>. |
+| VTSI_EVENT_CALL_AUDIO_STREAM_DISCONNECTED | 121 | A live call audio stream disconnected. <code>attributes</code> carry <code>stream_id</code>, <code>mode</code>, <code>actor</code> and <code>end_reason</code>. |
 | VTSI_EVENT_CALLER_STARTED | 200 | A caller started and placed its call. |
 | VTSI_EVENT_CALLER_START_FAILED | 201 | A caller could not be started; <code>description</code> says why. |
 | VTSI_EVENT_CALLER_STOPPED | 202 | A caller was stopped (<code>StopCaller</code>, <code>StopCallers</code>). |
@@ -24326,6 +25075,7 @@ The VTSI project with its configuration setting
 | nlu_agent_names | [string](#string) | repeated | Associated NLU agents. Format: <pre><code>projects/&lt;Project ID&gt;/agent</code></pre> |
 | deployed_callers | [int32](#int32) |  | The number of deployed callers in this project. |
 | deployed_listeners | [int32](#int32) |  | The number of deployed listeners in this project. |
+| transfer_phone_number_allowlist | [string](#string) | repeated | OPTIONAL: Restricts the phone numbers a call of this project may be transferred to with <pre><code>TransferCall</code></pre> and a <pre><code>CallTarget.phone_number</code></pre>. Each entry is an E.164 number or number prefix (<pre><code>^\+[1-9][0-9]{0,14}$</code></pre>), e.g. <pre><code>+43</code></pre> or <pre><code>+4312345678</code></pre>; a number is allowed when it starts with any entry. Empty: any valid E.164 number is allowed. A refused number answers <pre><code>TRANSFER_OUTCOME_TARGET_INVALID</code></pre> with <pre><code>error_reason = number-not-allowed</code></pre> and nothing is sent. Updatable with the update mask path <pre><code>transfer_phone_number_allowlist</code></pre>. |
 
 
 
