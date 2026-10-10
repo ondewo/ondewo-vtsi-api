@@ -49,14 +49,15 @@ import "ondewo/vtsi/call_configs.proto";
 // when a resource name is used. (The <code>CampaignDisplayName</code> message of 9.0.0, which
 // carried the project and the display name together, was removed in 9.1.0; its field numbers are
 // <code>reserved</code>.)</p>
-// <p>The shape of the selector is checked BEFORE authorization, so these are
-// <code>INVALID_ARGUMENT</code> for every caller, with or without authorization: neither the resource
-// name nor the display name set (also how an old 9.0.0 client&apos;s removed
+// <p>A malformed selector is <code>INVALID_ARGUMENT</code> for every authenticated caller, with or
+// without authorization enforced (also when authorization could resolve no project from it): neither
+// the resource name nor the display name set (also how an old 9.0.0 client&apos;s removed
 // <code>CampaignDisplayName</code> arrives), a malformed resource name, a display name with an empty
 // or malformed <code>vtsi_project_name</code>, and a <code>vtsi_project_name</code> that is not the
 // project of the resource name. With authorization enforced, a well-formed request naming a project
 // the caller holds no role on (an unknown project included) is refused with
-// <code>PERMISSION_DENIED</code> before any lookup, so it is not answered <code>NOT_FOUND</code>.</p>
+// <code>PERMISSION_DENIED</code> before any lookup, so it is not answered <code>NOT_FOUND</code>, and
+// a caller without a credential is <code>UNAUTHENTICATED</code> whatever it sent.</p>
 // <p>Campaign-level call defaults: <code>campaign_common_services_config</code> and
 // <code>campaign_sip_caller_config</code> of a <code>Campaign</code> are the defaults of EVERY call of
 // the campaign. They are read LIVE when a campaign call is dispatched (every attempt, retries

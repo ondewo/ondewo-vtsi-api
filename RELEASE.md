@@ -12,7 +12,7 @@
   `string vtsi_project_name`. Every old field number is `reserved` and never reused with another type, so the
   change is wire-safe: an old client that still sends the removed message field is read by a 9.1.0 server as
   an unknown field (the selector is then empty and the request is refused with `INVALID_ARGUMENT`, also with
-  authorization enforced, because the selector is checked before it), never as a wrong value. Code that builds a `CampaignDisplayName` no longer compiles and must move to the new fields:
+  authorization enforced), never as a wrong value. Code that builds a `CampaignDisplayName` no longer compiles and must move to the new fields:
 
   | Message | 9.0.0 | 9.1.0 |
   | --- | --- | --- |
@@ -21,9 +21,10 @@
   | `CampaignAssignment` | `CampaignDisplayName campaign_display_name = 4` | `string display_name = 5`; `reserved 4`, `reserved "campaign_display_name"` |
 
   `vtsi_project_name` (`projects/<project_uuid>/project`) is REQUIRED with `display_name` (`INVALID_ARGUMENT`
-  when empty or malformed) and, when sent with the resource name, must be the campaign's project. These shape
-  checks run before authorization; with authorization enforced, a well-formed request naming a project the
-  caller holds no role on (an unknown one included) is `PERMISSION_DENIED`. A
+  when empty or malformed) and, when sent with the resource name, must be the campaign's project. A malformed
+  selector is `INVALID_ARGUMENT` for every authenticated caller, also with authorization enforced; a
+  well-formed request naming a project the caller holds no role on (an unknown one included) is
+  `PERMISSION_DENIED` there. A
   `CampaignAssignment` has no project field of its own: its project is the enclosing request's
   `AddCallersToCampaignRequest.vtsi_project_name` / `AddScheduledCallersToCampaignRequest.vtsi_project_name`.
   Where the old and the new member share the name `display_name` only the number can be reserved; JSON
