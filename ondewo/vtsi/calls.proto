@@ -42,10 +42,39 @@ service Calls {
     rpc StartCallers (StartCallersRequest) returns (StartCallersResponse);
 
     // <p>Lists all available callers</p>
+    // <p>With <code>campaign_name</code> or <code>campaign_display_name</code> set, lists only the callers of that
+    // campaign: the callers that placed at least one attempt of one of its campaign calls (see
+    // <code>ListCallersRequest.campaign_name</code>).</p>
     rpc ListCallers (ListCallersRequest) returns (ListCallersResponse);
 
     // <p>Gets a caller</p>
     rpc GetCaller (GetCallerRequest) returns (Caller);
+
+    // <p>Updates the STORED configuration of a caller: the fields named in <code>update_mask</code>, i.e.
+    // <code>sip_caller_config</code> and <code>common_services_config</code> or any nested sub-path of them.
+    // Allowed whether or not the caller has a call running.</p>
+    // <p>A running call and its container are NEVER changed: nothing is restarted, redeployed or reconfigured,
+    // and the call goes on with the configuration its container was deployed with. The stored configuration is
+    // what the server uses the next time it deploys a container for this caller; a caller whose call has
+    // ended and that the server never deploys again keeps the update only as its stored (and returned)
+    // configuration. Updating a caller never changes a campaign: the attempts of a campaign call take their
+    // configuration from the campaign and the campaign call, never from a <code>Caller</code>.</p>
+    // <p>Errors are gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed <code>caller.name</code>,
+    // an empty <code>update_mask</code>, an unknown, output-only or immutable <code>update_mask</code> path, a
+    // resulting configuration that a <code>StartCallerRequest</code> carrying it would be refused for, or an
+    // unknown <code>field_mask</code> path (each naming the path or field); <code>NOT_FOUND</code> for an
+    // unknown caller or project; with authorization enforced <code>PERMISSION_DENIED</code> for a project the
+    // caller holds no role on.</p>
+    // <p>Authorization: the role that may start and stop callers of the project (<code>PROJECT_EXECUTOR</code>
+    // or higher).</p>
+    rpc UpdateCaller (UpdateCallerRequest) returns (UpdateCallerResponse);
+
+    // <p>Updates several callers, each like <code>UpdateCaller</code>. Not atomic: every entry is applied on its
+    // own and reported in <code>UpdateCallersResponse.update_caller_responses</code>, in request order; an entry
+    // that fails changes nothing and does not stop the others. Errors of the request as a whole (see
+    // <code>UpdateCallersRequest</code>) are gRPC status codes, and then no entry is applied.</p>
+    // <p>Authorization: as <code>UpdateCaller</code>.</p>
+    rpc UpdateCallers (UpdateCallersRequest) returns (UpdateCallersResponse);
 
     // <p>Deletes a caller</p>
     rpc DeleteCaller (DeleteCallerRequest) returns (DeleteCallerResponse);
@@ -76,6 +105,26 @@ service Calls {
 
     // <p>Gets a listener</p>
     rpc GetListener (GetListenerRequest) returns (Listener);
+
+    // <p>Updates the STORED configuration of a listener: the fields named in <code>update_mask</code>, i.e.
+    // <code>sip_base_config</code> and <code>common_services_config</code> or any nested sub-path of them.
+    // Allowed whether or not the listener&apos;s container is running or has a call.</p>
+    // <p>A running container and every call it takes are NEVER changed: nothing is restarted, redeployed or
+    // reconfigured, and the running container answers its calls with the configuration it was deployed with
+    // until it is replaced. The stored configuration is what the server uses the next time it deploys a
+    // container for this listener (e.g. when it restarts the listener&apos;s container or redeploys the
+    // project); a listener the server never deploys again keeps the update only as its stored (and returned)
+    // configuration.</p>
+    // <p>Errors as for <code>UpdateCaller</code>, with <code>StartListenerRequest</code> as the validation of the
+    // resulting configuration.</p>
+    // <p>Authorization: the role that may start and stop listeners of the project (<code>PROJECT_EXECUTOR</code>
+    // or higher).</p>
+    rpc UpdateListener (UpdateListenerRequest) returns (UpdateListenerResponse);
+
+    // <p>Updates several listeners, each like <code>UpdateListener</code>, with the per-entry results and the
+    // request-level errors of <code>UpdateCallers</code>.</p>
+    // <p>Authorization: as <code>UpdateListener</code>.</p>
+    rpc UpdateListeners (UpdateListenersRequest) returns (UpdateListenersResponse);
 
     // <p>Deletes a listener</p>
     rpc DeleteListener (DeleteListenerRequest) returns (DeleteListenerResponse);
@@ -157,7 +206,28 @@ service Calls {
     rpc GetCall (GetCallRequest) returns (Call);
 
     // <p>Get call log for all call instances</p>
+    // <p>With <code>call_filter.campaign_name</code> or <code>call_filter.campaign_display_name</code> set, lists
+    // only the calls of that campaign: the calls placed by the attempts of its campaign calls.</p>
     rpc ListCalls (ListCallsRequest) returns (ListCallsResponse);
+
+    // <p>Updates the descriptive metadata of a call: the only updatable <code>update_mask</code> path is
+    // <code>labels</code>. Allowed on active and ended calls. It changes only the stored call record: the live
+    // call, its SIP container, its status and its media are never touched, and no event is sent to the
+    // call.</p>
+    // <p>Errors are gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed <code>call.name</code>, an
+    // empty <code>update_mask</code>, any path other than <code>labels</code> (every other field of a
+    // <code>Call</code> is output only), a path below <code>labels</code>, labels outside the bounds of
+    // <code>Call.labels</code>, or an unknown <code>field_mask</code> path (each naming the path or label);
+    // <code>NOT_FOUND</code> for an unknown call or project; with authorization enforced
+    // <code>PERMISSION_DENIED</code> for a project the caller holds no role on.</p>
+    // <p>Authorization: the role that may stop calls of the project (<code>PROJECT_EXECUTOR</code> or
+    // higher).</p>
+    rpc UpdateCall (UpdateCallRequest) returns (UpdateCallResponse);
+
+    // <p>Updates several calls, each like <code>UpdateCall</code>, with the per-entry results and the
+    // request-level errors of <code>UpdateCallers</code>.</p>
+    // <p>Authorization: as <code>UpdateCall</code>.</p>
+    rpc UpdateCalls (UpdateCallsRequest) returns (UpdateCallsResponse);
 
     //////////////////////////////////////////////////////////////////////////////
     // Status stream endpoints
@@ -265,16 +335,20 @@ message Listener {
 
     // VTSI project name with which to perform the call of the form
     // <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
+    // Output only. Identifies the listener on <code>UpdateListener</code>.
     string name = 1;
 
     // The call name that was assigned to the call
     // <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
+    // Output only.
     string call_name = 2;
 
-    // SIP service configuration
+    // SIP service configuration. Updatable with <code>UpdateListener</code> (stored configuration only, see
+    // there).
     SipBaseConfig sip_base_config = 3;
 
-    // Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI
+    // Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI. Updatable with <code>UpdateListener</code>
+    // (stored configuration only, see there).
     CommonServicesConfig common_services_config = 4;
 
 }
@@ -284,16 +358,20 @@ message Caller {
 
     // Caller name with which to perform the call of the form
     // <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
+    // Output only. Identifies the caller on <code>UpdateCaller</code>.
     string name = 1;
 
     // The call name that was assigned to the call
     // <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
+    // Output only.
     string call_name = 2;
 
-    // SIP service configuration
+    // SIP service configuration. Updatable with <code>UpdateCaller</code> (stored configuration only, see
+    // there).
     SipCallerConfig sip_caller_config = 3;
 
-    // Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI
+    // Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI. Updatable with <code>UpdateCaller</code>
+    // (stored configuration only, see there).
     CommonServicesConfig common_services_config = 4;
 }
 
@@ -309,6 +387,19 @@ message StartListenerRequest {
 
     // Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI
     CommonServicesConfig common_services_config = 3;
+
+    // Optional. Partial response: the field paths to populate in <code>StartListenerResponse.listener</code>, relative to the
+    // <code>Listener</code> message (no <code>listener.</code> prefix), e.g. <code>call_name</code>, <code>common_services_config.nlu_vtsi_config.agent_name</code>. Nested paths through singular
+    // message fields are allowed; a path below a repeated or map field is not. <code>listener.name</code> and the
+    // other fields of the response are always populated. Unset or empty returns every field. An unknown path is
+    // rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is started. Applied after the
+    // server&apos;s role-based redaction of <code>common_services_config</code>, so it can only narrow the
+    // response. It shapes only the response: the listener is started regardless.
+    // <p>Read only by the RPC this message is the request of. Where it is an entry of another request
+    // (<code>StartListenersRequest.listener_requests</code>) it must be unset, otherwise that whole request is rejected with <code>INVALID_ARGUMENT</code>
+    // naming the entry and nothing is started; use the enclosing request&apos;s own <code>field_mask</code>
+    // where it has one.</p>
+    google.protobuf.FieldMask field_mask = 4;
 
 }
 
@@ -345,6 +436,18 @@ message StartListenersRequest {
     // no <code>common_services_config</code>: the server keeps no second copy of the credentials it holds. To
     // make a single caller or listener idempotent, send it as a batch of one.
     string idempotency_key = 3;
+
+    // Optional. Partial response: the field paths to populate in the <code>listener</code> of EVERY entry of
+    // <code>StartListenersResponse.listener_responses</code>, relative to the <code>Listener</code> message (no prefix), e.g.
+    // <code>call_name</code>. Nested paths through singular message fields are allowed; a path below a repeated or map
+    // field is not. <code>listener.name</code> and every other field of the response and of its entries are
+    // always populated. Unset or empty returns every field. An unknown path is rejected with
+    // <code>INVALID_ARGUMENT</code> naming it, before anything is started. Applied after the server&apos;s
+    // role-based redaction of <code>common_services_config</code>, so it can only narrow the response. It
+    // shapes only the response: the listeners are started regardless. The entries&apos; own
+    // <code>field_mask</code> must be unset. Not part of the <code>idempotency_key</code> comparison: a retry
+    // with the same key and another mask replays the first response shaped by the retry&apos;s mask.
+    google.protobuf.FieldMask field_mask = 4;
 }
 
 // Response to start multiple listeners
@@ -372,6 +475,19 @@ message StartCallerRequest {
 
     // Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI
     CommonServicesConfig common_services_config = 3;
+
+    // Optional. Partial response: the field paths to populate in <code>StartCallerResponse.caller</code>, relative to the
+    // <code>Caller</code> message (no <code>caller.</code> prefix), e.g. <code>call_name</code>, <code>sip_caller_config.callee_id</code>. Nested paths through singular
+    // message fields are allowed; a path below a repeated or map field is not. <code>caller.name</code> and the
+    // other fields of the response are always populated. Unset or empty returns every field. An unknown path is
+    // rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is started. Applied after the
+    // server&apos;s role-based redaction of <code>common_services_config</code>, so it can only narrow the
+    // response. It shapes only the response: the caller is started regardless.
+    // <p>Read only by the RPC this message is the request of. Where it is an entry of another request
+    // (<code>StartCallersRequest.caller_requests</code>, <code>StartScheduledCallerRequest.request</code>, <code>AddCallersToCampaignRequest.caller_requests</code>) it must be unset, otherwise that whole request is rejected with <code>INVALID_ARGUMENT</code>
+    // naming the entry and nothing is started; use the enclosing request&apos;s own <code>field_mask</code>
+    // where it has one.</p>
+    google.protobuf.FieldMask field_mask = 4;
 
 }
 
@@ -413,6 +529,18 @@ message StartCallersRequest {
     // no <code>common_services_config</code>: the server keeps no second copy of the credentials it holds. To
     // make a single caller or listener idempotent, send it as a batch of one.
     string idempotency_key = 4;
+
+    // Optional. Partial response: the field paths to populate in the <code>caller</code> of EVERY entry of
+    // <code>StartCallersResponse.caller_responses</code>, relative to the <code>Caller</code> message (no prefix), e.g.
+    // <code>call_name</code>, <code>sip_caller_config.callee_id</code>. Nested paths through singular message fields are allowed; a path below a repeated or map
+    // field is not. <code>caller.name</code> and every other field of the response and of its entries are
+    // always populated. Unset or empty returns every field. An unknown path is rejected with
+    // <code>INVALID_ARGUMENT</code> naming it, before anything is started. Applied after the server&apos;s
+    // role-based redaction of <code>common_services_config</code>, so it can only narrow the response. It
+    // shapes only the response: the callers are started regardless. The entries&apos; own
+    // <code>field_mask</code> must be unset. Not part of the <code>idempotency_key</code> comparison: a retry
+    // with the same key and another mask replays the first response shaped by the retry&apos;s mask.
+    google.protobuf.FieldMask field_mask = 5;
 
 }
 
@@ -462,6 +590,31 @@ message ListCallersRequest {
     // a <code>page_token</code> stays valid with another mask.
     google.protobuf.FieldMask field_mask = 4;
 
+    // Optional. Only the callers of one campaign. Neither set lists every caller of the project, as before
+    // 9.1.0.
+    // <p>The callers of a campaign are the callers that placed at least one attempt of one of its campaign calls
+    // (<code>CampaignCallAttempt.caller_name</code>), whichever way the call was added
+    // (<code>AddCallersToCampaign</code> or <code>AddScheduledCallersToCampaign</code>: the attempts of a
+    // scheduled campaign call are placed by callers too, while its <code>ScheduledCaller</code> is not a
+    // <code>Caller</code> and is never listed here). A caller that was deleted is not listed. A caller that
+    // placed attempts of several campaigns (a pooled caller of the server&apos;s caller pool can) is listed for
+    // each of them. The order is the one of the unfiltered listing, and the same set, oldest first, is what
+    // <code>Campaign.campaign_callers</code> reports. A <code>page_token</code> is valid only with the same
+    // campaign selector.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> for a malformed <code>campaign_name</code>, a campaign of
+    // another project than <code>vtsi_project_name</code>, or an empty <code>campaign_display_name</code>
+    // sent as the set member; <code>NOT_FOUND</code> for an unknown campaign.</p>
+    oneof campaign {
+
+        // Resource name of the campaign. It must be a campaign of <code>vtsi_project_name</code>.
+        // The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre>
+        string campaign_name = 5;
+
+        // Exact, case-sensitive <code>display_name</code> of the campaign, resolved within
+        // <code>vtsi_project_name</code>.
+        string campaign_display_name = 6;
+    }
+
 }
 
 // Represents the response for listing callers.
@@ -488,6 +641,15 @@ message GetCallerRequest {
 
     // you can specify the view to be shallow or full
     optional CallView call_view = 3;
+
+    // Optional. Partial response: the field paths to populate in the returned <code>Caller</code>, relative to
+    // the <code>Caller</code> message, e.g. <code>call_name</code>, <code>sip_caller_config.callee_id</code>. Nested paths through singular message fields are allowed;
+    // a path below a repeated or map field is not. <code>name</code> is always populated. Unset or empty
+    // returns every field the <code>call_view</code> populates. An unknown path is rejected with
+    // <code>INVALID_ARGUMENT</code> naming it. Applied after the <code>call_view</code> and the server&apos;s
+    // role-based redaction of <code>common_services_config</code>, so it can only narrow the response and never
+    // populates a field that was left empty.
+    google.protobuf.FieldMask field_mask = 4;
 
 }
 
@@ -543,6 +705,15 @@ message GetListenerRequest {
     // you can specify the view to be shallow or full
     optional CallView call_view = 3;
 
+    // Optional. Partial response: the field paths to populate in the returned <code>Listener</code>, relative to
+    // the <code>Listener</code> message, e.g. <code>call_name</code>, <code>common_services_config.nlu_vtsi_config.agent_name</code>. Nested paths through singular message fields are allowed;
+    // a path below a repeated or map field is not. <code>name</code> is always populated. Unset or empty
+    // returns every field the <code>call_view</code> populates. An unknown path is rejected with
+    // <code>INVALID_ARGUMENT</code> naming it. Applied after the <code>call_view</code> and the server&apos;s
+    // role-based redaction of <code>common_services_config</code>, so it can only narrow the response and never
+    // populates a field that was left empty.
+    google.protobuf.FieldMask field_mask = 4;
+
 }
 
 // Represents a request to stop a specific listener.
@@ -550,6 +721,12 @@ message StopListenerRequest {
 
     // The name of the listener to stop in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
     string name = 1;
+
+    // Optional. Partial response: the field paths of <code>StopListenerResponse</code> to populate, i.e.
+    // <code>error_message</code> (the response carries no <code>Listener</code>). <code>name</code> is always populated.
+    // Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming
+    // it, before anything is stopped. It shapes only the response: the listener is stopped regardless.
+    google.protobuf.FieldMask field_mask = 2;
 
 }
 
@@ -570,6 +747,14 @@ message StopListenersRequest {
     // The names of the listeners to stop in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
     repeated string names = 1;
 
+    // Optional. Partial response: the field paths to populate in EVERY entry of
+    // <code>StopListenersResponse.stop_listener_responses</code>, relative to the entry message <code>StopListenerResponse</code>, i.e.
+    // <code>error_message</code> (the entries carry no <code>Listener</code>). <code>name</code> of each entry and the
+    // response&apos;s own fields are always populated. Unset or empty returns every field. An unknown path is
+    // rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is stopped. It shapes only the
+    // response: the listeners are stopped regardless.
+    google.protobuf.FieldMask field_mask = 2;
+
 }
 
 // Response to stop multiple listeners
@@ -588,6 +773,12 @@ message StopCallerRequest {
 
     // The name of the caller to stop in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
     string name = 1;
+
+    // Optional. Partial response: the field paths of <code>StopCallerResponse</code> to populate, i.e.
+    // <code>error_message</code> (the response carries no <code>Caller</code>). <code>name</code> is always populated.
+    // Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming
+    // it, before anything is stopped. It shapes only the response: the caller is stopped regardless.
+    google.protobuf.FieldMask field_mask = 2;
 
 }
 
@@ -608,6 +799,14 @@ message StopCallersRequest {
     // The names of the callers to stop in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
     repeated string names = 1;
 
+    // Optional. Partial response: the field paths to populate in EVERY entry of
+    // <code>StopCallersResponse.stop_caller_responses</code>, relative to the entry message <code>StopCallerResponse</code>, i.e.
+    // <code>error_message</code> (the entries carry no <code>Caller</code>). <code>name</code> of each entry and the
+    // response&apos;s own fields are always populated. Unset or empty returns every field. An unknown path is
+    // rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is stopped. It shapes only the
+    // response: the callers are stopped regardless.
+    google.protobuf.FieldMask field_mask = 2;
+
 }
 
 // Response to stop multiple callers
@@ -627,6 +826,12 @@ message DeleteListenerRequest {
     // The name of the listener to delete in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
     string name = 1;
 
+    // Optional. Partial response: the field paths of <code>DeleteListenerResponse</code> to populate, i.e.
+    // <code>error_message</code> (the response carries no <code>Listener</code>). <code>name</code> is always populated.
+    // Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming
+    // it, before anything is deleted. It shapes only the response: the listener is deleted regardless.
+    google.protobuf.FieldMask field_mask = 2;
+
 }
 
 // Represents a request to delete a specific listener.
@@ -645,6 +850,14 @@ message DeleteListenersRequest {
 
     // The names of the listeners to delete in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
     repeated string names = 1;
+
+    // Optional. Partial response: the field paths to populate in EVERY entry of
+    // <code>DeleteListenersResponse.delete_listener_responses</code>, relative to the entry message <code>DeleteListenerResponse</code>, i.e.
+    // <code>error_message</code> (the entries carry no <code>Listener</code>). <code>name</code> of each entry and the
+    // response&apos;s own fields are always populated. Unset or empty returns every field. An unknown path is
+    // rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is deleted. It shapes only the
+    // response: the listeners are deleted regardless.
+    google.protobuf.FieldMask field_mask = 2;
 
 }
 
@@ -666,6 +879,12 @@ message DeleteCallerRequest {
     // The name of the caller to delete in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
     string name = 1;
 
+    // Optional. Partial response: the field paths of <code>DeleteCallerResponse</code> to populate, i.e.
+    // <code>error_message</code> (the response carries no <code>Caller</code>). <code>name</code> is always populated.
+    // Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming
+    // it, before anything is deleted. It shapes only the response: the caller is deleted regardless.
+    google.protobuf.FieldMask field_mask = 2;
+
 }
 
 // Represents a request to delete a specific caller.
@@ -685,6 +904,14 @@ message DeleteCallersRequest {
     // The name of the caller to delete in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
     repeated string names = 1;
 
+    // Optional. Partial response: the field paths to populate in EVERY entry of
+    // <code>DeleteCallersResponse.delete_caller_responses</code>, relative to the entry message <code>DeleteCallerResponse</code>, i.e.
+    // <code>error_message</code> (the entries carry no <code>Caller</code>). <code>name</code> of each entry and the
+    // response&apos;s own fields are always populated. Unset or empty returns every field. An unknown path is
+    // rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is deleted. It shapes only the
+    // response: the callers are deleted regardless.
+    google.protobuf.FieldMask field_mask = 2;
+
 }
 
 // Response to delete multiple callers
@@ -696,6 +923,195 @@ message DeleteCallersResponse {
     // error message if there are any.
     string error_message = 2;
 
+}
+
+// The request message for <a href="index.html#ondewo.vtsi.Calls.UpdateCaller">Calls.UpdateCaller</a>.
+message UpdateCallerRequest {
+
+    // The caller to update, identified by <code>caller.name</code>
+    // (<pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>), carrying the new values
+    // of the fields named in <code>update_mask</code>. Its fields that no path names are ignored.
+    Caller caller = 1;
+
+    // Required. Paths relative to <code>Caller</code>, WITHOUT a <code>caller.</code> prefix. Updatable paths:
+    // <code>sip_caller_config</code> and <code>common_services_config</code>, each also as any nested sub-path
+    // (e.g. <code>sip_caller_config.callee_id</code>, <code>sip_caller_config.sip_headers</code>,
+    // <code>sip_caller_config.sip_base_config.sip_sim_version</code>,
+    // <code>common_services_config.nlu_vtsi_config.agent_name</code>). An empty mask, or an unknown, output-only
+    // or immutable path (<code>name</code>, <code>call_name</code>; a nested path is checked against the message
+    // type it names), is rejected with <code>INVALID_ARGUMENT</code> naming the path, and nothing is written.
+    // <p>The semantics are those of <code>UpdateCampaignRequest.update_mask</code> for the campaign call
+    // defaults:</p>
+    // <ul>
+    //   <li>a path naming a message field REPLACES that whole message with the one sent; an unset one clears it
+    //       (the create default of a message field is unset);</li>
+    //   <li>a path naming a scalar, repeated or map field replaces exactly that field; a repeated or map field is
+    //       replaced as a whole, never appended to; a named scalar left at its zero value writes what
+    //       <code>StartCaller</code> stores for that value (the create default);</li>
+    //   <li>a field that no path names is left untouched;</li>
+    //   <li>a path naming a member of a <code>oneof</code> (e.g.
+    //       <code>common_services_config.nlu_vtsi_config.auth_token</code>) SETS that member, clearing the other
+    //       members, when the request&apos;s <code>caller</code> has that member set; when it does not, the path
+    //       CLEARS the member if it is the stored active one and changes nothing otherwise;</li>
+    //   <li>a path BELOW a repeated or map field (e.g. <code>sip_caller_config.sip_headers.X-Foo</code>) is
+    //       rejected with <code>INVALID_ARGUMENT</code> naming it: name the repeated or map field itself;</li>
+    //   <li>a path and a sub-path of it in the same mask act as the shorter path alone.</li>
+    // </ul>
+    // <p>The resulting stored configuration must be one a <code>StartCallerRequest</code> carrying it would be
+    // accepted with; otherwise the request is rejected with <code>INVALID_ARGUMENT</code> and nothing is
+    // written.</p>
+    // <p>Credentials: values written to credential-bearing fields are stored like those of
+    // <code>StartCaller</code> and never logged. A caller that is returned the redacted
+    // <code>common_services_config</code> (see <code>GetCaller</code>) and writes it back whole with the path
+    // <code>common_services_config</code> overwrites the stored credentials with the withheld (empty) ones;
+    // update a sub-path instead.</p>
+    google.protobuf.FieldMask update_mask = 2;
+
+    // Optional. Partial response: the field paths to populate in <code>UpdateCallerResponse.caller</code>,
+    // relative to the <code>Caller</code> message (no <code>caller.</code> prefix), e.g.
+    // <code>sip_caller_config.callee_id</code>. Nested paths through singular message fields are allowed; a
+    // path below a repeated or map field is not. <code>caller.name</code> and the other fields of the response
+    // are always populated. Unset or empty returns every field. An unknown path is rejected with
+    // <code>INVALID_ARGUMENT</code> naming it, before anything is written. The returned caller is the one
+    // <code>GetCaller</code> with <code>call_view = FULL</code> would return after the update, including the
+    // server&apos;s role-based redaction of <code>common_services_config</code>, and the mask is applied after
+    // that redaction, so it can only narrow the response. In an entry of <code>UpdateCallersRequest</code> it
+    // must be unset (use <code>UpdateCallersRequest.field_mask</code>).
+    google.protobuf.FieldMask field_mask = 3;
+}
+
+// The response message for <a href="index.html#ondewo.vtsi.Calls.UpdateCaller">Calls.UpdateCaller</a>, and one
+// entry of <code>UpdateCallersResponse</code>.
+message UpdateCallerResponse {
+
+    // The name of the caller the request named, in the form
+    // <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
+    // Always populated, also for a failed entry of <code>UpdateCallers</code>.
+    string name = 1;
+
+    // The caller after the update, shaped by the request&apos;s <code>field_mask</code>. Unset for a failed entry.
+    Caller caller = 2;
+
+    // Empty on success. <code>UpdateCaller</code> reports every error as a gRPC status code, so it is always
+    // empty there. In an entry of <code>UpdateCallersResponse</code> it is the error of that entry, prefixed with
+    // the name of the gRPC status code <code>UpdateCaller</code> would have answered, e.g.
+    // <code>NOT_FOUND: caller projects/.../callers/... does not exist</code> or
+    // <code>INVALID_ARGUMENT: update_mask path 'call_name' is output only</code>.
+    string error_message = 3;
+}
+
+// The request message for <a href="index.html#ondewo.vtsi.Calls.UpdateCallers">Calls.UpdateCallers</a>.
+// <p>Rejected as a whole with <code>INVALID_ARGUMENT</code>, nothing being written, when it has no entry, more
+// than 1000 entries, two entries naming the same caller, an entry whose <code>caller.name</code> is not a caller
+// of <code>vtsi_project_name</code>, an entry with its own <code>field_mask</code> set, or an unknown
+// <code>field_mask</code> path (each naming the entry index or the path). Every other error is reported per
+// entry.</p>
+message UpdateCallersRequest {
+
+    // VTSI project of every caller of the request.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // The updates, applied one by one and each like <code>UpdateCaller</code>.
+    repeated UpdateCallerRequest update_caller_requests = 2;
+
+    // Optional. Partial response: the field paths to populate in the <code>caller</code> of EVERY entry of
+    // <code>UpdateCallersResponse.update_caller_responses</code>, relative to the <code>Caller</code> message (no
+    // prefix), as in <code>UpdateCallerRequest.field_mask</code>. <code>caller.name</code>, <code>name</code>
+    // and <code>error_message</code> of each entry and the response&apos;s own fields are always populated.
+    google.protobuf.FieldMask field_mask = 3;
+}
+
+// The response message for <a href="index.html#ondewo.vtsi.Calls.UpdateCallers">Calls.UpdateCallers</a>.
+message UpdateCallersResponse {
+
+    // VTSI project of the request.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // One entry per entry of the request, in request order.
+    repeated UpdateCallerResponse update_caller_responses = 2;
+
+    // A summary when at least one entry failed (e.g. <code>2 of 5 updates failed</code>), empty when every entry
+    // succeeded. The failed entries carry their own <code>error_message</code>.
+    string error_message = 3;
+}
+
+// The request message for <a href="index.html#ondewo.vtsi.Calls.UpdateListener">Calls.UpdateListener</a>.
+message UpdateListenerRequest {
+
+    // The listener to update, identified by <code>listener.name</code>
+    // (<pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>), carrying the new
+    // values of the fields named in <code>update_mask</code>. Its fields that no path names are ignored.
+    Listener listener = 1;
+
+    // Required. Paths relative to <code>Listener</code>, WITHOUT a <code>listener.</code> prefix. Updatable
+    // paths: <code>sip_base_config</code> and <code>common_services_config</code>, each also as any nested
+    // sub-path (e.g. <code>sip_base_config.sip_sim_version</code>,
+    // <code>common_services_config.nlu_vtsi_config.agent_name</code>). <code>name</code> and
+    // <code>call_name</code> are output only. Rejections, path semantics, validation (against a
+    // <code>StartListenerRequest</code> carrying the result) and the credential note are exactly those of
+    // <code>UpdateCallerRequest.update_mask</code>.
+    google.protobuf.FieldMask update_mask = 2;
+
+    // Optional. Partial response: the field paths to populate in <code>UpdateListenerResponse.listener</code>,
+    // relative to the <code>Listener</code> message (no <code>listener.</code> prefix), with the rules of
+    // <code>UpdateCallerRequest.field_mask</code> (<code>GetListener</code> with <code>call_view = FULL</code>
+    // after the update, redacted, then masked). In an entry of <code>UpdateListenersRequest</code> it must be
+    // unset (use <code>UpdateListenersRequest.field_mask</code>).
+    google.protobuf.FieldMask field_mask = 3;
+}
+
+// The response message for <a href="index.html#ondewo.vtsi.Calls.UpdateListener">Calls.UpdateListener</a>, and
+// one entry of <code>UpdateListenersResponse</code>.
+message UpdateListenerResponse {
+
+    // The name of the listener the request named, in the form
+    // <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
+    // Always populated, also for a failed entry of <code>UpdateListeners</code>.
+    string name = 1;
+
+    // The listener after the update, shaped by the request&apos;s <code>field_mask</code>. Unset for a failed
+    // entry.
+    Listener listener = 2;
+
+    // Empty on success; as <code>UpdateCallerResponse.error_message</code>.
+    string error_message = 3;
+}
+
+// The request message for <a href="index.html#ondewo.vtsi.Calls.UpdateListeners">Calls.UpdateListeners</a>.
+// <p>Rejected as a whole exactly like <code>UpdateCallersRequest</code> (with listeners instead of callers);
+// every other error is reported per entry.</p>
+message UpdateListenersRequest {
+
+    // VTSI project of every listener of the request.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // The updates, applied one by one and each like <code>UpdateListener</code>.
+    repeated UpdateListenerRequest update_listener_requests = 2;
+
+    // Optional. Partial response: the field paths to populate in the <code>listener</code> of EVERY entry of
+    // <code>UpdateListenersResponse.update_listener_responses</code>, relative to the <code>Listener</code>
+    // message (no prefix), as in <code>UpdateListenerRequest.field_mask</code>. <code>listener.name</code>,
+    // <code>name</code> and <code>error_message</code> of each entry and the response&apos;s own fields are
+    // always populated.
+    google.protobuf.FieldMask field_mask = 3;
+}
+
+// The response message for <a href="index.html#ondewo.vtsi.Calls.UpdateListeners">Calls.UpdateListeners</a>.
+message UpdateListenersResponse {
+
+    // VTSI project of the request.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // One entry per entry of the request, in request order.
+    repeated UpdateListenerResponse update_listener_responses = 2;
+
+    // A summary when at least one entry failed, empty when every entry succeeded; as
+    // <code>UpdateCallersResponse.error_message</code>.
+    string error_message = 3;
 }
 
 // Request for starting a scheduled call
@@ -1038,6 +1454,13 @@ message StopCallRequest {
     // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     string call_name = 2;
+
+    // Optional. Partial response: the field paths of <code>StopCallResponse</code> to populate, i.e.
+    // <code>vtsi_project_name</code> and <code>error_message</code> (the response carries no
+    // <code>Call</code>). <code>call_name</code> is always populated. Unset or empty returns every field. An
+    // unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is stopped. It
+    // shapes only the response: the call is stopped regardless.
+    google.protobuf.FieldMask field_mask = 3;
 }
 
 // Response to stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.
@@ -1065,6 +1488,15 @@ message StopCallsRequest {
     // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     repeated string call_names = 2;
+
+    // Optional. Partial response: the field paths to populate in EVERY entry of
+    // <code>StopCallsResponse.stop_call_responses</code>, relative to the entry message
+    // <code>StopCallResponse</code>, i.e. <code>vtsi_project_name</code> and <code>error_message</code> (the
+    // entries carry no <code>Call</code>). <code>call_name</code> of each entry and
+    // <code>StopCallsResponse.error_message</code> are always populated. Unset or empty returns every field. An
+    // unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is stopped. It
+    // shapes only the response: the calls are stopped regardless.
+    google.protobuf.FieldMask field_mask = 3;
 }
 
 // Response to stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.
@@ -1082,6 +1514,15 @@ message StopAllCallsRequest {
 
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
+
+    // Optional. Partial response: the field paths to populate in EVERY entry of
+    // <code>StopCallsResponse.stop_call_responses</code>, relative to the entry message
+    // <code>StopCallResponse</code>, i.e. <code>vtsi_project_name</code> and <code>error_message</code> (the
+    // entries carry no <code>Call</code>). <code>call_name</code> of each entry and
+    // <code>StopCallsResponse.error_message</code> are always populated. Unset or empty returns every field. An
+    // unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is stopped. It
+    // shapes only the response: the calls are stopped regardless.
+    google.protobuf.FieldMask field_mask = 2;
 }
 
 // Request to transfer calls
@@ -1678,6 +2119,16 @@ message GetCallRequest {
 
     // you can specify the view to be shallow or full .. see above for more info
     optional CallView call_view = 3;
+
+    // Optional. Partial response: the field paths to populate in the returned <code>Call</code>, relative to the
+    // <code>Call</code> message, e.g. <code>call_type</code>, <code>phone_number</code>, <code>labels</code>,
+    // <code>sip_status.status_type</code>. Nested paths through singular message fields are allowed; a path
+    // below a repeated or map field is not. <code>name</code> is always populated. Unset or empty returns every
+    // field the <code>call_view</code> populates. An unknown path is rejected with <code>INVALID_ARGUMENT</code>
+    // naming it. Applied after the <code>call_view</code> and the server&apos;s role-based redaction of
+    // <code>common_services_config</code>, so it can only narrow the response and never populates a field that
+    // was left empty.
+    google.protobuf.FieldMask field_mask = 4;
 }
 
 // Call view options
@@ -1818,6 +2269,18 @@ message Call {
     // Set in the SHALLOW and FULL views
     string sip_call_id = 25;
 
+    // Client-defined descriptive labels of the call, e.g. <code>{"ticket": "4711", "outcome": "callback"}</code>.
+    // Empty until a client sets them; the server never sets or interprets them. Written ONLY by
+    // <code>UpdateCall</code> / <code>UpdateCalls</code> with the <code>update_mask</code> path
+    // <code>labels</code>, which REPLACES the whole map (an empty map clears it); a path below it (e.g.
+    // <code>labels.ticket</code>) is rejected. Bounds, each refused with <code>INVALID_ARGUMENT</code> naming
+    // the label: at most 64 entries; a key of 1 to 63 characters from <code>[a-z0-9_.-]</code>, starting with a
+    // lowercase letter; a value of at most 255 printable characters (Unicode allowed, no control characters).
+    // Stored with the call record, so they survive the end of the call and are kept as long as the record.
+    // This is the only mutable field of a <code>Call</code>: it exists so that a call can be annotated without
+    // anything about the live call being changed. Set in the SHALLOW and FULL views.
+    map<string, string> labels = 26;
+
 }
 
 // Definition of a CallFilter, representing filters for querying calls.
@@ -1868,6 +2331,27 @@ message CallFilter {
     // Optional: Platform responses sent to the user. Default is text: <code>Platform.PLATFORM_UNSPECIFIED</code>
     repeated ondewo.nlu.Intent.Message.Platform platforms = 15;
 
+    // Optional: Only the calls of one campaign, i.e. the calls placed by the attempts of its campaign calls
+    // (<code>CampaignCallAttempt.call_name</code>), whichever way the campaign call was added. An attempt
+    // whose start failed placed no call and contributes none. Combined with the other filters by AND (a
+    // campaign&apos;s calls are all <code>CALLER</code> calls). Neither set means any call, as before 9.1.0.
+    // Resolved within <code>ListCallsRequest.vtsi_project_name</code>; a <code>page_token</code> is valid only
+    // with the same campaign selector.
+    // <p>Errors: <code>INVALID_ARGUMENT</code> for a malformed <code>campaign_name</code>, a campaign of another
+    // project than <code>ListCallsRequest.vtsi_project_name</code>, or an empty
+    // <code>campaign_display_name</code> sent as the set member; <code>NOT_FOUND</code> for an unknown
+    // campaign.</p>
+    oneof campaign {
+
+        // Resource name of the campaign.
+        // The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre>
+        string campaign_name = 16;
+
+        // Exact, case-sensitive <code>display_name</code> of the campaign, resolved within
+        // <code>ListCallsRequest.vtsi_project_name</code>.
+        string campaign_display_name = 17;
+    }
+
 }
 
 
@@ -1911,6 +2395,86 @@ message ListCallsResponse{
     // If there are no more results in the list, this field will be empty.
     string next_page_token = 2;
 
+}
+
+// The request message for <a href="index.html#ondewo.vtsi.Calls.UpdateCall">Calls.UpdateCall</a>.
+message UpdateCallRequest {
+
+    // The call to update, identified by <code>call.name</code>
+    // (<pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> or
+    // <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>),
+    // carrying the new <code>labels</code>. Every other field is ignored.
+    Call call = 1;
+
+    // Required. Paths relative to <code>Call</code>, WITHOUT a <code>call.</code> prefix. The only updatable
+    // path is <code>labels</code>, which replaces the whole map with <code>call.labels</code> (unset or empty
+    // clears it). An empty mask, any other path (every other field of a <code>Call</code> is output only) or a
+    // path below <code>labels</code> (e.g. <code>labels.ticket</code>) is rejected with
+    // <code>INVALID_ARGUMENT</code> naming the path, and nothing is written. Labels outside the bounds of
+    // <code>Call.labels</code> are rejected with <code>INVALID_ARGUMENT</code> naming the label.
+    google.protobuf.FieldMask update_mask = 2;
+
+    // Optional. Partial response: the field paths to populate in <code>UpdateCallResponse.call</code>, relative
+    // to the <code>Call</code> message (no <code>call.</code> prefix), e.g. <code>labels</code>,
+    // <code>active</code>. Nested paths through singular message fields are allowed; a path below a repeated or
+    // map field is not. <code>call.name</code> and the other fields of the response are always populated. Unset
+    // or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it,
+    // before anything is written. The returned call is the one <code>GetCall</code> with
+    // <code>call_view = FULL</code> would return after the update, including the server&apos;s role-based
+    // redaction of <code>common_services_config</code>, and the mask is applied after that redaction. In an
+    // entry of <code>UpdateCallsRequest</code> it must be unset (use <code>UpdateCallsRequest.field_mask</code>).
+    google.protobuf.FieldMask field_mask = 3;
+}
+
+// The response message for <a href="index.html#ondewo.vtsi.Calls.UpdateCall">Calls.UpdateCall</a>, and one entry
+// of <code>UpdateCallsResponse</code>.
+message UpdateCallResponse {
+
+    // The name of the call the request named. Always populated, also for a failed entry of
+    // <code>UpdateCalls</code>.
+    string name = 1;
+
+    // The call after the update, shaped by the request&apos;s <code>field_mask</code>. Unset for a failed entry.
+    Call call = 2;
+
+    // Empty on success; as <code>UpdateCallerResponse.error_message</code>.
+    string error_message = 3;
+}
+
+// The request message for <a href="index.html#ondewo.vtsi.Calls.UpdateCalls">Calls.UpdateCalls</a>.
+// <p>Rejected as a whole exactly like <code>UpdateCallersRequest</code> (with calls instead of callers: no entry,
+// more than 1000 entries, two entries naming the same call, a call of another project than
+// <code>vtsi_project_name</code>, an entry with its own <code>field_mask</code>, an unknown
+// <code>field_mask</code> path); every other error is reported per entry.</p>
+message UpdateCallsRequest {
+
+    // VTSI project of every call of the request.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // The updates, applied one by one and each like <code>UpdateCall</code>.
+    repeated UpdateCallRequest update_call_requests = 2;
+
+    // Optional. Partial response: the field paths to populate in the <code>call</code> of EVERY entry of
+    // <code>UpdateCallsResponse.update_call_responses</code>, relative to the <code>Call</code> message (no
+    // prefix), as in <code>UpdateCallRequest.field_mask</code>. <code>call.name</code>, <code>name</code> and
+    // <code>error_message</code> of each entry and the response&apos;s own fields are always populated.
+    google.protobuf.FieldMask field_mask = 3;
+}
+
+// The response message for <a href="index.html#ondewo.vtsi.Calls.UpdateCalls">Calls.UpdateCalls</a>.
+message UpdateCallsResponse {
+
+    // VTSI project of the request.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // One entry per entry of the request, in request order.
+    repeated UpdateCallResponse update_call_responses = 2;
+
+    // A summary when at least one entry failed, empty when every entry succeeded; as
+    // <code>UpdateCallersResponse.error_message</code>.
+    string error_message = 3;
 }
 
 // Status of ondewo-sip instance

@@ -75,6 +75,11 @@ import "ondewo/vtsi/call_configs.proto";
 // <code>INVALID_ARGUMENT</code> naming it; nested paths through singular message fields (e.g.
 // <code>statistics.completed</code>) are allowed, a path below a repeated or map field is not. The
 // mask is applied after any role-based redaction, so it can only narrow what the caller may see.</p>
+// <p>Callers and calls of a campaign: <code>Campaign.campaign_callers</code> names the callers that placed
+// its calls (bounded); <code>Calls.ListCallers</code> with <code>ListCallersRequest.campaign_name</code> /
+// <code>campaign_display_name</code> lists them paginated as <code>Caller</code> resources, and
+// <code>Calls.ListCalls</code> with <code>CallFilter.campaign_name</code> /
+// <code>campaign_display_name</code> lists the calls they placed as <code>Call</code> resources.</p>
 // <p>Errors are reported as gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed name,
 // filter, field mask or value; <code>NOT_FOUND</code> for an unknown project, campaign or campaign
 // call (with authorization enforced: <code>PERMISSION_DENIED</code> for a project the caller holds
@@ -97,7 +102,8 @@ service Campaigns {
     // path.</p>
     rpc CreateCampaign (CreateCampaignRequest) returns (Campaign);
 
-    // <p>Returns a campaign including its statistics and its call defaults.</p>
+    // <p>Returns a campaign including its statistics, its call defaults and its callers
+    // (<code>campaign_callers</code>).</p>
     // <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for a malformed name, a
     // <code>display_name</code> without <code>vtsi_project_name</code> or an unknown
     // <code>field_mask</code> path.</p>
@@ -467,6 +473,36 @@ message Campaign {
     // <p>Returned by the same RPCs as <code>campaign_common_services_config</code> and left unset in the
     // same responses.</p>
     SipCallerConfig campaign_sip_caller_config = 19;
+
+    // Output only. Resource names
+    // (<pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>) of the callers of the
+    // campaign: the callers that placed at least one attempt of one of its campaign calls
+    // (<code>CampaignCallAttempt.caller_name</code>), whichever way the call was added. A scheduled campaign
+    // call is placed by a caller too and counts; its <code>ScheduledCaller</code> is not a
+    // <code>Caller</code> and is in <code>CampaignCall.scheduled_caller_name</code> instead. A caller that was
+    // deleted is not listed (its name stays in the attempt history), and a caller that placed attempts of
+    // several campaigns (a pooled caller can) is listed in each of them. Exactly the set
+    // <code>Calls.ListCallers</code> returns with <code>ListCallersRequest.campaign_name</code>.
+    // <p>Order: by the start of the first attempt each caller placed for the campaign, oldest first, each name
+    // once. Bounded: at most the first 1000 names; <code>campaign_callers_truncated</code> says whether there are
+    // more. The complete, paginated list is <code>Calls.ListCallers</code> with the campaign selector, and the
+    // calls they placed are <code>Calls.ListCalls</code> with <code>CallFilter.campaign_name</code>.</p>
+    // <p>Populated by <code>CreateCampaign</code> (always empty: a new campaign has placed no call),
+    // <code>GetCampaign</code>, <code>UpdateCampaign</code>, <code>ListCampaigns</code>,
+    // <code>StartCampaign</code>, <code>StopCampaign</code>, <code>HardStopCampaign</code> and
+    // <code>ResumeCampaign</code>; subject to their <code>field_mask</code> like any other path (path
+    // <code>campaign_callers</code>; a path below it is rejected). Left empty in
+    // <code>StreamCampaignStatusResponse.campaigns</code> and in the <code>campaign</code> of
+    // <code>AddCallersToCampaignResponse</code> / <code>AddScheduledCallersToCampaignResponse</code>. Setting it
+    // on create is an output-only field set (<code>INVALID_ARGUMENT</code>), naming it in an
+    // <code>update_mask</code> is rejected as output only.</p>
+    repeated string campaign_callers = 20;
+
+    // Output only. True when <code>campaign_callers</code> was cut at its bound of 1000 names and the campaign
+    // has more callers; read them all with <code>Calls.ListCallers</code> and the campaign selector. Populated
+    // and left unset by the same RPCs as <code>campaign_callers</code>; a <code>field_mask</code> names it
+    // like any other path (name both to read the names and whether they are complete).
+    bool campaign_callers_truncated = 21;
 }
 
 // Progress of a campaign. Every call of the campaign is counted in exactly one of
