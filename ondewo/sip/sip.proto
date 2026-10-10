@@ -23,16 +23,25 @@ service Sip {
     // <p>SIP LifeCycle is explained at <a href="https://thanhloi2603.wordpress.com/2017/06/10/sip-lifecycle-overview/">here</a></p>
 
     // <p>Starts a new SIP session for an account registered at a SIP server. <code>RegisterAccount</code> need to be called before.</p>
-    rpc SipStartSession (SipStartSessionRequest) returns (SipStatus) {};
+    rpc SipStartSession (SipStartSessionRequest) returns (SipStatus) {
+        // Not idempotent (no idempotency_level): (re)creates the SIP session and registration.
+    };
 
     // <p>Ends a SIP session for an account registered at a SIP server</p>
-    rpc SipEndSession (google.protobuf.Empty) returns (SipStatus) {};
+    rpc SipEndSession (google.protobuf.Empty) returns (SipStatus) {
+        // Not idempotent (no idempotency_level): tears down the session; a repeat records a new status.
+    };
 
     // <p>Starts a call in an active SIP session for an account registered at a SIP server</p>
-    rpc SipStartCall (SipStartCallRequest) returns (SipStatus) {};
+    rpc SipStartCall (SipStartCallRequest) returns (SipStatus) {
+        // Not idempotent (no idempotency_level): a repeat dials a second call.
+    };
 
     // <p>Ends a call in an active SIP session for an account registered at a SIP server</p>
-    rpc SipEndCall (SipEndCallRequest) returns (SipStatus) {};
+    rpc SipEndCall (SipEndCallRequest) returns (SipStatus) {
+        // Not idempotent (no idempotency_level): a repeat without a call appends its refusal to the history and ends
+        // a one-shot caller container; unscoped it can end the next call.
+    };
 
     // <p>Transfers a call in an active SIP session for an account registered at a SIP server to another SIP account or phone number specified by <code>transfer_id</code></p>
     // <p>Call scoping: when the gRPC metadatum <code>x-ondewo-expected-call-id</code> is present it must equal
@@ -46,38 +55,56 @@ service Sip {
     // party in it, the invited participant included. The refusal is RETURNED as <code>TRANSFER_CALL_FAILED</code> with
     // <code>exception_name=ParticipantsPresent</code> and <code>description = reason=participants-present</code>; nothing
     // is sent and the call is kept.</p>
-    rpc SipTransferCall (SipTransferCallRequest) returns (SipStatus) {};
+    rpc SipTransferCall (SipTransferCallRequest) returns (SipStatus) {
+        // Not idempotent (no idempotency_level): a repeat sends another REFER.
+    };
 
     // <p>Registers s SIP account at a SIP server</p>
-    rpc SipRegisterAccount (SipRegisterAccountRequest) returns (SipStatus) {};
+    rpc SipRegisterAccount (SipRegisterAccountRequest) returns (SipStatus) {
+        // Not idempotent (no idempotency_level): re-registers the account at the SIP server.
+    };
 
     // <p>Gets the current SIP status</p>
-    rpc SipGetSipStatus (google.protobuf.Empty) returns (SipStatus) {};
+    rpc SipGetSipStatus (google.protobuf.Empty) returns (SipStatus) {
+        // NO_SIDE_EFFECTS: serves a deep copy of the shared status taken under its lock; nothing is assigned.
+        option idempotency_level = NO_SIDE_EFFECTS;
+    };
 
     // <p>Gets the history of SIP status</p>
-    rpc SipGetSipStatusHistory (google.protobuf.Empty) returns (SipStatusHistoryResponse) {};
+    rpc SipGetSipStatusHistory (google.protobuf.Empty) returns (SipStatusHistoryResponse) {
+        // NO_SIDE_EFFECTS: serves deep copies of the history taken under its lock; nothing is assigned.
+        option idempotency_level = NO_SIDE_EFFECTS;
+    };
 
     // <p>Plays wav files during an ongoing call of an active SIP session</p>
     // <p>Call scoping as for <code>SipTransferCall</code>: a present <code>x-ondewo-expected-call-id</code> metadatum must
     // match <code>SipStatus.call_id</code>.</p>
-    rpc SipPlayWavFiles (SipPlayWavFilesRequest) returns (SipStatus) {};
+    rpc SipPlayWavFiles (SipPlayWavFilesRequest) returns (SipStatus) {
+        // Not idempotent (no idempotency_level): a repeat plays the files again.
+    };
 
     // <p>Mutes the microphone in an ongoing call of an active SIP session</p>
     // <p>Call scoping as for <code>SipTransferCall</code>. Sent by the in-container speech-to-speech pipeline it mutes only
     // the bot's own mixer slot; sent by a remote client it sets the operator mute of
     // <code>SipSetCallMediaControl</code>, which the pipeline cannot undo.</p>
-    rpc SipMute (google.protobuf.Empty) returns (SipStatus) {};
+    rpc SipMute (google.protobuf.Empty) returns (SipStatus) {
+        // Not idempotent (no idempotency_level): without a call it assigns NO_ONGOING_CALL and appends to the history.
+    };
 
     // <p>Un-mutes the microphone in an ongoing call of an active SIP session</p>
     // <p>Call scoping and the split between the pipeline's own mute and the operator mute as for <code>SipMute</code>.</p>
-    rpc SipUnMute (google.protobuf.Empty) returns (SipStatus) {};
+    rpc SipUnMute (google.protobuf.Empty) returns (SipStatus) {
+        // Not idempotent (no idempotency_level): without a call it assigns NO_ONGOING_CALL and appends to the history.
+    };
 
     // <p>Reports that answering machine detection reached a verdict on the ongoing outgoing call. Sets the status
     // <code>OUTGOING_CALL_ANSWERING_MACHINE_DETECTED</code> carrying <code>amd_result</code>; the call stays up.</p>
     // <p>Called by the speech-to-speech pipeline (ONDEWO-CSI) inside the same container, i.e. over loopback only.
     // Refused, and the current status left untouched, when no outgoing call is connected: the returned
     // <code>SipStatus</code> then carries the refusal in <code>exception_name</code> and <code>description</code></p>
-    rpc SipReportAnsweringMachineDetected (SipReportAnsweringMachineDetectedRequest) returns (SipStatus) {};
+    rpc SipReportAnsweringMachineDetected (SipReportAnsweringMachineDetectedRequest) returns (SipStatus) {
+        // Not idempotent (no idempotency_level): assigns a status and records answering machine detection telemetry.
+    };
 
     // <p>Call-scoped operator media control of the ongoing call: mute the bot and/or pause its listening.</p>
     // <p>Metadata REQUIRED: <code>x-ondewo-expected-call-id</code> (must equal <code>SipStatus.call_id</code> of the ongoing
@@ -90,7 +117,10 @@ service Sip {
     // <code>NoOngoingCall</code>, <code>AmdInProgress</code>, <code>CsiMediaControlFailed</code>) and never assigned to
     // the shared status. When the pipeline refuses or fails, a requested pause is rolled back and a requested mute is
     // kept (the safe direction); the returned fields carry the actual level.</p>
-    rpc SipSetCallMediaControl (SipSetCallMediaControlRequest) returns (SipStatus) {};
+    rpc SipSetCallMediaControl (SipSetCallMediaControlRequest) returns (SipStatus) {
+        // Deliberately unmarked although a repeat leaves the level unchanged: a retried attempt can land after a newer
+        // request of the same owner and restore a stale mute or pause.
+    };
 
     // <p>Bidirectional live audio of the ongoing call.</p>
     // <p>The first request MUST be <code>config</code> and must arrive within 2 seconds. Metadata as for
@@ -103,7 +133,9 @@ service Sip {
     // <code>INVALID_ARGUMENT</code> (missing or invalid <code>config</code>, wrong frame size),
     // <code>RESOURCE_EXHAUSTED</code> (stream cap reached, a second TALK). A normal end sends one <code>ended</code>
     // message and then OK.</p>
-    rpc SipStreamCallAudio (stream SipCallAudioRequest) returns (stream SipCallAudioResponse) {};
+    rpc SipStreamCallAudio (stream SipCallAudioRequest) returns (stream SipCallAudioResponse) {
+        // Not idempotent (no idempotency_level): a stream takes a slot and, in TALK, takes over the call.
+    };
 }
 
 // <p>Ends an ongoing call of the active SIP session of the active SIP account</p>

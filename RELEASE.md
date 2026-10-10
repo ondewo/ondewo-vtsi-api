@@ -296,13 +296,13 @@ with `HasField` crashes on exactly the messages it is meant to classify. The det
 
 Three vendored API submodule pins do not move in this release: `ondewo-nlu-api` stays at `tags/7.1.0`,
 `ondewo-s2t-api` at `tags/7.5.0` and `ondewo-t2s-api` at `tags/6.6.0`. `ondewo-sip-api` moves from
-`tags/5.4.0` to the sip-api 5.5.0 development line (a development commit pin, replaced by the released
-`tags/5.5.0` at release). That sip-api change is purely additive against 5.4.0: answering machine detection
+`tags/5.4.0` to `tags/5.5.0`. That sip-api change is purely additive against 5.4.0: answering machine detection
 (`SipStatus.StatusType.OUTGOING_CALL_ANSWERING_MACHINE_DETECTED = 22`, non-terminal;
 `AnsweringMachineDetectionResult`, `SipStatus.amd_result`, `SipEndCallRequest.end_reason` and `amd_result`,
 the RPC `SipReportAnsweringMachineDetected`) and call control (`SipStatus.call_id`, `bot_muted`,
 `listening_paused`, `call_audio_streams`, `sip_response_code`, `SipTransferCallRequest.outcome_timeout_ms`,
-`END_CALL_REASON_TRANSFERRED`, the RPCs `SipSetCallMediaControl` and `SipStreamCallAudio`), and it means the vendored-proto
+`END_CALL_REASON_TRANSFERRED`, the RPCs `SipSetCallMediaControl` and `SipStreamCallAudio`) and
+`option idempotency_level = NO_SIDE_EFFECTS` on `SipGetSipStatus` and `SipGetSipStatusHistory`, and it means the vendored-proto
 lockstep rule DOES fire: a consumer installing `ondewo-vtsi-client` next to `ondewo-sip-client` must take
 the sip client generated from the same sip-api commit, or the last installed copy of `ondewo/sip` wins.
 
