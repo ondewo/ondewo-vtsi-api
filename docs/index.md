@@ -1076,17 +1076,44 @@
   
     - [Text2Speech](#ondewo.t2s.Text2Speech)
   
+- [ondewo/vtsi/call_configs.proto](#ondewo/vtsi/call_configs.proto)
+    - [AnsweringMachineDetectionConfig](#ondewo.vtsi.AnsweringMachineDetectionConfig)
+    - [AudioObjectStorageConfig](#ondewo.vtsi.AudioObjectStorageConfig)
+    - [AudioObjectStorageServicesActivationConfig](#ondewo.vtsi.AudioObjectStorageServicesActivationConfig)
+    - [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig)
+    - [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig)
+    - [Credentials](#ondewo.vtsi.Credentials)
+    - [CsiVtsiConfig](#ondewo.vtsi.CsiVtsiConfig)
+    - [InterruptionHandlingConfig](#ondewo.vtsi.InterruptionHandlingConfig)
+    - [MessageBrokerConfig](#ondewo.vtsi.MessageBrokerConfig)
+    - [MessageBrokerServicesActivationConfig](#ondewo.vtsi.MessageBrokerServicesActivationConfig)
+    - [NluVtsiCallbacks](#ondewo.vtsi.NluVtsiCallbacks)
+    - [NluVtsiConfig](#ondewo.vtsi.NluVtsiConfig)
+    - [RabbitMqConfig](#ondewo.vtsi.RabbitMqConfig)
+    - [ResponseTimingConfig](#ondewo.vtsi.ResponseTimingConfig)
+    - [S2tVtsiCallbacks](#ondewo.vtsi.S2tVtsiCallbacks)
+    - [S2tVtsiConfig](#ondewo.vtsi.S2tVtsiConfig)
+    - [SipBaseConfig](#ondewo.vtsi.SipBaseConfig)
+    - [SipCallerConfig](#ondewo.vtsi.SipCallerConfig)
+    - [SipCallerConfig.SipHeadersEntry](#ondewo.vtsi.SipCallerConfig.SipHeadersEntry)
+    - [SoftTimeoutConfig](#ondewo.vtsi.SoftTimeoutConfig)
+    - [T2sVtsiCallbacks](#ondewo.vtsi.T2sVtsiCallbacks)
+    - [T2sVtsiConfig](#ondewo.vtsi.T2sVtsiConfig)
+    - [TurnDetectionConfig](#ondewo.vtsi.TurnDetectionConfig)
+    - [VoiceInteractionConfig](#ondewo.vtsi.VoiceInteractionConfig)
+  
+    - [AnsweringMachineDetectionConfig.AmdAction](#ondewo.vtsi.AnsweringMachineDetectionConfig.AmdAction)
+    - [AnsweringMachineDetectionConfig.AmdSensitivity](#ondewo.vtsi.AnsweringMachineDetectionConfig.AmdSensitivity)
+    - [TurnDetectionConfig.TurnDetectionMode](#ondewo.vtsi.TurnDetectionConfig.TurnDetectionMode)
+    - [TurnDetectionConfig.TurnEagerness](#ondewo.vtsi.TurnDetectionConfig.TurnEagerness)
+  
 - [ondewo/vtsi/calls.proto](#ondewo/vtsi/calls.proto)
     - [AddCallersToCampaignRequest](#ondewo.vtsi.AddCallersToCampaignRequest)
     - [AddCallersToCampaignResponse](#ondewo.vtsi.AddCallersToCampaignResponse)
     - [AddScheduledCallersToCampaignRequest](#ondewo.vtsi.AddScheduledCallersToCampaignRequest)
     - [AddScheduledCallersToCampaignResponse](#ondewo.vtsi.AddScheduledCallersToCampaignResponse)
     - [AllServicesStatuses](#ondewo.vtsi.AllServicesStatuses)
-    - [AnsweringMachineDetectionConfig](#ondewo.vtsi.AnsweringMachineDetectionConfig)
     - [AsteriskConfig](#ondewo.vtsi.AsteriskConfig)
-    - [AudioObjectStorageConfig](#ondewo.vtsi.AudioObjectStorageConfig)
-    - [AudioObjectStorageServicesActivationConfig](#ondewo.vtsi.AudioObjectStorageServicesActivationConfig)
-    - [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig)
     - [Call](#ondewo.vtsi.Call)
     - [CallAudioEnded](#ondewo.vtsi.CallAudioEnded)
     - [CallAudioFrame](#ondewo.vtsi.CallAudioFrame)
@@ -1101,9 +1128,6 @@
     - [Caller](#ondewo.vtsi.Caller)
     - [CancelScheduledCallerRequest](#ondewo.vtsi.CancelScheduledCallerRequest)
     - [CancelScheduledCallerResponse](#ondewo.vtsi.CancelScheduledCallerResponse)
-    - [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig)
-    - [Credentials](#ondewo.vtsi.Credentials)
-    - [CsiVtsiConfig](#ondewo.vtsi.CsiVtsiConfig)
     - [DeleteCallerRequest](#ondewo.vtsi.DeleteCallerRequest)
     - [DeleteCallerResponse](#ondewo.vtsi.DeleteCallerResponse)
     - [DeleteCallersRequest](#ondewo.vtsi.DeleteCallersRequest)
@@ -1116,7 +1140,6 @@
     - [GetCallerRequest](#ondewo.vtsi.GetCallerRequest)
     - [GetListenerRequest](#ondewo.vtsi.GetListenerRequest)
     - [GetScheduledCallerRequest](#ondewo.vtsi.GetScheduledCallerRequest)
-    - [InterruptionHandlingConfig](#ondewo.vtsi.InterruptionHandlingConfig)
     - [InviteToCallRequest](#ondewo.vtsi.InviteToCallRequest)
     - [InviteToCallResponse](#ondewo.vtsi.InviteToCallResponse)
     - [ListCallersRequest](#ondewo.vtsi.ListCallersRequest)
@@ -1130,24 +1153,12 @@
     - [ListenCallAudioRequest](#ondewo.vtsi.ListenCallAudioRequest)
     - [Listener](#ondewo.vtsi.Listener)
     - [ListenerQueueTarget](#ondewo.vtsi.ListenerQueueTarget)
-    - [MessageBrokerConfig](#ondewo.vtsi.MessageBrokerConfig)
-    - [MessageBrokerServicesActivationConfig](#ondewo.vtsi.MessageBrokerServicesActivationConfig)
-    - [NluVtsiCallbacks](#ondewo.vtsi.NluVtsiCallbacks)
-    - [NluVtsiConfig](#ondewo.vtsi.NluVtsiConfig)
-    - [RabbitMqConfig](#ondewo.vtsi.RabbitMqConfig)
     - [RemoveCallParticipantRequest](#ondewo.vtsi.RemoveCallParticipantRequest)
     - [RemoveCallParticipantResponse](#ondewo.vtsi.RemoveCallParticipantResponse)
-    - [ResponseTimingConfig](#ondewo.vtsi.ResponseTimingConfig)
-    - [S2tVtsiCallbacks](#ondewo.vtsi.S2tVtsiCallbacks)
-    - [S2tVtsiConfig](#ondewo.vtsi.S2tVtsiConfig)
     - [ScheduledCaller](#ondewo.vtsi.ScheduledCaller)
     - [ServiceStatus](#ondewo.vtsi.ServiceStatus)
     - [SetCallMediaControlRequest](#ondewo.vtsi.SetCallMediaControlRequest)
     - [SetCallMediaControlResponse](#ondewo.vtsi.SetCallMediaControlResponse)
-    - [SipBaseConfig](#ondewo.vtsi.SipBaseConfig)
-    - [SipCallerConfig](#ondewo.vtsi.SipCallerConfig)
-    - [SipCallerConfig.SipHeadersEntry](#ondewo.vtsi.SipCallerConfig.SipHeadersEntry)
-    - [SoftTimeoutConfig](#ondewo.vtsi.SoftTimeoutConfig)
     - [StartCallerRequest](#ondewo.vtsi.StartCallerRequest)
     - [StartCallerResponse](#ondewo.vtsi.StartCallerResponse)
     - [StartCallersRequest](#ondewo.vtsi.StartCallersRequest)
@@ -1180,18 +1191,12 @@
     - [StreamCallerStatusRequest](#ondewo.vtsi.StreamCallerStatusRequest)
     - [StreamListenerStatusRequest](#ondewo.vtsi.StreamListenerStatusRequest)
     - [StreamScheduledCallerStatusRequest](#ondewo.vtsi.StreamScheduledCallerStatusRequest)
-    - [T2sVtsiCallbacks](#ondewo.vtsi.T2sVtsiCallbacks)
-    - [T2sVtsiConfig](#ondewo.vtsi.T2sVtsiConfig)
     - [TransferCallRequest](#ondewo.vtsi.TransferCallRequest)
     - [TransferCallRequest.HeadersEntry](#ondewo.vtsi.TransferCallRequest.HeadersEntry)
     - [TransferCallResponse](#ondewo.vtsi.TransferCallResponse)
     - [TransferCallsRequest](#ondewo.vtsi.TransferCallsRequest)
     - [TransferCallsResponse](#ondewo.vtsi.TransferCallsResponse)
-    - [TurnDetectionConfig](#ondewo.vtsi.TurnDetectionConfig)
-    - [VoiceInteractionConfig](#ondewo.vtsi.VoiceInteractionConfig)
   
-    - [AnsweringMachineDetectionConfig.AmdAction](#ondewo.vtsi.AnsweringMachineDetectionConfig.AmdAction)
-    - [AnsweringMachineDetectionConfig.AmdSensitivity](#ondewo.vtsi.AnsweringMachineDetectionConfig.AmdSensitivity)
     - [BotPolicyOnJoin](#ondewo.vtsi.BotPolicyOnJoin)
     - [CallAudioEndReason](#ondewo.vtsi.CallAudioEndReason)
     - [CallAudioMode](#ondewo.vtsi.CallAudioMode)
@@ -1204,8 +1209,6 @@
     - [ScheduledCallerStatus](#ondewo.vtsi.ScheduledCallerStatus)
     - [TransferMode](#ondewo.vtsi.TransferMode)
     - [TransferOutcome](#ondewo.vtsi.TransferOutcome)
-    - [TurnDetectionConfig.TurnDetectionMode](#ondewo.vtsi.TurnDetectionConfig.TurnDetectionMode)
-    - [TurnDetectionConfig.TurnEagerness](#ondewo.vtsi.TurnDetectionConfig.TurnEagerness)
   
     - [Calls](#ondewo.vtsi.Calls)
   
@@ -1214,7 +1217,6 @@
     - [CampaignAssignment](#ondewo.vtsi.CampaignAssignment)
     - [CampaignCall](#ondewo.vtsi.CampaignCall)
     - [CampaignCallAttempt](#ondewo.vtsi.CampaignCallAttempt)
-    - [CampaignDisplayName](#ondewo.vtsi.CampaignDisplayName)
     - [CampaignFilter](#ondewo.vtsi.CampaignFilter)
     - [CampaignStatistics](#ondewo.vtsi.CampaignStatistics)
     - [CreateCampaignRequest](#ondewo.vtsi.CreateCampaignRequest)
@@ -20838,6 +20840,543 @@ UpdateMethod enum defines the method for updating custom phonemizers.
 
 
 
+<a name="ondewo/vtsi/call_configs.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## ondewo/vtsi/call_configs.proto
+
+
+
+<a name="ondewo.vtsi.AnsweringMachineDetectionConfig"></a>
+
+### AnsweringMachineDetectionConfig
+Configuration of the answering machine detection (AMD) of an outbound call, i.e. deciding in the first
+seconds after the callee answered whether a person, an answering machine, a fax, an IVR or a network
+announcement picked up, and hanging up on the non-human ones.
+Detection listens first: the bot stays silent until the verdict is reached or the decision window ends.
+Every field is optional: an unset field takes the default of the CSI container (listed per field below).
+Only accepted for pooled persistent callers; the settings are part of the caller container configuration,
+so callers with different AMD settings are never pooled together.
+The verdict of a call is reported as ondewo.sip.SipStatus.amd_result. Reaching a hang-up-eligible verdict sets
+the non-terminal status ondewo.sip.SipStatus.StatusType.OUTGOING_CALL_ANSWERING_MACHINE_DETECTED (the call is
+still up), and a call ended by AMD reaches the terminal status OUTGOING_CALL_FINISHED with one of these
+descriptions:
+<ul>
+<li>"Answering machine detected with hang up": the caller hung up without leaving a voice message</li>
+<li>"Answering machine detected with left voice message and hang up": the caller hung up after starting the
+voice message</li>
+<li>"Answering machine detected, call ended by the answering machine": the far end hung up before a voice
+message was started</li>
+<li>"Answering machine detected, call ended by the answering machine after leaving a voice message": the far
+end hung up after the voice message was started</li>
+</ul>
+The description is also recorded on the call as Call.answering_machine_detection_end_description.
+Compliance: leaving a recorded message on a consumer's mailbox for marketing purposes requires the consent of
+the callee in many jurisdictions (e.g. in Germany § 7 UWG). HANG_UP is therefore the default action.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| active | [bool](#bool) | optional | Optional: Master switch of the answering machine detection (default: false) |
+| action | [AnsweringMachineDetectionConfig.AmdAction](#ondewo.vtsi.AnsweringMachineDetectionConfig.AmdAction) | optional | Optional: Action on a non-human verdict (default: HANG_UP) |
+| sensitivity | [AnsweringMachineDetectionConfig.AmdSensitivity](#ondewo.vtsi.AnsweringMachineDetectionConfig.AmdSensitivity) | optional | Optional: Sensitivity of the detection (default: LOW) |
+| max_decision_time_ms | [int32](#int32) | optional | Optional: Maximum time in milliseconds after the callee answered to reach a verdict when no machine-leaning evidence was seen; the verdict is UNKNOWN when it is reached (default: 4000, valid range: 1500 - 10000) |
+| max_machine_wait_ms | [int32](#int32) | optional | Optional: Maximum time in milliseconds after the callee answered to reach a verdict once machine-leaning evidence extended the decision window (default: 11000, valid range: 4000 - 20000) |
+| beep_wait_after_greeting_ms | [int32](#int32) | optional | Optional: Time in milliseconds to wait for a beep after a long greeting ended (default: 1500, valid range: 0 - 4000) |
+| initial_silence_ms | [int32](#int32) | optional | Optional: Silence in milliseconds after the callee answered without any speech, after which the verdict is NO_SPEECH, which is treated like a person (default: 3500, valid range: 1000 - 10000) |
+| max_human_greeting_ms | [int32](#int32) | optional | Optional: Continuous speech in milliseconds beyond which a greeting is machine-leaning (default: 2400, valid range: 1000 - 6000) |
+| greeting_end_silence_ms | [int32](#int32) | optional | Optional: Silence in milliseconds after the first speech burst that ends a human greeting (default: 900, valid range: 300 - 3000) |
+| beep_detection_active | [bool](#bool) | optional | Optional: Enable the tone detector for the beep of an answering machine (default: true) |
+| additional_machine_phrases | [string](#string) | repeated | Additional phrases that indicate an answering machine, added to the built-in de and en phrase lists (maximum 50 phrases, each 1 - 80 characters) |
+| additional_human_phrases | [string](#string) | repeated | Additional phrases that indicate a person, added to the built-in de and en phrase lists (maximum 50 phrases, each 1 - 80 characters) |
+| hang_up_on_fax | [bool](#bool) | optional | Optional: Hang up on a FAX verdict when the action is HANG_UP (default: true) |
+| hang_up_on_network_announcement | [bool](#bool) | optional | Optional: Hang up on a NETWORK_ANNOUNCEMENT verdict, e.g. "the number is not reachable", when the action is HANG_UP (default: true) |
+| hang_up_on_ivr | [bool](#bool) | optional | Optional: Hang up on an IVR verdict, i.e. an automated menu, when the action is HANG_UP (default: false) |
+| hang_up_on_call_screening | [bool](#bool) | optional | Optional: Hang up on a CALL_SCREENING verdict, i.e. a call screening assistant asking for the reason of the call, when the action is HANG_UP (default: false) |
+| voice_message_intent | [string](#string) | optional | Optional: Name of the NLU intent whose fulfillment is the voice message when the action is LEAVE_VOICE_MESSAGE; it is triggered once (default: the welcome intent of the NLU project, 1 - 200 characters when set) |
+| voice_message_max_beep_wait_ms | [int32](#int32) | optional | Optional: Maximum time in milliseconds after the verdict to wait for the beep, or for the end of the machine greeting, before the voice message is spoken when the action is LEAVE_VOICE_MESSAGE; 0 speaks immediately (default: 10000, valid range: 0 - 30000) |
+| voice_message_timeout_ms | [int32](#int32) | optional | Optional: Maximum time in milliseconds after the verdict until the call is hung up when the action is LEAVE_VOICE_MESSAGE, also when the voice message has not finished playing (default: 30000, valid range: 5000 - 120000) |
+| keyword_detection_active | [bool](#bool) | optional | Optional: Enable the detection of machine and person phrases in the transcribed greeting, i.e. the built-in phrase lists plus additional_machine_phrases and additional_human_phrases; turning it off removes this evidence and the detection rules that need it (default: true) |
+| cadence_detection_active | [bool](#bool) | optional | Optional: Enable the detection based on the speech and silence cadence of the greeting, e.g. its length and the silence after it; turning it off removes this evidence and the detection rules that need it (default: true) |
+
+
+
+
+
+
+<a name="ondewo.vtsi.AudioObjectStorageConfig"></a>
+
+### AudioObjectStorageConfig
+Minio Audio Object Store
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| activate_audio_object_storage | [bool](#bool) | optional | Audio storage should be activated or not |
+| audio_object_storage_services_activation_config | [AudioObjectStorageServicesActivationConfig](#ondewo.vtsi.AudioObjectStorageServicesActivationConfig) |  | Configuration of the Minio Audio Object Store |
+
+
+
+
+
+
+<a name="ondewo.vtsi.AudioObjectStorageServicesActivationConfig"></a>
+
+### AudioObjectStorageServicesActivationConfig
+Configuration of the Minio Audio Object Store
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| activate_s2t | [bool](#bool) | optional | Should audio object store save audio sent to the Speech-2-Text platform |
+| activate_t2s | [bool](#bool) | optional | Should audio object store save audio generated from the Text-2-Speech platform |
+
+
+
+
+
+
+<a name="ondewo.vtsi.BaseServiceConfig"></a>
+
+### BaseServiceConfig
+Base configuration of services (ondewo-nlu, text-to-speech, speech-to-text, asterisk)
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| host | [string](#string) |  | service host IP |
+| port | [int32](#int32) |  | service port |
+| grpc_cert | [string](#string) |  | PEM certificate(s) the service&apos;s gRPC server certificate chains to (CA or self-signed leaf), with real or escaped newlines; never a private key. Required for the S2T, NLU and T2S configs of a call unless the VTSI server runs with ONDEWO_VTSI_ALLOW_INSECURE_UPSTREAM=True (lab and CI only); an empty value is otherwise refused with FAILED_PRECONDITION (UPSTREAM_TLS_REQUIRED). |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CommonServicesConfig"></a>
+
+### CommonServicesConfig
+Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI which are common for both listener and caller
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| s2t_vtsi_config | [S2tVtsiConfig](#ondewo.vtsi.S2tVtsiConfig) |  | speech-to-text service configuration |
+| nlu_vtsi_config | [NluVtsiConfig](#ondewo.vtsi.NluVtsiConfig) |  | ondewo-nlu configuration |
+| t2s_vtsi_config | [T2sVtsiConfig](#ondewo.vtsi.T2sVtsiConfig) |  | text-to-speech service configuration |
+| csi_vtsi_config | [CsiVtsiConfig](#ondewo.vtsi.CsiVtsiConfig) |  | CSI service configuration |
+| voice_interaction_config | [VoiceInteractionConfig](#ondewo.vtsi.VoiceInteractionConfig) |  | Voice interaction configuration for turn detection, interruption (barge-in) handling and response timing |
+
+
+
+
+
+
+<a name="ondewo.vtsi.Credentials"></a>
+
+### Credentials
+Credentials
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| account_name | [string](#string) |  | Account name - usually email address |
+| password | [string](#string) |  | password of the account |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CsiVtsiConfig"></a>
+
+### CsiVtsiConfig
+CSI configuration
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| s2t_vtsi_callbacks | [S2tVtsiCallbacks](#ondewo.vtsi.S2tVtsiCallbacks) |  | Callback for the Speech-2-Text platform |
+| nlu_vtsi_callbacks | [NluVtsiCallbacks](#ondewo.vtsi.NluVtsiCallbacks) |  | Callback for the NLU platform |
+| t2s_vtsi_callbacks | [T2sVtsiCallbacks](#ondewo.vtsi.T2sVtsiCallbacks) |  | Callback for the Text-2-Speech platform |
+| audio_object_store_config | [AudioObjectStorageConfig](#ondewo.vtsi.AudioObjectStorageConfig) |  | Configuration of the Minio Audio Object Store |
+| message_broker_config | [MessageBrokerConfig](#ondewo.vtsi.MessageBrokerConfig) |  | Configuration of the RabbitMQ Message Broker |
+| activate_control_messages | [bool](#bool) | optional | Setting to activate if it is possible to send control messages <ul> <li>via RabbitMQ to remote control the system</li> <li>via embeddings in NLU text responses</li> </ul> Explicitly optional: leaving the field unset means the caller expresses no preference and the server keeps its own configured default. That is NOT the same as sending <pre><code>false</code></pre>, which is a request to switch control messages off. A presence-less bool cannot tell the two apart, so an unset field arrived as <pre><code>false</code></pre> and silently disabled control messages for callers that never mentioned them. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.InterruptionHandlingConfig"></a>
+
+### InterruptionHandlingConfig
+Configuration of the interruption (barge-in) handling, i.e. the caller speaking while the bot is speaking
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| enabled | [bool](#bool) | optional | Optional: Enable interruption (barge-in) handling, i.e. the caller can interrupt the bot while it is speaking |
+| min_interruption_duration_seconds | [float](#float) | optional | Optional: Minimum duration in seconds of caller speech while the bot is speaking to trigger an interruption (noise gate) (default: 0.5) |
+| min_interruption_words | [int32](#int32) | optional | Optional: Minimum number of transcribed words of caller speech while the bot is speaking to trigger an interruption (default: 2) |
+| false_interruption_timeout_seconds | [float](#float) | optional | Optional: Time in seconds after an interruption trigger without a committed transcription after which the interruption is classified as a false interruption (default: 2.0) |
+| resume_after_false_interruption | [bool](#bool) | optional | Optional: Resume the paused bot response after a false interruption, e.g. a cough or brief background noise (default: true) |
+| backoff_seconds | [float](#float) | optional | Optional: Silence in seconds after a real interruption before the next bot response is played (default: 1.0) |
+| first_message_protected_seconds | [float](#float) | optional | Optional: Protect the first bot message from interruptions for the given number of seconds (default: 0 = no protection) |
+| transcribe_on_disabled_interruptions | [bool](#bool) | optional | Transcribe caller speech while the bot is speaking even if interruptions are disabled |
+
+
+
+
+
+
+<a name="ondewo.vtsi.MessageBrokerConfig"></a>
+
+### MessageBrokerConfig
+Configuration of the RabbitMQ Message Broker
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| activate_message_broker | [bool](#bool) | optional | Should the broker be activated or not |
+| message_broker_services_activation_config | [MessageBrokerServicesActivationConfig](#ondewo.vtsi.MessageBrokerServicesActivationConfig) |  | Configuration of the Broker service activation |
+| rabbit_mq_config | [RabbitMqConfig](#ondewo.vtsi.RabbitMqConfig) |  | Configuration of the RabbitMQ Message Broker |
+
+
+
+
+
+
+<a name="ondewo.vtsi.MessageBrokerServicesActivationConfig"></a>
+
+### MessageBrokerServicesActivationConfig
+Configuration of the RabbitMQ Message Broker
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| activate_s2t | [bool](#bool) | optional | should RabbitMQ Message Broker be activated for Speech-2-Text platform |
+| activate_nlu | [bool](#bool) | optional | should RabbitMQ Message Broker be activated for NLU platform |
+| activate_t2s | [bool](#bool) | optional | should RabbitMQ Message Broker be activated for Text-2-Speech platform |
+| activate_sip | [bool](#bool) | optional | should RabbitMQ Message Broker be activated for SIP platform |
+
+
+
+
+
+
+<a name="ondewo.vtsi.NluVtsiCallbacks"></a>
+
+### NluVtsiCallbacks
+Callback for the NLU platform
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| pre_nlu_callbacks | [string](#string) | repeated | Callback executed before the NLU will be called |
+| post_nlu_callbacks | [string](#string) | repeated | Callback executed after the NLU has been called |
+
+
+
+
+
+
+<a name="ondewo.vtsi.NluVtsiConfig"></a>
+
+### NluVtsiConfig
+NLU Configuration
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| nlu_base_config | [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig) |  | Base config Host, Port, and [Optional] GRPC cert |
+| credentials | [Credentials](#ondewo.vtsi.Credentials) |  | Credentials with classical username and password |
+| auth_token | [string](#string) |  | Authentication token |
+| agent_name | [string](#string) |  | The resource name of the agent. Format: <pre><code>projects/&lt;uuid&gt;/agent</code></pre> |
+| language_code | [string](#string) |  | language code in a two letter iso code, e.g. de, en, etc. |
+| initial_intent | [string](#string) |  | name of intent to trigger at the start of a call |
+| contexts | [ondewo.nlu.Context](#ondewo.nlu.Context) | repeated | ondewo-nlu list of contexts |
+| http_basic_auth_token | [string](#string) |  | http basic auth token |
+| platform | [ondewo.nlu.Intent.Message.Platform](#ondewo.nlu.Intent.Message.Platform) | optional | Return the message specified in Intent.Message.Platform platform to the user in the DetectIntentResponse |
+
+
+
+
+
+
+<a name="ondewo.vtsi.RabbitMqConfig"></a>
+
+### RabbitMqConfig
+Configuration of the RabbitMQ Message Broker
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| host | [string](#string) |  | host where the rabbit mq server runs |
+| port | [int32](#int32) |  | port where the rabbit mq server runs |
+| port_2 | [int32](#int32) |  | secondary port where the rabbit mq server runs |
+| user | [string](#string) |  | user of server |
+| password | [string](#string) |  | password of server |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ResponseTimingConfig"></a>
+
+### ResponseTimingConfig
+Configuration of the response timing, i.e. when and how the bot responds
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| turn_timeout_seconds | [float](#float) | optional | Optional: Seconds of caller silence after a bot response until a follow-up event is triggered (default: 20.0, valid range: 1.0 - 30.0) |
+| silence_end_call_timeout_seconds | [float](#float) | optional | Optional: Seconds of caller silence until the call is ended. Unset = off (-1 is also accepted as explicit off) |
+| soft_timeout_config | [SoftTimeoutConfig](#ondewo.vtsi.SoftTimeoutConfig) |  | Configuration of the soft timeout filler messages |
+| preemptive_generation_enabled | [bool](#bool) | optional | Optional: Enable preemptive response generation on an eagerly detected end of turn (default: false) |
+| t2s_chunked_streaming_enabled | [bool](#bool) | optional | Optional: Enable chunked text-to-speech streaming for a lower time to first audio (default: false) |
+
+
+
+
+
+
+<a name="ondewo.vtsi.S2tVtsiCallbacks"></a>
+
+### S2tVtsiCallbacks
+Callback for the Speech-2-Text platform
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| pre_s2t_callbacks | [string](#string) | repeated | Callback executed before the Speech-2-Text will be called |
+| post_s2t_callbacks | [string](#string) | repeated | Callback executed after the Speech-2-Text has been called |
+
+
+
+
+
+
+<a name="ondewo.vtsi.S2tVtsiConfig"></a>
+
+### S2tVtsiConfig
+Speech-2-Text Configuration
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| s2t_base_config | [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig) |  | Host, Port, and [Optional] GRPC cert |
+| s2t_transcribe_request_config | [ondewo.s2t.TranscribeRequestConfig](#ondewo.s2t.TranscribeRequestConfig) |  | Configuration of Speech-2-Text |
+
+
+
+
+
+
+<a name="ondewo.vtsi.SipBaseConfig"></a>
+
+### SipBaseConfig
+The base config is for both the listener and caller. If you only provide it you will get a listener
+You will need to provide <code>SipCallerConfig</code> for the caller
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sip_sim_version | [string](#string) |  | version of sip to use for call, semantic versioning e.g., 1.0.0, 1.1.0-pre-release, etc. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.SipCallerConfig"></a>
+
+### SipCallerConfig
+Configuration of the SIP caller
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sip_base_config | [SipBaseConfig](#ondewo.vtsi.SipBaseConfig) |  | SIP configuration |
+| callee_id | [string](#string) |  | callee id e.g. phone number to call, +4365012345678 or VOIP phone ondewo0001@ondewo.com, etc. |
+| sip_headers | [SipCallerConfig.SipHeadersEntry](#ondewo.vtsi.SipCallerConfig.SipHeadersEntry) | repeated | dictionary of sip headers that are sent on call |
+
+
+
+
+
+
+<a name="ondewo.vtsi.SipCallerConfig.SipHeadersEntry"></a>
+
+### SipCallerConfig.SipHeadersEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.vtsi.SoftTimeoutConfig"></a>
+
+### SoftTimeoutConfig
+Configuration of the soft timeout, i.e. filler messages played
+when the response generation takes longer than the timeout
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| timeout_seconds | [float](#float) | optional | Optional: Seconds after which a filler message is played while the response is still being generated. Unset = off (-1 is also accepted as explicit off). Recommended: 3.0 |
+| messages | [string](#string) | repeated | Filler messages, rotated per soft timeout (maximum 7 messages, each 1 - 200 characters) |
+| max_per_generation | [int32](#int32) | optional | Optional: Maximum number of filler messages per response generation (default: 1) |
+
+
+
+
+
+
+<a name="ondewo.vtsi.T2sVtsiCallbacks"></a>
+
+### T2sVtsiCallbacks
+Callback for the Text-2-Speech platform
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| pre_t2s_callbacks | [string](#string) | repeated | Callback executed before the Text-2-Speech will be called |
+| post_t2s_callbacks | [string](#string) | repeated | Callback executed after the Text-2-Speech has been called |
+
+
+
+
+
+
+<a name="ondewo.vtsi.T2sVtsiConfig"></a>
+
+### T2sVtsiConfig
+Text-2-Speech Configuration
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| t2s_base_config | [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig) |  | Host, Port, and [Optional] GRPC cert |
+| t2s_request_config | [ondewo.t2s.RequestConfig](#ondewo.t2s.RequestConfig) |  | Configuration of Text-2-Speech |
+
+
+
+
+
+
+<a name="ondewo.vtsi.TurnDetectionConfig"></a>
+
+### TurnDetectionConfig
+Configuration of the turn detection, i.e. deciding when the caller has finished speaking
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| mode | [TurnDetectionConfig.TurnDetectionMode](#ondewo.vtsi.TurnDetectionConfig.TurnDetectionMode) |  | Mode of the turn detection. Defaults to SEMANTIC_MODEL if unspecified |
+| min_endpointing_delay_seconds | [float](#float) | optional | Optional: Minimum delay in seconds before a confidently detected end of turn is committed (default: 0.5) |
+| max_endpointing_delay_seconds | [float](#float) | optional | Optional: Maximum delay in seconds to wait for an end of turn before the turn is committed from the latest stable partial transcription (default: 3.0) |
+| turn_eagerness | [TurnDetectionConfig.TurnEagerness](#ondewo.vtsi.TurnDetectionConfig.TurnEagerness) |  | Eagerness of the turn detection: scales both endpointing delays. Defaults to NORMAL if unspecified |
+| turn_detection_system_prompt | [string](#string) | optional | System prompt for the semantic (LLM) turn detection model of the speech-to-text service |
+| turn_detection_user_prompt | [string](#string) | optional | User prompt for the semantic (LLM) turn detection model of the speech-to-text service |
+
+
+
+
+
+
+<a name="ondewo.vtsi.VoiceInteractionConfig"></a>
+
+### VoiceInteractionConfig
+Configuration of the voice interaction behavior of a call:
+turn detection, interruption (barge-in) handling and response timing
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| turn_detection_config | [TurnDetectionConfig](#ondewo.vtsi.TurnDetectionConfig) |  | Configuration of the turn detection |
+| interruption_handling_config | [InterruptionHandlingConfig](#ondewo.vtsi.InterruptionHandlingConfig) |  | Configuration of the interruption (barge-in) handling |
+| response_timing_config | [ResponseTimingConfig](#ondewo.vtsi.ResponseTimingConfig) |  | Configuration of the response timing |
+| answering_machine_detection_config | [AnsweringMachineDetectionConfig](#ondewo.vtsi.AnsweringMachineDetectionConfig) |  | Configuration of the answering machine detection (AMD) of an outbound call. Only accepted for pooled persistent callers: a listener or a one-shot caller that carries it is rejected with INVALID_ARGUMENT |
+
+
+
+
+
+ <!-- end messages -->
+
+
+<a name="ondewo.vtsi.AnsweringMachineDetectionConfig.AmdAction"></a>
+
+### AnsweringMachineDetectionConfig.AmdAction
+What to do once a non-human verdict is reached
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| AMD_ACTION_UNSPECIFIED | 0 | Unspecified action defaults to HANG_UP |
+| HANG_UP | 1 | Hang up at once on a non-human verdict whose per-verdict hang-up switch is on (an answering machine is always hung up on) (default) |
+| DETECT_ONLY | 2 | Only detect and record the verdict, never hang up: OUTGOING_CALL_ANSWERING_MACHINE_DETECTED is still set, then the far end is treated as a person and the call continues with the greeting and ends normally (shadow mode to calibrate the detection before enabling HANG_UP) |
+| LEAVE_VOICE_MESSAGE | 3 | Leave a voice message on a hang-up-eligible verdict, then hang up: the fulfillment of voice_message_intent is spoken once after the beep (or after the end of the machine greeting), and the call is hung up when it finished playing or when voice_message_timeout_ms elapsed, whichever comes first. A FAX verdict never gets a voice message; it is hung up on when hang_up_on_fax is on. See the compliance note above before enabling it |
+
+
+
+<a name="ondewo.vtsi.AnsweringMachineDetectionConfig.AmdSensitivity"></a>
+
+### AnsweringMachineDetectionConfig.AmdSensitivity
+Sensitivity of the detection: selects the enabled detection rules and their internal thresholds
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| AMD_SENSITIVITY_UNSPECIFIED | 0 | Unspecified sensitivity defaults to LOW |
+| LOW | 1 | Most conservative towards people: only strong machine evidence leads to a machine verdict (default) |
+| MEDIUM | 2 | Balanced between missed machines and people classified as machines |
+| HIGH | 3 | Most aggressive: detects more machines at a higher risk of hanging up on a person |
+
+
+
+<a name="ondewo.vtsi.TurnDetectionConfig.TurnDetectionMode"></a>
+
+### TurnDetectionConfig.TurnDetectionMode
+Mode of the turn detection
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| TURN_DETECTION_MODE_UNSPECIFIED | 0 | Unspecified turn detection mode defaults to SEMANTIC_MODEL |
+| VAD | 1 | Turn detection based on voice activity detection, i.e. pauses in the caller audio (fallback mode) |
+| SEMANTIC_MODEL | 2 | Turn detection based on a semantic (LLM) turn detection model of the speech-to-text service (default) |
+| AUDIO_MODEL | 3 | Turn detection based on an audio-native turn detection model |
+
+
+
+<a name="ondewo.vtsi.TurnDetectionConfig.TurnEagerness"></a>
+
+### TurnDetectionConfig.TurnEagerness
+Eagerness of the turn detection
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| TURN_EAGERNESS_UNSPECIFIED | 0 | Unspecified turn eagerness defaults to NORMAL |
+| PATIENT | 1 | Patient turn taking: scales the endpointing delays by a factor of 1.7 |
+| NORMAL | 2 | Normal turn taking: keeps the endpointing delays unchanged (factor 1.0) |
+| EAGER | 3 | Eager turn taking: scales the endpointing delays by a factor of 0.6 |
+
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
 <a name="ondewo/vtsi/calls.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
@@ -20937,63 +21476,6 @@ Status of ondewo-sip instance
 
 
 
-<a name="ondewo.vtsi.AnsweringMachineDetectionConfig"></a>
-
-### AnsweringMachineDetectionConfig
-Configuration of the answering machine detection (AMD) of an outbound call, i.e. deciding in the first
-seconds after the callee answered whether a person, an answering machine, a fax, an IVR or a network
-announcement picked up, and hanging up on the non-human ones.
-Detection listens first: the bot stays silent until the verdict is reached or the decision window ends.
-Every field is optional: an unset field takes the default of the CSI container (listed per field below).
-Only accepted for pooled persistent callers; the settings are part of the caller container configuration,
-so callers with different AMD settings are never pooled together.
-The verdict of a call is reported as ondewo.sip.SipStatus.amd_result. Reaching a hang-up-eligible verdict sets
-the non-terminal status ondewo.sip.SipStatus.StatusType.OUTGOING_CALL_ANSWERING_MACHINE_DETECTED (the call is
-still up), and a call ended by AMD reaches the terminal status OUTGOING_CALL_FINISHED with one of these
-descriptions:
-<ul>
-<li>"Answering machine detected with hang up": the caller hung up without leaving a voice message</li>
-<li>"Answering machine detected with left voice message and hang up": the caller hung up after starting the
-voice message</li>
-<li>"Answering machine detected, call ended by the answering machine": the far end hung up before a voice
-message was started</li>
-<li>"Answering machine detected, call ended by the answering machine after leaving a voice message": the far
-end hung up after the voice message was started</li>
-</ul>
-The description is also recorded on the call as Call.answering_machine_detection_end_description.
-Compliance: leaving a recorded message on a consumer's mailbox for marketing purposes requires the consent of
-the callee in many jurisdictions (e.g. in Germany § 7 UWG). HANG_UP is therefore the default action.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| active | [bool](#bool) | optional | Optional: Master switch of the answering machine detection (default: false) |
-| action | [AnsweringMachineDetectionConfig.AmdAction](#ondewo.vtsi.AnsweringMachineDetectionConfig.AmdAction) | optional | Optional: Action on a non-human verdict (default: HANG_UP) |
-| sensitivity | [AnsweringMachineDetectionConfig.AmdSensitivity](#ondewo.vtsi.AnsweringMachineDetectionConfig.AmdSensitivity) | optional | Optional: Sensitivity of the detection (default: LOW) |
-| max_decision_time_ms | [int32](#int32) | optional | Optional: Maximum time in milliseconds after the callee answered to reach a verdict when no machine-leaning evidence was seen; the verdict is UNKNOWN when it is reached (default: 4000, valid range: 1500 - 10000) |
-| max_machine_wait_ms | [int32](#int32) | optional | Optional: Maximum time in milliseconds after the callee answered to reach a verdict once machine-leaning evidence extended the decision window (default: 11000, valid range: 4000 - 20000) |
-| beep_wait_after_greeting_ms | [int32](#int32) | optional | Optional: Time in milliseconds to wait for a beep after a long greeting ended (default: 1500, valid range: 0 - 4000) |
-| initial_silence_ms | [int32](#int32) | optional | Optional: Silence in milliseconds after the callee answered without any speech, after which the verdict is NO_SPEECH, which is treated like a person (default: 3500, valid range: 1000 - 10000) |
-| max_human_greeting_ms | [int32](#int32) | optional | Optional: Continuous speech in milliseconds beyond which a greeting is machine-leaning (default: 2400, valid range: 1000 - 6000) |
-| greeting_end_silence_ms | [int32](#int32) | optional | Optional: Silence in milliseconds after the first speech burst that ends a human greeting (default: 900, valid range: 300 - 3000) |
-| beep_detection_active | [bool](#bool) | optional | Optional: Enable the tone detector for the beep of an answering machine (default: true) |
-| additional_machine_phrases | [string](#string) | repeated | Additional phrases that indicate an answering machine, added to the built-in de and en phrase lists (maximum 50 phrases, each 1 - 80 characters) |
-| additional_human_phrases | [string](#string) | repeated | Additional phrases that indicate a person, added to the built-in de and en phrase lists (maximum 50 phrases, each 1 - 80 characters) |
-| hang_up_on_fax | [bool](#bool) | optional | Optional: Hang up on a FAX verdict when the action is HANG_UP (default: true) |
-| hang_up_on_network_announcement | [bool](#bool) | optional | Optional: Hang up on a NETWORK_ANNOUNCEMENT verdict, e.g. "the number is not reachable", when the action is HANG_UP (default: true) |
-| hang_up_on_ivr | [bool](#bool) | optional | Optional: Hang up on an IVR verdict, i.e. an automated menu, when the action is HANG_UP (default: false) |
-| hang_up_on_call_screening | [bool](#bool) | optional | Optional: Hang up on a CALL_SCREENING verdict, i.e. a call screening assistant asking for the reason of the call, when the action is HANG_UP (default: false) |
-| voice_message_intent | [string](#string) | optional | Optional: Name of the NLU intent whose fulfillment is the voice message when the action is LEAVE_VOICE_MESSAGE; it is triggered once (default: the welcome intent of the NLU project, 1 - 200 characters when set) |
-| voice_message_max_beep_wait_ms | [int32](#int32) | optional | Optional: Maximum time in milliseconds after the verdict to wait for the beep, or for the end of the machine greeting, before the voice message is spoken when the action is LEAVE_VOICE_MESSAGE; 0 speaks immediately (default: 10000, valid range: 0 - 30000) |
-| voice_message_timeout_ms | [int32](#int32) | optional | Optional: Maximum time in milliseconds after the verdict until the call is hung up when the action is LEAVE_VOICE_MESSAGE, also when the voice message has not finished playing (default: 30000, valid range: 5000 - 120000) |
-| keyword_detection_active | [bool](#bool) | optional | Optional: Enable the detection of machine and person phrases in the transcribed greeting, i.e. the built-in phrase lists plus additional_machine_phrases and additional_human_phrases; turning it off removes this evidence and the detection rules that need it (default: true) |
-| cadence_detection_active | [bool](#bool) | optional | Optional: Enable the detection based on the speech and silence cadence of the greeting, e.g. its length and the silence after it; turning it off removes this evidence and the detection rules that need it (default: true) |
-
-
-
-
-
-
 <a name="ondewo.vtsi.AsteriskConfig"></a>
 
 ### AsteriskConfig
@@ -21003,55 +21485,6 @@ Asterisk configuration
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | asterisk_base_config | [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig) |  | Host, Port, and [Optional] GRPC cert |
-
-
-
-
-
-
-<a name="ondewo.vtsi.AudioObjectStorageConfig"></a>
-
-### AudioObjectStorageConfig
-Minio Audio Object Store
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| activate_audio_object_storage | [bool](#bool) | optional | Audio storage should be activated or not |
-| audio_object_storage_services_activation_config | [AudioObjectStorageServicesActivationConfig](#ondewo.vtsi.AudioObjectStorageServicesActivationConfig) |  | Configuration of the Minio Audio Object Store |
-
-
-
-
-
-
-<a name="ondewo.vtsi.AudioObjectStorageServicesActivationConfig"></a>
-
-### AudioObjectStorageServicesActivationConfig
-Configuration of the Minio Audio Object Store
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| activate_s2t | [bool](#bool) | optional | Should audio object store save audio sent to the Speech-2-Text platform |
-| activate_t2s | [bool](#bool) | optional | Should audio object store save audio generated from the Text-2-Speech platform |
-
-
-
-
-
-
-<a name="ondewo.vtsi.BaseServiceConfig"></a>
-
-### BaseServiceConfig
-Base configuration of services (ondewo-nlu, text-to-speech, speech-to-text, asterisk)
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| host | [string](#string) |  | service host IP |
-| port | [int32](#int32) |  | service port |
-| grpc_cert | [string](#string) |  | PEM certificate(s) the service&apos;s gRPC server certificate chains to (CA or self-signed leaf), with real or escaped newlines; never a private key. Required for the S2T, NLU and T2S configs of a call unless the VTSI server runs with ONDEWO_VTSI_ALLOW_INSECURE_UPSTREAM=True (lab and CI only); an empty value is otherwise refused with FAILED_PRECONDITION (UPSTREAM_TLS_REQUIRED). |
 
 
 
@@ -21354,61 +21787,6 @@ Response to cancelling a scheduled caller.
 
 
 
-<a name="ondewo.vtsi.CommonServicesConfig"></a>
-
-### CommonServicesConfig
-Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI which are common for both listener and caller
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| s2t_vtsi_config | [S2tVtsiConfig](#ondewo.vtsi.S2tVtsiConfig) |  | speech-to-text service configuration |
-| nlu_vtsi_config | [NluVtsiConfig](#ondewo.vtsi.NluVtsiConfig) |  | ondewo-nlu configuration |
-| t2s_vtsi_config | [T2sVtsiConfig](#ondewo.vtsi.T2sVtsiConfig) |  | text-to-speech service configuration |
-| csi_vtsi_config | [CsiVtsiConfig](#ondewo.vtsi.CsiVtsiConfig) |  | CSI service configuration |
-| voice_interaction_config | [VoiceInteractionConfig](#ondewo.vtsi.VoiceInteractionConfig) |  | Voice interaction configuration for turn detection, interruption (barge-in) handling and response timing |
-
-
-
-
-
-
-<a name="ondewo.vtsi.Credentials"></a>
-
-### Credentials
-Credentials
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| account_name | [string](#string) |  | Account name - usually email address |
-| password | [string](#string) |  | password of the account |
-
-
-
-
-
-
-<a name="ondewo.vtsi.CsiVtsiConfig"></a>
-
-### CsiVtsiConfig
-CSI configuration
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| s2t_vtsi_callbacks | [S2tVtsiCallbacks](#ondewo.vtsi.S2tVtsiCallbacks) |  | Callback for the Speech-2-Text platform |
-| nlu_vtsi_callbacks | [NluVtsiCallbacks](#ondewo.vtsi.NluVtsiCallbacks) |  | Callback for the NLU platform |
-| t2s_vtsi_callbacks | [T2sVtsiCallbacks](#ondewo.vtsi.T2sVtsiCallbacks) |  | Callback for the Text-2-Speech platform |
-| audio_object_store_config | [AudioObjectStorageConfig](#ondewo.vtsi.AudioObjectStorageConfig) |  | Configuration of the Minio Audio Object Store |
-| message_broker_config | [MessageBrokerConfig](#ondewo.vtsi.MessageBrokerConfig) |  | Configuration of the RabbitMQ Message Broker |
-| activate_control_messages | [bool](#bool) | optional | Setting to activate if it is possible to send control messages <ul> <li>via RabbitMQ to remote control the system</li> <li>via embeddings in NLU text responses</li> </ul> Explicitly optional: leaving the field unset means the caller expresses no preference and the server keeps its own configured default. That is NOT the same as sending <pre><code>false</code></pre>, which is a request to switch control messages off. A presence-less bool cannot tell the two apart, so an unset field arrived as <pre><code>false</code></pre> and silently disabled control messages for callers that never mentioned them. |
-
-
-
-
-
-
 <a name="ondewo.vtsi.DeleteCallerRequest"></a>
 
 ### DeleteCallerRequest
@@ -21601,28 +21979,6 @@ Represents a request to get a specific scheduled caller.
 
 
 
-<a name="ondewo.vtsi.InterruptionHandlingConfig"></a>
-
-### InterruptionHandlingConfig
-Configuration of the interruption (barge-in) handling, i.e. the caller speaking while the bot is speaking
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| enabled | [bool](#bool) | optional | Optional: Enable interruption (barge-in) handling, i.e. the caller can interrupt the bot while it is speaking |
-| min_interruption_duration_seconds | [float](#float) | optional | Optional: Minimum duration in seconds of caller speech while the bot is speaking to trigger an interruption (noise gate) (default: 0.5) |
-| min_interruption_words | [int32](#int32) | optional | Optional: Minimum number of transcribed words of caller speech while the bot is speaking to trigger an interruption (default: 2) |
-| false_interruption_timeout_seconds | [float](#float) | optional | Optional: Time in seconds after an interruption trigger without a committed transcription after which the interruption is classified as a false interruption (default: 2.0) |
-| resume_after_false_interruption | [bool](#bool) | optional | Optional: Resume the paused bot response after a false interruption, e.g. a cough or brief background noise (default: true) |
-| backoff_seconds | [float](#float) | optional | Optional: Silence in seconds after a real interruption before the next bot response is played (default: 1.0) |
-| first_message_protected_seconds | [float](#float) | optional | Optional: Protect the first bot message from interruptions for the given number of seconds (default: 0 = no protection) |
-| transcribe_on_disabled_interruptions | [bool](#bool) | optional | Transcribe caller speech while the bot is speaking even if interruptions are disabled |
-
-
-
-
-
-
 <a name="ondewo.vtsi.InviteToCallRequest"></a>
 
 ### InviteToCallRequest
@@ -21674,6 +22030,7 @@ Represents a request to list callers.
 | vtsi_project_name | [string](#string) |  | VTSI project name for which to perform the call. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | page_token | [string](#string) | optional | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
 | call_view | [CallView](#ondewo.vtsi.CallView) | optional | you can specify the view to be shallow or full |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in every returned <code>Caller</code>, relative to the <code>Caller</code> message (no <code>callers.</code> prefix), e.g. <code>call_name</code>, <code>sip_caller_config.callee_id</code>, <code>common_services_config.nlu_vtsi_config.agent_name</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field is not. <code>name</code> is always populated. Unset or empty returns every field the <code>call_view</code> populates. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. Applied after the <code>call_view</code> and the server&apos;s role-based redaction of <code>common_services_config</code>, so it can only narrow the response and never populates a field that was left empty. Not part of the paging contract: a <code>page_token</code> stays valid with another mask. |
 
 
 
@@ -21708,6 +22065,7 @@ Request to list calls
 | call_view | [CallView](#ondewo.vtsi.CallView) | optional | you can specify the view to be shallow or full .. see above for more info |
 | call_filter | [CallFilter](#ondewo.vtsi.CallFilter) | optional | Optional. A filter to narrow the response down to sessions of interest. |
 | page_token | [string](#string) | optional | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in every returned <code>Call</code>, relative to the <code>Call</code> message (no <code>calls.</code> prefix), e.g. <code>call_type</code>, <code>phone_number</code>, <code>start_time</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field is not. <code>name</code> is always populated. Unset or empty returns every field the <code>call_view</code> populates. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. Applied after the <code>call_view</code> and the server&apos;s role-based redaction of <code>common_services_config</code>, so it can only narrow the response and never populates a field that was left empty. Not part of the paging contract: a <code>page_token</code> stays valid with another mask. |
 
 
 
@@ -21741,6 +22099,7 @@ Represents a request to list listeners.
 | vtsi_project_name | [string](#string) |  | VTSI project name for which to perform the call. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | page_token | [string](#string) | optional | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
 | call_view | [CallView](#ondewo.vtsi.CallView) | optional | you can specify the view to be shallow or full |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in every returned <code>Listener</code>, relative to the <code>Listener</code> message (no <code>listeners.</code> prefix), e.g. <code>call_name</code>, <code>common_services_config.nlu_vtsi_config.agent_name</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field is not. <code>name</code> is always populated. Unset or empty returns every field the <code>call_view</code> populates. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. Applied after the <code>call_view</code> and the server&apos;s role-based redaction of <code>common_services_config</code>, so it can only narrow the response and never populates a field that was left empty. Not part of the paging contract: a <code>page_token</code> stays valid with another mask. |
 
 
 
@@ -21775,6 +22134,7 @@ Represents a request to list the scheduled callers of a vtsi-project.
 | page_token | [string](#string) | optional | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
 | call_view | [CallView](#ondewo.vtsi.CallView) | optional | you can specify the view to be shallow or full |
 | statuses | [ScheduledCallerStatus](#ondewo.vtsi.ScheduledCallerStatus) | repeated | Optional. Only return scheduled callers in one of these states. An empty list returns every state. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in every returned <code>ScheduledCaller</code>, relative to the <code>ScheduledCaller</code> message (no <code>scheduled_callers.</code> prefix), e.g. <code>scheduled_time</code>, <code>sip_caller_config.callee_id</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field is not. <code>name</code> is always populated. Unset or empty returns every field the <code>call_view</code> populates. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. Applied after the <code>call_view</code> and the server&apos;s role-based redaction of <code>common_services_config</code>, so it can only narrow the response and never populates a field that was left empty. Not part of the paging contract: a <code>page_token</code> stays valid with another mask. |
 
 
 
@@ -21840,99 +22200,6 @@ Listener represents a listener instance that waits for incoming calls
 
 
 
-<a name="ondewo.vtsi.MessageBrokerConfig"></a>
-
-### MessageBrokerConfig
-Configuration of the RabbitMQ Message Broker
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| activate_message_broker | [bool](#bool) | optional | Should the broker be activated or not |
-| message_broker_services_activation_config | [MessageBrokerServicesActivationConfig](#ondewo.vtsi.MessageBrokerServicesActivationConfig) |  | Configuration of the Broker service activation |
-| rabbit_mq_config | [RabbitMqConfig](#ondewo.vtsi.RabbitMqConfig) |  | Configuration of the RabbitMQ Message Broker |
-
-
-
-
-
-
-<a name="ondewo.vtsi.MessageBrokerServicesActivationConfig"></a>
-
-### MessageBrokerServicesActivationConfig
-Configuration of the RabbitMQ Message Broker
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| activate_s2t | [bool](#bool) | optional | should RabbitMQ Message Broker be activated for Speech-2-Text platform |
-| activate_nlu | [bool](#bool) | optional | should RabbitMQ Message Broker be activated for NLU platform |
-| activate_t2s | [bool](#bool) | optional | should RabbitMQ Message Broker be activated for Text-2-Speech platform |
-| activate_sip | [bool](#bool) | optional | should RabbitMQ Message Broker be activated for SIP platform |
-
-
-
-
-
-
-<a name="ondewo.vtsi.NluVtsiCallbacks"></a>
-
-### NluVtsiCallbacks
-Callback for the NLU platform
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| pre_nlu_callbacks | [string](#string) | repeated | Callback executed before the NLU will be called |
-| post_nlu_callbacks | [string](#string) | repeated | Callback executed after the NLU has been called |
-
-
-
-
-
-
-<a name="ondewo.vtsi.NluVtsiConfig"></a>
-
-### NluVtsiConfig
-NLU Configuration
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| nlu_base_config | [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig) |  | Base config Host, Port, and [Optional] GRPC cert |
-| credentials | [Credentials](#ondewo.vtsi.Credentials) |  | Credentials with classical username and password |
-| auth_token | [string](#string) |  | Authentication token |
-| agent_name | [string](#string) |  | The resource name of the agent. Format: <pre><code>projects/&lt;uuid&gt;/agent</code></pre> |
-| language_code | [string](#string) |  | language code in a two letter iso code, e.g. de, en, etc. |
-| initial_intent | [string](#string) |  | name of intent to trigger at the start of a call |
-| contexts | [ondewo.nlu.Context](#ondewo.nlu.Context) | repeated | ondewo-nlu list of contexts |
-| http_basic_auth_token | [string](#string) |  | http basic auth token |
-| platform | [ondewo.nlu.Intent.Message.Platform](#ondewo.nlu.Intent.Message.Platform) | optional | Return the message specified in Intent.Message.Platform platform to the user in the DetectIntentResponse |
-
-
-
-
-
-
-<a name="ondewo.vtsi.RabbitMqConfig"></a>
-
-### RabbitMqConfig
-Configuration of the RabbitMQ Message Broker
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| host | [string](#string) |  | host where the rabbit mq server runs |
-| port | [int32](#int32) |  | port where the rabbit mq server runs |
-| port_2 | [int32](#int32) |  | secondary port where the rabbit mq server runs |
-| user | [string](#string) |  | user of server |
-| password | [string](#string) |  | password of server |
-
-
-
-
-
-
 <a name="ondewo.vtsi.RemoveCallParticipantRequest"></a>
 
 ### RemoveCallParticipantRequest
@@ -21962,57 +22229,6 @@ Configuration of the RabbitMQ Message Broker
 | call_name | [string](#string) |  | Name of the call |
 | participant | [CallParticipant](#ondewo.vtsi.CallParticipant) |  | The participant after the request |
 | error_message | [string](#string) |  | error message if you have any |
-
-
-
-
-
-
-<a name="ondewo.vtsi.ResponseTimingConfig"></a>
-
-### ResponseTimingConfig
-Configuration of the response timing, i.e. when and how the bot responds
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| turn_timeout_seconds | [float](#float) | optional | Optional: Seconds of caller silence after a bot response until a follow-up event is triggered (default: 20.0, valid range: 1.0 - 30.0) |
-| silence_end_call_timeout_seconds | [float](#float) | optional | Optional: Seconds of caller silence until the call is ended. Unset = off (-1 is also accepted as explicit off) |
-| soft_timeout_config | [SoftTimeoutConfig](#ondewo.vtsi.SoftTimeoutConfig) |  | Configuration of the soft timeout filler messages |
-| preemptive_generation_enabled | [bool](#bool) | optional | Optional: Enable preemptive response generation on an eagerly detected end of turn (default: false) |
-| t2s_chunked_streaming_enabled | [bool](#bool) | optional | Optional: Enable chunked text-to-speech streaming for a lower time to first audio (default: false) |
-
-
-
-
-
-
-<a name="ondewo.vtsi.S2tVtsiCallbacks"></a>
-
-### S2tVtsiCallbacks
-Callback for the Speech-2-Text platform
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| pre_s2t_callbacks | [string](#string) | repeated | Callback executed before the Speech-2-Text will be called |
-| post_s2t_callbacks | [string](#string) | repeated | Callback executed after the Speech-2-Text has been called |
-
-
-
-
-
-
-<a name="ondewo.vtsi.S2tVtsiConfig"></a>
-
-### S2tVtsiConfig
-Speech-2-Text Configuration
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| s2t_base_config | [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig) |  | Host, Port, and [Optional] GRPC cert |
-| s2t_transcribe_request_config | [ondewo.s2t.TranscribeRequestConfig](#ondewo.s2t.TranscribeRequestConfig) |  | Configuration of Speech-2-Text |
 
 
 
@@ -22092,73 +22308,6 @@ Status of service
 | state | [CallMediaControlState](#ondewo.vtsi.CallMediaControlState) |  | Effective media control state after the request |
 | changed | [bool](#bool) |  | <code>true</code> if the effective state changed |
 | error_message | [string](#string) |  | error message if you have any |
-
-
-
-
-
-
-<a name="ondewo.vtsi.SipBaseConfig"></a>
-
-### SipBaseConfig
-The base config is for both the listener and caller. If you only provide it you will get a listener
-You will need to provide <code>SipCallerConfig</code> for the caller
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| sip_sim_version | [string](#string) |  | version of sip to use for call, semantic versioning e.g., 1.0.0, 1.1.0-pre-release, etc. |
-
-
-
-
-
-
-<a name="ondewo.vtsi.SipCallerConfig"></a>
-
-### SipCallerConfig
-Configuration of the SIP caller
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| sip_base_config | [SipBaseConfig](#ondewo.vtsi.SipBaseConfig) |  | SIP configuration |
-| callee_id | [string](#string) |  | callee id e.g. phone number to call, +4365012345678 or VOIP phone ondewo0001@ondewo.com, etc. |
-| sip_headers | [SipCallerConfig.SipHeadersEntry](#ondewo.vtsi.SipCallerConfig.SipHeadersEntry) | repeated | dictionary of sip headers that are sent on call |
-
-
-
-
-
-
-<a name="ondewo.vtsi.SipCallerConfig.SipHeadersEntry"></a>
-
-### SipCallerConfig.SipHeadersEntry
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| key | [string](#string) |  |  |
-| value | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="ondewo.vtsi.SoftTimeoutConfig"></a>
-
-### SoftTimeoutConfig
-Configuration of the soft timeout, i.e. filler messages played
-when the response generation takes longer than the timeout
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| timeout_seconds | [float](#float) | optional | Optional: Seconds after which a filler message is played while the response is still being generated. Unset = off (-1 is also accepted as explicit off). Recommended: 3.0 |
-| messages | [string](#string) | repeated | Filler messages, rotated per soft timeout (maximum 7 messages, each 1 - 200 characters) |
-| max_per_generation | [int32](#int32) | optional | Optional: Maximum number of filler messages per response generation (default: 1) |
 
 
 
@@ -22698,38 +22847,6 @@ The request message for <code>Calls.StreamScheduledCallerStatus</code>.
 
 
 
-<a name="ondewo.vtsi.T2sVtsiCallbacks"></a>
-
-### T2sVtsiCallbacks
-Callback for the Text-2-Speech platform
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| pre_t2s_callbacks | [string](#string) | repeated | Callback executed before the Text-2-Speech will be called |
-| post_t2s_callbacks | [string](#string) | repeated | Callback executed after the Text-2-Speech has been called |
-
-
-
-
-
-
-<a name="ondewo.vtsi.T2sVtsiConfig"></a>
-
-### T2sVtsiConfig
-Text-2-Speech Configuration
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| t2s_base_config | [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig) |  | Host, Port, and [Optional] GRPC cert |
-| t2s_request_config | [ondewo.t2s.RequestConfig](#ondewo.t2s.RequestConfig) |  | Configuration of Text-2-Speech |
-
-
-
-
-
-
 <a name="ondewo.vtsi.TransferCallRequest"></a>
 
 ### TransferCallRequest
@@ -22821,74 +22938,7 @@ Response to transfer a call to a phone number or voip number
 
 
 
-
-<a name="ondewo.vtsi.TurnDetectionConfig"></a>
-
-### TurnDetectionConfig
-Configuration of the turn detection, i.e. deciding when the caller has finished speaking
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| mode | [TurnDetectionConfig.TurnDetectionMode](#ondewo.vtsi.TurnDetectionConfig.TurnDetectionMode) |  | Mode of the turn detection. Defaults to SEMANTIC_MODEL if unspecified |
-| min_endpointing_delay_seconds | [float](#float) | optional | Optional: Minimum delay in seconds before a confidently detected end of turn is committed (default: 0.5) |
-| max_endpointing_delay_seconds | [float](#float) | optional | Optional: Maximum delay in seconds to wait for an end of turn before the turn is committed from the latest stable partial transcription (default: 3.0) |
-| turn_eagerness | [TurnDetectionConfig.TurnEagerness](#ondewo.vtsi.TurnDetectionConfig.TurnEagerness) |  | Eagerness of the turn detection: scales both endpointing delays. Defaults to NORMAL if unspecified |
-| turn_detection_system_prompt | [string](#string) | optional | System prompt for the semantic (LLM) turn detection model of the speech-to-text service |
-| turn_detection_user_prompt | [string](#string) | optional | User prompt for the semantic (LLM) turn detection model of the speech-to-text service |
-
-
-
-
-
-
-<a name="ondewo.vtsi.VoiceInteractionConfig"></a>
-
-### VoiceInteractionConfig
-Configuration of the voice interaction behavior of a call:
-turn detection, interruption (barge-in) handling and response timing
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| turn_detection_config | [TurnDetectionConfig](#ondewo.vtsi.TurnDetectionConfig) |  | Configuration of the turn detection |
-| interruption_handling_config | [InterruptionHandlingConfig](#ondewo.vtsi.InterruptionHandlingConfig) |  | Configuration of the interruption (barge-in) handling |
-| response_timing_config | [ResponseTimingConfig](#ondewo.vtsi.ResponseTimingConfig) |  | Configuration of the response timing |
-| answering_machine_detection_config | [AnsweringMachineDetectionConfig](#ondewo.vtsi.AnsweringMachineDetectionConfig) |  | Configuration of the answering machine detection (AMD) of an outbound call. Only accepted for pooled persistent callers: a listener or a one-shot caller that carries it is rejected with INVALID_ARGUMENT |
-
-
-
-
-
  <!-- end messages -->
-
-
-<a name="ondewo.vtsi.AnsweringMachineDetectionConfig.AmdAction"></a>
-
-### AnsweringMachineDetectionConfig.AmdAction
-What to do once a non-human verdict is reached
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| AMD_ACTION_UNSPECIFIED | 0 | Unspecified action defaults to HANG_UP |
-| HANG_UP | 1 | Hang up at once on a non-human verdict whose per-verdict hang-up switch is on (an answering machine is always hung up on) (default) |
-| DETECT_ONLY | 2 | Only detect and record the verdict, never hang up: OUTGOING_CALL_ANSWERING_MACHINE_DETECTED is still set, then the far end is treated as a person and the call continues with the greeting and ends normally (shadow mode to calibrate the detection before enabling HANG_UP) |
-| LEAVE_VOICE_MESSAGE | 3 | Leave a voice message on a hang-up-eligible verdict, then hang up: the fulfillment of voice_message_intent is spoken once after the beep (or after the end of the machine greeting), and the call is hung up when it finished playing or when voice_message_timeout_ms elapsed, whichever comes first. A FAX verdict never gets a voice message; it is hung up on when hang_up_on_fax is on. See the compliance note above before enabling it |
-
-
-
-<a name="ondewo.vtsi.AnsweringMachineDetectionConfig.AmdSensitivity"></a>
-
-### AnsweringMachineDetectionConfig.AmdSensitivity
-Sensitivity of the detection: selects the enabled detection rules and their internal thresholds
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| AMD_SENSITIVITY_UNSPECIFIED | 0 | Unspecified sensitivity defaults to LOW |
-| LOW | 1 | Most conservative towards people: only strong machine evidence leads to a machine verdict (default) |
-| MEDIUM | 2 | Balanced between missed machines and people classified as machines |
-| HIGH | 3 | Most aggressive: detects more machines at a higher risk of hanging up on a person |
-
 
 
 <a name="ondewo.vtsi.BotPolicyOnJoin"></a>
@@ -23063,34 +23113,6 @@ Lifecycle state of a ScheduledCaller
 | TRANSFER_OUTCOME_SIP_UNREACHABLE | 8 | The call&apos;s SIP container could not be reached |
 
 
-
-<a name="ondewo.vtsi.TurnDetectionConfig.TurnDetectionMode"></a>
-
-### TurnDetectionConfig.TurnDetectionMode
-Mode of the turn detection
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| TURN_DETECTION_MODE_UNSPECIFIED | 0 | Unspecified turn detection mode defaults to SEMANTIC_MODEL |
-| VAD | 1 | Turn detection based on voice activity detection, i.e. pauses in the caller audio (fallback mode) |
-| SEMANTIC_MODEL | 2 | Turn detection based on a semantic (LLM) turn detection model of the speech-to-text service (default) |
-| AUDIO_MODEL | 3 | Turn detection based on an audio-native turn detection model |
-
-
-
-<a name="ondewo.vtsi.TurnDetectionConfig.TurnEagerness"></a>
-
-### TurnDetectionConfig.TurnEagerness
-Eagerness of the turn detection
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| TURN_EAGERNESS_UNSPECIFIED | 0 | Unspecified turn eagerness defaults to NORMAL |
-| PATIENT | 1 | Patient turn taking: scales the endpointing delays by a factor of 1.7 |
-| NORMAL | 2 | Normal turn taking: keeps the endpointing delays unchanged (factor 1.0) |
-| EAGER | 3 | Eager turn taking: scales the endpointing delays by a factor of 0.6 |
-
-
  <!-- end enums -->
 
  <!-- end HasExtensions -->
@@ -23178,6 +23200,8 @@ A campaign: a set of outbound calls started with a limit on how many run at the 
 | started_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only. When the campaign was first started. |
 | stopped_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only. When the campaign last reached <code>STOPPED</code> or <code>HARD_STOPPED</code>. |
 | completed_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only. When the campaign reached <code>COMPLETED</code>. |
+| campaign_common_services_config | [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig) |  | Optional. Default <code>CommonServicesConfig</code> of EVERY call of the campaign (speech-to-text, NLU, text-to-speech, CSI and voice interaction). Settable on <code>CreateCampaign</code> and on <code>CampaignAssignment.new_campaign</code>; updatable with the <code>update_mask</code> path <code>campaign_common_services_config</code> or a nested sub-path of it (e.g. <code>campaign_common_services_config.nlu_vtsi_config.agent_name</code>). Unset (the default) changes nothing: every call runs exactly with its own <code>StartCallerRequest</code> config, as before 9.1.0. <p>Read LIVE, never snapshotted per call: whenever a campaign call is dispatched (its first attempt and every retry) the server reads the campaign&apos;s CURRENT value. The effective <code>common_services_config</code> of that call is:</p> <pre><code>effective = copy(campaign.campaign_common_services_config) effective.MergeFrom(caller_request.common_services_config)</code></pre> <p>i.e. protobuf <code>MergeFrom</code> semantics, the call&apos;s own value WINNING:</p> <ul> <li>a singular scalar, enum or string the call sets to a non-default value (or, for an <code>optional</code> field, sets at all) replaces the campaign&apos;s value; one the call leaves at its default keeps the campaign&apos;s value. A plain (non-<code>optional</code>) scalar therefore cannot be reset to its zero value by the call;</li> <li>a message field is merged recursively by the same rules;</li> <li>a repeated field is CONCATENATED, the campaign&apos;s entries first (e.g. <code>nlu_vtsi_config.contexts</code>, the lists of the <code>csi_vtsi_config</code> callbacks, <code>voice_interaction_config.response_timing_config.soft_timeout_config.messages</code>);</li> <li>a map field is merged by key, the call&apos;s entry winning on a shared key;</li> <li>a oneof member the call sets replaces whichever member the campaign set (e.g. <code>nlu_vtsi_config.credentials</code> versus <code>nlu_vtsi_config.auth_token</code>).</li> </ul> <p>The effective configuration is validated exactly as a <code>StartCallerRequest</code> carrying it, so an entry of <code>AddCallersToCampaign</code> / <code>AddScheduledCallersToCampaign</code> may leave out what the campaign supplies. Because the default is read live, an update that makes the effective configuration of a not yet dispatched call invalid fails that call at dispatch as a failure that cannot succeed by repetition (it is not retried).</p> <p>Credentials: the credential-bearing fields (NLU credentials and tokens, gRPC certificates, message broker and object store settings, callbacks, transcribe and synthesize request configs) are stored like the <code>common_services_config</code> of a started caller and are subject to the same role-based redaction on every response that returns the campaign; the server never logs them. A client that reads a redacted campaign and writes the whole config back with <code>update_mask</code> path <code>campaign_common_services_config</code> overwrites the stored credentials with the redacted ones; update a sub-path instead.</p> |
+| campaign_sip_caller_config | [SipCallerConfig](#ondewo.vtsi.SipCallerConfig) |  | Optional. Default <code>SipCallerConfig</code> of EVERY call of the campaign (SIP image version, callee and SIP headers). Settable on <code>CreateCampaign</code> and on <code>CampaignAssignment.new_campaign</code>; updatable with the <code>update_mask</code> path <code>campaign_sip_caller_config</code> or a nested sub-path of it (e.g. <code>campaign_sip_caller_config.sip_headers</code>). Unset (the default) changes nothing. <p>Read LIVE at every dispatch and merged exactly like <code>campaign_common_services_config</code>: the effective <code>sip_caller_config</code> of a call is a copy of this value with the call&apos;s own <code>StartCallerRequest.sip_caller_config</code> merged over it (<code>MergeFrom</code>, the call winning); <code>sip_headers</code> are merged by key with the call&apos;s header winning on a shared name.</p> <p>EXCEPT <code>callee_id</code>, which is resolved ONCE, when the call is added to the campaign: the call&apos;s own <code>callee_id</code> or, when that is empty, this value&apos;s <code>callee_id</code> at that moment. The result is stored as <code>CampaignCall.phone_number</code> and is the <code>callee_id</code> of every attempt of that call, retries included. A later update of <code>campaign_sip_caller_config.callee_id</code> (or of the whole config) therefore changes the callee only of calls added after it, never of calls already in the campaign, so the number a campaign call reports (and that <code>ListCampaignCallsRequest.phone_number</code> filters on) is always the number it dials.</p> |
 
 
 
@@ -23199,19 +23223,29 @@ stopped campaign runs them after <code>ResumeCampaign</code>; see <code>start_mo
 <code>CREATED</code>); <code>COMPLETED</code> accepts them and becomes <code>RUNNING</code>.</p>
 <p>Errors, as gRPC status codes of the <code>AddCallersToCampaign</code> /
 <code>AddScheduledCallersToCampaign</code> RPC: <code>NOT_FOUND</code> for an unknown
-<code>campaign_name</code> / <code>campaign_display_name</code>
+<code>campaign_name</code> / <code>display_name</code>
 or a campaign deleted while the request ran; <code>INVALID_ARGUMENT</code> for a campaign of
 another project, an invalid <code>new_campaign</code> (an output-only field set, a value out of
 range) or an invalid caller entry (the message names its index); <code>ALREADY_EXISTS</code> for a
 <code>new_campaign.display_name</code> used in the project; <code>FAILED_PRECONDITION</code> when
 the campaign would exceed the server&apos;s maximum number of calls per campaign.</p>
+<p>The project of the campaign is the project of the enclosing request:
+<code>AddCallersToCampaignRequest.vtsi_project_name</code> /
+<code>AddScheduledCallersToCampaignRequest.vtsi_project_name</code>. It is where a new campaign is
+created, where <code>display_name</code> is resolved, and the project a <code>campaign_name</code>
+must belong to.</p>
+<p>Every caller entry of the request is validated against its EFFECTIVE configuration, i.e. the
+campaign&apos;s <code>campaign_common_services_config</code> / <code>campaign_sip_caller_config</code>
+with the entry&apos;s own config merged over it (see
+<a href="index.html#ondewo.vtsi.Campaign">Campaign</a>), so an entry may leave out what the campaign
+supplies.</p>
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | campaign_name | [string](#string) |  | Add the calls to this existing campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre> |
-| new_campaign | [Campaign](#ondewo.vtsi.Campaign) |  | Create a new campaign with these settings and add the calls to it. Only <code>display_name</code>, <code>max_parallel_calls</code>, <code>max_attempts</code> and <code>retry_delay</code> are read; output-only fields must be unset. |
-| campaign_display_name | [CampaignDisplayName](#ondewo.vtsi.CampaignDisplayName) |  | Add the calls to the existing campaign with this display name. Its <code>vtsi_project_name</code> must be the request&apos;s project. |
+| new_campaign | [Campaign](#ondewo.vtsi.Campaign) |  | Create a new campaign with these settings, in the enclosing request&apos;s project, and add the calls to it. Only <code>display_name</code>, <code>max_parallel_calls</code>, <code>max_attempts</code>, <code>retry_delay</code>, <code>campaign_common_services_config</code> and <code>campaign_sip_caller_config</code> are read; output-only fields must be unset. |
+| display_name | [string](#string) |  | Add the calls to the existing campaign with this exact, case-sensitive display name, resolved within the enclosing request&apos;s project (<code>AddCallersToCampaignRequest.vtsi_project_name</code> / <code>AddScheduledCallersToCampaignRequest.vtsi_project_name</code>). Replaces the 9.0.0 <code>CampaignDisplayName campaign_display_name = 4</code>. |
 | start_mode | [CampaignStartMode](#ondewo.vtsi.CampaignStartMode) |  | Whether the campaign starts dialling; see <code>CampaignStartMode</code>. The default starts a new campaign and leaves an existing one in its state. |
 
 
@@ -23231,7 +23265,7 @@ One call of a campaign. Every field is output only.
 | campaign_name | [string](#string) |  | Resource name of the campaign. |
 | position | [int32](#int32) |  | Position of the call in the campaign, in the order calls were added, starting at 1. |
 | state | [CampaignCallState](#ondewo.vtsi.CampaignCallState) |  | State of the call. |
-| phone_number | [string](#string) |  | The callee: <code>SipCallerConfig.callee_id</code> of the call&apos;s request. |
+| phone_number | [string](#string) |  | The callee: <code>SipCallerConfig.callee_id</code> of the call&apos;s request or, when the request leaves it empty, of <code>Campaign.campaign_sip_caller_config</code> at the time the call was added. Fixed from then on: every attempt of the call dials exactly this number, whatever later updates of the campaign&apos;s <code>campaign_sip_caller_config</code> say. |
 | source | [CampaignCallSource](#ondewo.vtsi.CampaignCallSource) |  | How the call was added. |
 | scheduled_caller_name | [string](#string) |  | For <code>CAMPAIGN_CALL_SOURCE_SCHEDULED_CALLER</code>: resource name of its scheduled caller. |
 | scheduled_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | For <code>CAMPAIGN_CALL_SOURCE_SCHEDULED_CALLER</code>: the scheduled time. |
@@ -23272,22 +23306,6 @@ One attempt of a campaign call.
 | sip_status_type | [ondewo.sip.SipStatus.StatusType](#ondewo.sip.SipStatus.StatusType) |  | Last SIP status of the attempt&apos;s call. |
 | sip_status_description | [string](#string) |  | Description of the last SIP status of the attempt&apos;s call. |
 | error_message | [string](#string) |  | Why the attempt failed. Empty unless <code>outcome</code> is <code>FAILED</code>. |
-
-
-
-
-
-
-<a name="ondewo.vtsi.CampaignDisplayName"></a>
-
-### CampaignDisplayName
-Identifies a campaign by its display name, which is unique within a project.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| vtsi_project_name | [string](#string) |  | VTSI project of the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
-| display_name | [string](#string) |  | Exact, case-sensitive <code>display_name</code> of the campaign. |
 
 
 
@@ -23360,7 +23378,8 @@ The request message for
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project in which to create the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
-| campaign | [Campaign](#ondewo.vtsi.Campaign) |  | The campaign to create. Output-only fields must be unset. |
+| campaign | [Campaign](#ondewo.vtsi.Campaign) |  | The campaign to create. Output-only fields must be unset. <code>campaign_common_services_config</code> and <code>campaign_sip_caller_config</code> may be set: they become the defaults of every call of the campaign (see <a href="index.html#ondewo.vtsi.Campaign">Campaign</a>). |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the <code>Campaign</code> field paths to populate, relative to the returned <code>Campaign</code> and WITHOUT a <code>campaign.</code> prefix, e.g. <code>state</code>, <code>statistics.completed</code>, <code>campaign_common_services_config.nlu_vtsi_config.agent_name</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field is not. <code>name</code> is always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. The mask is applied after the server&apos;s role-based redaction, so it never reveals a redacted value. It shapes only the response: the whole campaign is created regardless. |
 
 
 
@@ -23376,8 +23395,10 @@ The request message for
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | Resource name of the campaign. |
-| display_name | [CampaignDisplayName](#ondewo.vtsi.CampaignDisplayName) |  | The campaign with this display name. |
+| name | [string](#string) |  | Resource name of the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre> |
+| display_name | [string](#string) |  | Exact, case-sensitive <code>display_name</code> of the campaign, resolved within <code>vtsi_project_name</code>, which is then required. Replaces the 9.0.0 <code>CampaignDisplayName display_name = 2</code>. |
+| vtsi_project_name | [string](#string) |  | VTSI project of the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> REQUIRED with <code>display_name</code>: empty or malformed is rejected with <code>INVALID_ARGUMENT</code>, an unknown project with <code>NOT_FOUND</code>. Optional with <code>name</code>: when set, it must be the project of the campaign (<code>INVALID_ARGUMENT</code> otherwise). |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the <code>DeleteCampaignResponse</code> field paths to populate, e.g. <code>deleted_campaign_call_count</code>. <code>name</code> is always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. It shapes only the response: the campaign is deleted regardless. |
 
 
 
@@ -23411,8 +23432,10 @@ The request message for
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | Resource name of the campaign. |
-| display_name | [CampaignDisplayName](#ondewo.vtsi.CampaignDisplayName) |  | The campaign with this display name. |
+| name | [string](#string) |  | Resource name of the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre> |
+| display_name | [string](#string) |  | Exact, case-sensitive <code>display_name</code> of the campaign, resolved within <code>vtsi_project_name</code>, which is then required. Replaces the 9.0.0 <code>CampaignDisplayName display_name = 2</code>. |
+| vtsi_project_name | [string](#string) |  | VTSI project of the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> REQUIRED with <code>display_name</code>: empty or malformed is rejected with <code>INVALID_ARGUMENT</code>, an unknown project with <code>NOT_FOUND</code>. Optional with <code>name</code>: when set, it must be the project of the campaign (<code>INVALID_ARGUMENT</code> otherwise). |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the <code>Campaign</code> field paths to populate, relative to the returned <code>Campaign</code> and WITHOUT a <code>campaign.</code> prefix, e.g. <code>state</code>, <code>statistics.completed</code>, <code>campaign_common_services_config.nlu_vtsi_config.agent_name</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field is not. <code>name</code> is always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. The mask is applied after the server&apos;s role-based redaction, so it never reveals a redacted value. |
 
 
 
@@ -23428,8 +23451,9 @@ The request message for
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | Resource name of the campaign. |
-| display_name | [CampaignDisplayName](#ondewo.vtsi.CampaignDisplayName) |  | The campaign with this display name. |
+| name | [string](#string) |  | Resource name of the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre> |
+| display_name | [string](#string) |  | Exact, case-sensitive <code>display_name</code> of the campaign, resolved within <code>vtsi_project_name</code>, which is then required. Replaces the 9.0.0 <code>CampaignDisplayName display_name = 2</code>. |
+| vtsi_project_name | [string](#string) |  | VTSI project of the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> REQUIRED with <code>display_name</code>: empty or malformed is rejected with <code>INVALID_ARGUMENT</code>, an unknown project with <code>NOT_FOUND</code>. Optional with <code>name</code>: when set, it must be the project of the campaign (<code>INVALID_ARGUMENT</code> otherwise). |
 
 
 
@@ -23445,8 +23469,9 @@ The request message for
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | Resource name of the campaign. |
-| display_name | [CampaignDisplayName](#ondewo.vtsi.CampaignDisplayName) |  | The campaign with this display name. |
+| name | [string](#string) |  | Resource name of the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre> |
+| display_name | [string](#string) |  | Exact, case-sensitive <code>display_name</code> of the campaign, resolved within <code>vtsi_project_name</code>, which is then required. Replaces the 9.0.0 <code>CampaignDisplayName display_name = 2</code>. |
+| vtsi_project_name | [string](#string) |  | VTSI project of the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> REQUIRED with <code>display_name</code>: empty or malformed is rejected with <code>INVALID_ARGUMENT</code>, an unknown project with <code>NOT_FOUND</code>. Optional with <code>name</code>: when set, it must be the project of the campaign (<code>INVALID_ARGUMENT</code> otherwise). |
 
 
 
@@ -23462,13 +23487,15 @@ The request message for
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| campaign_name | [string](#string) |  | Resource name of the campaign. |
-| campaign_display_name | [CampaignDisplayName](#ondewo.vtsi.CampaignDisplayName) |  | The campaign with this display name. |
+| campaign_name | [string](#string) |  | Resource name of the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre> |
+| display_name | [string](#string) |  | Exact, case-sensitive <code>display_name</code> of the campaign, resolved within <code>vtsi_project_name</code>, which is then required. Replaces the 9.0.0 <code>CampaignDisplayName campaign_display_name = 7</code>. |
+| vtsi_project_name | [string](#string) |  | VTSI project of the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> REQUIRED with <code>display_name</code>: empty or malformed is rejected with <code>INVALID_ARGUMENT</code>, an unknown project with <code>NOT_FOUND</code>. Optional with <code>campaign_name</code>: when set, it must be the project of the campaign (<code>INVALID_ARGUMENT</code> otherwise). |
 | states | [CampaignCallState](#ondewo.vtsi.CampaignCallState) | repeated | Only calls in one of these states. Empty means every state. |
 | phone_number | [string](#string) |  | Only calls to this callee (exact match on <code>phone_number</code>). Empty means every callee. |
 | page_size | [int32](#int32) |  | Optional. Maximum calls per page. <code>0</code> means 50; values above 1000 are clamped to 1000; negative values are rejected with <code>INVALID_ARGUMENT</code>. |
 | page_token | [string](#string) | optional | Optional. The <code>next_page_token</code> of a previous response; valid only with the same campaign and filter. |
 | include_attempts | [bool](#bool) |  | Populate <code>CampaignCall.attempt_history</code>. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in every returned <code>CampaignCall</code>, relative to the <code>CampaignCall</code> message (no <code>campaign_calls.</code> prefix), e.g. <code>state</code>, <code>phone_number</code>, <code>attempt_history</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field (e.g. <code>attempt_history.outcome</code>) is not. <code>name</code> is always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. <code>attempt_history</code> is still populated only with <code>include_attempts</code>: a mask naming it without <code>include_attempts</code> returns it empty. Not part of the paging contract: a <code>page_token</code> stays valid with another mask. |
 
 
 
@@ -23505,6 +23532,7 @@ The request message for
 | filter | [CampaignFilter](#ondewo.vtsi.CampaignFilter) |  | Optional. Narrows the listing. |
 | page_size | [int32](#int32) |  | Optional. Maximum campaigns per page. <code>0</code> means 20; values above 1000 are clamped to 1000; negative values are rejected with <code>INVALID_ARGUMENT</code>. |
 | page_token | [string](#string) | optional | Optional. The <code>next_page_token</code> of a previous response; valid only with the same project and filter. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in every returned <code>Campaign</code>, relative to the <code>Campaign</code> message (no <code>campaigns.</code> prefix), as in <a href="index.html#ondewo.vtsi.GetCampaignRequest">GetCampaignRequest.field_mask</a>. <code>name</code> is always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. Not part of the paging contract: a <code>page_token</code> stays valid with another mask. |
 
 
 
@@ -23537,8 +23565,9 @@ The request message for
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | Resource name of the campaign. |
-| display_name | [CampaignDisplayName](#ondewo.vtsi.CampaignDisplayName) |  | The campaign with this display name. |
+| name | [string](#string) |  | Resource name of the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre> |
+| display_name | [string](#string) |  | Exact, case-sensitive <code>display_name</code> of the campaign, resolved within <code>vtsi_project_name</code>, which is then required. Replaces the 9.0.0 <code>CampaignDisplayName display_name = 2</code>. |
+| vtsi_project_name | [string](#string) |  | VTSI project of the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> REQUIRED with <code>display_name</code>: empty or malformed is rejected with <code>INVALID_ARGUMENT</code>, an unknown project with <code>NOT_FOUND</code>. Optional with <code>name</code>: when set, it must be the project of the campaign (<code>INVALID_ARGUMENT</code> otherwise). |
 
 
 
@@ -23554,8 +23583,9 @@ The request message for
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | Resource name of the campaign. |
-| display_name | [CampaignDisplayName](#ondewo.vtsi.CampaignDisplayName) |  | The campaign with this display name. |
+| name | [string](#string) |  | Resource name of the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre> |
+| display_name | [string](#string) |  | Exact, case-sensitive <code>display_name</code> of the campaign, resolved within <code>vtsi_project_name</code>, which is then required. Replaces the 9.0.0 <code>CampaignDisplayName display_name = 2</code>. |
+| vtsi_project_name | [string](#string) |  | VTSI project of the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> REQUIRED with <code>display_name</code>: empty or malformed is rejected with <code>INVALID_ARGUMENT</code>, an unknown project with <code>NOT_FOUND</code>. Optional with <code>name</code>: when set, it must be the project of the campaign (<code>INVALID_ARGUMENT</code> otherwise). |
 
 
 
@@ -23571,8 +23601,9 @@ The request message for
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | Resource name of the campaign. |
-| display_name | [CampaignDisplayName](#ondewo.vtsi.CampaignDisplayName) |  | The campaign with this display name. |
+| name | [string](#string) |  | Resource name of the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre> |
+| display_name | [string](#string) |  | Exact, case-sensitive <code>display_name</code> of the campaign, resolved within <code>vtsi_project_name</code>, which is then required. Replaces the 9.0.0 <code>CampaignDisplayName display_name = 2</code>. |
+| vtsi_project_name | [string](#string) |  | VTSI project of the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> REQUIRED with <code>display_name</code>: empty or malformed is rejected with <code>INVALID_ARGUMENT</code>, an unknown project with <code>NOT_FOUND</code>. Optional with <code>name</code>: when set, it must be the project of the campaign (<code>INVALID_ARGUMENT</code> otherwise). |
 
 
 
@@ -23628,7 +23659,8 @@ The request message for
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | campaign | [Campaign](#ondewo.vtsi.Campaign) |  | The campaign to update, identified by <code>campaign.name</code>, carrying the new values of the fields named in <code>update_mask</code>. |
-| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Required. Paths WITHOUT a <code>campaign.</code> prefix. Updatable paths: <code>display_name</code>, <code>max_parallel_calls</code>, <code>max_attempts</code>, <code>retry_delay</code>. An empty mask, or an unknown, output-only or immutable path, is rejected with <code>INVALID_ARGUMENT</code> naming the path. A path in the mask with an unset value writes the create default (<code>display_name</code> empty writes <code>campaign-&lt;campaign_uuid&gt;</code>). |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Required. Paths WITHOUT a <code>campaign.</code> prefix. Updatable paths: <code>display_name</code>, <code>max_parallel_calls</code>, <code>max_attempts</code>, <code>retry_delay</code>, <code>campaign_common_services_config</code> and <code>campaign_sip_caller_config</code>, the last two also as any nested sub-path (e.g. <code>campaign_common_services_config.nlu_vtsi_config.agent_name</code>, <code>campaign_sip_caller_config.sip_headers</code>). An empty mask, or an unknown, output-only or immutable path (a nested path is checked against the message type it names), is rejected with <code>INVALID_ARGUMENT</code> naming the path. A path in the mask with an unset value writes the create default (<code>display_name</code> empty writes <code>campaign-&lt;campaign_uuid&gt;</code>). <p>The two call-default configs follow <code>FieldMask</code> semantics:</p> <ul> <li>a path naming a message field (<code>campaign_common_services_config</code>, or a submessage below it such as <code>campaign_common_services_config.nlu_vtsi_config</code>) REPLACES that whole message with the one sent; an unset one clears it (clearing <code>campaign_common_services_config</code> or <code>campaign_sip_caller_config</code> removes the campaign default);</li> <li>a path naming a scalar, repeated or map field below them replaces exactly that field; a repeated or map field is replaced as a whole, never appended to;</li> <li>a field below them that no path names is left untouched;</li> <li>a path naming a member of a <code>oneof</code> (e.g. <code>campaign_common_services_config.nlu_vtsi_config.auth_token</code> in the <code>authentication</code> oneof) SETS that member, clearing the other members, when the request&apos;s <code>campaign</code> has that member set; when it does not, the path CLEARS the member if it is the stored active one and changes nothing otherwise (another active member is kept);</li> <li>a path BELOW a repeated or map field (e.g. <code>campaign_sip_caller_config.sip_headers.X-Foo</code>) is rejected with <code>INVALID_ARGUMENT</code> naming it: name the repeated or map field itself;</li> <li>a path and a sub-path of it in the same mask act as the shorter path alone.</li> </ul> |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the <code>Campaign</code> field paths to populate, relative to the returned <code>Campaign</code> and WITHOUT a <code>campaign.</code> prefix, e.g. <code>state</code>, <code>statistics.completed</code>, <code>campaign_common_services_config.nlu_vtsi_config.agent_name</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field is not. <code>name</code> is always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. The mask is applied after the server&apos;s role-based redaction, so it never reveals a redacted value. |
 
 
 
@@ -23740,9 +23772,30 @@ configuration) is never retried.</p>
 the ongoing calls finish and starts no new ones; <code>HardStopCampaign</code> ends the ongoing
 calls immediately and starts no new ones; <code>ResumeCampaign</code> continues a stopped or hard
 stopped campaign with the calls that have not finished yet.</p>
-<p>Every RPC about ONE campaign accepts either its resource name or its display name
-(<a href="index.html#ondewo.vtsi.CampaignDisplayName">CampaignDisplayName</a>); display names are
-unique within a project.</p>
+<p>Every RPC about ONE campaign accepts either its resource name or its display name. Display names
+are unique within a project, so a display name is resolved within the project named by the
+request&apos;s top-level <code>vtsi_project_name</code>, which is REQUIRED with a display name
+(<code>INVALID_ARGUMENT</code> when it is empty or malformed) and checked against the campaign
+when a resource name is used. (The <code>CampaignDisplayName</code> message of 9.0.0, which
+carried the project and the display name together, was removed in 9.1.0; its field numbers are
+<code>reserved</code>.)</p>
+<p>Campaign-level call defaults: <code>campaign_common_services_config</code> and
+<code>campaign_sip_caller_config</code> of a <code>Campaign</code> are the defaults of EVERY call of
+the campaign. They are read LIVE when a campaign call is dispatched (every attempt, retries
+included): the effective configuration of the call is a copy of the campaign&apos;s config with the
+call&apos;s own <code>StartCallerRequest</code> config merged over it (protobuf
+<code>MergeFrom</code>), see <a href="index.html#ondewo.vtsi.Campaign">Campaign</a>. The one exception
+is the callee: <code>campaign_sip_caller_config.callee_id</code> is resolved and FIXED when a call is
+added (it is that call&apos;s <code>CampaignCall.phone_number</code>), so every attempt of a call dials the
+number its campaign call reports.</p>
+<p>Partial responses: <code>ListCampaigns</code>, <code>ListCampaignCalls</code>,
+<code>CreateCampaign</code>, <code>GetCampaign</code>, <code>UpdateCampaign</code> and
+<code>DeleteCampaign</code> accept an optional <code>field_mask</code> naming the field paths of the
+returned resource (for a listing: of each listed element) to populate. Unset or empty returns every
+field; the identifying <code>name</code> is always populated; an unknown path is rejected with
+<code>INVALID_ARGUMENT</code> naming it; nested paths through singular message fields (e.g.
+<code>statistics.completed</code>) are allowed, a path below a repeated or map field is not. The
+mask is applied after any role-based redaction, so it can only narrow what the caller may see.</p>
 <p>Errors are reported as gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed name,
 filter, field mask or value; <code>NOT_FOUND</code> for an unknown project, campaign or campaign
 call; <code>ALREADY_EXISTS</code> for a <code>display_name</code> already used in the project;
@@ -23752,17 +23805,17 @@ be retried; <code>RESOURCE_EXHAUSTED</code> when the server has no free stream s
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| CreateCampaign | [CreateCampaignRequest](#ondewo.vtsi.CreateCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Creates a campaign in state <code>CAMPAIGN_STATE_CREATED</code>. Calls are added with <code>AddCallersToCampaign</code> / <code>AddScheduledCallersToCampaign</code>; nothing is dialled before <code>StartCampaign</code>.</p> <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>ALREADY_EXISTS</code> if the <code>display_name</code> is used in the project; <code>INVALID_ARGUMENT</code> for an output-only field that was set or an out-of-range value.</p> |
-| GetCampaign | [GetCampaignRequest](#ondewo.vtsi.GetCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Returns a campaign including its statistics.</p> <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for a malformed name.</p> |
-| UpdateCampaign | [UpdateCampaignRequest](#ondewo.vtsi.UpdateCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Updates the fields named in <code>update_mask</code>: <code>display_name</code>, <code>max_parallel_calls</code>, <code>max_attempts</code>, <code>retry_delay</code>. Allowed in every state. Lowering <code>max_parallel_calls</code> never ends a running call: the campaign starts no new call until fewer than the new maximum are running.</p> <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for an empty mask, an unknown, output-only or immutable path, or an out-of-range value; <code>ALREADY_EXISTS</code> for a <code>display_name</code> used by another campaign of the project.</p> |
-| DeleteCampaign | [DeleteCampaignRequest](#ondewo.vtsi.DeleteCampaignRequest) | [DeleteCampaignResponse](#ondewo.vtsi.DeleteCampaignResponse) | <p>Deletes a campaign and its campaign calls. Its scheduled callers that have not fired yet are cancelled. Calls that already ran are not touched and stay visible through <code>ListCalls</code>.</p> <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> while the campaign is <code>RUNNING</code>, <code>STOPPING</code> or <code>HARD_STOPPING</code> (stop or hard stop it first).</p> |
-| ListCampaigns | [ListCampaignsRequest](#ondewo.vtsi.ListCampaignsRequest) | [ListCampaignsResponse](#ondewo.vtsi.ListCampaignsResponse) | <p>Lists the campaigns of a project, newest first, filtered and paged, each with its statistics.</p> <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>INVALID_ARGUMENT</code> for a negative <code>page_size</code> or a foreign <code>page_token</code>.</p> |
-| GetCampaignStatistics | [GetCampaignStatisticsRequest](#ondewo.vtsi.GetCampaignStatisticsRequest) | [CampaignStatistics](#ondewo.vtsi.CampaignStatistics) | <p>Returns the progress of a campaign: how many of its calls are not started, in progress, waiting for a retry, completed, failed and cancelled, and how many attempts were made.</p> <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for a malformed name.</p> |
-| ListCampaignCalls | [ListCampaignCallsRequest](#ondewo.vtsi.ListCampaignCallsRequest) | [ListCampaignCallsResponse](#ondewo.vtsi.ListCampaignCallsResponse) | <p>Lists the calls of a campaign in the order they were added, filtered and paged, each with its current SIP status, the SIP status description and its attempts.</p> <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for a negative <code>page_size</code> or a foreign <code>page_token</code>.</p> |
-| StartCampaign | [StartCampaignRequest](#ondewo.vtsi.StartCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Starts a <code>CAMPAIGN_STATE_CREATED</code> campaign. Idempotent on a <code>RUNNING</code> campaign.</p> <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> in any other state (use <code>ResumeCampaign</code> for a stopped campaign).</p> |
-| StopCampaign | [StopCampaignRequest](#ondewo.vtsi.StopCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Stops a campaign gracefully: no new call is started, the calls that are running continue until they end, then the campaign is <code>CAMPAIGN_STATE_STOPPED</code>. Returns the campaign in <code>STOPPING</code> (or already <code>STOPPED</code> when no call was running). Idempotent on <code>STOPPING</code>, <code>STOPPED</code>, <code>HARD_STOPPING</code> and <code>HARD_STOPPED</code>.</p> <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> on a <code>COMPLETED</code> campaign.</p> |
-| HardStopCampaign | [HardStopCampaignRequest](#ondewo.vtsi.HardStopCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Stops a campaign immediately: no new call is started and the server hangs up every running call of the campaign right away. The campaign stays <code>CAMPAIGN_STATE_HARD_STOPPING</code> until the end of each of those calls is CONFIRMED (its call record is no longer active), then becomes <code>CAMPAIGN_STATE_HARD_STOPPED</code>; with a reachable call infrastructure this takes seconds, scaled by the number of running calls. A hang-up that fails is repeated every few seconds, and the campaign does not report <code>HARD_STOPPED</code> while one of its calls is still up. Calls ended this way are <code>CAMPAIGN_CALL_STATE_CANCELLED</code>; a call that finished on its own before the hard stop keeps its own outcome. Calls not started yet stay <code>NOT_STARTED</code> / <code>RETRY_PENDING</code> and run after <code>ResumeCampaign</code>. Returns the campaign in <code>HARD_STOPPING</code> (or already <code>HARD_STOPPED</code>). Idempotent on <code>HARD_STOPPING</code> and <code>HARD_STOPPED</code>.</p> <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> on a <code>COMPLETED</code> campaign.</p> |
-| ResumeCampaign | [ResumeCampaignRequest](#ondewo.vtsi.ResumeCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Resumes a <code>STOPPING</code>, <code>STOPPED</code> or <code>HARD_STOPPED</code> campaign: it becomes <code>RUNNING</code> and continues with the calls that are not finished. Idempotent on <code>RUNNING</code>.</p> <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> on <code>CREATED</code> (use <code>StartCampaign</code>), <code>HARD_STOPPING</code> (wait until it is <code>HARD_STOPPED</code>) and <code>COMPLETED</code>.</p> |
+| CreateCampaign | [CreateCampaignRequest](#ondewo.vtsi.CreateCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Creates a campaign in state <code>CAMPAIGN_STATE_CREATED</code>. Calls are added with <code>AddCallersToCampaign</code> / <code>AddScheduledCallersToCampaign</code>; nothing is dialled before <code>StartCampaign</code>.</p> <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>ALREADY_EXISTS</code> if the <code>display_name</code> is used in the project; <code>INVALID_ARGUMENT</code> for an output-only field that was set, an out-of-range value or an unknown <code>field_mask</code> path.</p> |
+| GetCampaign | [GetCampaignRequest](#ondewo.vtsi.GetCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Returns a campaign including its statistics and its call defaults.</p> <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for a malformed name, a <code>display_name</code> without <code>vtsi_project_name</code> or an unknown <code>field_mask</code> path.</p> |
+| UpdateCampaign | [UpdateCampaignRequest](#ondewo.vtsi.UpdateCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Updates the fields named in <code>update_mask</code>: <code>display_name</code>, <code>max_parallel_calls</code>, <code>max_attempts</code>, <code>retry_delay</code>, <code>campaign_common_services_config</code> and <code>campaign_sip_caller_config</code> (each also by a nested sub-path). Allowed in every state. Lowering <code>max_parallel_calls</code> never ends a running call: the campaign starts no new call until fewer than the new maximum are running. A changed call default applies to every campaign call dispatched after the update, retries included; a call already dispatched keeps the configuration it was started with. The exception is <code>campaign_sip_caller_config.callee_id</code>, which is fixed per call when the call is added and therefore applies only to calls added after the update.</p> <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for an empty mask, an unknown, output-only or immutable path, an out-of-range value or an unknown <code>field_mask</code> path; <code>ALREADY_EXISTS</code> for a <code>display_name</code> used by another campaign of the project.</p> |
+| DeleteCampaign | [DeleteCampaignRequest](#ondewo.vtsi.DeleteCampaignRequest) | [DeleteCampaignResponse](#ondewo.vtsi.DeleteCampaignResponse) | <p>Deletes a campaign and its campaign calls. Its scheduled callers that have not fired yet are cancelled. Calls that already ran are not touched and stay visible through <code>ListCalls</code>.</p> <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> while the campaign is <code>RUNNING</code>, <code>STOPPING</code> or <code>HARD_STOPPING</code> (stop or hard stop it first); <code>INVALID_ARGUMENT</code> for a malformed name, a <code>display_name</code> without <code>vtsi_project_name</code> or an unknown <code>field_mask</code> path.</p> |
+| ListCampaigns | [ListCampaignsRequest](#ondewo.vtsi.ListCampaignsRequest) | [ListCampaignsResponse](#ondewo.vtsi.ListCampaignsResponse) | <p>Lists the campaigns of a project, newest first, filtered and paged, each with its statistics.</p> <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>INVALID_ARGUMENT</code> for a negative <code>page_size</code>, a foreign <code>page_token</code> or an unknown <code>field_mask</code> path.</p> |
+| GetCampaignStatistics | [GetCampaignStatisticsRequest](#ondewo.vtsi.GetCampaignStatisticsRequest) | [CampaignStatistics](#ondewo.vtsi.CampaignStatistics) | <p>Returns the progress of a campaign: how many of its calls are not started, in progress, waiting for a retry, completed, failed and cancelled, and how many attempts were made.</p> <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for a malformed name or a <code>display_name</code> without <code>vtsi_project_name</code>.</p> |
+| ListCampaignCalls | [ListCampaignCallsRequest](#ondewo.vtsi.ListCampaignCallsRequest) | [ListCampaignCallsResponse](#ondewo.vtsi.ListCampaignCallsResponse) | <p>Lists the calls of a campaign in the order they were added, filtered and paged, each with its current SIP status, the SIP status description and its attempts.</p> <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for a negative <code>page_size</code>, a foreign <code>page_token</code>, a <code>display_name</code> without <code>vtsi_project_name</code> or an unknown <code>field_mask</code> path.</p> |
+| StartCampaign | [StartCampaignRequest](#ondewo.vtsi.StartCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Starts a <code>CAMPAIGN_STATE_CREATED</code> campaign. Idempotent on a <code>RUNNING</code> campaign.</p> <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> in any other state (use <code>ResumeCampaign</code> for a stopped campaign); <code>INVALID_ARGUMENT</code> for a malformed name, neither selector set, a <code>display_name</code> without <code>vtsi_project_name</code> or a <code>vtsi_project_name</code> that is not the campaign&apos;s project.</p> |
+| StopCampaign | [StopCampaignRequest](#ondewo.vtsi.StopCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Stops a campaign gracefully: no new call is started, the calls that are running continue until they end, then the campaign is <code>CAMPAIGN_STATE_STOPPED</code>. Returns the campaign in <code>STOPPING</code> (or already <code>STOPPED</code> when no call was running). Idempotent on <code>STOPPING</code>, <code>STOPPED</code>, <code>HARD_STOPPING</code> and <code>HARD_STOPPED</code>.</p> <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> on a <code>COMPLETED</code> campaign; <code>INVALID_ARGUMENT</code> for a malformed name, neither selector set, a <code>display_name</code> without <code>vtsi_project_name</code> or a <code>vtsi_project_name</code> that is not the campaign&apos;s project.</p> |
+| HardStopCampaign | [HardStopCampaignRequest](#ondewo.vtsi.HardStopCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Stops a campaign immediately: no new call is started and the server hangs up every running call of the campaign right away. The campaign stays <code>CAMPAIGN_STATE_HARD_STOPPING</code> until the end of each of those calls is CONFIRMED (its call record is no longer active), then becomes <code>CAMPAIGN_STATE_HARD_STOPPED</code>; with a reachable call infrastructure this takes seconds, scaled by the number of running calls. A hang-up that fails is repeated every few seconds, and the campaign does not report <code>HARD_STOPPED</code> while one of its calls is still up. Calls ended this way are <code>CAMPAIGN_CALL_STATE_CANCELLED</code>; a call that finished on its own before the hard stop keeps its own outcome. Calls not started yet stay <code>NOT_STARTED</code> / <code>RETRY_PENDING</code> and run after <code>ResumeCampaign</code>. Returns the campaign in <code>HARD_STOPPING</code> (or already <code>HARD_STOPPED</code>). Idempotent on <code>HARD_STOPPING</code> and <code>HARD_STOPPED</code>.</p> <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> on a <code>COMPLETED</code> campaign; <code>INVALID_ARGUMENT</code> for a malformed name, neither selector set, a <code>display_name</code> without <code>vtsi_project_name</code> or a <code>vtsi_project_name</code> that is not the campaign&apos;s project.</p> |
+| ResumeCampaign | [ResumeCampaignRequest](#ondewo.vtsi.ResumeCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Resumes a <code>STOPPING</code>, <code>STOPPED</code> or <code>HARD_STOPPED</code> campaign: it becomes <code>RUNNING</code> and continues with the calls that are not finished. Idempotent on <code>RUNNING</code>.</p> <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> on <code>CREATED</code> (use <code>StartCampaign</code>), <code>HARD_STOPPING</code> (wait until it is <code>HARD_STOPPED</code>) and <code>COMPLETED</code>; <code>INVALID_ARGUMENT</code> for a malformed name, neither selector set, a <code>display_name</code> without <code>vtsi_project_name</code> or a <code>vtsi_project_name</code> that is not the campaign&apos;s project.</p> |
 | StreamCampaignStatus | [StreamCampaignStatusRequest](#ondewo.vtsi.StreamCampaignStatusRequest) | [StreamCampaignStatusResponse](#ondewo.vtsi.StreamCampaignStatusResponse) stream | <p>Streams the status and progress of the campaigns of a project. The first message is a snapshot (<code>snapshot = true</code>) of every matching campaign; every later message carries only the campaigns (and, with <code>include_calls</code>, the campaign calls) that changed. An empty message is sent as a keep-alive. The stream ends when the client disconnects or the server-side maximum stream duration is reached (<code>end_reason</code> set on the last message).</p> <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>RESOURCE_EXHAUSTED</code> when the server has no free stream slot.</p> |
 
  <!-- end services -->
@@ -23910,6 +23963,7 @@ The request message for <code>Events.ListVtsiEventSubscriptions</code>.
 | vtsi_project_name | [string](#string) |  | VTSI project. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | page_size | [int32](#int32) |  | Optional. <code>0</code> means 20; above 1000 clamped; negative rejected. |
 | page_token | [string](#string) | optional | Optional. The <code>next_page_token</code> of a previous response. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in every returned <code>VtsiEventSubscription</code>, relative to the <code>VtsiEventSubscription</code> message (no <code>event_subscriptions.</code> prefix), e.g. <code>display_name</code>, <code>events</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field is not. <code>name</code> is always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. Applied after the server&apos;s redaction, so it can only narrow the response and never populates a field that was left empty. Not part of the paging contract: a <code>page_token</code> stays valid with another mask. |
 
 
 
@@ -23943,6 +23997,7 @@ The request message for <code>Events.ListWebhooks</code>.
 | vtsi_project_name | [string](#string) |  | VTSI project. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | page_size | [int32](#int32) |  | Optional. <code>0</code> means 20; above 1000 clamped; negative rejected. |
 | page_token | [string](#string) | optional | Optional. The <code>next_page_token</code> of a previous response. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in every returned <code>Webhook</code>, relative to the <code>Webhook</code> message (no <code>webhooks.</code> prefix), e.g. <code>display_name</code>, <code>url</code>, <code>delivery_statistics</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field is not. <code>name</code> is always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. Applied after the masking of the custom header values (a returned value stays <code>********</code>), so it can only narrow the response and never populates a field that was left empty. Not part of the paging contract: a <code>page_token</code> stays valid with another mask. |
 
 
 
@@ -24580,6 +24635,7 @@ The request message for
 | vtsi_project_name | [string](#string) |  | VTSI project name for which to list the log streams. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | filter | [CallLogFilter](#ondewo.vtsi.CallLogFilter) | optional | Optional. A filter to narrow the response down to the log streams of interest. Only the identity fields of the filter apply here; content fields are ignored. |
 | page_token | [string](#string) | optional | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in every returned <code>CallLogStream</code>, relative to the <code>CallLogStream</code> message (no <code>log_streams.</code> prefix), e.g. <code>container_name</code>, <code>capture_state</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field is not. <code>name</code> is always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. Applied after the server&apos;s redaction, so it can only narrow the response and never populates a field that was left empty. Not part of the paging contract: a <code>page_token</code> stays valid with another mask. |
 
 
 
@@ -24619,6 +24675,7 @@ The request message for
 | after_seq | [int64](#int64) | optional | Optional cursor for infinite-scroll DOWN: return entries with <code>seq</code> greater than this value. Valid only when the filter resolves to exactly one log stream. |
 | resume_token | [string](#string) | optional | Optional. An opaque, server-encoded per-log-stream cursor from a previous response. Use this instead of <code>after_seq</code> whenever the filter can match more than one container. |
 | oldest_first | [bool](#bool) | optional | Walk forward from the cursor oldest-first instead of returning the most recent window. A client paging through a whole backlog must set this: the default window silently skips everything between the cursor and the newest entries. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in every returned <code>CallLogEntry</code>, relative to the <code>CallLogEntry</code> message (no <code>log_entries.</code> prefix), e.g. <code>timestamp</code>, <code>level</code>, <code>message</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field is not. <code>log_stream</code> and <code>seq</code>, which together identify an entry, are always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. Applied after the server&apos;s secret redaction of the log text, so it can only narrow the response and never populates a field that was left empty. It shapes only the entries: the window and cursor fields of the response (<code>truncated</code>, the <code>seq</code> bounds, <code>next_resume_token</code>) are computed exactly as without a mask. |
 
 
 
@@ -24990,6 +25047,7 @@ Request to get the list of agents
 | page_token | [string](#string) | optional | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
 | vtsi_project_sorting | [VtsiProjectSorting](#ondewo.vtsi.VtsiProjectSorting) | optional | Optional. Field to define the sorting of the list of VTSI projects in the response. If not specified, the default behavior is to have no sorting. |
 | nlu_agent_names | [string](#string) | repeated | Optional. Filter based on associated NLU agents. Format: <pre><code>projects/&lt;Project ID&gt;/agent</code></pre> |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in every returned <code>VtsiProject</code>, relative to the <code>VtsiProject</code> message (no <code>vtsi_projects.</code> prefix), e.g. <code>display_name</code>, <code>vtsi_project_status</code>, <code>asterisk_configs.asterisk_configs_variables</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field is not. <code>name</code> is always populated. Unset or empty returns every field the <code>vtsi_project_view</code> populates. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. Applied after the <code>vtsi_project_view</code> and the server&apos;s role-based redaction, so it can only narrow the response and never populates a field that was left empty. Not part of the paging contract: a <code>page_token</code> stays valid with another mask. |
 
 
 
