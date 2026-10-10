@@ -1115,6 +1115,7 @@
     - [AllServicesStatuses](#ondewo.vtsi.AllServicesStatuses)
     - [AsteriskConfig](#ondewo.vtsi.AsteriskConfig)
     - [Call](#ondewo.vtsi.Call)
+    - [Call.LabelsEntry](#ondewo.vtsi.Call.LabelsEntry)
     - [CallAudioEnded](#ondewo.vtsi.CallAudioEnded)
     - [CallAudioFrame](#ondewo.vtsi.CallAudioFrame)
     - [CallAudioStarted](#ondewo.vtsi.CallAudioStarted)
@@ -1196,6 +1197,18 @@
     - [TransferCallResponse](#ondewo.vtsi.TransferCallResponse)
     - [TransferCallsRequest](#ondewo.vtsi.TransferCallsRequest)
     - [TransferCallsResponse](#ondewo.vtsi.TransferCallsResponse)
+    - [UpdateCallRequest](#ondewo.vtsi.UpdateCallRequest)
+    - [UpdateCallResponse](#ondewo.vtsi.UpdateCallResponse)
+    - [UpdateCallerRequest](#ondewo.vtsi.UpdateCallerRequest)
+    - [UpdateCallerResponse](#ondewo.vtsi.UpdateCallerResponse)
+    - [UpdateCallersRequest](#ondewo.vtsi.UpdateCallersRequest)
+    - [UpdateCallersResponse](#ondewo.vtsi.UpdateCallersResponse)
+    - [UpdateCallsRequest](#ondewo.vtsi.UpdateCallsRequest)
+    - [UpdateCallsResponse](#ondewo.vtsi.UpdateCallsResponse)
+    - [UpdateListenerRequest](#ondewo.vtsi.UpdateListenerRequest)
+    - [UpdateListenerResponse](#ondewo.vtsi.UpdateListenerResponse)
+    - [UpdateListenersRequest](#ondewo.vtsi.UpdateListenersRequest)
+    - [UpdateListenersResponse](#ondewo.vtsi.UpdateListenersResponse)
   
     - [BotPolicyOnJoin](#ondewo.vtsi.BotPolicyOnJoin)
     - [CallAudioEndReason](#ondewo.vtsi.CallAudioEndReason)
@@ -21524,6 +21537,23 @@ Call
 | participants | [CallParticipant](#ondewo.vtsi.CallParticipant) | repeated | Participants invited into the call. FULL view: all of them; SHALLOW view: those still ringing or joined |
 | last_transfer | [CallTransferRecord](#ondewo.vtsi.CallTransferRecord) |  | The last transfer attempt of the call; unset if there was none. Set in the SHALLOW and FULL views |
 | sip_call_id | [string](#string) |  | Identifier the call&apos;s SIP container minted for the call (<code>ondewo.sip.SipStatus.call_id</code>). Empty until the call was identified; call control requests are refused (<code>call-not-yet-identified</code>) until then. Set in the SHALLOW and FULL views |
+| labels | [Call.LabelsEntry](#ondewo.vtsi.Call.LabelsEntry) | repeated | Client-defined descriptive labels of the call, e.g. <code>{"ticket": "4711", "outcome": "callback"}</code>. Empty until a client sets them; the server never sets or interprets them. Written ONLY by <code>UpdateCall</code> / <code>UpdateCalls</code> with the <code>update_mask</code> path <code>labels</code>, which REPLACES the whole map (an empty map clears it); a path below it (e.g. <code>labels.ticket</code>) is rejected. Bounds, each refused with <code>INVALID_ARGUMENT</code> naming the label: at most 64 entries; a key of 1 to 63 characters from <code>[a-z0-9_.-]</code>, starting with a lowercase letter; a value of at most 255 printable characters (Unicode allowed, no control characters). Stored with the call record, so they survive the end of the call and are kept as long as the record. This is the only mutable field of a <code>Call</code>: it exists so that a call can be annotated without anything about the live call being changed. Set in the SHALLOW and FULL views. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.Call.LabelsEntry"></a>
+
+### Call.LabelsEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [string](#string) |  |  |
 
 
 
@@ -21622,6 +21652,8 @@ Definition of a CallFilter, representing filters for querying calls.
 | duration_in_s_min | [float](#float) | optional | Optional: Match only sessions for which the duration in seconds is larger or equal. |
 | duration_in_s_max | [float](#float) | optional | Optional: Match only calls for which the duration in seconds is smaller or equal. |
 | platforms | [ondewo.nlu.Intent.Message.Platform](#ondewo.nlu.Intent.Message.Platform) | repeated | Optional: Platform responses sent to the user. Default is text: <code>Platform.PLATFORM_UNSPECIFIED</code> |
+| campaign_name | [string](#string) |  | Resource name of the campaign. The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre> |
+| campaign_display_name | [string](#string) |  | Exact, case-sensitive <code>display_name</code> of the campaign, resolved within <code>ListCallsRequest.vtsi_project_name</code>. |
 
 
 
@@ -21743,10 +21775,10 @@ Caller represents a caller instance that initiates outbound calls
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | Caller name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> |
-| call_name | [string](#string) |  | The call name that was assigned to the call <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
-| sip_caller_config | [SipCallerConfig](#ondewo.vtsi.SipCallerConfig) |  | SIP service configuration |
-| common_services_config | [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig) |  | Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI |
+| name | [string](#string) |  | Caller name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> Output only. Identifies the caller on <code>UpdateCaller</code>. |
+| call_name | [string](#string) |  | The call name that was assigned to the call <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> Output only. |
+| sip_caller_config | [SipCallerConfig](#ondewo.vtsi.SipCallerConfig) |  | SIP service configuration. Updatable with <code>UpdateCaller</code> (stored configuration only, see there). |
+| common_services_config | [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig) |  | Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI. Updatable with <code>UpdateCaller</code> (stored configuration only, see there). |
 
 
 
@@ -21796,6 +21828,7 @@ Represents a request to delete a specific caller.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | The name of the caller to delete in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths of <code>DeleteCallerResponse</code> to populate, i.e. <code>error_message</code> (the response carries no <code>Caller</code>). <code>name</code> is always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is deleted. It shapes only the response: the caller is deleted regardless. |
 
 
 
@@ -21827,6 +21860,7 @@ Represents a request to delete multiple callers.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | names | [string](#string) | repeated | The name of the caller to delete in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in EVERY entry of <code>DeleteCallersResponse.delete_caller_responses</code>, relative to the entry message <code>DeleteCallerResponse</code>, i.e. <code>error_message</code> (the entries carry no <code>Caller</code>). <code>name</code> of each entry and the response&apos;s own fields are always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is deleted. It shapes only the response: the callers are deleted regardless. |
 
 
 
@@ -21858,6 +21892,7 @@ Represents a request to delete a specific listener.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | The name of the listener to delete in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths of <code>DeleteListenerResponse</code> to populate, i.e. <code>error_message</code> (the response carries no <code>Listener</code>). <code>name</code> is always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is deleted. It shapes only the response: the listener is deleted regardless. |
 
 
 
@@ -21889,6 +21924,7 @@ Represents a request to delete multiple listeners.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | names | [string](#string) | repeated | The names of the listeners to delete in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in EVERY entry of <code>DeleteListenersResponse.delete_listener_responses</code>, relative to the entry message <code>DeleteListenerResponse</code>, i.e. <code>error_message</code> (the entries carry no <code>Listener</code>). <code>name</code> of each entry and the response&apos;s own fields are always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is deleted. It shapes only the response: the listeners are deleted regardless. |
 
 
 
@@ -21922,6 +21958,7 @@ Request to get a call instance&apos;s call logs
 | vtsi_project_name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | call_name | [string](#string) |  | call name For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
 | call_view | [CallView](#ondewo.vtsi.CallView) | optional | you can specify the view to be shallow or full .. see above for more info |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in the returned <code>Call</code>, relative to the <code>Call</code> message, e.g. <code>call_type</code>, <code>phone_number</code>, <code>labels</code>, <code>sip_status.status_type</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field is not. <code>name</code> is always populated. Unset or empty returns every field the <code>call_view</code> populates. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. Applied after the <code>call_view</code> and the server&apos;s role-based redaction of <code>common_services_config</code>, so it can only narrow the response and never populates a field that was left empty. |
 
 
 
@@ -21939,6 +21976,7 @@ Represents a request to get a specific caller.
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | name | [string](#string) |  | The name of caller to retrieve. |
 | call_view | [CallView](#ondewo.vtsi.CallView) | optional | you can specify the view to be shallow or full |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in the returned <code>Caller</code>, relative to the <code>Caller</code> message, e.g. <code>call_name</code>, <code>sip_caller_config.callee_id</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field is not. <code>name</code> is always populated. Unset or empty returns every field the <code>call_view</code> populates. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. Applied after the <code>call_view</code> and the server&apos;s role-based redaction of <code>common_services_config</code>, so it can only narrow the response and never populates a field that was left empty. |
 
 
 
@@ -21956,6 +21994,7 @@ Represents a request to get a specific listener.
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | name | [string](#string) |  | The name of listener to retrieve. |
 | call_view | [CallView](#ondewo.vtsi.CallView) | optional | you can specify the view to be shallow or full |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in the returned <code>Listener</code>, relative to the <code>Listener</code> message, e.g. <code>call_name</code>, <code>common_services_config.nlu_vtsi_config.agent_name</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field is not. <code>name</code> is always populated. Unset or empty returns every field the <code>call_view</code> populates. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. Applied after the <code>call_view</code> and the server&apos;s role-based redaction of <code>common_services_config</code>, so it can only narrow the response and never populates a field that was left empty. |
 
 
 
@@ -22031,6 +22070,8 @@ Represents a request to list callers.
 | page_token | [string](#string) | optional | Optional. The next_page_token value returned from a previous list request. Example: "current_index-1--page_size-20" |
 | call_view | [CallView](#ondewo.vtsi.CallView) | optional | you can specify the view to be shallow or full |
 | field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in every returned <code>Caller</code>, relative to the <code>Caller</code> message (no <code>callers.</code> prefix), e.g. <code>call_name</code>, <code>sip_caller_config.callee_id</code>, <code>common_services_config.nlu_vtsi_config.agent_name</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field is not. <code>name</code> is always populated. Unset or empty returns every field the <code>call_view</code> populates. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. Applied after the <code>call_view</code> and the server&apos;s role-based redaction of <code>common_services_config</code>, so it can only narrow the response and never populates a field that was left empty. Not part of the paging contract: a <code>page_token</code> stays valid with another mask. |
+| campaign_name | [string](#string) |  | Resource name of the campaign. It must be a campaign of <code>vtsi_project_name</code>. The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre> |
+| campaign_display_name | [string](#string) |  | Exact, case-sensitive <code>display_name</code> of the campaign, resolved within <code>vtsi_project_name</code>. |
 
 
 
@@ -22180,10 +22221,10 @@ Listener represents a listener instance that waits for incoming calls
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> |
-| call_name | [string](#string) |  | The call name that was assigned to the call <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
-| sip_base_config | [SipBaseConfig](#ondewo.vtsi.SipBaseConfig) |  | SIP service configuration |
-| common_services_config | [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig) |  | Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI |
+| name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> Output only. Identifies the listener on <code>UpdateListener</code>. |
+| call_name | [string](#string) |  | The call name that was assigned to the call <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> Output only. |
+| sip_base_config | [SipBaseConfig](#ondewo.vtsi.SipBaseConfig) |  | SIP service configuration. Updatable with <code>UpdateListener</code> (stored configuration only, see there). |
+| common_services_config | [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig) |  | Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI. Updatable with <code>UpdateListener</code> (stored configuration only, see there). |
 
 
 
@@ -22325,6 +22366,7 @@ Request for starting a caller
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | sip_caller_config | [SipCallerConfig](#ondewo.vtsi.SipCallerConfig) |  | SIP service configuration |
 | common_services_config | [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig) |  | Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in <code>StartCallerResponse.caller</code>, relative to the <code>Caller</code> message (no <code>caller.</code> prefix), e.g. <code>call_name</code>, <code>sip_caller_config.callee_id</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field is not. <code>caller.name</code> and the other fields of the response are always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is started. Applied after the server&apos;s role-based redaction of <code>common_services_config</code>, so it can only narrow the response. It shapes only the response: the caller is started regardless. <p>Read only by the RPC this message is the request of. Where it is an entry of another request (<code>StartCallersRequest.caller_requests</code>, <code>StartScheduledCallerRequest.request</code>, <code>AddCallersToCampaignRequest.caller_requests</code>) it must be unset, otherwise that whole request is rejected with <code>INVALID_ARGUMENT</code> naming the entry and nothing is started; use the enclosing request&apos;s own <code>field_mask</code> where it has one.</p> |
 
 
 
@@ -22359,6 +22401,7 @@ Request to start multiple callers
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | caller_requests | [StartCallerRequest](#ondewo.vtsi.StartCallerRequest) | repeated | Callers that should be started |
 | idempotency_key | [string](#string) |  | Optional client idempotency key: at most 255 printable ASCII characters, no whitespace; empty means no deduplication. A retry carrying the same key returns the response of the first successful attempt instead of running the request a second time, whichever server replica it reaches, for as long as the server retains the key (24 hours by default). The key is scoped to the VTSI project and to this RPC. Reusing a key with a different request is refused with <code>INVALID_ARGUMENT</code>. A retry that arrives while the first attempt is still running is answered <code>ABORTED</code> and may be retried later. A first attempt that fails stores nothing, so a retry after a failure runs the request again. A replayed response carries no <code>common_services_config</code>: the server keeps no second copy of the credentials it holds. To make a single caller or listener idempotent, send it as a batch of one. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in the <code>caller</code> of EVERY entry of <code>StartCallersResponse.caller_responses</code>, relative to the <code>Caller</code> message (no prefix), e.g. <code>call_name</code>, <code>sip_caller_config.callee_id</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field is not. <code>caller.name</code> and every other field of the response and of its entries are always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is started. Applied after the server&apos;s role-based redaction of <code>common_services_config</code>, so it can only narrow the response. It shapes only the response: the callers are started regardless. The entries&apos; own <code>field_mask</code> must be unset. Not part of the <code>idempotency_key</code> comparison: a retry with the same key and another mask replays the first response shaped by the retry&apos;s mask. |
 
 
 
@@ -22393,6 +22436,7 @@ Request for starting a listener
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | sip_base_config | [SipBaseConfig](#ondewo.vtsi.SipBaseConfig) |  | SIP service configuration |
 | common_services_config | [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig) |  | Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in <code>StartListenerResponse.listener</code>, relative to the <code>Listener</code> message (no <code>listener.</code> prefix), e.g. <code>call_name</code>, <code>common_services_config.nlu_vtsi_config.agent_name</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field is not. <code>listener.name</code> and the other fields of the response are always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is started. Applied after the server&apos;s role-based redaction of <code>common_services_config</code>, so it can only narrow the response. It shapes only the response: the listener is started regardless. <p>Read only by the RPC this message is the request of. Where it is an entry of another request (<code>StartListenersRequest.listener_requests</code>) it must be unset, otherwise that whole request is rejected with <code>INVALID_ARGUMENT</code> naming the entry and nothing is started; use the enclosing request&apos;s own <code>field_mask</code> where it has one.</p> |
 
 
 
@@ -22427,6 +22471,7 @@ Request to start multiple listeners
 | vtsi_project_name | [string](#string) |  | VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | listener_requests | [StartListenerRequest](#ondewo.vtsi.StartListenerRequest) | repeated | Listeners that should be started |
 | idempotency_key | [string](#string) |  | Optional client idempotency key: at most 255 printable ASCII characters, no whitespace; empty means no deduplication. A retry carrying the same key returns the response of the first successful attempt instead of running the request a second time, whichever server replica it reaches, for as long as the server retains the key (24 hours by default). The key is scoped to the VTSI project and to this RPC. Reusing a key with a different request is refused with <code>INVALID_ARGUMENT</code>. A retry that arrives while the first attempt is still running is answered <code>ABORTED</code> and may be retried later. A first attempt that fails stores nothing, so a retry after a failure runs the request again. A replayed response carries no <code>common_services_config</code>: the server keeps no second copy of the credentials it holds. To make a single caller or listener idempotent, send it as a batch of one. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in the <code>listener</code> of EVERY entry of <code>StartListenersResponse.listener_responses</code>, relative to the <code>Listener</code> message (no prefix), e.g. <code>call_name</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field is not. <code>listener.name</code> and every other field of the response and of its entries are always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is started. Applied after the server&apos;s role-based redaction of <code>common_services_config</code>, so it can only narrow the response. It shapes only the response: the listeners are started regardless. The entries&apos; own <code>field_mask</code> must be unset. Not part of the <code>idempotency_key</code> comparison: a retry with the same key and another mask replays the first response shaped by the retry&apos;s mask. |
 
 
 
@@ -22526,6 +22571,7 @@ Request to stop all calls of a VTSI project, so all listeners and callers
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in EVERY entry of <code>StopCallsResponse.stop_call_responses</code>, relative to the entry message <code>StopCallResponse</code>, i.e. <code>vtsi_project_name</code> and <code>error_message</code> (the entries carry no <code>Call</code>). <code>call_name</code> of each entry and <code>StopCallsResponse.error_message</code> are always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is stopped. It shapes only the response: the calls are stopped regardless. |
 
 
 
@@ -22542,6 +22588,7 @@ Request to stop/kill a ondewo-sip listener or caller instance for a specific vts
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project parent with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | call_name | [string](#string) |  | call name to stop For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths of <code>StopCallResponse</code> to populate, i.e. <code>vtsi_project_name</code> and <code>error_message</code> (the response carries no <code>Call</code>). <code>call_name</code> is always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is stopped. It shapes only the response: the call is stopped regardless. |
 
 
 
@@ -22574,6 +22621,7 @@ Represents a request to stop a specific caller.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | The name of the caller to stop in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths of <code>StopCallerResponse</code> to populate, i.e. <code>error_message</code> (the response carries no <code>Caller</code>). <code>name</code> is always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is stopped. It shapes only the response: the caller is stopped regardless. |
 
 
 
@@ -22605,6 +22653,7 @@ Represents a request to stop multiple callers.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | names | [string](#string) | repeated | The names of the callers to stop in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in EVERY entry of <code>StopCallersResponse.stop_caller_responses</code>, relative to the entry message <code>StopCallerResponse</code>, i.e. <code>error_message</code> (the entries carry no <code>Caller</code>). <code>name</code> of each entry and the response&apos;s own fields are always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is stopped. It shapes only the response: the callers are stopped regardless. |
 
 
 
@@ -22637,6 +22686,7 @@ Request to stop/kill specific ondewo-sip listeners or callers instance for a spe
 | ----- | ---- | ----- | ----------- |
 | vtsi_project_name | [string](#string) |  | VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
 | call_names | [string](#string) | repeated | call names to stop For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in EVERY entry of <code>StopCallsResponse.stop_call_responses</code>, relative to the entry message <code>StopCallResponse</code>, i.e. <code>vtsi_project_name</code> and <code>error_message</code> (the entries carry no <code>Call</code>). <code>call_name</code> of each entry and <code>StopCallsResponse.error_message</code> are always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is stopped. It shapes only the response: the calls are stopped regardless. |
 
 
 
@@ -22668,6 +22718,7 @@ Represents a request to stop a specific listener.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | The name of the listener to stop in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths of <code>StopListenerResponse</code> to populate, i.e. <code>error_message</code> (the response carries no <code>Listener</code>). <code>name</code> is always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is stopped. It shapes only the response: the listener is stopped regardless. |
 
 
 
@@ -22699,6 +22750,7 @@ Represents a request to stop multiple listeners.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | names | [string](#string) | repeated | The names of the listeners to stop in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in EVERY entry of <code>StopListenersResponse.stop_listener_responses</code>, relative to the entry message <code>StopListenerResponse</code>, i.e. <code>error_message</code> (the entries carry no <code>Listener</code>). <code>name</code> of each entry and the response&apos;s own fields are always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is stopped. It shapes only the response: the listeners are stopped regardless. |
 
 
 
@@ -22938,6 +22990,224 @@ Response to transfer a call to a phone number or voip number
 
 
 
+
+<a name="ondewo.vtsi.UpdateCallRequest"></a>
+
+### UpdateCallRequest
+The request message for <a href="index.html#ondewo.vtsi.Calls.UpdateCall">Calls.UpdateCall</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| call | [Call](#ondewo.vtsi.Call) |  | The call to update, identified by <code>call.name</code> (<pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> or <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>), carrying the new <code>labels</code>. Every other field is ignored. |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Required. Paths relative to <code>Call</code>, WITHOUT a <code>call.</code> prefix. The only updatable path is <code>labels</code>, which replaces the whole map with <code>call.labels</code> (unset or empty clears it). An empty mask, any other path (every other field of a <code>Call</code> is output only) or a path below <code>labels</code> (e.g. <code>labels.ticket</code>) is rejected with <code>INVALID_ARGUMENT</code> naming the path, and nothing is written. Labels outside the bounds of <code>Call.labels</code> are rejected with <code>INVALID_ARGUMENT</code> naming the label. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in <code>UpdateCallResponse.call</code>, relative to the <code>Call</code> message (no <code>call.</code> prefix), e.g. <code>labels</code>, <code>active</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field is not. <code>call.name</code> and the other fields of the response are always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is written. The returned call is the one <code>GetCall</code> with <code>call_view = FULL</code> would return after the update, including the server&apos;s role-based redaction of <code>common_services_config</code>, and the mask is applied after that redaction. In an entry of <code>UpdateCallsRequest</code> it must be unset (use <code>UpdateCallsRequest.field_mask</code>). |
+
+
+
+
+
+
+<a name="ondewo.vtsi.UpdateCallResponse"></a>
+
+### UpdateCallResponse
+The response message for <a href="index.html#ondewo.vtsi.Calls.UpdateCall">Calls.UpdateCall</a>, and one entry
+of <code>UpdateCallsResponse</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the call the request named. Always populated, also for a failed entry of <code>UpdateCalls</code>. |
+| call | [Call](#ondewo.vtsi.Call) |  | The call after the update, shaped by the request&apos;s <code>field_mask</code>. Unset for a failed entry. |
+| error_message | [string](#string) |  | Empty on success; as <code>UpdateCallerResponse.error_message</code>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.UpdateCallerRequest"></a>
+
+### UpdateCallerRequest
+The request message for <a href="index.html#ondewo.vtsi.Calls.UpdateCaller">Calls.UpdateCaller</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| caller | [Caller](#ondewo.vtsi.Caller) |  | The caller to update, identified by <code>caller.name</code> (<pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>), carrying the new values of the fields named in <code>update_mask</code>. Its fields that no path names are ignored. |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Required. Paths relative to <code>Caller</code>, WITHOUT a <code>caller.</code> prefix. Updatable paths: <code>sip_caller_config</code> and <code>common_services_config</code>, each also as any nested sub-path (e.g. <code>sip_caller_config.callee_id</code>, <code>sip_caller_config.sip_headers</code>, <code>sip_caller_config.sip_base_config.sip_sim_version</code>, <code>common_services_config.nlu_vtsi_config.agent_name</code>). An empty mask, or an unknown, output-only or immutable path (<code>name</code>, <code>call_name</code>; a nested path is checked against the message type it names), is rejected with <code>INVALID_ARGUMENT</code> naming the path, and nothing is written. <p>The semantics are those of <code>UpdateCampaignRequest.update_mask</code> for the campaign call defaults:</p> <ul> <li>a path naming a message field REPLACES that whole message with the one sent; an unset one clears it (the create default of a message field is unset);</li> <li>a path naming a scalar, repeated or map field replaces exactly that field; a repeated or map field is replaced as a whole, never appended to; a named scalar left at its zero value writes what <code>StartCaller</code> stores for that value (the create default);</li> <li>a field that no path names is left untouched;</li> <li>a path naming a member of a <code>oneof</code> (e.g. <code>common_services_config.nlu_vtsi_config.auth_token</code>) SETS that member, clearing the other members, when the request&apos;s <code>caller</code> has that member set; when it does not, the path CLEARS the member if it is the stored active one and changes nothing otherwise;</li> <li>a path BELOW a repeated or map field (e.g. <code>sip_caller_config.sip_headers.X-Foo</code>) is rejected with <code>INVALID_ARGUMENT</code> naming it: name the repeated or map field itself;</li> <li>a path and a sub-path of it in the same mask act as the shorter path alone.</li> </ul> <p>The resulting stored configuration must be one a <code>StartCallerRequest</code> carrying it would be accepted with; otherwise the request is rejected with <code>INVALID_ARGUMENT</code> and nothing is written.</p> <p>Credentials: values written to credential-bearing fields are stored like those of <code>StartCaller</code> and never logged. A caller that is returned the redacted <code>common_services_config</code> (see <code>GetCaller</code>) and writes it back whole with the path <code>common_services_config</code> overwrites the stored credentials with the withheld (empty) ones; update a sub-path instead.</p> |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in <code>UpdateCallerResponse.caller</code>, relative to the <code>Caller</code> message (no <code>caller.</code> prefix), e.g. <code>sip_caller_config.callee_id</code>. Nested paths through singular message fields are allowed; a path below a repeated or map field is not. <code>caller.name</code> and the other fields of the response are always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is written. The returned caller is the one <code>GetCaller</code> with <code>call_view = FULL</code> would return after the update, including the server&apos;s role-based redaction of <code>common_services_config</code>, and the mask is applied after that redaction, so it can only narrow the response. In an entry of <code>UpdateCallersRequest</code> it must be unset (use <code>UpdateCallersRequest.field_mask</code>). |
+
+
+
+
+
+
+<a name="ondewo.vtsi.UpdateCallerResponse"></a>
+
+### UpdateCallerResponse
+The response message for <a href="index.html#ondewo.vtsi.Calls.UpdateCaller">Calls.UpdateCaller</a>, and one
+entry of <code>UpdateCallersResponse</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the caller the request named, in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre> Always populated, also for a failed entry of <code>UpdateCallers</code>. |
+| caller | [Caller](#ondewo.vtsi.Caller) |  | The caller after the update, shaped by the request&apos;s <code>field_mask</code>. Unset for a failed entry. |
+| error_message | [string](#string) |  | Empty on success. <code>UpdateCaller</code> reports every error as a gRPC status code, so it is always empty there. In an entry of <code>UpdateCallersResponse</code> it is the error of that entry, prefixed with the name of the gRPC status code <code>UpdateCaller</code> would have answered, e.g. <code>NOT_FOUND: caller projects/.../callers/... does not exist</code> or <code>INVALID_ARGUMENT: update_mask path 'call_name' is output only</code>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.UpdateCallersRequest"></a>
+
+### UpdateCallersRequest
+The request message for <a href="index.html#ondewo.vtsi.Calls.UpdateCallers">Calls.UpdateCallers</a>.
+<p>Rejected as a whole with <code>INVALID_ARGUMENT</code>, nothing being written, when it has no entry, more
+than 1000 entries, two entries naming the same caller, an entry whose <code>caller.name</code> is not a caller
+of <code>vtsi_project_name</code>, an entry with its own <code>field_mask</code> set, or an unknown
+<code>field_mask</code> path (each naming the entry index or the path). Every other error is reported per
+entry.</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project of every caller of the request. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| update_caller_requests | [UpdateCallerRequest](#ondewo.vtsi.UpdateCallerRequest) | repeated | The updates, applied one by one and each like <code>UpdateCaller</code>. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in the <code>caller</code> of EVERY entry of <code>UpdateCallersResponse.update_caller_responses</code>, relative to the <code>Caller</code> message (no prefix), as in <code>UpdateCallerRequest.field_mask</code>. <code>caller.name</code>, <code>name</code> and <code>error_message</code> of each entry and the response&apos;s own fields are always populated. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.UpdateCallersResponse"></a>
+
+### UpdateCallersResponse
+The response message for <a href="index.html#ondewo.vtsi.Calls.UpdateCallers">Calls.UpdateCallers</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project of the request. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| update_caller_responses | [UpdateCallerResponse](#ondewo.vtsi.UpdateCallerResponse) | repeated | One entry per entry of the request, in request order. |
+| error_message | [string](#string) |  | A summary when at least one entry failed (e.g. <code>2 of 5 updates failed</code>), empty when every entry succeeded. The failed entries carry their own <code>error_message</code>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.UpdateCallsRequest"></a>
+
+### UpdateCallsRequest
+The request message for <a href="index.html#ondewo.vtsi.Calls.UpdateCalls">Calls.UpdateCalls</a>.
+<p>Rejected as a whole exactly like <code>UpdateCallersRequest</code> (with calls instead of callers: no entry,
+more than 1000 entries, two entries naming the same call, a call of another project than
+<code>vtsi_project_name</code>, an entry with its own <code>field_mask</code>, an unknown
+<code>field_mask</code> path); every other error is reported per entry.</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project of every call of the request. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| update_call_requests | [UpdateCallRequest](#ondewo.vtsi.UpdateCallRequest) | repeated | The updates, applied one by one and each like <code>UpdateCall</code>. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in the <code>call</code> of EVERY entry of <code>UpdateCallsResponse.update_call_responses</code>, relative to the <code>Call</code> message (no prefix), as in <code>UpdateCallRequest.field_mask</code>. <code>call.name</code>, <code>name</code> and <code>error_message</code> of each entry and the response&apos;s own fields are always populated. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.UpdateCallsResponse"></a>
+
+### UpdateCallsResponse
+The response message for <a href="index.html#ondewo.vtsi.Calls.UpdateCalls">Calls.UpdateCalls</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project of the request. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| update_call_responses | [UpdateCallResponse](#ondewo.vtsi.UpdateCallResponse) | repeated | One entry per entry of the request, in request order. |
+| error_message | [string](#string) |  | A summary when at least one entry failed, empty when every entry succeeded; as <code>UpdateCallersResponse.error_message</code>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.UpdateListenerRequest"></a>
+
+### UpdateListenerRequest
+The request message for <a href="index.html#ondewo.vtsi.Calls.UpdateListener">Calls.UpdateListener</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| listener | [Listener](#ondewo.vtsi.Listener) |  | The listener to update, identified by <code>listener.name</code> (<pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>), carrying the new values of the fields named in <code>update_mask</code>. Its fields that no path names are ignored. |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Required. Paths relative to <code>Listener</code>, WITHOUT a <code>listener.</code> prefix. Updatable paths: <code>sip_base_config</code> and <code>common_services_config</code>, each also as any nested sub-path (e.g. <code>sip_base_config.sip_sim_version</code>, <code>common_services_config.nlu_vtsi_config.agent_name</code>). <code>name</code> and <code>call_name</code> are output only. Rejections, path semantics, validation (against a <code>StartListenerRequest</code> carrying the result) and the credential note are exactly those of <code>UpdateCallerRequest.update_mask</code>. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in <code>UpdateListenerResponse.listener</code>, relative to the <code>Listener</code> message (no <code>listener.</code> prefix), with the rules of <code>UpdateCallerRequest.field_mask</code> (<code>GetListener</code> with <code>call_view = FULL</code> after the update, redacted, then masked). In an entry of <code>UpdateListenersRequest</code> it must be unset (use <code>UpdateListenersRequest.field_mask</code>). |
+
+
+
+
+
+
+<a name="ondewo.vtsi.UpdateListenerResponse"></a>
+
+### UpdateListenerResponse
+The response message for <a href="index.html#ondewo.vtsi.Calls.UpdateListener">Calls.UpdateListener</a>, and
+one entry of <code>UpdateListenersResponse</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the listener the request named, in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre> Always populated, also for a failed entry of <code>UpdateListeners</code>. |
+| listener | [Listener](#ondewo.vtsi.Listener) |  | The listener after the update, shaped by the request&apos;s <code>field_mask</code>. Unset for a failed entry. |
+| error_message | [string](#string) |  | Empty on success; as <code>UpdateCallerResponse.error_message</code>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.UpdateListenersRequest"></a>
+
+### UpdateListenersRequest
+The request message for <a href="index.html#ondewo.vtsi.Calls.UpdateListeners">Calls.UpdateListeners</a>.
+<p>Rejected as a whole exactly like <code>UpdateCallersRequest</code> (with listeners instead of callers);
+every other error is reported per entry.</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project of every listener of the request. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| update_listener_requests | [UpdateListenerRequest](#ondewo.vtsi.UpdateListenerRequest) | repeated | The updates, applied one by one and each like <code>UpdateListener</code>. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in the <code>listener</code> of EVERY entry of <code>UpdateListenersResponse.update_listener_responses</code>, relative to the <code>Listener</code> message (no prefix), as in <code>UpdateListenerRequest.field_mask</code>. <code>listener.name</code>, <code>name</code> and <code>error_message</code> of each entry and the response&apos;s own fields are always populated. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.UpdateListenersResponse"></a>
+
+### UpdateListenersResponse
+The response message for <a href="index.html#ondewo.vtsi.Calls.UpdateListeners">Calls.UpdateListeners</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project of the request. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| update_listener_responses | [UpdateListenerResponse](#ondewo.vtsi.UpdateListenerResponse) | repeated | One entry per entry of the request, in request order. |
+| error_message | [string](#string) |  | A summary when at least one entry failed, empty when every entry succeeded; as <code>UpdateCallersResponse.error_message</code>. |
+
+
+
+
+
  <!-- end messages -->
 
 
@@ -23127,8 +23397,10 @@ Lifecycle state of a ScheduledCaller
 | ----------- | ------------ | ------------- | ------------|
 | StartCaller | [StartCallerRequest](#ondewo.vtsi.StartCallerRequest) | [StartCallerResponse](#ondewo.vtsi.StartCallerResponse) | <p>Start single caller instance for a specific nlu-project.</p> |
 | StartCallers | [StartCallersRequest](#ondewo.vtsi.StartCallersRequest) | [StartCallersResponse](#ondewo.vtsi.StartCallersResponse) | <p>Start multiple ondewo-sip callers instances for a specific nlu-project.</p> |
-| ListCallers | [ListCallersRequest](#ondewo.vtsi.ListCallersRequest) | [ListCallersResponse](#ondewo.vtsi.ListCallersResponse) | <p>Lists all available callers</p> |
+| ListCallers | [ListCallersRequest](#ondewo.vtsi.ListCallersRequest) | [ListCallersResponse](#ondewo.vtsi.ListCallersResponse) | <p>Lists all available callers</p> <p>With <code>campaign_name</code> or <code>campaign_display_name</code> set, lists only the callers of that campaign: the callers that placed at least one attempt of one of its campaign calls (see <code>ListCallersRequest.campaign_name</code>).</p> |
 | GetCaller | [GetCallerRequest](#ondewo.vtsi.GetCallerRequest) | [Caller](#ondewo.vtsi.Caller) | <p>Gets a caller</p> |
+| UpdateCaller | [UpdateCallerRequest](#ondewo.vtsi.UpdateCallerRequest) | [UpdateCallerResponse](#ondewo.vtsi.UpdateCallerResponse) | <p>Updates the STORED configuration of a caller: the fields named in <code>update_mask</code>, i.e. <code>sip_caller_config</code> and <code>common_services_config</code> or any nested sub-path of them. Allowed whether or not the caller has a call running.</p> <p>A running call and its container are NEVER changed: nothing is restarted, redeployed or reconfigured, and the call goes on with the configuration its container was deployed with. The stored configuration is what the server uses the next time it deploys a container for this caller; a caller whose call has ended and that the server never deploys again keeps the update only as its stored (and returned) configuration. Updating a caller never changes a campaign: the attempts of a campaign call take their configuration from the campaign and the campaign call, never from a <code>Caller</code>.</p> <p>Errors are gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed <code>caller.name</code>, an empty <code>update_mask</code>, an unknown, output-only or immutable <code>update_mask</code> path, a resulting configuration that a <code>StartCallerRequest</code> carrying it would be refused for, or an unknown <code>field_mask</code> path (each naming the path or field); <code>NOT_FOUND</code> for an unknown caller or project; with authorization enforced <code>PERMISSION_DENIED</code> for a project the caller holds no role on.</p> <p>Authorization: the role that may start and stop callers of the project (<code>PROJECT_EXECUTOR</code> or higher).</p> |
+| UpdateCallers | [UpdateCallersRequest](#ondewo.vtsi.UpdateCallersRequest) | [UpdateCallersResponse](#ondewo.vtsi.UpdateCallersResponse) | <p>Updates several callers, each like <code>UpdateCaller</code>. Not atomic: every entry is applied on its own and reported in <code>UpdateCallersResponse.update_caller_responses</code>, in request order; an entry that fails changes nothing and does not stop the others. Errors of the request as a whole (see <code>UpdateCallersRequest</code>) are gRPC status codes, and then no entry is applied.</p> <p>Authorization: as <code>UpdateCaller</code>.</p> |
 | DeleteCaller | [DeleteCallerRequest](#ondewo.vtsi.DeleteCallerRequest) | [DeleteCallerResponse](#ondewo.vtsi.DeleteCallerResponse) | <p>Deletes a caller</p> |
 | DeleteCallers | [DeleteCallersRequest](#ondewo.vtsi.DeleteCallersRequest) | [DeleteCallersResponse](#ondewo.vtsi.DeleteCallersResponse) | <p>Deletes multiple callers</p> |
 | StopCaller | [StopCallerRequest](#ondewo.vtsi.StopCallerRequest) | [StopCallerResponse](#ondewo.vtsi.StopCallerResponse) | <p>Stops a caller</p> |
@@ -23139,6 +23411,8 @@ Lifecycle state of a ScheduledCaller
 | StopListeners | [StopListenersRequest](#ondewo.vtsi.StopListenersRequest) | [StopListenersResponse](#ondewo.vtsi.StopListenersResponse) | <p>Stop multiple ondewo-sip listeners instances for a specific nlu-project.</p> |
 | ListListeners | [ListListenersRequest](#ondewo.vtsi.ListListenersRequest) | [ListListenersResponse](#ondewo.vtsi.ListListenersResponse) | <p>Lists all available listeners</p> |
 | GetListener | [GetListenerRequest](#ondewo.vtsi.GetListenerRequest) | [Listener](#ondewo.vtsi.Listener) | <p>Gets a listener</p> |
+| UpdateListener | [UpdateListenerRequest](#ondewo.vtsi.UpdateListenerRequest) | [UpdateListenerResponse](#ondewo.vtsi.UpdateListenerResponse) | <p>Updates the STORED configuration of a listener: the fields named in <code>update_mask</code>, i.e. <code>sip_base_config</code> and <code>common_services_config</code> or any nested sub-path of them. Allowed whether or not the listener&apos;s container is running or has a call.</p> <p>A running container and every call it takes are NEVER changed: nothing is restarted, redeployed or reconfigured, and the running container answers its calls with the configuration it was deployed with until it is replaced. The stored configuration is what the server uses the next time it deploys a container for this listener (e.g. when it restarts the listener&apos;s container or redeploys the project); a listener the server never deploys again keeps the update only as its stored (and returned) configuration.</p> <p>Errors as for <code>UpdateCaller</code>, with <code>StartListenerRequest</code> as the validation of the resulting configuration.</p> <p>Authorization: the role that may start and stop listeners of the project (<code>PROJECT_EXECUTOR</code> or higher).</p> |
+| UpdateListeners | [UpdateListenersRequest](#ondewo.vtsi.UpdateListenersRequest) | [UpdateListenersResponse](#ondewo.vtsi.UpdateListenersResponse) | <p>Updates several listeners, each like <code>UpdateListener</code>, with the per-entry results and the request-level errors of <code>UpdateCallers</code>.</p> <p>Authorization: as <code>UpdateListener</code>.</p> |
 | DeleteListener | [DeleteListenerRequest](#ondewo.vtsi.DeleteListenerRequest) | [DeleteListenerResponse](#ondewo.vtsi.DeleteListenerResponse) | <p>Deletes a listener</p> |
 | DeleteListeners | [DeleteListenersRequest](#ondewo.vtsi.DeleteListenersRequest) | [DeleteListenersResponse](#ondewo.vtsi.DeleteListenersResponse) | <p>Deletes multiple listeners</p> |
 | StartScheduledCaller | [StartScheduledCallerRequest](#ondewo.vtsi.StartScheduledCallerRequest) | [StartScheduledCallerResponse](#ondewo.vtsi.StartScheduledCallerResponse) | <p>Start a single ondewo-sip caller instance at a scheduled time</p> |
@@ -23154,7 +23428,9 @@ Lifecycle state of a ScheduledCaller
 | TransferCall | [TransferCallRequest](#ondewo.vtsi.TransferCallRequest) | [TransferCallResponse](#ondewo.vtsi.TransferCallResponse) | <p>Transfer a call to a phone number, a softphone account, another listener or the listener queue.</p> <p>The target is either the typed <code>target</code> or the legacy raw <code>transfer_id</code>, never both. It is resolved and validated before anything is sent; an invalid target is answered with <code>TRANSFER_OUTCOME_TARGET_INVALID</code> and an <code>error_reason</code>, and the call is untouched.</p> <p><code>TRANSFER_MODE_BLIND</code> (default) sends a SIP REFER and reports its outcome: a refused REFER keeps the call with the bot. <code>TRANSFER_MODE_WARM</code> rings the target into the call first, and the bot leaves only after the target joined (Asterisk 22 only).</p> <p>Telephony outcomes (busy, no answer, REFER rejected) are successful RPCs carrying an <code>outcome</code>. Refusals before any side effect also return a gRPC status with <code>reason=&lt;token&gt;</code> in its details: <code>INVALID_ARGUMENT</code> (both targets set, malformed target), <code>NOT_FOUND</code> (call or target not found, including another project&apos;s), <code>FAILED_PRECONDITION</code> (<code>call-not-connected</code>, <code>amd-in-progress</code>, <code>call-not-yet-identified</code>, <code>participants-present</code>, <code>asterisk-version-unsupported</code>, <code>sip-image-too-old</code>), <code>ABORTED</code> (<code>transfer-in-progress</code>), <code>UNAVAILABLE</code> (<code>sip-unreachable</code>).</p> <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced. Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p> |
 | TransferCalls | [TransferCallsRequest](#ondewo.vtsi.TransferCallsRequest) | [TransferCallsResponse](#ondewo.vtsi.TransferCallsResponse) | <p>Transfer several calls, each like <code>TransferCall</code>.</p> <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced. Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p> |
 | GetCall | [GetCallRequest](#ondewo.vtsi.GetCallRequest) | [Call](#ondewo.vtsi.Call) | <p>Get call log for single call instance</p> |
-| ListCalls | [ListCallsRequest](#ondewo.vtsi.ListCallsRequest) | [ListCallsResponse](#ondewo.vtsi.ListCallsResponse) | <p>Get call log for all call instances</p> |
+| ListCalls | [ListCallsRequest](#ondewo.vtsi.ListCallsRequest) | [ListCallsResponse](#ondewo.vtsi.ListCallsResponse) | <p>Get call log for all call instances</p> <p>With <code>call_filter.campaign_name</code> or <code>call_filter.campaign_display_name</code> set, lists only the calls of that campaign: the calls placed by the attempts of its campaign calls.</p> |
+| UpdateCall | [UpdateCallRequest](#ondewo.vtsi.UpdateCallRequest) | [UpdateCallResponse](#ondewo.vtsi.UpdateCallResponse) | <p>Updates the descriptive metadata of a call: the only updatable <code>update_mask</code> path is <code>labels</code>. Allowed on active and ended calls. It changes only the stored call record: the live call, its SIP container, its status and its media are never touched, and no event is sent to the call.</p> <p>Errors are gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed <code>call.name</code>, an empty <code>update_mask</code>, any path other than <code>labels</code> (every other field of a <code>Call</code> is output only), a path below <code>labels</code>, labels outside the bounds of <code>Call.labels</code>, or an unknown <code>field_mask</code> path (each naming the path or label); <code>NOT_FOUND</code> for an unknown call or project; with authorization enforced <code>PERMISSION_DENIED</code> for a project the caller holds no role on.</p> <p>Authorization: the role that may stop calls of the project (<code>PROJECT_EXECUTOR</code> or higher).</p> |
+| UpdateCalls | [UpdateCallsRequest](#ondewo.vtsi.UpdateCallsRequest) | [UpdateCallsResponse](#ondewo.vtsi.UpdateCallsResponse) | <p>Updates several calls, each like <code>UpdateCall</code>, with the per-entry results and the request-level errors of <code>UpdateCallers</code>.</p> <p>Authorization: as <code>UpdateCall</code>.</p> |
 | StreamCallerStatus | [StreamCallerStatusRequest](#ondewo.vtsi.StreamCallerStatusRequest) | [StreamCallResourceStatusResponse](#ondewo.vtsi.StreamCallResourceStatusResponse) stream | <p>Streams the status of the callers of a project: a snapshot first (<code>snapshot = true</code>), then every caller whose call or SIP status changed, plus keep-alive messages. Ends when the client disconnects or at the server-side maximum stream duration.</p> <p>Errors: <code>NOT_FOUND</code> for an unknown project; <code>RESOURCE_EXHAUSTED</code> when the server has no free stream slot.</p> |
 | StreamListenerStatus | [StreamListenerStatusRequest](#ondewo.vtsi.StreamListenerStatusRequest) | [StreamCallResourceStatusResponse](#ondewo.vtsi.StreamCallResourceStatusResponse) stream | <p>Streams the status of the listeners of a project, like <code>StreamCallerStatus</code>.</p> |
 | StreamScheduledCallerStatus | [StreamScheduledCallerStatusRequest](#ondewo.vtsi.StreamScheduledCallerStatusRequest) | [StreamCallResourceStatusResponse](#ondewo.vtsi.StreamCallResourceStatusResponse) stream | <p>Streams the status of the scheduled callers of a project, like <code>StreamCallerStatus</code>. The snapshot holds every PENDING and FIRING scheduled caller and those that finished in the last hour.</p> |
@@ -23202,6 +23478,8 @@ A campaign: a set of outbound calls started with a limit on how many run at the 
 | completed_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only. When the campaign reached <code>COMPLETED</code>. |
 | campaign_common_services_config | [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig) |  | Optional. Default <code>CommonServicesConfig</code> of EVERY call of the campaign (speech-to-text, NLU, text-to-speech, CSI and voice interaction). Settable on <code>CreateCampaign</code> and on <code>CampaignAssignment.new_campaign</code>; updatable with the <code>update_mask</code> path <code>campaign_common_services_config</code> or a nested sub-path of it (e.g. <code>campaign_common_services_config.nlu_vtsi_config.agent_name</code>). Unset (the default) changes nothing: every call runs exactly with its own <code>StartCallerRequest</code> config, as before 9.1.0. <p>Read LIVE, never snapshotted per call: whenever a campaign call is dispatched (its first attempt and every retry) the server reads the campaign&apos;s CURRENT value. The effective <code>common_services_config</code> of that call is:</p> <pre><code>effective = copy(campaign.campaign_common_services_config) effective.MergeFrom(caller_request.common_services_config)</code></pre> <p>i.e. protobuf <code>MergeFrom</code> semantics, the call&apos;s own value WINNING:</p> <ul> <li>a singular scalar, enum or string the call sets to a non-default value (or, for an <code>optional</code> field, sets at all) replaces the campaign&apos;s value; one the call leaves at its default keeps the campaign&apos;s value. A plain (non-<code>optional</code>) scalar therefore cannot be reset to its zero value by the call;</li> <li>a message field is merged recursively by the same rules;</li> <li>a repeated field is CONCATENATED, the campaign&apos;s entries first (e.g. <code>nlu_vtsi_config.contexts</code>, the lists of the <code>csi_vtsi_config</code> callbacks, <code>voice_interaction_config.response_timing_config.soft_timeout_config.messages</code>);</li> <li>a map field is merged by key, the call&apos;s entry winning on a shared key;</li> <li>a oneof member the call sets replaces whichever member the campaign set (e.g. <code>nlu_vtsi_config.credentials</code> versus <code>nlu_vtsi_config.auth_token</code>).</li> </ul> <p>The effective configuration is validated exactly as a <code>StartCallerRequest</code> carrying it, so an entry of <code>AddCallersToCampaign</code> / <code>AddScheduledCallersToCampaign</code> may leave out what the campaign supplies. Because the default is read live, an update that makes the effective configuration of a not yet dispatched call invalid fails that call at dispatch as a failure that cannot succeed by repetition (it is not retried).</p> <p>Returned by <code>CreateCampaign</code>, <code>GetCampaign</code>, <code>UpdateCampaign</code>, <code>ListCampaigns</code>, <code>StartCampaign</code>, <code>StopCampaign</code>, <code>HardStopCampaign</code> and <code>ResumeCampaign</code>. Left UNSET (whatever is stored) in <code>StreamCampaignStatusResponse.campaigns</code> and in the <code>campaign</code> of <code>AddCallersToCampaignResponse</code> / <code>AddScheduledCallersToCampaignResponse</code>; read it with <code>GetCampaign</code>.</p> <p>Credentials: the credential-bearing fields (NLU credentials and tokens, gRPC certificates, message broker and object store settings, callbacks, transcribe and synthesize request configs) are stored like the <code>common_services_config</code> of a started caller; the server never logs them. They are RETURNED only to a caller whose role on the project was resolved with authorization enforced and who may see the whole project (<code>SERVER_ADMIN</code>, <code>PROJECT_ADMIN</code>, <code>PROJECT_DEVELOPER</code>). Every other caller receives only the identity and routing fields (agent, language, initial intent, platform, service hosts and ports, CSI control messages, voice interaction config): a <code>PROJECT_EXECUTOR</code>, and also every caller when authorization is disabled or only monitored, because a <code>Campaign</code> has no view that could leave the config out by default. A client that reads such a campaign and writes the whole config back with <code>update_mask</code> path <code>campaign_common_services_config</code> overwrites the stored credentials with the withheld (empty) ones; update a sub-path instead.</p> |
 | campaign_sip_caller_config | [SipCallerConfig](#ondewo.vtsi.SipCallerConfig) |  | Optional. Default <code>SipCallerConfig</code> of EVERY call of the campaign (SIP image version, callee and SIP headers). Settable on <code>CreateCampaign</code> and on <code>CampaignAssignment.new_campaign</code>; updatable with the <code>update_mask</code> path <code>campaign_sip_caller_config</code> or a nested sub-path of it (e.g. <code>campaign_sip_caller_config.sip_headers</code>). Unset (the default) changes nothing. <p>Read LIVE at every dispatch and merged exactly like <code>campaign_common_services_config</code>: the effective <code>sip_caller_config</code> of a call is a copy of this value with the call&apos;s own <code>StartCallerRequest.sip_caller_config</code> merged over it (<code>MergeFrom</code>, the call winning); <code>sip_headers</code> are merged by key with the call&apos;s header winning on a shared name.</p> <p>EXCEPT <code>callee_id</code>, which is resolved ONCE, when the call is added to the campaign: the call&apos;s own <code>callee_id</code> or, when that is empty, this value&apos;s <code>callee_id</code> at that moment. The result is stored as <code>CampaignCall.phone_number</code> and is the <code>callee_id</code> of every attempt of that call, retries included. A later update of <code>campaign_sip_caller_config.callee_id</code> (or of the whole config) therefore changes the callee only of calls added after it, never of calls already in the campaign, so the number a campaign call reports (and that <code>ListCampaignCallsRequest.phone_number</code> filters on) is always the number it dials. An <code>AddCallersToCampaign</code> / <code>AddScheduledCallersToCampaign</code> request of which an entry takes the default callee is refused with <code>ABORTED</code> (nothing is added; retry it) when an update of the default callee commits while the request runs, so no call added after an update dials the previous default.</p> <p>Returned by the same RPCs as <code>campaign_common_services_config</code> and left unset in the same responses.</p> |
+| campaign_callers | [string](#string) | repeated | Output only. Resource names (<pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>) of the callers of the campaign: the callers that placed at least one attempt of one of its campaign calls (<code>CampaignCallAttempt.caller_name</code>), whichever way the call was added. A scheduled campaign call is placed by a caller too and counts; its <code>ScheduledCaller</code> is not a <code>Caller</code> and is in <code>CampaignCall.scheduled_caller_name</code> instead. A caller that was deleted is not listed (its name stays in the attempt history), and a caller that placed attempts of several campaigns (a pooled caller can) is listed in each of them. Exactly the set <code>Calls.ListCallers</code> returns with <code>ListCallersRequest.campaign_name</code>. <p>Order: by the start of the first attempt each caller placed for the campaign, oldest first, each name once. Bounded: at most the first 1000 names; <code>campaign_callers_truncated</code> says whether there are more. The complete, paginated list is <code>Calls.ListCallers</code> with the campaign selector, and the calls they placed are <code>Calls.ListCalls</code> with <code>CallFilter.campaign_name</code>.</p> <p>Populated by <code>CreateCampaign</code> (always empty: a new campaign has placed no call), <code>GetCampaign</code>, <code>UpdateCampaign</code>, <code>ListCampaigns</code>, <code>StartCampaign</code>, <code>StopCampaign</code>, <code>HardStopCampaign</code> and <code>ResumeCampaign</code>; subject to their <code>field_mask</code> like any other path (path <code>campaign_callers</code>; a path below it is rejected). Left empty in <code>StreamCampaignStatusResponse.campaigns</code> and in the <code>campaign</code> of <code>AddCallersToCampaignResponse</code> / <code>AddScheduledCallersToCampaignResponse</code>. Setting it on create is an output-only field set (<code>INVALID_ARGUMENT</code>), naming it in an <code>update_mask</code> is rejected as output only.</p> |
+| campaign_callers_truncated | [bool](#bool) |  | Output only. True when <code>campaign_callers</code> was cut at its bound of 1000 names and the campaign has more callers; read them all with <code>Calls.ListCallers</code> and the campaign selector. Populated and left unset by the same RPCs as <code>campaign_callers</code>; a <code>field_mask</code> names it like any other path (name both to read the names and whether they are complete). |
 
 
 
@@ -23805,6 +24083,11 @@ field; the identifying <code>name</code> is always populated; an unknown path is
 <code>INVALID_ARGUMENT</code> naming it; nested paths through singular message fields (e.g.
 <code>statistics.completed</code>) are allowed, a path below a repeated or map field is not. The
 mask is applied after any role-based redaction, so it can only narrow what the caller may see.</p>
+<p>Callers and calls of a campaign: <code>Campaign.campaign_callers</code> names the callers that placed
+its calls (bounded); <code>Calls.ListCallers</code> with <code>ListCallersRequest.campaign_name</code> /
+<code>campaign_display_name</code> lists them paginated as <code>Caller</code> resources, and
+<code>Calls.ListCalls</code> with <code>CallFilter.campaign_name</code> /
+<code>campaign_display_name</code> lists the calls they placed as <code>Call</code> resources.</p>
 <p>Errors are reported as gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed name,
 filter, field mask or value; <code>NOT_FOUND</code> for an unknown project, campaign or campaign
 call (with authorization enforced: <code>PERMISSION_DENIED</code> for a project the caller holds
@@ -23816,7 +24099,7 @@ be retried; <code>RESOURCE_EXHAUSTED</code> when the server has no free stream s
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | CreateCampaign | [CreateCampaignRequest](#ondewo.vtsi.CreateCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Creates a campaign in state <code>CAMPAIGN_STATE_CREATED</code>. Calls are added with <code>AddCallersToCampaign</code> / <code>AddScheduledCallersToCampaign</code>; nothing is dialled before <code>StartCampaign</code>.</p> <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>ALREADY_EXISTS</code> if the <code>display_name</code> is used in the project; <code>INVALID_ARGUMENT</code> for an output-only field that was set, an out-of-range value or an unknown <code>field_mask</code> path.</p> |
-| GetCampaign | [GetCampaignRequest](#ondewo.vtsi.GetCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Returns a campaign including its statistics and its call defaults.</p> <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for a malformed name, a <code>display_name</code> without <code>vtsi_project_name</code> or an unknown <code>field_mask</code> path.</p> |
+| GetCampaign | [GetCampaignRequest](#ondewo.vtsi.GetCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Returns a campaign including its statistics, its call defaults and its callers (<code>campaign_callers</code>).</p> <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for a malformed name, a <code>display_name</code> without <code>vtsi_project_name</code> or an unknown <code>field_mask</code> path.</p> |
 | UpdateCampaign | [UpdateCampaignRequest](#ondewo.vtsi.UpdateCampaignRequest) | [Campaign](#ondewo.vtsi.Campaign) | <p>Updates the fields named in <code>update_mask</code>: <code>display_name</code>, <code>max_parallel_calls</code>, <code>max_attempts</code>, <code>retry_delay</code>, <code>campaign_common_services_config</code> and <code>campaign_sip_caller_config</code> (each also by a nested sub-path). Allowed in every state. Lowering <code>max_parallel_calls</code> never ends a running call: the campaign starts no new call until fewer than the new maximum are running. A changed call default applies to every campaign call dispatched after the update, retries included; a call already dispatched keeps the configuration it was started with. The exception is <code>campaign_sip_caller_config.callee_id</code>, which is fixed per call when the call is added and therefore applies only to calls added after the update.</p> <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for an empty mask, an unknown, output-only or immutable path, an out-of-range value or an unknown <code>field_mask</code> path; <code>ALREADY_EXISTS</code> for a <code>display_name</code> used by another campaign of the project.</p> |
 | DeleteCampaign | [DeleteCampaignRequest](#ondewo.vtsi.DeleteCampaignRequest) | [DeleteCampaignResponse](#ondewo.vtsi.DeleteCampaignResponse) | <p>Deletes a campaign and its campaign calls. Its scheduled callers that have not fired yet are cancelled. Calls that already ran are not touched and stay visible through <code>ListCalls</code>.</p> <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> while the campaign is <code>RUNNING</code>, <code>STOPPING</code> or <code>HARD_STOPPING</code> (stop or hard stop it first); <code>INVALID_ARGUMENT</code> for a malformed name, a <code>display_name</code> without <code>vtsi_project_name</code> or an unknown <code>field_mask</code> path.</p> |
 | ListCampaigns | [ListCampaignsRequest](#ondewo.vtsi.ListCampaignsRequest) | [ListCampaignsResponse](#ondewo.vtsi.ListCampaignsResponse) | <p>Lists the campaigns of a project, newest first, filtered and paged, each with its statistics.</p> <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>INVALID_ARGUMENT</code> for a negative <code>page_size</code>, a foreign <code>page_token</code> or an unknown <code>field_mask</code> path.</p> |
