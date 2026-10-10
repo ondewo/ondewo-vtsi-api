@@ -112,12 +112,24 @@
     changes only its stored and returned configuration and never any present or future call; an idle pooled
     caller is matched to later `StartCaller` requests by the configuration its container runs, never by an
     updated stored one. Updating a caller never changes a campaign (an attempt of a campaign call is configured
-    by the campaign and the campaign call).
+    by the campaign and the campaign call). A STOPPED caller is updated from an empty configuration, so the
+    update must state a complete one; a STOPPED listener has no stored configuration and is `NOT_FOUND`.
+  * **Credentials follow their endpoint.** An update that moves an upstream (the `host`, `port` or `grpc_cert` of
+    the NLU, S2T or T2S base config, or the RabbitMQ `host` / ports) must also write every credential path of that
+    upstream that holds a stored value (NLU `credentials`, `auth_token`, `http_basic_auth_token`, `contexts`; S2T
+    `s2t_transcribe_request_config`; T2S `t2s_request_config`; RabbitMQ `user` and `password`), otherwise it is
+    `INVALID_ARGUMENT` naming the paths to add. A stored credential, which the response redaction withholds from a
+    `PROJECT_EXECUTOR`, is thereby never sent to an endpoint the request chose, also not by the live validation.
+  * An update of a caller or listener waits, for a bounded time, while an update, deploy or undeploy of its
+    project runs (so a recycle cannot start the replacement from the configuration it captured before the
+    update and lose it), and answers `ABORTED`, writing nothing, when that time runs out.
   * **Call**: `Call` gained `map<string, string> labels = 26`, client-defined descriptive labels and its only
     mutable field: the only updatable path is `labels`, which replaces the whole map (at most 64 entries, keys
     `[a-z][a-z0-9_.-]{0,62}`, values of at most 255 printable characters). It was added because a `Call` had no
     field that can change without touching the live call; `UpdateCall` changes only the stored call record, on
-    active and ended calls alike, and never the call itself, its SIP container, its status or its media.
+    active and ended calls alike, and never the call itself, its SIP container, its status or its media. The
+    WAITING call of a persistent listener or pooled caller (`NO_ONGOING_CALL`, not active), which `ListCalls`
+    returns too, is refused with `FAILED_PRECONDITION` and `reason=call-not-started`.
   * The single RPCs answer every error as a gRPC status code. The batches take repeated single requests plus a
     `vtsi_project_name` and a batch-level `field_mask`, apply each entry on its own (not atomic) and report one
     `Update*Response` per entry in request order, with a failed entry's `error_message` prefixed by the gRPC status
@@ -138,7 +150,11 @@
   one of the campaign's calls (`CampaignCallAttempt.caller_name`, for calls added by `AddCallersToCampaign` and
   by `AddScheduledCallersToCampaign` alike; a `ScheduledCaller` is not a `Caller` and is not listed), deleted
   callers left out, ordered by the start of each caller's first attempt for the campaign, oldest first, and
-  bounded to the first 1000 names (`campaign_callers_truncated` says whether there are more). Populated by
+  bounded to the first 1000 names (`campaign_callers_truncated` says whether there are more). The work is bounded
+  as well: the server reads only the campaign's earliest 10000 attempts for it, and reports
+  `campaign_callers_truncated` when the campaign reached that bound (10000 or more attempts). On `UpdateCampaign` and the lifecycle RPCs, whose change
+  is applied first, a failed read of the callers does not fail the RPC: the two fields are then empty and `true`.
+  Populated by
   `CreateCampaign` (empty), `GetCampaign`, `UpdateCampaign`, `StartCampaign`, `StopCampaign`, `HardStopCampaign`
   and `ResumeCampaign`, masked like any other path. `ListCampaigns` populates the two fields ONLY when its
   `field_mask` names them explicitly (an unset or empty mask leaves them empty) and then clamps `page_size` to 20,

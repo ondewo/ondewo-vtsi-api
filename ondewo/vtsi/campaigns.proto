@@ -488,8 +488,15 @@ message Campaign {
     // <code>Calls.ListCallers</code> returns with <code>ListCallersRequest.campaign_name</code>.
     // <p>Order: by the start of the first attempt each caller placed for the campaign, oldest first, each name
     // once. Bounded: at most the first 1000 names; <code>campaign_callers_truncated</code> says whether there are
-    // more. The complete, paginated list is <code>Calls.ListCallers</code> with the campaign selector, and the
-    // calls they placed are <code>Calls.ListCalls</code> with <code>CallFilter.campaign_name</code>.</p>
+    // more. Bounded in work too: the server reads only the campaign&apos;s earliest 10000 attempts, by start, to
+    // compute it, so a campaign with 10000 or more attempts reports <code>campaign_callers_truncated</code>, also
+    // with fewer than 1000 names. The complete, paginated list is <code>Calls.ListCallers</code> with the
+    // campaign selector, and the calls they placed are <code>Calls.ListCalls</code> with
+    // <code>CallFilter.campaign_name</code>.</p>
+    // <p>On <code>UpdateCampaign</code> and the four lifecycle RPCs the change has already been applied when the
+    // callers are read; when that read fails, the RPC still succeeds and returns the campaign with
+    // <code>campaign_callers</code> empty and <code>campaign_callers_truncated</code> true (read them with
+    // <code>GetCampaign</code>).</p>
     // <p>Populated by <code>CreateCampaign</code> (always empty: a new campaign has placed no call),
     // <code>GetCampaign</code>, <code>UpdateCampaign</code>, <code>StartCampaign</code>,
     // <code>StopCampaign</code>, <code>HardStopCampaign</code> and <code>ResumeCampaign</code>; subject to their
@@ -504,8 +511,11 @@ message Campaign {
     // <code>update_mask</code> is rejected as output only.</p>
     repeated string campaign_callers = 20;
 
-    // Output only. True when <code>campaign_callers</code> was cut at its bound of 1000 names and the campaign
-    // has more callers; read them all with <code>Calls.ListCallers</code> and the campaign selector. Populated
+    // Output only. True when <code>campaign_callers</code> may be incomplete: it was cut at its bound of 1000
+    // names and the campaign has more callers, the campaign has 10000 or more attempts (the most the server
+    // reads for it), or (on <code>UpdateCampaign</code> and the lifecycle RPCs only) the callers could not be
+    // read after the change was applied. Read them all with <code>Calls.ListCallers</code> and the campaign
+    // selector. Populated
     // and left unset by the same RPCs as <code>campaign_callers</code>, and in <code>ListCampaigns</code> also
     // only when the <code>field_mask</code> names it explicitly; a <code>field_mask</code> names it like any
     // other path (name both to read the names and whether they are complete).

@@ -70,12 +70,28 @@ service Calls {
     // RUNS, never by an updated stored configuration it does not run.</p>
     // <p>Updating a caller never changes a campaign: the attempts of a campaign call take their configuration
     // from the campaign and the campaign call, never from a <code>Caller</code>.</p>
+    // <p>A STOPPED caller (its call ended and its configuration was released) has no stored configuration left:
+    // the update starts from an empty one, so it must state a complete configuration
+    // (<code>sip_caller_config</code> and <code>common_services_config</code>), and a partial one is refused as a
+    // configuration a <code>StartCallerRequest</code> would be refused for. Nothing is deployed.</p>
+    // <p>Credentials follow their endpoint: an update that MOVES an upstream (the <code>host</code>,
+    // <code>port</code> or <code>grpc_cert</code> of the NLU, S2T or T2S <code>*_base_config</code>, or the
+    // <code>host</code> / ports of <code>csi_vtsi_config.message_broker_config.rabbit_mq_config</code>) must
+    // also write every credential path of that upstream that holds a stored value -- the NLU
+    // <code>credentials</code>, <code>auth_token</code>, <code>http_basic_auth_token</code> and
+    // <code>contexts</code>, the S2T <code>s2t_transcribe_request_config</code>, the T2S
+    // <code>t2s_request_config</code>, the RabbitMQ <code>user</code> and <code>password</code> -- named itself
+    // or by a shorter path, with the values to use. A stored credential is never sent to an endpoint the request
+    // moved without restating it, also not for the live validation of the result.</p>
     // <p>Errors are gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed <code>caller.name</code>,
-    // an empty <code>update_mask</code>, an unknown, output-only or immutable <code>update_mask</code> path, a
+    // an empty <code>update_mask</code>, an unknown, output-only or immutable <code>update_mask</code> path, an
+    // update that moves an upstream without restating its stored credentials (naming the paths to add), a
     // resulting configuration that a <code>StartCallerRequest</code> carrying it would be refused for, or an
     // unknown <code>field_mask</code> path (each naming the path or field); <code>NOT_FOUND</code> for an
-    // unknown caller or project; with authorization enforced <code>PERMISSION_DENIED</code> for a project the
-    // caller holds no role on.</p>
+    // unknown caller or project; <code>ABORTED</code> when concurrent updates kept changing the caller, or while
+    // an update, deploy or undeploy of its project is still running (an update waits for it, for a bounded time,
+    // so that a recycle of the project cannot lose it), nothing being written (retry the request); with
+    // authorization enforced <code>PERMISSION_DENIED</code> for a project the caller holds no role on.</p>
     // <p>Authorization: the role that may start and stop callers of the project (<code>PROJECT_EXECUTOR</code>
     // or higher).</p>
     rpc UpdateCaller (UpdateCallerRequest) returns (UpdateCallerResponse);
@@ -119,7 +135,10 @@ service Calls {
 
     // <p>Updates the STORED configuration of a listener: the fields named in <code>update_mask</code>, i.e.
     // <code>sip_base_config</code> and <code>common_services_config</code> or any nested sub-path of them.
-    // Allowed whether or not the listener&apos;s container is running or has a call.</p>
+    // Allowed whether or not the listener&apos;s container is running or has a call, as long as the listener is
+    // DEPLOYED: a stopped listener has no stored configuration (it is deployed again only by a
+    // <code>StartListener</code> carrying a complete one) and is <code>NOT_FOUND</code>, unlike a stopped caller,
+    // which <code>UpdateCaller</code> accepts with a complete configuration.</p>
     // <p>A running container and every call it takes are NEVER changed: nothing is restarted, redeployed or
     // reconfigured, and the running container answers its calls with the configuration it was deployed with
     // until it is replaced.</p>
@@ -132,8 +151,9 @@ service Calls {
     // unhealthy container, a <code>docker restart</code>) keeps the configuration the container was deployed
     // with. A listener that is never recycled keeps the update only as its stored (and returned)
     // configuration.</p>
-    // <p>Errors as for <code>UpdateCaller</code>, with <code>StartListenerRequest</code> as the validation of the
-    // resulting configuration.</p>
+    // <p>Errors as for <code>UpdateCaller</code> (the credential rule included), with
+    // <code>StartListenerRequest</code> as the validation of the resulting configuration, and
+    // <code>NOT_FOUND</code> also for a stopped listener.</p>
     // <p>Authorization: the role that may start and stop listeners of the project (<code>PROJECT_EXECUTOR</code>
     // or higher).</p>
     rpc UpdateListener (UpdateListenerRequest) returns (UpdateListenerResponse);
@@ -228,14 +248,18 @@ service Calls {
     rpc ListCalls (ListCallsRequest) returns (ListCallsResponse);
 
     // <p>Updates the descriptive metadata of a call: the only updatable <code>update_mask</code> path is
-    // <code>labels</code>. Allowed on active and ended calls. It changes only the stored call record: the live
-    // call, its SIP container, its status and its media are never touched, and no event is sent to the
-    // call.</p>
+    // <code>labels</code>. Allowed on active and ended calls. Refused for the WAITING call of a persistent
+    // listener or a pooled caller (status <code>NO_ONGOING_CALL</code>, not active: the record that waits for the
+    // next call, which <code>ListCalls</code> returns too) with <code>FAILED_PRECONDITION</code> and
+    // <code>reason=call-not-started</code> in the details: label the call once it has started. It changes only
+    // the stored call record: the live call, its SIP container, its status and its media are never touched, and
+    // no event is sent to the call.</p>
     // <p>Errors are gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed <code>call.name</code>, an
     // empty <code>update_mask</code>, any path other than <code>labels</code> (every other field of a
     // <code>Call</code> is output only), a path below <code>labels</code>, labels outside the bounds of
     // <code>Call.labels</code>, or an unknown <code>field_mask</code> path (each naming the path or label);
-    // <code>NOT_FOUND</code> for an unknown call or project; with authorization enforced
+    // <code>NOT_FOUND</code> for an unknown call or project; <code>FAILED_PRECONDITION</code>
+    // (<code>reason=call-not-started</code>) for a waiting call; with authorization enforced
     // <code>PERMISSION_DENIED</code> for a project the caller holds no role on.</p>
     // <p>Authorization: the role that may stop calls of the project (<code>PROJECT_EXECUTOR</code> or
     // higher).</p>
@@ -2303,6 +2327,8 @@ message Call {
     // the label: at most 64 entries; a key of 1 to 63 characters from <code>[a-z0-9_.-]</code>, starting with a
     // lowercase letter; a value of at most 255 printable characters (Unicode allowed, no control characters).
     // Stored with the call record, so they survive the end of the call and are kept as long as the record.
+    // The waiting call of a persistent listener or pooled caller (status <code>NO_ONGOING_CALL</code>, not
+    // active) cannot be labelled: <code>FAILED_PRECONDITION</code> with <code>reason=call-not-started</code>.
     // This is the only mutable field of a <code>Call</code>: it exists so that a call can be annotated without
     // anything about the live call being changed. Set in the SHALLOW and FULL views.
     map<string, string> labels = 26;
