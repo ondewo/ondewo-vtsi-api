@@ -11,8 +11,8 @@
   campaign selector oneof, and the project it is resolved in is a separate top-level
   `string vtsi_project_name`. Every old field number is `reserved` and never reused with another type, so the
   change is wire-safe: an old client that still sends the removed message field is read by a 9.1.0 server as
-  an unknown field (the selector is then empty and the request is refused with `INVALID_ARGUMENT`), never as
-  a wrong value. Code that builds a `CampaignDisplayName` no longer compiles and must move to the new fields:
+  an unknown field (the selector is then empty and the request is refused with `INVALID_ARGUMENT`, also with
+  authorization enforced, because the selector is checked before it), never as a wrong value. Code that builds a `CampaignDisplayName` no longer compiles and must move to the new fields:
 
   | Message | 9.0.0 | 9.1.0 |
   | --- | --- | --- |
@@ -21,7 +21,9 @@
   | `CampaignAssignment` | `CampaignDisplayName campaign_display_name = 4` | `string display_name = 5`; `reserved 4`, `reserved "campaign_display_name"` |
 
   `vtsi_project_name` (`projects/<project_uuid>/project`) is REQUIRED with `display_name` (`INVALID_ARGUMENT`
-  when empty or malformed) and, when sent with the resource name, must be the campaign's project. A
+  when empty or malformed) and, when sent with the resource name, must be the campaign's project. These shape
+  checks run before authorization; with authorization enforced, a well-formed request naming a project the
+  caller holds no role on (an unknown one included) is `PERMISSION_DENIED`. A
   `CampaignAssignment` has no project field of its own: its project is the enclosing request's
   `AddCallersToCampaignRequest.vtsi_project_name` / `AddScheduledCallersToCampaignRequest.vtsi_project_name`.
   Where the old and the new member share the name `display_name` only the number can be reserved; JSON
@@ -32,7 +34,10 @@
 * [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Campaign-level call defaults.** `Campaign`
   gained `CommonServicesConfig campaign_common_services_config = 18` and
   `SipCallerConfig campaign_sip_caller_config = 19`, the defaults of every call of the campaign. They are
-  returned by every RPC that returns a campaign, settable on `CreateCampaign` and on
+  returned by `CreateCampaign`, `GetCampaign`, `UpdateCampaign`, `ListCampaigns`, `StartCampaign`,
+  `StopCampaign`, `HardStopCampaign` and `ResumeCampaign`, and always left unset in
+  `StreamCampaignStatusResponse.campaigns` and in the `campaign` of `AddCallersToCampaignResponse` /
+  `AddScheduledCallersToCampaignResponse`. They are settable on `CreateCampaign` and on
   `CampaignAssignment.new_campaign`, and updatable through `UpdateCampaign` with the `update_mask` paths
   `campaign_common_services_config` / `campaign_sip_caller_config` or any nested sub-path of them (a path
   naming a message replaces it whole, a path naming a scalar, repeated or map field replaces exactly that
@@ -44,8 +49,13 @@
   entries first; maps are merged by key). The one exception is the callee: `callee_id` is resolved once,
   when the call is added (the call's own, else the campaign's at that moment), stored as
   `CampaignCall.phone_number` and dialled by every attempt, so updating the campaign's `callee_id` affects
-  only calls added afterwards. Unset campaign defaults change nothing. Their
-  credential-bearing fields get the same role-based redaction as `Caller.common_services_config`.
+  only calls added afterwards (an `AddCallersToCampaign` / `AddScheduledCallersToCampaign` that took the
+  default callee while such an update committed is refused with `ABORTED` and adds nothing). Unset campaign
+  defaults change nothing; clearing every field of a default by sub-paths removes it, and a field of the
+  update that no `update_mask` path names is neither written nor validated. Their credential-bearing fields
+  are returned only to a caller authorization resolved a role for that may see the whole project
+  (`SERVER_ADMIN`, `PROJECT_ADMIN`, `PROJECT_DEVELOPER`); everyone else, every caller with authorization
+  disabled or only monitored included, receives the identity and routing fields only.
 * [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Partial responses (`field_mask`) for
   campaigns and every listing.** A `google.protobuf.FieldMask field_mask` was added to `CreateCampaignRequest`
   (3), `GetCampaignRequest` (5), `UpdateCampaignRequest` (3), `DeleteCampaignRequest` (5, paths of

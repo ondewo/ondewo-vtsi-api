@@ -787,7 +787,9 @@ message AddCallersToCampaignResponse {
     // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
-    // The campaign the callers were added to.
+    // The campaign the callers were added to. Its call defaults (<code>campaign_common_services_config</code>,
+    // <code>campaign_sip_caller_config</code>) are always left unset here; read them with
+    // <code>Campaigns.GetCampaign</code>.
     Campaign campaign = 2;
 
     // The campaign calls created by this request, in request order.
@@ -832,7 +834,9 @@ message AddScheduledCallersToCampaignResponse {
     // The scheduled callers created, in request order.
     repeated StartScheduledCallerResponse scheduled_caller_responses = 2;
 
-    // The campaign the scheduled callers were added to.
+    // The campaign the scheduled callers were added to. Its call defaults
+    // (<code>campaign_common_services_config</code>, <code>campaign_sip_caller_config</code>) are always
+    // left unset here; read them with <code>Campaigns.GetCampaign</code>.
     Campaign campaign = 3;
 
     // The campaign calls created by this request, in request order.
