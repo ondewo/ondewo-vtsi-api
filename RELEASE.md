@@ -64,7 +64,7 @@
 * [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) New service `Softphones` in the new file
   `ondewo/vtsi/softphones.proto` (unreleased, in development): SIP accounts on a project's Asterisk for
   humans using a softphone such as Zoiper, each with its OWN SIP credentials and never one of the
-  `ondewo000N` container accounts. Eleven RPCs:
+  `ondewo000N` container accounts. Ten RPCs:
   * accounts: `CreateSoftphoneAccount`, `GetSoftphoneAccount` (`field_mask`), `UpdateSoftphoneAccount`
     (required `update_mask`; updatable paths `display_name`, `transport_security`, `enabled`,
     `max_contacts`, `labels`, `allowed_destinations`), `DeleteSoftphoneAccount`, `ListSoftphoneAccounts`
