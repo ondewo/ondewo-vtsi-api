@@ -1,0 +1,65 @@
+# Guards the field-presence surface of ondewo/vtsi/*.proto.
+#
+# Why a workflow of its own rather than a step in generate-doc-and-deploy: that workflow REGENERATES
+# and PUBLISHES the docs, so it is a producer and its success says nothing about whether the protos
+# still match their committed expectations. This one only reads, and it is allowed to fail.
+#
+# This workflow is the SECOND line of defence, not the only one: `make release` takes presence_check
+# as its first prerequisite, because a workflow can be skipped, disabled or simply not triggered by
+# the branch a release is cut on, and a make prerequisite cannot.
+name: Proto field presence
+
+on:
+  push:
+    # release/** as well as master: a release cuts `release/<version>` and `make build` commits the
+    # re-assembled proto trees onto it, so the tree that actually ships is pushed to neither master
+    # nor a pull request. Without this line the guard never reads what is released.
+    branches: [ master, 'release/**' ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  presence_check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          # The check walks ondewo/vtsi/*.proto only, which is committed in this repository; the four
+          # vendored api submodules are not needed and cloning them would cost minutes for nothing.
+          submodules: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install the proto toolchain
+        # grpcio-tools carries protoc AND the well-known types. A bare apt protoc would resolve
+        # neither google/protobuf/timestamp.proto nor google/protobuf/field_mask.proto, and the
+        # failure would read as a proto defect instead of a missing include path.
+        #
+        # THE VERSIONS ARE PINNED BECAUSE THE CHECK COMPARES presence-manifest.json BYTE-FOR-BYTE.
+        # Every value in that file - the type spelling, the protoc-derived json_name, both hex
+        # encodings - is RENDERED by this toolchain, so an unpinned install makes the comparison a
+        # statement about whatever pip resolved on the day rather than about the protos. These are
+        # the versions the committed manifest was measured with. Measured 2026-09-15 on python
+        # 3.12.3: grpcio-tools 1.60.0 + protobuf 4.25.3 and grpcio-tools 1.84.0 + protobuf 7.36.1
+        # both still render it byte-identically, so the pin is not papering over a live drift - it
+        # is what stops a future renderer change turning up as a red build on an unrelated PR
+        # instead of as a deliberate, reviewable bump here.
+        #
+        # THE 1.60.0 HALF OF THAT MEASUREMENT NEEDS setuptools<82, AND A CURRENT RUNNER HAS MORE.
+        # grpc_tools/protoc.py line 21 is a bare `import pkg_resources`, which setuptools removed.
+        # Measured the same day in four throwaway venvs on python 3.12.3 with grpcio-tools 1.60.0 +
+        # protobuf 4.25.3 held fixed and only setuptools varied: 80.10.2 and 81.0.0 import, warning
+        # "pkg_resources is deprecated ... pin to Setuptools<81"; 82.0.0, 83.0.0 and 84.0.0 all die
+        # with `ModuleNotFoundError: No module named 'pkg_resources'` BEFORE protoc is reached. So
+        # the equivalence above is not reproducible by `pip install "grpcio-tools==1.60.0"` on a
+        # fresh venv today - it needs `setuptools<82` installed alongside, and without that the
+        # attempt fails as a BROKEN toolchain rather than as manifest drift. Nothing here installs
+        # 1.60.0; this is recorded so the next person re-measuring the pin is not misled by it.
+        run: python -m pip install --upgrade pip && python -m pip install "grpcio-tools==1.83.0" "protobuf==7.35.1"
+
+      - name: Check proto field presence
+        run: make presence_check PRESENCE_PY=python

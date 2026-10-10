@@ -2,6 +2,344 @@
 
 *****************
 
+## Release ONDEWO VTSI API 9.0.0
+
+### Breaking changes
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) Renamed
+  `AsteriskConfigsFiles.sip_conf_file_string` to `pjsip_conf_file_string`. The `chan_sip` channel driver the
+  old name referred to was removed in Asterisk 21; the configuration file an Asterisk 22 server reads is
+  `pjsip.conf`, so the field carried a name that described a file no supported Asterisk parses. **Field
+  number 1 and type `string` do not change and no `json_name` override is added**, so the change is binary
+  wire-compatible in both directions and source-breaking only. The three sibling fields keep their names:
+  `extensions.conf`, `queues.conf` and `modules.conf` exist unchanged under `res_pjsip` and only their
+  CONTENT changes. The accessor that moves, per language, measured against the generated 8.7.x client trees:
+
+  | Client | 8.7.x | 9.0.0 |
+  | --- | --- | --- |
+  | python | `sip_conf_file_string` attribute, constructor keyword and `ClearField` literal | `pjsip_conf_file_string` |
+  | angular | `sipConfFileString` property (23 references) | `pjsipConfFileString` |
+  | nodejs, typescript, js | `getSipConfFileString()` / `setSipConfFileString()`, `sipConfFileString` on `AsObject` | `getPjsipConfFileString()` / `setPjsipConfFileString()` |
+
+  The field deliberately does NOT gain the `optional` keyword. On the create path `""` and unset are the
+  same instruction — build the Asterisk configuration from the blueprint — so presence would add a third
+  state that no server reads.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) Eleven singular scalars in
+  `ondewo/vtsi/calls.proto` gained the `optional` keyword, so that "the caller said nothing" stops being
+  indistinguishable from "the caller said the default":
+  `InterruptionHandlingConfig.transcribe_on_disabled_interruptions`,
+  `TurnDetectionConfig.turn_detection_system_prompt`, `TurnDetectionConfig.turn_detection_user_prompt`,
+  `AudioObjectStorageConfig.activate_audio_object_storage`,
+  `AudioObjectStorageServicesActivationConfig.activate_s2t` and `.activate_t2s`,
+  `MessageBrokerConfig.activate_message_broker`, and
+  `MessageBrokerServicesActivationConfig.activate_s2t`, `.activate_nlu`, `.activate_t2s` and
+  `.activate_sip`. Each keeps its field number and wire type; `optional` only adds explicit presence,
+  compiling to a synthetic one-member oneof that exists in the descriptor and not on the wire. The listed
+  fields are singular scalars only — a repeated or map field cannot take the keyword, a oneof member cannot
+  take it, and a singular message field already has presence without it.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) The comment on
+  `ScheduledCaller.call_name` lost the words "asterisk sip", matching its `Caller` and `Listener` siblings.
+  Listed here only because it is a source-visible change: it moves no descriptor byte, measured — the
+  descriptor set and the generated `calls_pb2.py` are byte-identical before and after it.
+
+### New features
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) `AsteriskConfigsVariables` gained two
+  fields on the next free numbers, 7 and 8, making the SIP trunk's transport a per-project choice instead
+  of a property of the image:
+  * `SipTrunkTransport sip_trunk_transport = 7` — `SIP_TRUNK_TRANSPORT_UNSPECIFIED` (0),
+    `SIP_TRUNK_TRANSPORT_TLS` (1), `SIP_TRUNK_TRANSPORT_UDP` (2), `SIP_TRUNK_TRANSPORT_TCP` (3). Unset ==
+    `UNSPECIFIED` == `TLS`: **the zero value is the encrypted one**, so a caller that says nothing gets an
+    encrypted trunk. The field takes no `optional` keyword, because an enum whose zero IS a documented
+    `*_UNSPECIFIED` sentinel already carries the third state.
+  * `optional string sip_trunk_source_cidr = 8` — the source address or CIDR the carrier sends from, e.g.
+    `203.0.113.7/32`. REQUIRED when the transport is `UDP` or `TCP`, where the trunk is matched by source
+    address rather than authenticated by a certificate, and ignored otherwise. A hostname is refused with
+    `INVALID_ARGUMENT`: Asterisk drops a `type=identify` section whose `match=` does not resolve, and it
+    does so silently, so an unresolvable name would read as a working trunk that never matches an inbound
+    call. This one DOES take `optional`, so a validator can tell an explicit empty CIDR from nothing sent
+    and refuse each by name, and so an `update_mask` can CLEAR it rather than assign `""`.
+
+  Both are additive. An 8.x server decoding a 9.0.0 request skips them as unknown fields.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) New service `Softphones` in the new file
+  `ondewo/vtsi/softphones.proto` (unreleased, in development): SIP accounts on a project's Asterisk for
+  humans using a softphone such as Zoiper, each with its OWN SIP credentials and never one of the
+  `ondewo000N` container accounts. Eleven RPCs:
+  * accounts: `CreateSoftphoneAccount`, `GetSoftphoneAccount` (`field_mask`), `UpdateSoftphoneAccount`
+    (required `update_mask`; updatable paths `display_name`, `transport_security`, `enabled`,
+    `max_contacts`, `labels`, `allowed_destinations`), `DeleteSoftphoneAccount`, `ListSoftphoneAccounts`
+    (structured `SoftphoneAccountFilter` by transport security, enabled, labels, display-name and
+    SIP-username substring and certificate-expiry window; `field_mask`; `page_size` / `page_token`;
+    `SoftphoneAccountSorting`) and `RotateSoftphoneCredentials`;
+  * certificates: `ListSoftphoneCertificates` (per account or per project, filtered by status and expiry
+    window), `GetSoftphoneCertificate` and `RevokeSoftphoneCertificate`;
+  * provisioning: `GetSoftphoneProvisioning`, returning server, port, TLS transport, outbound proxy, SIP
+    identity, mandatory SDES-SRTP, codecs (`opus`, `alaw`, `ulaw`), the server CA to trust, the fingerprint
+    of the client certificate to import and step-by-step Zoiper 5 instructions.
+
+  `SoftphoneTransportSecurity` chooses per account between `CLIENT_CERTIFICATE` (mutual TLS on the
+  project's internal TLS port, with a client certificate issued by a per-project SOFTPHONE CA) and
+  `SERVER_TLS_ONLY` (the external TLS port, SIP digest only, for Zoiper editions without client-certificate
+  support); the zero value means `CLIENT_CERTIFICATE`. **Secrets are returned exactly once**: the SIP
+  password and the password-protected PKCS#12 bundle with the private key appear only in the
+  `CreateSoftphoneAccount` and `RotateSoftphoneCredentials` responses (`SoftphoneCredentials`). Get, List
+  and provisioning carry public material only (certificate PEM, CA PEM, SHA-256 fingerprint, serial,
+  validity, status); a lost key or password is recovered by rotating it. Six new fields carry the
+  `optional` keyword and are declared in `presence/expected_optional.txt`: `SoftphoneAccount.enabled`,
+  `SoftphoneAccountFilter.enabled`, `SoftphoneAccountSorting.sorting_field` and `.sorting_mode`, and
+  `page_token` of both list requests. Purely additive: no existing message, field or RPC changes.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) Answering machine detection (AMD) for
+  pooled persistent callers: `VoiceInteractionConfig.answering_machine_detection_config = 4` of the new
+  message `AnsweringMachineDetectionConfig`, with the enums `AmdAction` (`AMD_ACTION_UNSPECIFIED`,
+  `HANG_UP`, `DETECT_ONLY`, `LEAVE_VOICE_MESSAGE`) and `AmdSensitivity` (`AMD_SENSITIVITY_UNSPECIFIED`, `LOW`, `MEDIUM`, `HIGH`).
+  Its nineteen singular fields carry the `optional` keyword (unset = the CSI container default, documented
+  per field together with its valid range) and are declared in `presence/expected_optional.txt`; the two
+  phrase lists are `repeated string`. Defaults: `active` false, `action` `HANG_UP`, `sensitivity` `LOW`,
+  hang up on fax and network announcements, not on IVRs and call screening. A listener or a one-shot
+  caller carrying the config is rejected with `INVALID_ARGUMENT`. `LEAVE_VOICE_MESSAGE` speaks the
+  fulfillment of `voice_message_intent` (default: the welcome intent) once after the beep, waiting at most
+  `voice_message_max_beep_wait_ms` (default 10000, 0 - 30000), and hangs up when it finished playing or at
+  `voice_message_timeout_ms` after the verdict (default 30000, 5000 - 120000); a fax never gets a message.
+  `keyword_detection_active` and `cadence_detection_active` (both default true) switch those detectors off
+  next to `beep_detection_active`. `HANG_UP` stays the default because leaving a recorded message on a
+  consumer's mailbox for marketing is consent-bound (e.g. § 7 UWG in Germany).
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) `Call` gained
+  `optional bool redial_recommended = 19` and `optional string redial_reason = 20`, set only when AMD ended
+  the call (`answering_machine` and `network_announcement` hung up on without a voice message recommend a
+  redial; a left voice message and `fax` do not), and
+  `optional string answering_machine_detection_end_description = 21`, the description of the call's
+  terminal `OUTGOING_CALL_FINISHED` status (one of the four AMD descriptions documented on the field). The AMD
+  verdict, cause and confidence of a call are read from the existing `Call.sip_status.amd_result`, so they
+  need no field of their own. No call is redialled automatically.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) `AsteriskConfigsVariables` gained two fields
+  that make verifying the carrier's TLS certificate a per-project choice:
+  * `optional string sip_trunk_ca_certificates_pem = 9` — the PEM bundle of the CA certificate(s) the
+    carrier's TLS certificate chains to. Refused with `INVALID_ARGUMENT` for anything other than unexpired CA
+    certificates (a private key in particular). Public data, not a secret.
+  * `optional bool sip_trunk_verify_server = 10` — default false. Asterisk verifies the carrier's certificate
+    chain and host name (`verify_server=yes`) only when this is true AND a CA bundle is given; true without a
+    bundle is refused with `INVALID_ARGUMENT`. A bundle stored with verification off changes nothing on the
+    trunk, so it can be staged before verification is switched on.
+
+  Both apply only to the TLS trunk transport (a bundle, or verification switched on, is refused on a UDP or
+  TCP trunk). Declared in `presence/expected_optional.txt`; purely additive.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) New service `Campaigns` in the new file
+  `ondewo/vtsi/campaigns.proto`: a CAMPAIGN is a named set of outbound calls that VTSI places while keeping
+  at most `max_parallel_calls` of them running at the same time (100 callers with `max_parallel_calls = 10`
+  means at most 10 calls are set up or connected at any moment; the next starts when one ends).
+  * CRUD: `CreateCampaign`, `GetCampaign`, `UpdateCampaign` (required `update_mask`; updatable paths
+    `display_name`, `max_parallel_calls`, `max_attempts`, `retry_delay`, in every state), `DeleteCampaign`
+    and `ListCampaigns` (`CampaignFilter` by state, display-name substring or exact display name;
+    `page_size` / `page_token`).
+  * Lifecycle: `StartCampaign`, `StopCampaign` (no new call is started, running calls finish),
+    `HardStopCampaign` (running calls are hung up immediately; `HARD_STOPPED` only once every hang-up is
+    confirmed) and `ResumeCampaign`. States: `CREATED`, `RUNNING`, `STOPPING`, `STOPPED`,
+    `HARD_STOPPING`, `HARD_STOPPED`, `COMPLETED`.
+  * Progress: `GetCampaignStatistics` (`CampaignStatistics`: `total`, `not_started`, `in_progress`,
+    `retry_pending`, `completed`, `failed`, `cancelled`, `total_attempts`, `calls_retried`,
+    `scheduled_not_due`, `progress_percent`) and `ListCampaignCalls` (`CampaignCall` with its state, SIP
+    status type and description, attempts and, on request, the `attempt_history`).
+  * Retries: `max_attempts` per campaign (default 1 = no retry, at most 10) and `retry_delay` (default
+    60 s). A call counts as failed only after its last attempt; a failure that cannot succeed by repetition
+    is never retried.
+  * Names: resource name `projects/<project_uuid>/campaigns/<campaign_uuid>`; an empty `display_name`
+    becomes `campaign-<campaign_uuid>`. Display names are unique per project, so every single-campaign RPC
+    takes either the resource name or a `CampaignDisplayName`.
+  * `StreamCampaignStatus`: a server-streaming snapshot of the project's campaigns followed by every change,
+    optionally including campaign calls.
+
+  Errors of the new RPCs are gRPC status codes, never `error_message` fields. Two new fields carry the
+  `optional` keyword (`page_token` of `ListCampaignsRequest` and `ListCampaignCallsRequest`).
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) Two new `Calls` RPCs add callers to a
+  campaign instead of starting them: `AddCallersToCampaign` (`AddCallersToCampaignRequest` /
+  `AddCallersToCampaignResponse`) and `AddScheduledCallersToCampaign` (`AddScheduledCallersToCampaignRequest`
+  / `AddScheduledCallersToCampaignResponse`). Each request carries a REQUIRED `CampaignAssignment
+  campaign_assignment`: an existing campaign (by resource name or display name) or a new one (`new_campaign`),
+  stored atomically, with `CampaignStartMode` choosing whether the campaign starts. The responses carry the
+  `Campaign` and the created `campaign_call_names` (the scheduled variant also the
+  `scheduled_caller_responses`), and `ScheduledCaller` gained `string campaign_name = 12`. `StartCallers` and
+  `StartScheduledCallers` are unchanged against 8.7.x.
+  Development builds of 9.0.0 carried the assignment as field 3 of `StartCallersRequest` /
+  `StartScheduledCallersRequest` (and the campaign result as fields 4-5 / 3-4 of their responses). Those
+  numbers and names are now `reserved`, and a server refuses a `StartCallers` / `StartScheduledCallers`
+  request that still carries field 3 with `INVALID_ARGUMENT` instead of starting every caller.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) `AsteriskConfigsVariables` gained
+  `repeated string softphone_permit_cidrs = 11`: the source allow-list (IPv4/IPv6 CIDRs) of the project's
+  softphone accounts on both TLS ports, i.e. of the external TLS port for softphones. Empty means the
+  server's `ONDEWO_VTSI_ASTERISK_SOFTPHONE_PERMIT_CIDRS` (default: the private networks); that server value
+  is a ceiling a project can only narrow, and an entry outside it is refused with `INVALID_ARGUMENT`.
+  `CreateSoftphoneAccount` and `UpdateSoftphoneAccount` document it.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) Three status streams on `Calls`:
+  `StreamCallerStatus`, `StreamListenerStatus` and `StreamScheduledCallerStatus`, each sending a snapshot
+  and then every changed `CallResourceStatus` (call, active flag, SIP status type and description, times,
+  phone number, scheduled-caller state and campaign) in a `StreamCallResourceStatusResponse`.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) New service `Events` in the new file
+  `ondewo/vtsi/events.proto`: every key event and status change of VTSI is one value of the new enum
+  `VtsiEvent` (calls 1xx, callers 2xx, listeners 3xx, scheduled callers 4xx, campaigns 5xx, VTSI projects
+  6xx, Asterisk 7xx, softphone accounts 8xx, the event system itself 9xx; 600 is reserved), delivered as a
+  `VtsiEventMessage`.
+  * Event subscriptions per project (which events, optionally narrowed by resource-name prefixes and
+    campaign names, go to which webhooks): `CreateVtsiEventSubscription`, `GetVtsiEventSubscription`,
+    `UpdateVtsiEventSubscription`, `DeleteVtsiEventSubscription`, `ListVtsiEventSubscriptions`.
+  * Webhooks per project (an http(s) URL, `POST` or `PUT`, optional custom headers, a timeout):
+    `CreateWebhook`, `GetWebhook`, `UpdateWebhook`, `DeleteWebhook`, `ListWebhooks` and `TestWebhook`.
+    **Custom header values are write-only**: every RPC returns them as `********`, and an update that sends
+    the mask keeps the stored value. Webhook delivery is best effort: at most a few retried requests per
+    event, kept in memory, dropped rather than slowing a call down; de-duplicate by `event_id`.
+  * `SubscribeVtsiEvents`: a server stream of the project's events, selected by a stored subscription or an
+    inline `VtsiEventFilter`, resumable with `resume_token` within the server's journal retention.
+
+  Five new fields carry the `optional` keyword (`page_token` of both list requests,
+  `SubscribeVtsiEventsRequest.resume_token`, `VtsiEventMessage.sip_status_type` and
+  `.previous_sip_status_type`). No new field is an `optional bool`, because ngx-grpc cannot send `false`
+  for one; switches are plain bools whose zero value is the safe default (`disabled`) or enums whose
+  `*_UNSPECIFIED` value is the documented default.
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) Client idempotency keys for the five
+  batch-creating `Calls` RPCs: `string idempotency_key` on `StartCallersRequest` (field 4),
+  `StartListenersRequest` (3), `StartScheduledCallersRequest` (4), `AddCallersToCampaignRequest` (4) and
+  `AddScheduledCallersToCampaignRequest` (4). A client that retries after a timeout or `UNAVAILABLE` (when the
+  first attempt may in fact have succeeded) sends the same key and gets the FIRST attempt's response back
+  instead of a second batch, whichever server replica the retry reaches. The key is scoped to the project and
+  the RPC and retained by the server for 24 hours by default; the same key with a different request is
+  `INVALID_ARGUMENT`, a retry while the first attempt still runs is `ABORTED` (retry later), and a failed
+  first attempt stores nothing. A replayed response carries no `common_services_config`. Empty = no
+  deduplication, byte-for-byte the previous behaviour. The single-resource RPCs take no key: their request
+  messages are also the ITEMS of the batch requests, where a key would have no meaning; send a batch of one.
+  No `optional` keyword (the empty string already means "no key"), so `presence/expected_optional.txt` is
+  unchanged.
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) Call control on `Calls`, five new RPCs:
+  * `InviteToCall` / `RemoveCallParticipant`: invite a registered softphone account of the project into a
+    connected call (`ParticipantMode` `CONFERENCE`, the default, or `MONITOR`), and hang a participant up
+    again. `CallParticipant` carries the participant's id, account, mode, `ParticipantState`
+    (`RINGING`, `JOINED`, `FAILED`, `LEFT`), times, end reason, inviter and `BotPolicyOnJoin`. The default
+    policy is `KEEP`: Asterisk mixes caller, bot and participant and the bot keeps talking; `PAUSE` and
+    `PAUSE_LISTENING` silence or deafen it while a participant rings or is joined. When the bot's leg ends
+    every participant is hung up. Idempotent per `request_id`.
+  * `SetCallMediaControl`: mute the bot of a connected call and/or stop it listening, as a desired level
+    (`CallMediaSetting` `UNCHANGED` / `ON` / `OFF`, never a toggle); the response carries the effective
+    `CallMediaControlState` and `changed`.
+  * `StreamCallAudio` (bidirectional, native gRPC clients only) and `ListenCallAudio` (server stream,
+    grpc-web safe): live call audio, LINEAR16 mono 20 ms frames at 8 or 16 kHz, LISTEN or TALK; TALK requires
+    `take_over` (the bot is muted and deaf while the agent talks). Messages `StreamCallAudioConfig`,
+    `CallAudioFrame`, `StreamCallAudioRequest`, `StreamCallAudioResponse`, `CallAudioStarted`,
+    `CallAudioStats`, `CallAudioEnded`, `ListenCallAudioRequest`, enums `CallAudioMode`,
+    `CallAudioEndReason`. Browsers get listen-only plus a softphone to talk.
+
+  The supervision RPCs (`InviteToCall`, `SetCallMediaControl`, `StreamCallAudio`, `ListenCallAudio` and
+  `TransferCall` / `TransferCalls`) require the role `PROJECT_DEVELOPER` or higher and the Keycloak auth mode
+  `ENFORCE`; every action is audited. Refusals are real gRPC status codes with `reason=<token>` in the status
+  details, documented per RPC.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) Typed, truthful transfers.
+  `TransferCallRequest` gained `CallTarget target = 4` (one of `phone_number` in E.164, `softphone_account_name`,
+  `listener_name`, `listener_queue`; mutually exclusive with the legacy `transfer_id`, which is now validated
+  against `^\+?[A-Za-z0-9._-]{1,64}$`), `TransferMode mode = 5` (`BLIND`, the default, or `WARM`: ring the
+  target in first and leave only after it joined; Asterisk 22 only), `map<string, string> headers = 6`
+  (`X-ondewo-*` only, delivered through the dialplan) and `int32 ring_timeout_s = 7`.
+  `TransferCallResponse` gained `TransferOutcome outcome = 5` (`ACCEPTED`, `PENDING`, `TARGET_INVALID`,
+  `REFER_REJECTED`, `TIMEOUT`, `CALL_ENDED`, `CALL_SCOPE_MISMATCH`, `SIP_UNREACHABLE`), `resolved_target = 6`,
+  `sip_response_code = 7` and `error_reason = 8`. A refused REFER now keeps the call with the bot.
+  `VtsiProject` gained `repeated string transfer_phone_number_allowlist = 17` (E.164 numbers or prefixes;
+  empty = any E.164 number).
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) `Call` gained
+  `CallMediaControlState media_control = 22`, `repeated CallParticipant participants = 23`,
+  `CallTransferRecord last_transfer = 24` and `string sip_call_id = 25` (the per-call id minted by the call's
+  SIP container; call control is refused as `call-not-yet-identified` until it is known).
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) `VtsiEvent` gained
+  `VTSI_EVENT_CALL_PARTICIPANT_INVITED` (112), `_JOINED` (113), `_FAILED` (114), `_LEFT` (115),
+  `VTSI_EVENT_CALL_BOT_MUTED` (116), `_BOT_UNMUTED` (117), `VTSI_EVENT_CALL_LISTENING_PAUSED` (118),
+  `_LISTENING_RESUMED` (119), `VTSI_EVENT_CALL_AUDIO_STREAM_CONNECTED` (120) and `_DISCONNECTED` (121).
+  `VTSI_EVENT_CALL_TRANSFER_INITIATED` (105) is emitted on BLIND acceptance or when a WARM target starts
+  ringing, `VTSI_EVENT_CALL_TRANSFERRED` (106) at the terminal `Call transferred` edge, and
+  `VTSI_EVENT_CALL_TRANSFER_FAILED` (107) whenever the call was kept.
+
+  None of the call-control fields carries the `optional` keyword (tri-state enums instead, because ngx-grpc
+  flattens presence), so `presence/expected_optional.txt` is unchanged. Purely additive: no field, enum
+  value or RPC was renumbered or removed.
+
+### Compatibility
+
+**Binary wire-compatible in BOTH directions. Source-breaking in every language. This is a MAJOR release
+because of the second sentence, not the first.** For a code-generating IDL the published contract is the
+generated symbol set, not the encoding, and this release removes `sip_conf_file_string` and its four
+accessor spellings from five languages at once.
+
+What that buys the operator: no coordinated deploy, no client-before-server ordering, and no rewrite of any
+stored protobuf payload. Measured with `grpc_tools.protoc` and protobuf 7.35.1, compiling the 8.7.0 and
+9.0.0 trees into two independent descriptor pools: an `AsteriskConfigsFiles` carrying the same text
+serialises to the same 14 bytes under either name, each side parses the other's bytes and re-serialises them
+byte-identically.
+
+Two things are NOT compatible, and neither raises anything at runtime.
+
+The JSON key moves. No `json_name` override is added, so `protoc` derives it from the field name and it goes
+from `sipConfFileString` to `pjsipConfFileString`. Any consumer that goes through `MessageToJson`,
+`ParseDict` or a hand-written JSON mapping must move with it. An override was considered and rejected: with
+the protobuf pin, `[json_name = "sipConfFileString"]` makes `ParseDict({"pjsipConfFileString": ...})` FAIL
+while the old key keeps working — it SWAPS the accepted key rather than widening it, which reinstates the
+name that lies in the one surface a human reads.
+
+The presence change has a MIRROR, and there is no runtime detector for it. A 9.0.0 client that explicitly
+sets one of the eleven fields to its default now puts bytes on the wire where 8.7.0 put none (`b''` becomes
+`b'\x08\x00'` for a `bool`, and `MessageToJson` goes from `{}` to `{"activate_s2t": false}`). The mirror is
+the risk: an 8.7.0 client that explicitly sets the default still sends NOTHING, and a 9.0.0 server reads
+that as unset. The two cases are identical on the wire, so no server-side check can separate them —
+regenerate a client against 9.0.0 before relying on an explicit default reaching the server as an explicit
+default. For the same reason, a round trip of a 9.0.0 message through an un-regenerated SDK silently DROPS
+presence, which is why all five clients are regenerated in one cycle.
+
+One trap for anyone writing a test against this. On an 8.7.0 message `HasField` on these eleven fields
+RAISES `ValueError: Field ... does not have presence` rather than returning `False`, so a test that probes
+with `HasField` crashes on exactly the messages it is meant to classify. The detection signal is
+`FieldDescriptor.has_presence`.
+
+Three vendored API submodule pins do not move in this release: `ondewo-nlu-api` stays at `tags/7.1.0`,
+`ondewo-s2t-api` at `tags/7.5.0` and `ondewo-t2s-api` at `tags/6.6.0`. `ondewo-sip-api` moves from
+`tags/5.4.0` to `tags/5.5.0`. That sip-api change is purely additive against 5.4.0: answering machine detection
+(`SipStatus.StatusType.OUTGOING_CALL_ANSWERING_MACHINE_DETECTED = 22`, non-terminal;
+`AnsweringMachineDetectionResult`, `SipStatus.amd_result`, `SipEndCallRequest.end_reason` and `amd_result`,
+the RPC `SipReportAnsweringMachineDetected`) and call control (`SipStatus.call_id`, `bot_muted`,
+`listening_paused`, `call_audio_streams`, `sip_response_code`, `SipTransferCallRequest.outcome_timeout_ms`,
+`END_CALL_REASON_TRANSFERRED`, the RPCs `SipSetCallMediaControl` and `SipStreamCallAudio`) and
+`option idempotency_level = NO_SIDE_EFFECTS` on `SipGetSipStatus` and `SipGetSipStatusHistory`, and it means the vendored-proto
+lockstep rule DOES fire: a consumer installing `ondewo-vtsi-client` next to `ondewo-sip-client` must take
+the sip client generated from the same sip-api commit, or the last installed copy of `ondewo/sip` wins.
+
+**Campaign enrollment fails closed during a rolling update.** A server replica that predates
+`AddCallersToCampaign` / `AddScheduledCallersToCampaign` answers them with `UNIMPLEMENTED` and starts
+nothing, so a campaign can never be dialled all at once by an old replica. Clients must NOT fall back to
+`StartCallers` on `UNIMPLEMENTED`; retry later. The new `Campaigns` and `Events` services and the three
+status streams answer `UNIMPLEMENTED` on an older replica too, which is harmless.
+
+**Idempotency keys are ignored by an older server replica.** A replica that predates `idempotency_key`
+skips it as an unknown field and runs the request, i.e. a retry reaching it during a rolling update behaves as
+before this release. Deduplication is guaranteed once every replica runs a server that reads the key.
+
+**`TransferCall` / `TransferCalls` are supervision RPCs now.** They require `PROJECT_DEVELOPER` or higher
+and the auth mode `ENFORCE`; a technical user holding only `PROJECT_EXECUTOR` that transferred calls before
+is refused with `PERMISSION_DENIED`. A call container deployed before the server had a call-control key
+refuses the new call-control RPCs until it is recycled, and an older SIP image answers them as
+`FAILED_PRECONDITION` `reason=sip-image-too-old`.
+
+**Server behaviour documented in this release (no wire change).** `BaseServiceConfig.grpc_cert` is now
+REQUIRED for the S2T, NLU and T2S configs of a call unless the VTSI server runs with
+`ONDEWO_VTSI_ALLOW_INSECURE_UPSTREAM=True` (lab and CI only); an empty value is otherwise refused with
+`FAILED_PRECONDITION` (`UPSTREAM_TLS_REQUIRED`). `UpdateWebhook` documents that moving a webhook's `url` to
+another origin (scheme, host or port) while custom headers are stored requires re-sending `custom_headers`
+with their real values (or an empty map) in the same request; the stored values never follow the url to a
+new origin.
+
+### Build
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) `make presence_check` works out of the box.
+  It needed `PRESENCE_PY` pointing at a python with `grpcio-tools`, and a plain `python3` without it failed
+  with exit 2. With `PRESENCE_PY` unset it now runs through a `uv run --no-project` runner with a pinned
+  `grpcio-tools`; `PRESENCE_PY` still overrides it. On a machine without index access, warm uv's cache once or
+  set `PRESENCE_PY`.
+
+*****************
+
 ## Release ONDEWO VTSI API 8.7.0
 
 ### Improvements

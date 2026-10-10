@@ -24,6 +24,7 @@ import "ondewo/nlu/intent.proto";
 import "ondewo/s2t/speech-to-text.proto";
 import "ondewo/t2s/text-to-speech.proto";
 import "ondewo/sip/sip.proto";
+import "ondewo/vtsi/campaigns.proto";
 
 
 // <p>ONDEWO VTSI API</p>
@@ -87,6 +88,18 @@ service Calls {
     // <p>Start multiple ondewo-sip caller instances, each at its own scheduled time</p>
     rpc StartScheduledCallers (StartScheduledCallersRequest) returns (StartScheduledCallersResponse);
 
+    // <p>Adds callers to a campaign instead of starting them. The campaign then starts them, at most
+    // <code>max_parallel_calls</code> at a time. The request is atomic: either the campaign (when new), every
+    // campaign call is stored, or nothing is. Errors are gRPC status codes (see <code>CampaignAssignment</code>).</p>
+    // <p>Rolling updates: a VTSI server that predates this RPC answers <code>UNIMPLEMENTED</code> and starts
+    // nothing. Do not fall back to <code>StartCallers</code> on <code>UNIMPLEMENTED</code>; retry later.</p>
+    rpc AddCallersToCampaign (AddCallersToCampaignRequest) returns (AddCallersToCampaignResponse);
+
+    // <p>Adds scheduled callers to a campaign: each fires at or after its scheduled time AND when the campaign has a
+    // free slot, and follows the campaign&apos;s retries, stop and hard stop. Same atomicity, errors and rolling-update
+    // behaviour as <code>AddCallersToCampaign</code>.</p>
+    rpc AddScheduledCallersToCampaign (AddScheduledCallersToCampaignRequest) returns (AddScheduledCallersToCampaignResponse);
+
     // <p>Gets a scheduled caller</p>
     rpc GetScheduledCaller (GetScheduledCallerRequest) returns (ScheduledCaller);
 
@@ -94,6 +107,11 @@ service Calls {
     rpc ListScheduledCallers (ListScheduledCallersRequest) returns (ListScheduledCallersResponse);
 
     // <p>Cancels a scheduled caller that has not fired yet</p>
+    // <p>A scheduled caller of a campaign can be cancelled while its campaign call is
+    // <code>CAMPAIGN_CALL_STATE_NOT_STARTED</code> or <code>CAMPAIGN_CALL_STATE_RETRY_PENDING</code>;
+    // the campaign call then becomes <code>CAMPAIGN_CALL_STATE_CANCELLED</code>. While an attempt is
+    // <code>DISPATCHING</code> or <code>IN_PROGRESS</code> the request is refused:
+    // <code>cancelled = false</code> and the scheduled caller keeps its status.</p>
     rpc CancelScheduledCaller (CancelScheduledCallerRequest) returns (CancelScheduledCallerResponse);
 
     // <p>Stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.</p>
@@ -107,10 +125,31 @@ service Calls {
     // <p>Stops all Listener and Caller calls</p>
     rpc StopAllCalls (StopAllCallsRequest) returns (StopCallsResponse);
 
-    // <p>Transfer a call from a listener to another</p>
+    // <p>Transfer a call to a phone number, a softphone account, another listener or the listener queue.</p>
+    // <p>The target is either the typed <code>target</code> or the legacy raw <code>transfer_id</code>, never both. It is
+    // resolved and validated before anything is sent; an invalid target is answered with
+    // <code>TRANSFER_OUTCOME_TARGET_INVALID</code> and an <code>error_reason</code>, and the call is untouched.</p>
+    // <p><code>TRANSFER_MODE_BLIND</code> (default) sends a SIP REFER and reports its outcome: a refused REFER keeps the
+    // call with the bot. <code>TRANSFER_MODE_WARM</code> rings the target into the call first, and the bot leaves only
+    // after the target joined (Asterisk 22 only).</p>
+    // <p>Telephony outcomes (busy, no answer, REFER rejected) are successful RPCs carrying an <code>outcome</code>.
+    // Refusals before any side effect also return a gRPC status with <code>reason=&lt;token&gt;</code> in its details:
+    // <code>INVALID_ARGUMENT</code> (both targets set, malformed target), <code>NOT_FOUND</code> (call or target not
+    // found, including another project&apos;s), <code>FAILED_PRECONDITION</code> (<code>call-not-connected</code>,
+    // <code>amd-in-progress</code>, <code>call-not-yet-identified</code>, <code>participants-present</code>,
+    // <code>asterisk-version-unsupported</code>, <code>sip-image-too-old</code>), <code>ABORTED</code>
+    // (<code>transfer-in-progress</code>), <code>UNAVAILABLE</code> (<code>sip-unreachable</code>).</p>
+    // <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s
+    // Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or
+    // <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced.
+    // Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p>
     rpc TransferCall (TransferCallRequest) returns (TransferCallResponse);
 
-    // <p>Transfer a call from a listener to another</p>
+    // <p>Transfer several calls, each like <code>TransferCall</code>.</p>
+    // <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s
+    // Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or
+    // <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced.
+    // Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p>
     rpc TransferCalls (TransferCallsRequest) returns (TransferCallsResponse);
 
     // <p>Get call log for single call instance</p>
@@ -118,6 +157,98 @@ service Calls {
 
     // <p>Get call log for all call instances</p>
     rpc ListCalls (ListCallsRequest) returns (ListCallsResponse);
+
+    //////////////////////////////////////////////////////////////////////////////
+    // Status stream endpoints
+    //////////////////////////////////////////////////////////////////////////////
+
+    // <p>Streams the status of the callers of a project: a snapshot first
+    // (<code>snapshot = true</code>), then every caller whose call or SIP status changed, plus
+    // keep-alive messages. Ends when the client disconnects or at the server-side maximum stream
+    // duration.</p>
+    // <p>Errors: <code>NOT_FOUND</code> for an unknown project; <code>RESOURCE_EXHAUSTED</code> when
+    // the server has no free stream slot.</p>
+    rpc StreamCallerStatus (StreamCallerStatusRequest) returns (stream StreamCallResourceStatusResponse);
+
+    // <p>Streams the status of the listeners of a project, like <code>StreamCallerStatus</code>.</p>
+    rpc StreamListenerStatus (StreamListenerStatusRequest) returns (stream StreamCallResourceStatusResponse);
+
+    // <p>Streams the status of the scheduled callers of a project, like
+    // <code>StreamCallerStatus</code>. The snapshot holds every PENDING and FIRING scheduled caller
+    // and those that finished in the last hour.</p>
+    rpc StreamScheduledCallerStatus (StreamScheduledCallerStatusRequest) returns (stream StreamCallResourceStatusResponse);
+
+    //////////////////////////////////////////////////////////////////////////////
+    // Call control endpoints
+    //////////////////////////////////////////////////////////////////////////////
+
+    // <p>Invite a registered softphone account of the project into a connected call. Returns the participant in
+    // <code>PARTICIPANT_STATE_RINGING</code>; follow <code>Call.participants</code> or the events
+    // <code>VTSI_EVENT_CALL_PARTICIPANT_*</code> for JOINED, FAILED and LEFT.</p>
+    // <p><code>PARTICIPANT_MODE_CONFERENCE</code> (default) joins the softphone into the call: Asterisk mixes the caller,
+    // the bot and the participant, and by default the bot keeps talking and listening
+    // (<code>BOT_POLICY_ON_JOIN_KEEP</code>). <code>PARTICIPANT_MODE_MONITOR</code> lets the participant listen only.
+    // When the bot&apos;s leg ends, every participant is hung up; the caller is handed over only by a WARM
+    // <code>TransferCall</code>. Idempotent per <code>request_id</code>.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code>, <code>NOT_FOUND</code> (call or softphone account, including another
+    // project&apos;s), <code>FAILED_PRECONDITION</code> (<code>call-not-connected</code>, <code>amd-in-progress</code>,
+    // <code>softphone-not-registered</code>, <code>softphone-disabled</code>, <code>softphone-unrouted</code>,
+    // <code>call-not-yet-identified</code>, <code>bot-channel-ambiguous</code>, <code>asterisk-not-local</code>,
+    // <code>asterisk-version-unsupported</code>), <code>ALREADY_EXISTS</code> (the softphone is already ringing or joined),
+    // <code>ABORTED</code> (<code>transfer-in-progress</code>), <code>RESOURCE_EXHAUSTED</code> (participant cap),
+    // <code>UNAVAILABLE</code> (<code>asterisk-unreachable</code>).</p>
+    // <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s
+    // Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or
+    // <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced.
+    // Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p>
+    rpc InviteToCall (InviteToCallRequest) returns (InviteToCallResponse);
+
+    // <p>Hang up a participant of a call (ringing or joined). The participant ends as
+    // <code>PARTICIPANT_STATE_LEFT</code> with <code>end_reason = REMOVED</code>; the call and the bot are not
+    // affected.</p>
+    // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher. Audited like <code>InviteToCall</code>.</p>
+    rpc RemoveCallParticipant (RemoveCallParticipantRequest) returns (RemoveCallParticipantResponse);
+
+    // <p>Mute the bot of a connected call and/or stop it listening to the caller, or undo either. Every request sets a
+    // desired level and never toggles: a repeat answers <code>changed = false</code>. The bot stays muted while
+    // anything else (a TALK take-over of <code>StreamCallAudio</code>, a participant bot policy) also holds it muted.</p>
+    // <p>Errors as for <code>InviteToCall</code>, plus <code>FAILED_PRECONDITION</code> <code>reason=sip-image-too-old</code>,
+    // <code>ABORTED</code> <code>reason=call-control-busy</code> (another call-control request for the call is running)
+    // and <code>UNAVAILABLE</code> <code>reason=sip-unreachable</code> or <code>reason=csi-media-control-failed</code> (the
+    // bot did not apply the level: a requested pause is rolled back, a requested mute is kept).</p>
+    // <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s
+    // Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or
+    // <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced.
+    // Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p>
+    rpc SetCallMediaControl (SetCallMediaControlRequest) returns (SetCallMediaControlResponse);
+
+    // <p>Live audio of a connected call, both ways. The first request MUST be <code>config</code> (within 2 seconds).
+    // LISTEN receives the caller mixed with the bot. TALK sends the agent&apos;s audio to the caller and REQUIRES
+    // <code>take_over</code>: the bot is muted and does not listen while the stream is connected, and resumes when it
+    // ends; in TALK the agent hears the caller only. Audio is LINEAR16 little-endian mono in 20 ms frames.</p>
+    // <p>Bidirectional streaming: available to native gRPC clients (python, nodejs) only. Browser (grpc-web) clients
+    // use <code>ListenCallAudio</code>, plus a softphone (<code>InviteToCall</code>) to talk.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> (no or invalid <code>config</code>, TALK without
+    // <code>take_over</code>, wrong frame size), <code>NOT_FOUND</code>, <code>FAILED_PRECONDITION</code>
+    // (<code>call-not-connected</code>, <code>amd-in-progress</code>, <code>call-not-yet-identified</code>,
+    // <code>bot-still-speaking</code>, <code>sip-image-too-old</code>), <code>RESOURCE_EXHAUSTED</code> (stream cap, a
+    // second TALK). A normal end sends one <code>ended</code> message, then OK. A second <code>config</code> or audio
+    // sent in LISTEN mode ends the stream with <code>INVALID_ARGUMENT</code>. A client half-close ends the stream
+    // (<code>CALL_AUDIO_END_REASON_CLIENT_CLOSED</code>), so a listening client keeps its request stream open.</p>
+    // <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s
+    // Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or
+    // <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced.
+    // Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p>
+    rpc StreamCallAudio (stream StreamCallAudioRequest) returns (stream StreamCallAudioResponse);
+
+    // <p>Listen-only live audio of a connected call, like <code>StreamCallAudio</code> in LISTEN mode, as a server
+    // stream that grpc-web (browser) clients can consume. <code>config.mode</code> must be LISTEN or unspecified and
+    // <code>config.take_over</code> must be false, otherwise <code>INVALID_ARGUMENT</code> <code>reason=listen-only</code>.</p>
+    // <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s
+    // Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or
+    // <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced.
+    // Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p>
+    rpc ListenCallAudio (ListenCallAudioRequest) returns (stream StreamCallAudioResponse);
 
 }
 
@@ -130,7 +261,10 @@ message BaseServiceConfig{
     // service port
     int32 port = 2;
 
-    // Optional: GRPC cert for the given service
+    // PEM certificate(s) the service&apos;s gRPC server certificate chains to (CA or self-signed leaf), with real or
+    // escaped newlines; never a private key. Required for the S2T, NLU and T2S configs of a call unless the VTSI
+    // server runs with ONDEWO_VTSI_ALLOW_INSECURE_UPSTREAM=True (lab and CI only); an empty value is otherwise
+    // refused with FAILED_PRECONDITION (UPSTREAM_TLS_REQUIRED).
     string grpc_cert = 3;
 }
 
@@ -241,6 +375,11 @@ message VoiceInteractionConfig{
 
     // Configuration of the response timing
     ResponseTimingConfig response_timing_config = 3;
+
+    // Configuration of the answering machine detection (AMD) of an outbound call.
+    // Only accepted for pooled persistent callers: a listener or a one-shot caller that carries it
+    // is rejected with INVALID_ARGUMENT
+    AnsweringMachineDetectionConfig answering_machine_detection_config = 4;
 }
 
 // Configuration of the turn detection, i.e. deciding when the caller has finished speaking
@@ -292,10 +431,10 @@ message TurnDetectionConfig{
     TurnEagerness turn_eagerness = 4;
 
     // System prompt for the semantic (LLM) turn detection model of the speech-to-text service
-    string turn_detection_system_prompt = 5;
+    optional string turn_detection_system_prompt = 5;
 
     // User prompt for the semantic (LLM) turn detection model of the speech-to-text service
-    string turn_detection_user_prompt = 6;
+    optional string turn_detection_user_prompt = 6;
 }
 
 // Configuration of the interruption (barge-in) handling, i.e. the caller speaking while the bot is speaking
@@ -328,7 +467,7 @@ message InterruptionHandlingConfig{
     optional float first_message_protected_seconds = 7;
 
     // Transcribe caller speech while the bot is speaking even if interruptions are disabled
-    bool transcribe_on_disabled_interruptions = 8;
+    optional bool transcribe_on_disabled_interruptions = 8;
 }
 
 // Configuration of the response timing, i.e. when and how the bot responds
@@ -365,6 +504,155 @@ message SoftTimeoutConfig{
 
     // Optional: Maximum number of filler messages per response generation (default: 1)
     optional int32 max_per_generation = 3;
+}
+
+// Configuration of the answering machine detection (AMD) of an outbound call, i.e. deciding in the first
+// seconds after the callee answered whether a person, an answering machine, a fax, an IVR or a network
+// announcement picked up, and hanging up on the non-human ones.
+// Detection listens first: the bot stays silent until the verdict is reached or the decision window ends.
+// Every field is optional: an unset field takes the default of the CSI container (listed per field below).
+// Only accepted for pooled persistent callers; the settings are part of the caller container configuration,
+// so callers with different AMD settings are never pooled together.
+// The verdict of a call is reported as ondewo.sip.SipStatus.amd_result. Reaching a hang-up-eligible verdict sets
+// the non-terminal status ondewo.sip.SipStatus.StatusType.OUTGOING_CALL_ANSWERING_MACHINE_DETECTED (the call is
+// still up), and a call ended by AMD reaches the terminal status OUTGOING_CALL_FINISHED with one of these
+// descriptions:
+// <ul>
+// <li>"Answering machine detected with hang up": the caller hung up without leaving a voice message</li>
+// <li>"Answering machine detected with left voice message and hang up": the caller hung up after starting the
+// voice message</li>
+// <li>"Answering machine detected, call ended by the answering machine": the far end hung up before a voice
+// message was started</li>
+// <li>"Answering machine detected, call ended by the answering machine after leaving a voice message": the far
+// end hung up after the voice message was started</li>
+// </ul>
+// The description is also recorded on the call as Call.answering_machine_detection_end_description.
+// Compliance: leaving a recorded message on a consumer's mailbox for marketing purposes requires the consent of
+// the callee in many jurisdictions (e.g. in Germany § 7 UWG). HANG_UP is therefore the default action.
+message AnsweringMachineDetectionConfig{
+
+    // What to do once a non-human verdict is reached
+    enum AmdAction {
+
+        // Unspecified action defaults to HANG_UP
+        AMD_ACTION_UNSPECIFIED = 0;
+
+        // Hang up at once on a non-human verdict whose per-verdict hang-up switch is on
+        // (an answering machine is always hung up on) (default)
+        HANG_UP = 1;
+
+        // Only detect and record the verdict, never hang up: OUTGOING_CALL_ANSWERING_MACHINE_DETECTED is still
+        // set, then the far end is treated as a person and the call continues with the greeting and ends
+        // normally (shadow mode to calibrate the detection before enabling HANG_UP)
+        DETECT_ONLY = 2;
+
+        // Leave a voice message on a hang-up-eligible verdict, then hang up: the fulfillment of
+        // voice_message_intent is spoken once after the beep (or after the end of the machine greeting),
+        // and the call is hung up when it finished playing or when voice_message_timeout_ms elapsed,
+        // whichever comes first. A FAX verdict never gets a voice message; it is hung up on when
+        // hang_up_on_fax is on. See the compliance note above before enabling it
+        LEAVE_VOICE_MESSAGE = 3;
+    }
+
+    // Sensitivity of the detection: selects the enabled detection rules and their internal thresholds
+    enum AmdSensitivity {
+
+        // Unspecified sensitivity defaults to LOW
+        AMD_SENSITIVITY_UNSPECIFIED = 0;
+
+        // Most conservative towards people: only strong machine evidence leads to a machine verdict (default)
+        LOW = 1;
+
+        // Balanced between missed machines and people classified as machines
+        MEDIUM = 2;
+
+        // Most aggressive: detects more machines at a higher risk of hanging up on a person
+        HIGH = 3;
+    }
+
+    // Optional: Master switch of the answering machine detection (default: false)
+    optional bool active = 1;
+
+    // Optional: Action on a non-human verdict (default: HANG_UP)
+    optional AmdAction action = 2;
+
+    // Optional: Sensitivity of the detection (default: LOW)
+    optional AmdSensitivity sensitivity = 3;
+
+    // Optional: Maximum time in milliseconds after the callee answered to reach a verdict when no
+    // machine-leaning evidence was seen; the verdict is UNKNOWN when it is reached
+    // (default: 4000, valid range: 1500 - 10000)
+    optional int32 max_decision_time_ms = 4;
+
+    // Optional: Maximum time in milliseconds after the callee answered to reach a verdict once
+    // machine-leaning evidence extended the decision window (default: 11000, valid range: 4000 - 20000)
+    optional int32 max_machine_wait_ms = 5;
+
+    // Optional: Time in milliseconds to wait for a beep after a long greeting ended
+    // (default: 1500, valid range: 0 - 4000)
+    optional int32 beep_wait_after_greeting_ms = 6;
+
+    // Optional: Silence in milliseconds after the callee answered without any speech, after which the verdict
+    // is NO_SPEECH, which is treated like a person (default: 3500, valid range: 1000 - 10000)
+    optional int32 initial_silence_ms = 7;
+
+    // Optional: Continuous speech in milliseconds beyond which a greeting is machine-leaning
+    // (default: 2400, valid range: 1000 - 6000)
+    optional int32 max_human_greeting_ms = 8;
+
+    // Optional: Silence in milliseconds after the first speech burst that ends a human greeting
+    // (default: 900, valid range: 300 - 3000)
+    optional int32 greeting_end_silence_ms = 9;
+
+    // Optional: Enable the tone detector for the beep of an answering machine (default: true)
+    optional bool beep_detection_active = 10;
+
+    // Additional phrases that indicate an answering machine, added to the built-in de and en phrase lists
+    // (maximum 50 phrases, each 1 - 80 characters)
+    repeated string additional_machine_phrases = 11;
+
+    // Additional phrases that indicate a person, added to the built-in de and en phrase lists
+    // (maximum 50 phrases, each 1 - 80 characters)
+    repeated string additional_human_phrases = 12;
+
+    // Optional: Hang up on a FAX verdict when the action is HANG_UP (default: true)
+    optional bool hang_up_on_fax = 13;
+
+    // Optional: Hang up on a NETWORK_ANNOUNCEMENT verdict, e.g. "the number is not reachable",
+    // when the action is HANG_UP (default: true)
+    optional bool hang_up_on_network_announcement = 14;
+
+    // Optional: Hang up on an IVR verdict, i.e. an automated menu, when the action is HANG_UP (default: false)
+    optional bool hang_up_on_ivr = 15;
+
+    // Optional: Hang up on a CALL_SCREENING verdict, i.e. a call screening assistant asking for the reason of
+    // the call, when the action is HANG_UP (default: false)
+    optional bool hang_up_on_call_screening = 16;
+
+    // Optional: Name of the NLU intent whose fulfillment is the voice message when the action is
+    // LEAVE_VOICE_MESSAGE; it is triggered once (default: the welcome intent of the NLU project,
+    // 1 - 200 characters when set)
+    optional string voice_message_intent = 17;
+
+    // Optional: Maximum time in milliseconds after the verdict to wait for the beep, or for the end of the
+    // machine greeting, before the voice message is spoken when the action is LEAVE_VOICE_MESSAGE;
+    // 0 speaks immediately (default: 10000, valid range: 0 - 30000)
+    optional int32 voice_message_max_beep_wait_ms = 18;
+
+    // Optional: Maximum time in milliseconds after the verdict until the call is hung up when the action is
+    // LEAVE_VOICE_MESSAGE, also when the voice message has not finished playing
+    // (default: 30000, valid range: 5000 - 120000)
+    optional int32 voice_message_timeout_ms = 19;
+
+    // Optional: Enable the detection of machine and person phrases in the transcribed greeting, i.e. the
+    // built-in phrase lists plus additional_machine_phrases and additional_human_phrases; turning it off
+    // removes this evidence and the detection rules that need it (default: true)
+    optional bool keyword_detection_active = 20;
+
+    // Optional: Enable the detection based on the speech and silence cadence of the greeting, e.g. its
+    // length and the silence after it; turning it off removes this evidence and the detection rules that
+    // need it (default: true)
+    optional bool cadence_detection_active = 21;
 }
 
 // The base config is for both the listener and caller. If you only provide it you will get a listener
@@ -428,7 +716,7 @@ message CsiVtsiConfig{
 message AudioObjectStorageConfig{
 
     // Audio storage should be activated or not
-    bool activate_audio_object_storage = 1;
+    optional bool activate_audio_object_storage = 1;
 
     // Configuration of the Minio Audio Object Store
     AudioObjectStorageServicesActivationConfig audio_object_storage_services_activation_config = 2;
@@ -439,17 +727,17 @@ message AudioObjectStorageConfig{
 message AudioObjectStorageServicesActivationConfig{
 
     // Should audio object store save audio sent to the Speech-2-Text platform
-    bool activate_s2t = 1;
+    optional bool activate_s2t = 1;
 
     // Should audio object store save audio generated from the Text-2-Speech platform
-    bool activate_t2s = 2;
+    optional bool activate_t2s = 2;
 }
 
 // Configuration of the RabbitMQ Message Broker
 message MessageBrokerConfig{
 
     // Should the broker be activated or not
-    bool activate_message_broker = 1;
+    optional bool activate_message_broker = 1;
 
     // Configuration of the Broker service activation
     MessageBrokerServicesActivationConfig message_broker_services_activation_config = 2;
@@ -464,16 +752,16 @@ message MessageBrokerConfig{
 message MessageBrokerServicesActivationConfig{
 
     // should RabbitMQ Message Broker be activated for Speech-2-Text platform
-    bool activate_s2t = 1;
+    optional bool activate_s2t = 1;
 
     // should RabbitMQ Message Broker be activated for NLU platform
-    bool activate_nlu = 2;
+    optional bool activate_nlu = 2;
 
     // should RabbitMQ Message Broker be activated for Text-2-Speech platform
-    bool activate_t2s = 3;
+    optional bool activate_t2s = 3;
 
     // should RabbitMQ Message Broker be activated for SIP platform
-    bool activate_sip = 4;
+    optional bool activate_sip = 4;
 }
 
 // Configuration of the RabbitMQ Message Broker
@@ -603,6 +891,17 @@ message StartListenersRequest {
 
     // Listeners that should be started
     repeated StartListenerRequest listener_requests = 2;
+
+    // Optional client idempotency key: at most 255 printable ASCII characters, no whitespace; empty means no
+    // deduplication. A retry carrying the same key returns the response of the first successful attempt instead
+    // of running the request a second time, whichever server replica it reaches, for as long as the server
+    // retains the key (24 hours by default). The key is scoped to the VTSI project and to this RPC. Reusing a
+    // key with a different request is refused with <code>INVALID_ARGUMENT</code>. A retry that arrives while the
+    // first attempt is still running is answered <code>ABORTED</code> and may be retried later. A first attempt
+    // that fails stores nothing, so a retry after a failure runs the request again. A replayed response carries
+    // no <code>common_services_config</code>: the server keeps no second copy of the credentials it holds. To
+    // make a single caller or listener idempotent, send it as a batch of one.
+    string idempotency_key = 3;
 }
 
 // Response to start multiple listeners
@@ -656,6 +955,22 @@ message StartCallersRequest {
     // Callers that should be started
     repeated StartCallerRequest caller_requests = 2;
 
+    // Field 3 was campaign_assignment in unreleased 9.0.0 development builds; use AddCallersToCampaign. A
+    // request that still carries it is refused with INVALID_ARGUMENT.
+    reserved 3;
+    reserved "campaign_assignment";
+
+    // Optional client idempotency key: at most 255 printable ASCII characters, no whitespace; empty means no
+    // deduplication. A retry carrying the same key returns the response of the first successful attempt instead
+    // of running the request a second time, whichever server replica it reaches, for as long as the server
+    // retains the key (24 hours by default). The key is scoped to the VTSI project and to this RPC. Reusing a
+    // key with a different request is refused with <code>INVALID_ARGUMENT</code>. A retry that arrives while the
+    // first attempt is still running is answered <code>ABORTED</code> and may be retried later. A first attempt
+    // that fails stores nothing, so a retry after a failure runs the request again. A replayed response carries
+    // no <code>common_services_config</code>: the server keeps no second copy of the credentials it holds. To
+    // make a single caller or listener idempotent, send it as a batch of one.
+    string idempotency_key = 4;
+
 }
 
 // Response to the start caller request
@@ -669,6 +984,11 @@ message StartCallersResponse {
 
     // overall error message if you have any so if it's unhealthy
     string error_message = 3;
+
+    // Fields 4 and 5 carried the campaign result in unreleased 9.0.0 development builds; see
+    // AddCallersToCampaignResponse.
+    reserved 4, 5;
+    reserved "campaign", "campaign_call_names";
 
 }
 
@@ -934,6 +1254,22 @@ message StartScheduledCallersRequest {
 
     // requests to start scheduled callers
     repeated StartScheduledCallerRequest scheduled_caller_requests = 2;
+
+    // Field 3 was campaign_assignment in unreleased 9.0.0 development builds; use
+    // AddScheduledCallersToCampaign. A request that still carries it is refused with INVALID_ARGUMENT.
+    reserved 3;
+    reserved "campaign_assignment";
+
+    // Optional client idempotency key: at most 255 printable ASCII characters, no whitespace; empty means no
+    // deduplication. A retry carrying the same key returns the response of the first successful attempt instead
+    // of running the request a second time, whichever server replica it reaches, for as long as the server
+    // retains the key (24 hours by default). The key is scoped to the VTSI project and to this RPC. Reusing a
+    // key with a different request is refused with <code>INVALID_ARGUMENT</code>. A retry that arrives while the
+    // first attempt is still running is answered <code>ABORTED</code> and may be retried later. A first attempt
+    // that fails stores nothing, so a retry after a failure runs the request again. A replayed response carries
+    // no <code>common_services_config</code>: the server keeps no second copy of the credentials it holds. To
+    // make a single caller or listener idempotent, send it as a batch of one.
+    string idempotency_key = 4;
 }
 
 // Response to start multiple listeners
@@ -945,6 +1281,95 @@ message StartScheduledCallersResponse {
     // The call ids that were assigned to each listener
     repeated StartScheduledCallerResponse scheduled_caller_responses = 2;
 
+    // Fields 3 and 4 carried the campaign result in unreleased 9.0.0 development builds; see
+    // AddScheduledCallersToCampaignResponse.
+    reserved 3, 4;
+    reserved "campaign", "campaign_call_names";
+
+}
+
+// The request message for <a href="index.html#ondewo.vtsi.Calls.AddCallersToCampaign">Calls.AddCallersToCampaign</a>.
+message AddCallersToCampaignRequest {
+
+    // VTSI project of the callers and the campaign.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Callers to add, at least one. The project&apos;s caller limit is checked per started call, not for the request.
+    repeated StartCallerRequest caller_requests = 2;
+
+    // Required. Which campaign, and whether it starts dialling.
+    CampaignAssignment campaign_assignment = 3;
+
+    // Optional client idempotency key: at most 255 printable ASCII characters, no whitespace; empty means no
+    // deduplication. A retry carrying the same key returns the response of the first successful attempt instead
+    // of running the request a second time, whichever server replica it reaches, for as long as the server
+    // retains the key (24 hours by default). The key is scoped to the VTSI project and to this RPC. Reusing a
+    // key with a different request is refused with <code>INVALID_ARGUMENT</code>. A retry that arrives while the
+    // first attempt is still running is answered <code>ABORTED</code> and may be retried later. A first attempt
+    // that fails stores nothing, so a retry after a failure runs the request again. A replayed response carries
+    // no <code>common_services_config</code>: the server keeps no second copy of the credentials it holds. To
+    // make a single caller or listener idempotent, send it as a batch of one.
+    string idempotency_key = 4;
+}
+
+// The response message for <a href="index.html#ondewo.vtsi.Calls.AddCallersToCampaign">Calls.AddCallersToCampaign</a>.
+message AddCallersToCampaignResponse {
+
+    // VTSI project of the callers and the campaign.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // The campaign the callers were added to.
+    Campaign campaign = 2;
+
+    // The campaign calls created by this request, in request order.
+    repeated string campaign_call_names = 3;
+}
+
+// The request message for
+// <a href="index.html#ondewo.vtsi.Calls.AddScheduledCallersToCampaign">Calls.AddScheduledCallersToCampaign</a>.
+message AddScheduledCallersToCampaignRequest {
+
+    // VTSI project of the scheduled callers and the campaign.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Scheduled callers to add, at least one. A scheduled caller of a campaign can be cancelled with
+    // <code>CancelScheduledCaller</code> only while its campaign call has no attempt dispatching or in progress.
+    repeated StartScheduledCallerRequest scheduled_caller_requests = 2;
+
+    // Required. Which campaign, and whether it starts dialling.
+    CampaignAssignment campaign_assignment = 3;
+
+    // Optional client idempotency key: at most 255 printable ASCII characters, no whitespace; empty means no
+    // deduplication. A retry carrying the same key returns the response of the first successful attempt instead
+    // of running the request a second time, whichever server replica it reaches, for as long as the server
+    // retains the key (24 hours by default). The key is scoped to the VTSI project and to this RPC. Reusing a
+    // key with a different request is refused with <code>INVALID_ARGUMENT</code>. A retry that arrives while the
+    // first attempt is still running is answered <code>ABORTED</code> and may be retried later. A first attempt
+    // that fails stores nothing, so a retry after a failure runs the request again. A replayed response carries
+    // no <code>common_services_config</code>: the server keeps no second copy of the credentials it holds. To
+    // make a single caller or listener idempotent, send it as a batch of one.
+    string idempotency_key = 4;
+}
+
+// The response message for
+// <a href="index.html#ondewo.vtsi.Calls.AddScheduledCallersToCampaign">Calls.AddScheduledCallersToCampaign</a>.
+message AddScheduledCallersToCampaignResponse {
+
+    // VTSI project of the scheduled callers and the campaign.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // The scheduled callers created, in request order.
+    repeated StartScheduledCallerResponse scheduled_caller_responses = 2;
+
+    // The campaign the scheduled callers were added to.
+    Campaign campaign = 3;
+
+    // The campaign calls created by this request, in request order.
+    repeated string campaign_call_names = 4;
 }
 
 
@@ -991,7 +1416,7 @@ message ScheduledCaller {
     // <pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre>
     string name = 1;
 
-    // The asterisk sip call name that was assigned to the call
+    // The call name that was assigned to the call
     // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     string call_name = 2;
@@ -1028,6 +1453,15 @@ message ScheduledCaller {
 
     // Why starting the call failed. Only populated when the status is SCHEDULED_CALLER_STATUS_FAILED
     string error_message = 11;
+
+    // Resource name of the campaign this scheduled caller belongs to. Empty when it belongs to none.
+    // A campaign&apos;s scheduled caller mirrors its campaign call: <code>status</code> is
+    // <code>PENDING</code> while the call is not started or waits for a retry,
+    // <code>FIRING</code> while an attempt is being started or running, and <code>DONE</code> /
+    // <code>FAILED</code> / <code>CANCELLED</code> when the call is completed / failed / cancelled;
+    // <code>call_name</code> and <code>error_message</code> are those of the latest attempt. Its
+    // own retry settings are not used; the campaign&apos;s apply.
+    string campaign_name = 12;
 }
 
 // Represents a request to get a specific scheduled caller.
@@ -1178,9 +1612,105 @@ message TransferCallRequest{
     // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     string call_name = 2;
 
-    // transfer_id to transfer the call to, so the number or voip number you want to be transferred too
+    // LEGACY raw target: the dialplan extension, voip number or phone number to transfer the call to. Validated against
+    // <code>^\+?[A-Za-z0-9._-]{1,64}$</code>. Mutually exclusive with <code>target</code>: setting both is
+    // <code>INVALID_ARGUMENT</code>
     string transfer_id = 3;
 
+    // Typed target of the transfer, resolved and validated by the server. Mutually exclusive with <code>transfer_id</code>
+    CallTarget target = 4;
+
+    // How to transfer. Unspecified means <code>TRANSFER_MODE_BLIND</code>
+    TransferMode mode = 5;
+
+    // Optional headers handed to the transfer target. Keys must match <code>X-ondewo-[A-Za-z0-9-]{1,64}</code>, at most 16
+    // entries, values at most 256 bytes. Merged over the call&apos;s own headers. They are delivered through the
+    // dialplan, not on the SIP REFER (Asterisk does not forward REFER headers to the target). Not delivered to a phone
+    // number target
+    map<string, string> headers = 6;
+
+    // WARM only: how long the target may ring, in seconds, <code>5</code> to <code>120</code>. <code>0</code> means
+    // <code>30</code>
+    int32 ring_timeout_s = 7;
+
+}
+
+// <p>Target of a transfer</p>
+message CallTarget {
+
+    // One of the following
+    oneof target {
+
+        // Phone number in E.164 form, e.g. <code>+4312345678</code> (<code>^\+[1-9][0-9]{6,14}$</code>). Any E.164 number
+        // is allowed unless the project configures <code>VtsiProject.transfer_phone_number_allowlist</code>
+        string phone_number = 1;
+
+        // A softphone account of the same project:
+        // <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;account_uuid&gt;</code></pre>. It must be enabled,
+        // routed and registered
+        string softphone_account_name = 2;
+
+        // A listener of the same project: <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>.
+        // The call goes to that listener&apos;s idle container; a busy listener is refused (<code>listener-busy</code>)
+        string listener_name = 3;
+
+        // The project&apos;s listener queue: any idle listener of the project takes the call
+        ListenerQueueTarget listener_queue = 4;
+    }
+}
+
+// <p>The project&apos;s listener queue as a transfer target. Carries no fields</p>
+message ListenerQueueTarget {}
+
+// <p>How a call is transferred</p>
+enum TransferMode {
+
+    // Same as <code>TRANSFER_MODE_BLIND</code>
+    TRANSFER_MODE_UNSPECIFIED = 0;
+
+    // SIP REFER: the caller is handed to the dialplan, which dials the target. A refused REFER keeps the call with the
+    // bot; once the REFER is accepted the bot leaves, and a target that is then busy or does not answer loses the
+    // caller
+    TRANSFER_MODE_BLIND = 1;
+
+    // The target is rung into the call first; the bot leaves only after the target joined, and keeps the call when the
+    // target is busy or does not answer. Requires an Asterisk 22 project
+    TRANSFER_MODE_WARM = 2;
+}
+
+// <p>Outcome of a transfer</p>
+enum TransferOutcome {
+
+    // No outcome recorded
+    TRANSFER_OUTCOME_UNSPECIFIED = 0;
+
+    // BLIND: the REFER was accepted and the bot left the call. WARM: the target answered and was bridged, and the bot
+    // left the call
+    TRANSFER_OUTCOME_ACCEPTED = 1;
+
+    // WARM: the target is ringing. Follow <code>VTSI_EVENT_CALL_TRANSFERRED</code> /
+    // <code>VTSI_EVENT_CALL_TRANSFER_FAILED</code> or <code>Call.last_transfer</code>
+    TRANSFER_OUTCOME_PENDING = 2;
+
+    // Refused before anything was sent; the call is untouched. <code>error_reason</code> says why
+    TRANSFER_OUTCOME_TARGET_INVALID = 3;
+
+    // The SIP server refused the REFER (including an unknown target extension); the call is KEPT with the bot.
+    // <code>sip_response_code</code> carries the code where known
+    TRANSFER_OUTCOME_REFER_REJECTED = 4;
+
+    // No answer to the REFER in time, or (WARM) the target did not answer; the call is KEPT with the bot
+    TRANSFER_OUTCOME_TIMEOUT = 5;
+
+    // The far end left the call during the attempt
+    TRANSFER_OUTCOME_CALL_ENDED = 6;
+
+    // The call this request names is no longer the call the container is serving (e.g. the next call of a persistent
+    // listener); nothing was sent
+    TRANSFER_OUTCOME_CALL_SCOPE_MISMATCH = 7;
+
+    // The call&apos;s SIP container could not be reached
+    TRANSFER_OUTCOME_SIP_UNREACHABLE = 8;
 }
 
 // Response to transfer a call to a phone number or voip number
@@ -1200,6 +1730,431 @@ message TransferCallResponse {
     // error message if you have any so if it's unhealthy
     string error_message = 4;
 
+    // Outcome of the transfer
+    TransferOutcome outcome = 5;
+
+    // The dialplan extension the target resolved to, e.g. <code>ondewo0007</code>, a softphone user name,
+    // <code>ondewoqueue</code> or the E.164 number
+    string resolved_target = 6;
+
+    // SIP response code of the REFER where known (<code>202</code> accepted, the refusal code otherwise), else
+    // <code>0</code>
+    int32 sip_response_code = 7;
+
+    // Stable reason token of a refusal or failure, e.g. <code>target-not-registered</code>, <code>listener-busy</code>,
+    // <code>queue-empty</code>, <code>self-transfer</code>, <code>number-not-allowed</code>; empty on success
+    string error_reason = 8;
+
+}
+
+// <p>Record of the last transfer attempt of a call</p>
+message CallTransferRecord {
+
+    // Requested typed target; unset for a legacy <code>transfer_id</code> transfer
+    CallTarget target = 1;
+
+    // The dialplan extension the target resolved to
+    string resolved_target = 2;
+
+    // Mode of the transfer
+    TransferMode mode = 3;
+
+    // Outcome of the transfer
+    TransferOutcome outcome = 4;
+
+    // SIP response code of the REFER where known, else <code>0</code>
+    int32 sip_response_code = 5;
+
+    // When the outcome was recorded
+    google.protobuf.Timestamp time = 6;
+}
+
+// <p>Desired setting of one media control flag of a call</p>
+enum CallMediaSetting {
+
+    // Leave the flag as it is
+    CALL_MEDIA_SETTING_UNCHANGED = 0;
+
+    // On: the bot speaks (<code>bot_voice</code>) or listens (<code>bot_listening</code>)
+    CALL_MEDIA_SETTING_ON = 1;
+
+    // Off: the bot is muted (<code>bot_voice</code>) or does not listen (<code>bot_listening</code>)
+    CALL_MEDIA_SETTING_OFF = 2;
+}
+
+// <p>Effective media control state of a call</p>
+message CallMediaControlState {
+
+    // The bot is muted (by an operator, a TALK take-over or a participant bot policy)
+    bool bot_muted = 1;
+
+    // The bot does not listen to the caller
+    bool listening_paused = 2;
+
+    // Number of connected <code>StreamCallAudio</code> / <code>ListenCallAudio</code> streams
+    int32 connected_audio_streams = 3;
+
+    // Number of joined participants
+    int32 joined_participants = 4;
+}
+
+// <p>How an invited participant takes part in a call</p>
+enum ParticipantMode {
+
+    // Same as <code>PARTICIPANT_MODE_CONFERENCE</code>
+    PARTICIPANT_MODE_UNSPECIFIED = 0;
+
+    // The participant is joined into the call: Asterisk mixes the caller, the bot and the participant
+    PARTICIPANT_MODE_CONFERENCE = 1;
+
+    // The participant listens only; the caller and the bot do not hear it
+    PARTICIPANT_MODE_MONITOR = 2;
+}
+
+// <p>What the bot does while a CONFERENCE participant is ringing or joined</p>
+enum BotPolicyOnJoin {
+
+    // Same as <code>BOT_POLICY_ON_JOIN_KEEP</code>: the bot keeps talking
+    BOT_POLICY_ON_JOIN_UNSPECIFIED = 0;
+
+    // The bot is muted and does not listen while at least one participant is ringing or joined
+    BOT_POLICY_ON_JOIN_PAUSE = 1;
+
+    // The bot may still speak, but does not hear the participant (nor the caller)
+    BOT_POLICY_ON_JOIN_PAUSE_LISTENING = 2;
+
+    // The bot keeps talking and listening, and it WILL answer what the participant says
+    BOT_POLICY_ON_JOIN_KEEP = 3;
+}
+
+// <p>State of an invited participant</p>
+enum ParticipantState {
+
+    // No state recorded
+    PARTICIPANT_STATE_UNSPECIFIED = 0;
+
+    // The participant&apos;s softphone is ringing
+    PARTICIPANT_STATE_RINGING = 1;
+
+    // The participant answered and is in the call
+    PARTICIPANT_STATE_JOINED = 2;
+
+    // The participant never joined; <code>end_reason</code> says why
+    PARTICIPANT_STATE_FAILED = 3;
+
+    // The participant left the call; <code>end_reason</code> says why
+    PARTICIPANT_STATE_LEFT = 4;
+}
+
+// <p>A participant invited into a call</p>
+message CallParticipant {
+
+    // Identifier of the participant, 9 digits, unique among the project&apos;s live invites
+    string participant_id = 1;
+
+    // The invited softphone account:
+    // <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;account_uuid&gt;</code></pre>
+    string softphone_account_name = 2;
+
+    // How the participant takes part
+    ParticipantMode mode = 3;
+
+    // State of the participant
+    ParticipantState state = 4;
+
+    // When the participant was invited
+    google.protobuf.Timestamp invited_at = 5;
+
+    // When the participant joined; unset if it never joined
+    google.protobuf.Timestamp joined_at = 6;
+
+    // When the participant failed or left; unset while ringing or joined
+    google.protobuf.Timestamp left_at = 7;
+
+    // Why the participant failed or left: <code>NOANSWER</code>, <code>BUSY</code>, <code>CHANUNAVAIL</code>,
+    // <code>CALL_ENDED</code>, <code>REMOVED</code>, <code>HANGUP</code>, <code>HANDED_OVER</code>,
+    // <code>JOIN_FAILED</code> or <code>TIMEOUT</code>
+    string end_reason = 8;
+
+    // Identity of who invited the participant (audit)
+    string invited_by = 9;
+
+    // Bot policy applied while this participant is ringing or joined
+    BotPolicyOnJoin bot_policy = 10;
+}
+
+// <p>Request to invite a softphone account into a call</p>
+message InviteToCallRequest {
+
+    // VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Name of the connected call to invite into
+    // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
+    // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
+    string call_name = 2;
+
+    // Softphone account of the same project to invite:
+    // <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;account_uuid&gt;</code></pre>
+    string softphone_account_name = 3;
+
+    // How the participant takes part. Unspecified means <code>PARTICIPANT_MODE_CONFERENCE</code>
+    ParticipantMode mode = 4;
+
+    // How long the softphone may ring, in seconds, <code>5</code> to <code>120</code>. <code>0</code> means <code>30</code>
+    int32 ring_timeout_s = 5;
+
+    // What the bot does while the participant is ringing or joined. Unspecified means <code>BOT_POLICY_ON_JOIN_KEEP</code>
+    // (the bot keeps talking)
+    BotPolicyOnJoin bot_policy = 6;
+
+    // Caller-ID display name shown on the softphone. Sanitized by the server; default
+    // <code>ONDEWO &lt;listener or caller name&gt;</code>
+    string caller_id_display_name = 7;
+
+    // Optional idempotency key: a repeated request with the same <code>call_name</code> and <code>request_id</code>
+    // returns the participant of the first request instead of inviting again
+    string request_id = 8;
+}
+
+// <p>Response of <code>InviteToCall</code></p>
+message InviteToCallResponse {
+
+    // VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Name of the call
+    string call_name = 2;
+
+    // The invited participant
+    CallParticipant participant = 3;
+
+    // error message if you have any
+    string error_message = 4;
+}
+
+// <p>Request to hang up a participant of a call</p>
+message RemoveCallParticipantRequest {
+
+    // VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Name of the call
+    string call_name = 2;
+
+    // Identifier of the participant (<code>CallParticipant.participant_id</code>)
+    string participant_id = 3;
+}
+
+// <p>Response of <code>RemoveCallParticipant</code></p>
+message RemoveCallParticipantResponse {
+
+    // VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Name of the call
+    string call_name = 2;
+
+    // The participant after the request
+    CallParticipant participant = 3;
+
+    // error message if you have any
+    string error_message = 4;
+}
+
+// <p>Request to mute the bot of a call and/or stop it listening</p>
+message SetCallMediaControlRequest {
+
+    // VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Name of the connected call
+    string call_name = 2;
+
+    // <code>CALL_MEDIA_SETTING_OFF</code> mutes the bot, <code>CALL_MEDIA_SETTING_ON</code> lets it speak again
+    CallMediaSetting bot_voice = 3;
+
+    // <code>CALL_MEDIA_SETTING_OFF</code> stops the bot listening, <code>CALL_MEDIA_SETTING_ON</code> resumes it
+    CallMediaSetting bot_listening = 4;
+}
+
+// <p>Response of <code>SetCallMediaControl</code></p>
+message SetCallMediaControlResponse {
+
+    // VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Name of the call
+    string call_name = 2;
+
+    // Effective media control state after the request
+    CallMediaControlState state = 3;
+
+    // <code>true</code> if the effective state changed
+    bool changed = 4;
+
+    // error message if you have any
+    string error_message = 5;
+}
+
+// <p>Mode of a call audio stream</p>
+enum CallAudioMode {
+
+    // Same as <code>CALL_AUDIO_MODE_LISTEN</code>
+    CALL_AUDIO_MODE_UNSPECIFIED = 0;
+
+    // Receive the call audio only
+    CALL_AUDIO_MODE_LISTEN = 1;
+
+    // Receive the caller&apos;s audio and send audio to the caller. Requires <code>take_over</code>
+    CALL_AUDIO_MODE_TALK = 2;
+}
+
+// <p>Configuration of a call audio stream. The first request of <code>StreamCallAudio</code></p>
+message StreamCallAudioConfig {
+
+    // VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Name of the connected call
+    string call_name = 2;
+
+    // Mode of the stream. Unspecified means LISTEN
+    CallAudioMode mode = 3;
+
+    // Sample rate in Hz in both directions: <code>8000</code> or <code>16000</code>; <code>0</code> means <code>16000</code>.
+    // Audio is LINEAR16 little-endian mono in 20 ms frames
+    int32 sample_rate_hz = 4;
+
+    // REQUIRED for TALK: the bot is muted and does not listen while the stream is connected
+    bool take_over = 5;
+
+    // Maximum duration of the stream in seconds. <code>0</code> means the server maximum
+    int32 max_duration_s = 6;
+}
+
+// <p>One 20 ms frame of call audio</p>
+message CallAudioFrame {
+
+    // LINEAR16 little-endian mono samples, <code>sample_rate_hz * 0.02 * 2</code> bytes
+    bytes pcm_s16le = 1;
+
+    // Monotonic sequence number of the frame within its direction of the stream
+    uint64 sequence = 2;
+}
+
+// <p>Request of <code>StreamCallAudio</code></p>
+message StreamCallAudioRequest {
+
+    // One of the following
+    oneof request {
+
+        // Configuration; must be the first request and is accepted only once
+        StreamCallAudioConfig config = 1;
+
+        // Agent audio to send to the caller (TALK only)
+        CallAudioFrame audio = 2;
+
+        // <code>true</code>: the agent&apos;s audio is not sent to the caller until set to <code>false</code>
+        bool agent_muted = 3;
+    }
+}
+
+// <p>Why a call audio stream ended</p>
+enum CallAudioEndReason {
+
+    // No reason recorded
+    CALL_AUDIO_END_REASON_UNSPECIFIED = 0;
+
+    // The client cancelled or half-closed the stream
+    CALL_AUDIO_END_REASON_CLIENT_CLOSED = 1;
+
+    // The call ended
+    CALL_AUDIO_END_REASON_CALL_ENDED = 2;
+
+    // The call was transferred
+    CALL_AUDIO_END_REASON_CALL_TRANSFERRED = 3;
+
+    // The maximum duration was reached
+    CALL_AUDIO_END_REASON_MAX_DURATION = 4;
+
+    // The client did not read the audio in time
+    CALL_AUDIO_END_REASON_STALLED = 5;
+
+    // An internal error ended the stream
+    CALL_AUDIO_END_REASON_INTERNAL = 6;
+}
+
+// <p>Sent once when a call audio stream is connected</p>
+message CallAudioStarted {
+
+    // Identifier of the stream (audit correlation)
+    string stream_id = 1;
+
+    // Sample rate in Hz in both directions
+    int32 sample_rate_hz = 2;
+
+    // Frame length in milliseconds
+    int32 frame_ms = 3;
+
+    // Mode of the stream
+    CallAudioMode mode = 4;
+}
+
+// <p>Counters of a call audio stream, sent periodically</p>
+message CallAudioStats {
+
+    // Frames sent to the client
+    uint64 frames_sent = 1;
+
+    // Frames to the client dropped because the client read too slowly
+    uint64 frames_dropped = 2;
+
+    // Frames received from the client
+    uint64 frames_received = 3;
+
+    // Playback underruns of the agent audio
+    uint64 underruns = 4;
+
+    // Frames from the client discarded because the playback buffer was full
+    uint64 frames_discarded = 5;
+}
+
+// <p>Sent once when a call audio stream ends normally</p>
+message CallAudioEnded {
+
+    // Why the stream ended
+    CallAudioEndReason reason = 1;
+
+    // Optional detail, a stable token
+    string detail = 2;
+}
+
+// <p>Response of <code>StreamCallAudio</code> and <code>ListenCallAudio</code></p>
+message StreamCallAudioResponse {
+
+    // One of the following
+    oneof response {
+
+        // The stream is connected
+        CallAudioStarted started = 1;
+
+        // Call audio
+        CallAudioFrame audio = 2;
+
+        // Stream counters
+        CallAudioStats stats = 3;
+
+        // The stream ended
+        CallAudioEnded ended = 4;
+    }
+}
+
+// <p>Request of <code>ListenCallAudio</code></p>
+message ListenCallAudioRequest {
+
+    // Configuration of the stream; <code>mode</code> must be LISTEN or unspecified and <code>take_over</code> false
+    StreamCallAudioConfig config = 1;
 }
 
 // Request to transfer multiple calls
@@ -1344,6 +2299,42 @@ message Call {
     // Messages for each of the Intent.Message.Platform were sent to the user
     optional ondewo.nlu.Intent.Message.Platform platforms = 18;
 
+    // Optional: Whether the callee should be called again later, set only when the answering machine
+    // detection (AMD) ended the call: true for an answering machine or a network announcement hung up
+    // on without a voice message, false once a voice message was left and false for a fax.
+    // Unset when AMD did not end the call.
+    // The AMD verdict, cause and confidence of the call are in sip_status.amd_result.
+    // No call is redialled automatically; the marker is for the campaign logic of the client
+    optional bool redial_recommended = 19;
+
+    // Optional: Reason of redial_recommended, set together with it. One of
+    // "answering_machine", "network_announcement" or "fax"
+    optional string redial_reason = 20;
+
+    // Optional: Description of how a call ended by the answering machine detection (AMD) ended, i.e. the
+    // description of its terminal ondewo.sip.SipStatus.StatusType.OUTGOING_CALL_FINISHED status. One of
+    // "Answering machine detected with hang up",
+    // "Answering machine detected with left voice message and hang up",
+    // "Answering machine detected, call ended by the answering machine" or
+    // "Answering machine detected, call ended by the answering machine after leaving a voice message".
+    // Unset when AMD did not end the call
+    optional string answering_machine_detection_end_description = 21;
+
+    // Media control state of the call (bot muted, listening paused, connected audio streams, joined participants).
+    // Set in the SHALLOW and FULL views
+    CallMediaControlState media_control = 22;
+
+    // Participants invited into the call. FULL view: all of them; SHALLOW view: those still ringing or joined
+    repeated CallParticipant participants = 23;
+
+    // The last transfer attempt of the call; unset if there was none. Set in the SHALLOW and FULL views
+    CallTransferRecord last_transfer = 24;
+
+    // Identifier the call&apos;s SIP container minted for the call (<code>ondewo.sip.SipStatus.call_id</code>). Empty until
+    // the call was identified; call control requests are refused (<code>call-not-yet-identified</code>) until then.
+    // Set in the SHALLOW and FULL views
+    string sip_call_id = 25;
+
 }
 
 // Definition of a CallFilter, representing filters for querying calls.
@@ -1455,4 +2446,108 @@ message ServiceStatus {
 
     // error messages if you have any so if it's unhealthy
     string error_message = 2;
+}
+
+// The status of one caller, listener or scheduled caller, as streamed by the status streams.
+message CallResourceStatus {
+
+    // The caller, listener or scheduled caller.
+    string resource_name = 1;
+
+    // CALLER, LISTENER or SCHEDULED_CALLER.
+    CallType call_type = 2;
+
+    // Its current or last call. Empty when it has none.
+    string call_name = 3;
+
+    // Whether its call is active.
+    bool active = 4;
+
+    // SIP status of its current or last call.
+    ondewo.sip.SipStatus.StatusType sip_status_type = 5;
+
+    // Description of that SIP status.
+    string sip_status_description = 6;
+
+    // Start of its current or last call.
+    google.protobuf.Timestamp start_time = 7;
+
+    // End of its last call. Unset while a call runs.
+    google.protobuf.Timestamp end_time = 8;
+
+    // Callee or caller number of its current or last call.
+    string phone_number = 9;
+
+    // For SCHEDULED_CALLER: its lifecycle state.
+    ScheduledCallerStatus scheduled_caller_status = 10;
+
+    // For SCHEDULED_CALLER: its scheduled time.
+    google.protobuf.Timestamp scheduled_time = 11;
+
+    // The campaign it belongs to, if any.
+    string campaign_name = 12;
+
+    // For SCHEDULED_CALLER: why it failed.
+    string error_message = 13;
+}
+
+// The request message for <code>Calls.StreamCallerStatus</code>.
+message StreamCallerStatusRequest {
+
+    // VTSI project. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Only these callers. Empty means every caller of the project.
+    repeated string caller_names = 2;
+
+    // Only callers whose call is active.
+    bool active_only = 3;
+}
+
+// The request message for <code>Calls.StreamListenerStatus</code>.
+message StreamListenerStatusRequest {
+
+    // VTSI project. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Only these listeners. Empty means every listener of the project.
+    repeated string listener_names = 2;
+
+    // Only listeners whose call is active.
+    bool active_only = 3;
+}
+
+// The request message for <code>Calls.StreamScheduledCallerStatus</code>.
+message StreamScheduledCallerStatusRequest {
+
+    // VTSI project. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Only these scheduled callers. Empty means every scheduled caller of the project.
+    repeated string scheduled_caller_names = 2;
+
+    // Only scheduled callers in these states. Empty means every state.
+    repeated ScheduledCallerStatus statuses = 3;
+
+    // Only scheduled callers of this campaign. Empty means any.
+    string campaign_name = 4;
+}
+
+// The response message of the three status streams.
+message StreamCallResourceStatusResponse {
+
+    // Resources that changed (every matching resource in the snapshot).
+    repeated CallResourceStatus statuses = 1;
+
+    // Resources that no longer exist or no longer match.
+    repeated string removed_resource_names = 2;
+
+    // True on the first message, which carries every matching resource.
+    bool snapshot = 3;
+
+    // True when the snapshot was cut at the server limit (5000 resources).
+    bool snapshot_truncated = 4;
+
+    // Set on the last message when the server ended the stream. Empty otherwise.
+    string end_reason = 5;
 }

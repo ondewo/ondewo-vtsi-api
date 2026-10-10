@@ -216,7 +216,7 @@ hooks. The `mypy` and `install_python_requirements` targets still sitting in the
   line breaks included, while `md.tmpl` folds each comment into one table cell so per-line trailing spaces
   vanish. Expect an HTML-only diff from a whitespace-only proto edit, and do not read it as corruption.
 - **`submodules: true` does not feed the documentation.** The action's `entrypoint.sh` globs
-  `find ondewo -name '*.proto'` — only the self-contained top-level `ondewo/` tree (25 protos). Building from a
+  `find ondewo -name '*.proto'` — only the self-contained top-level `ondewo/` tree (26 protos). Building from a
   tree with all four `ondewo-*-api` submodule directories completely empty yields byte-identical `index.html`,
   `index.md` and `style.css`. A drifted or uninitialised submodule can therefore never explain a docs diff; look
   at `ondewo/**/*.proto` instead.
@@ -316,7 +316,6 @@ the release reads. Keep `src/RELEASE.md` in step by hand if it exists.
 
 `make release` in this repo runs:
 
-
 The **npm publish happens LAST**. So a failure before it means nothing shipped, but the
 branch, tag and GitHub release may already exist — and `spc` will then refuse a re-run. Recover
 by running only the remaining step, not the whole target.
@@ -396,7 +395,6 @@ cat RELEASE.md | perl -ne 'print if /<the exact heading> <version>/../^\*{5}/' |
 GitHub's release API returned 500 twice in one session, leaving the registry and the tag correct and
 **no release object at all** (nlu-client-js and -angular 7.1.1); `gh release create` after the fact
 repairs it without touching the artefact.
-
 
 ```bash
 git tag --list <version> ; gh release view <version> --json body --jq '.body|length'
