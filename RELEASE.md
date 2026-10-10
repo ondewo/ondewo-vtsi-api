@@ -36,10 +36,15 @@
   `CampaignAssignment.new_campaign`, and updatable through `UpdateCampaign` with the `update_mask` paths
   `campaign_common_services_config` / `campaign_sip_caller_config` or any nested sub-path of them (a path
   naming a message replaces it whole, a path naming a scalar, repeated or map field replaces exactly that
-  field). They are read LIVE whenever a campaign call is dispatched, retries included: the effective config
-  of the call is a copy of the campaign's config with the call's own `StartCallerRequest` config merged over
-  it by protobuf `MergeFrom` (the call wins for every field it sets; repeated fields are concatenated, the
-  campaign's entries first; maps are merged by key). Unset campaign defaults change nothing. Their
+  field, a path naming a `oneof` member sets it when the request sets it and otherwise clears it only if it
+  is the stored active member, and a path below a repeated or map field is `INVALID_ARGUMENT`). They are read
+  LIVE whenever a campaign call is dispatched, retries included: the effective config of the call is a copy
+  of the campaign's config with the call's own `StartCallerRequest` config merged over it by protobuf
+  `MergeFrom` (the call wins for every field it sets; repeated fields are concatenated, the campaign's
+  entries first; maps are merged by key). The one exception is the callee: `callee_id` is resolved once,
+  when the call is added (the call's own, else the campaign's at that moment), stored as
+  `CampaignCall.phone_number` and dialled by every attempt, so updating the campaign's `callee_id` affects
+  only calls added afterwards. Unset campaign defaults change nothing. Their
   credential-bearing fields get the same role-based redaction as `Caller.common_services_config`.
 * [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Partial responses (`field_mask`) for
   campaigns and every listing.** A `google.protobuf.FieldMask field_mask` was added to `CreateCampaignRequest`
@@ -69,9 +74,14 @@ campaign defaults. Package, fully qualified names, field numbers and comments ar
 moved `DescriptorProto` is byte-identical), so the wire format and the JSON form do not change.
 `calls.proto` re-exports the file with `import public "ondewo/vtsi/call_configs.proto";`: python's
 `ondewo.vtsi.calls_pb2` keeps exposing every moved message (verified), and the descriptor of each moved message
-now names `ondewo/vtsi/call_configs.proto` as its file. Generated clients whose module layout follows the file
-(the javascript, typescript, nodejs and angular clients) gain a `call_configs` module and must be regenerated
-from this release as a whole. `AsteriskConfig` stays in `calls.proto`.
+now names `ondewo/vtsi/call_configs.proto` as its file (so `calls_pb2.DESCRIPTOR.message_types_by_name` no
+longer lists them; look them up in `call_configs_pb2.DESCRIPTOR`). `import public` is honoured by python only.
+Generated clients whose module layout follows the file (the javascript, typescript, nodejs and angular clients)
+declare the moved messages in a new `call_configs_pb` module and NO LONGER in `calls_pb`: they must be
+regenerated from this release as a whole, code must import the moved messages from `call_configs_pb`, and a
+client whose public API lists the generated files by hand must add the new one (e.g.
+`export * from './api/ondewo/vtsi/call_configs_pb.d'` in the nodejs client's `public-api.d.ts`, and the
+equivalent entry in the angular client). `AsteriskConfig` stays in `calls.proto`.
 
 **Rolling updates.** A 9.0.0 server skips every new field as unknown: the campaign defaults are dropped, a
 mask is ignored (every field is returned), and a display-name selector sent in the new form reaches it as no

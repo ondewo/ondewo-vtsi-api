@@ -54,7 +54,10 @@ import "ondewo/vtsi/call_configs.proto";
 // the campaign. They are read LIVE when a campaign call is dispatched (every attempt, retries
 // included): the effective configuration of the call is a copy of the campaign&apos;s config with the
 // call&apos;s own <code>StartCallerRequest</code> config merged over it (protobuf
-// <code>MergeFrom</code>), see <a href="index.html#ondewo.vtsi.Campaign">Campaign</a>.</p>
+// <code>MergeFrom</code>), see <a href="index.html#ondewo.vtsi.Campaign">Campaign</a>. The one exception
+// is the callee: <code>campaign_sip_caller_config.callee_id</code> is resolved and FIXED when a call is
+// added (it is that call&apos;s <code>CampaignCall.phone_number</code>), so every attempt of a call dials the
+// number its campaign call reports.</p>
 // <p>Partial responses: <code>ListCampaigns</code>, <code>ListCampaignCalls</code>,
 // <code>CreateCampaign</code>, <code>GetCampaign</code>, <code>UpdateCampaign</code> and
 // <code>DeleteCampaign</code> accept an optional <code>field_mask</code> naming the field paths of the
@@ -96,7 +99,9 @@ service Campaigns {
     // also by a nested sub-path). Allowed in every state. Lowering <code>max_parallel_calls</code>
     // never ends a running call: the campaign starts no new call until fewer than the new maximum are
     // running. A changed call default applies to every campaign call dispatched after the update,
-    // retries included; a call already dispatched keeps the configuration it was started with.</p>
+    // retries included; a call already dispatched keeps the configuration it was started with. The
+    // exception is <code>campaign_sip_caller_config.callee_id</code>, which is fixed per call when the call
+    // is added and therefore applies only to calls added after the update.</p>
     // <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for an empty mask, an unknown,
     // output-only or immutable path, an out-of-range value or an unknown <code>field_mask</code> path;
     // <code>ALREADY_EXISTS</code> for a
@@ -135,7 +140,9 @@ service Campaigns {
     // <p>Starts a <code>CAMPAIGN_STATE_CREATED</code> campaign. Idempotent on a
     // <code>RUNNING</code> campaign.</p>
     // <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> in any other state (use
-    // <code>ResumeCampaign</code> for a stopped campaign).</p>
+    // <code>ResumeCampaign</code> for a stopped campaign); <code>INVALID_ARGUMENT</code> for a malformed name, neither selector set, a
+    // <code>display_name</code> without <code>vtsi_project_name</code> or a <code>vtsi_project_name</code>
+    // that is not the campaign&apos;s project.</p>
     rpc StartCampaign (StartCampaignRequest) returns (Campaign);
 
     // <p>Stops a campaign gracefully: no new call is started, the calls that are running continue
@@ -144,7 +151,9 @@ service Campaigns {
     // Idempotent on <code>STOPPING</code>, <code>STOPPED</code>, <code>HARD_STOPPING</code> and
     // <code>HARD_STOPPED</code>.</p>
     // <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> on a
-    // <code>COMPLETED</code> campaign.</p>
+    // <code>COMPLETED</code> campaign; <code>INVALID_ARGUMENT</code> for a malformed name, neither selector set, a
+    // <code>display_name</code> without <code>vtsi_project_name</code> or a <code>vtsi_project_name</code>
+    // that is not the campaign&apos;s project.</p>
     rpc StopCampaign (StopCampaignRequest) returns (Campaign);
 
     // <p>Stops a campaign immediately: no new call is started and the server hangs up every running
@@ -159,7 +168,9 @@ service Campaigns {
     // Returns the campaign in <code>HARD_STOPPING</code> (or already <code>HARD_STOPPED</code>).
     // Idempotent on <code>HARD_STOPPING</code> and <code>HARD_STOPPED</code>.</p>
     // <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> on a
-    // <code>COMPLETED</code> campaign.</p>
+    // <code>COMPLETED</code> campaign; <code>INVALID_ARGUMENT</code> for a malformed name, neither selector set, a
+    // <code>display_name</code> without <code>vtsi_project_name</code> or a <code>vtsi_project_name</code>
+    // that is not the campaign&apos;s project.</p>
     rpc HardStopCampaign (HardStopCampaignRequest) returns (Campaign);
 
     // <p>Resumes a <code>STOPPING</code>, <code>STOPPED</code> or <code>HARD_STOPPED</code>
@@ -167,7 +178,9 @@ service Campaigns {
     // Idempotent on <code>RUNNING</code>.</p>
     // <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> on <code>CREATED</code>
     // (use <code>StartCampaign</code>), <code>HARD_STOPPING</code> (wait until it is
-    // <code>HARD_STOPPED</code>) and <code>COMPLETED</code>.</p>
+    // <code>HARD_STOPPED</code>) and <code>COMPLETED</code>; <code>INVALID_ARGUMENT</code> for a malformed name, neither selector set, a
+    // <code>display_name</code> without <code>vtsi_project_name</code> or a <code>vtsi_project_name</code>
+    // that is not the campaign&apos;s project.</p>
     rpc ResumeCampaign (ResumeCampaignRequest) returns (Campaign);
 
     // <p>Streams the status and progress of the campaigns of a project. The first message is a
@@ -417,11 +430,16 @@ message Campaign {
     // <p>Read LIVE at every dispatch and merged exactly like
     // <code>campaign_common_services_config</code>: the effective <code>sip_caller_config</code> of a call
     // is a copy of this value with the call&apos;s own <code>StartCallerRequest.sip_caller_config</code>
-    // merged over it (<code>MergeFrom</code>, the call winning). In particular a
-    // <code>callee_id</code> set by the call replaces the campaign&apos;s, an empty one keeps it, and
-    // <code>sip_headers</code> are merged by key with the call&apos;s header winning on a shared name.
-    // <code>CampaignCall.phone_number</code> is the EFFECTIVE <code>callee_id</code>, resolved when the
-    // call is added to the campaign.</p>
+    // merged over it (<code>MergeFrom</code>, the call winning); <code>sip_headers</code> are merged by
+    // key with the call&apos;s header winning on a shared name.</p>
+    // <p>EXCEPT <code>callee_id</code>, which is resolved ONCE, when the call is added to the campaign: the
+    // call&apos;s own <code>callee_id</code> or, when that is empty, this value&apos;s
+    // <code>callee_id</code> at that moment. The result is stored as <code>CampaignCall.phone_number</code>
+    // and is the <code>callee_id</code> of every attempt of that call, retries included. A later update of
+    // <code>campaign_sip_caller_config.callee_id</code> (or of the whole config) therefore changes the callee
+    // only of calls added after it, never of calls already in the campaign, so the number a campaign call
+    // reports (and that <code>ListCampaignCallsRequest.phone_number</code> filters on) is always the number
+    // it dials.</p>
     SipCallerConfig campaign_sip_caller_config = 19;
 }
 
@@ -528,6 +546,8 @@ message CampaignCall {
 
     // The callee: <code>SipCallerConfig.callee_id</code> of the call&apos;s request or, when the request
     // leaves it empty, of <code>Campaign.campaign_sip_caller_config</code> at the time the call was added.
+    // Fixed from then on: every attempt of the call dials exactly this number, whatever later updates of
+    // the campaign&apos;s <code>campaign_sip_caller_config</code> say.
     string phone_number = 5;
 
     // How the call was added.
@@ -743,6 +763,15 @@ message UpdateCampaignRequest {
     //   <li>a path naming a scalar, repeated or map field below them replaces exactly that field; a
     //       repeated or map field is replaced as a whole, never appended to;</li>
     //   <li>a field below them that no path names is left untouched;</li>
+    //   <li>a path naming a member of a <code>oneof</code> (e.g.
+    //       <code>campaign_common_services_config.nlu_vtsi_config.auth_token</code> in the
+    //       <code>authentication</code> oneof) SETS that member, clearing the other members, when the
+    //       request&apos;s <code>campaign</code> has that member set; when it does not, the path CLEARS the
+    //       member if it is the stored active one and changes nothing otherwise (another active member
+    //       is kept);</li>
+    //   <li>a path BELOW a repeated or map field (e.g.
+    //       <code>campaign_sip_caller_config.sip_headers.X-Foo</code>) is rejected with
+    //       <code>INVALID_ARGUMENT</code> naming it: name the repeated or map field itself;</li>
     //   <li>a path and a sub-path of it in the same mask act as the shorter path alone.</li>
     // </ul>
     google.protobuf.FieldMask update_mask = 2;

@@ -62,8 +62,9 @@ Errors of the `Campaigns` and `Events` services, and of `Calls.AddCallersToCampa
 
 Every `List*` request, and `CreateCampaign`, `GetCampaign`, `UpdateCampaign` and `DeleteCampaign`, accepts an
 optional `field_mask` for a partial response: field paths relative to the returned resource (for a listing, to its
-element type); the identifying `name` is always populated; unset or empty returns every field; an unknown path is
-`INVALID_ARGUMENT`. The mask is applied after any view and any redaction.
+element type); the identifying field (`name`; `log_stream` and `seq` for a `CallLogEntry`) is always populated; unset
+or empty returns every field; an unknown path is `INVALID_ARGUMENT`. The mask is applied after any view and any
+redaction.
 
 ### Campaigns
 

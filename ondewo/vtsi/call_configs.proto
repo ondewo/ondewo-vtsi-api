@@ -30,8 +30,11 @@ import "ondewo/t2s/text-to-speech.proto";
 // can use them: <code>calls.proto</code> imports <code>campaigns.proto</code>, so the reverse import would be a
 // cycle. Moved here from <code>calls.proto</code> in 9.1.0 without any change: same package
 // <code>ondewo.vtsi</code>, same fully qualified names, same field numbers, same wire format.
-// <code>calls.proto</code> re-exports this file with <code>import public</code>, so code that imports
-// <code>calls.proto</code> keeps seeing every one of these messages.</p>
+// <code>calls.proto</code> re-exports this file with <code>import public</code>. Only generators that honour
+// <code>import public</code> (python: <code>calls_pb2</code> keeps exposing every one of these messages)
+// keep them reachable through <code>calls.proto</code>; the javascript, typescript, nodejs and angular clients
+// declare them in the generated <code>call_configs_pb</code> module only, which must be imported (and exported
+// from a client&apos;s public API) in its own right.</p>
 
 // Base configuration of services (ondewo-nlu, text-to-speech, speech-to-text, asterisk)
 message BaseServiceConfig{
