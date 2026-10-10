@@ -60,11 +60,31 @@ Errors of the `Campaigns` and `Events` services, and of `Calls.AddCallersToCampa
 `CommonServicesConfig`, `SipCallerConfig` and the messages they are built from are declared in `call_configs.proto`
 (no service), shared by `calls.proto` and `campaigns.proto`.
 
-Every `List*` request, and `CreateCampaign`, `GetCampaign`, `UpdateCampaign` and `DeleteCampaign`, accepts an
-optional `field_mask` for a partial response: field paths relative to the returned resource (for a listing, to its
-element type); the identifying field (`name`; `log_stream` and `seq` for a `CallLogEntry`) is always populated; unset
-or empty returns every field; an unknown path is `INVALID_ARGUMENT`. The mask is applied after any view and any
-redaction.
+Every `List*` request, `CreateCampaign`, `GetCampaign`, `UpdateCampaign` and `DeleteCampaign`, and every CRUD RPC of
+callers, listeners and calls (`Start*`, `Get*`, `Update*`, `Stop*`, `Delete*`, `StopCall(s)`, `StopAllCalls`) accepts
+an optional `field_mask` for a partial response: field paths relative to the returned resource (for a listing, to its
+element type; for a response that wraps the resource, e.g. `StartCallerResponse.caller`, to the wrapped resource; for
+a `Stop*` / `Delete*` response, which carries no resource, to the response itself); the identifying field (`name`;
+`call_name` for a `StopCallResponse`; `log_stream` and `seq` for a `CallLogEntry`) is always populated; unset or empty
+returns every field; an unknown path is `INVALID_ARGUMENT`. The mask is applied after any view and any redaction and
+never changes what the RPC does.
+
+### Updating callers, listeners and calls
+
+`UpdateCaller`, `UpdateListener` and `UpdateCall` (and the batches `UpdateCallers`, `UpdateListeners`,
+`UpdateCalls`) take the resource and a required `update_mask` with the rules of `UpdateCampaign`. A caller's
+`sip_caller_config` / `common_services_config` and a listener's `sip_base_config` / `common_services_config` (or any
+nested sub-path) are updatable: the update changes the STORED configuration, which the server uses the next time it
+deploys a container for that caller or listener; a running container and its calls are never changed. A call's only
+updatable field is `labels`, client-defined descriptive metadata that changes only the stored call record. The
+batches apply every entry on its own and report one result per entry.
+
+### The callers and calls of a campaign
+
+`Campaign.campaign_callers` names the callers that placed the campaign's calls (oldest first, at most 1000, see
+`campaign_callers_truncated`). The complete, paginated listings are `ListCallers` with
+`ListCallersRequest.campaign_name` (or `campaign_display_name`) and `ListCalls` with `CallFilter.campaign_name` (or
+`campaign_display_name`), returning ordinary `Caller` and `Call` resources.
 
 ### Campaigns
 

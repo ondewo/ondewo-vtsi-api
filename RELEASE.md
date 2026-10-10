@@ -70,6 +70,75 @@
   it, and nested paths through singular message fields are allowed. The mask is applied after any view and
   any redaction, so it can only narrow a response. `ListSoftphoneAccounts` and `ListSoftphoneCertificates`
   already had one.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Partial responses (`field_mask`) for every
+  CRUD RPC of callers, listeners and calls.** A `google.protobuf.FieldMask field_mask` was added to
+  `StartCallerRequest` (4), `StartCallersRequest` (5), `StartListenerRequest` (4), `StartListenersRequest` (4),
+  `GetCallerRequest` (4), `GetListenerRequest` (4), `GetCallRequest` (4), `StopCallerRequest` (2),
+  `StopCallersRequest` (2), `StopListenerRequest` (2), `StopListenersRequest` (2), `DeleteCallerRequest` (2),
+  `DeleteCallersRequest` (2), `DeleteListenerRequest` (2), `DeleteListenersRequest` (2), `StopCallRequest` (3),
+  `StopCallsRequest` (3) and `StopAllCallsRequest` (2), and to the new `Update*` requests. Same convention as
+  above. Where a response WRAPS the resource (`StartCallerResponse.caller`, `StartListenerResponse.listener`,
+  `UpdateCallerResponse.caller`, ...), the paths are relative to the wrapped resource (`call_name`, not
+  `caller.call_name`), the wrapped resource's `name` and every other field of the response are always populated,
+  and a batch request's mask applies to the resource of every entry. Where a response carries no resource (the
+  `Stop*` / `Delete*` responses), the paths are those of the response itself (in a batch: of each entry), i.e.
+  `error_message` (and `vtsi_project_name` for `StopCallResponse`), with `name` / `call_name` always populated,
+  following `DeleteCampaignRequest.field_mask`. A mask never changes what the RPC does, an unknown path is
+  refused with `INVALID_ARGUMENT` before anything is started, stopped, deleted or written, and the mask is not
+  part of the `idempotency_key` comparison. A `StartCallerRequest` / `StartListenerRequest` that is an ENTRY of
+  another request (`StartCallers`, `StartListeners`, `StartScheduledCaller(s)`, `AddCallersToCampaign`,
+  `AddScheduledCallersToCampaign`) must leave its own `field_mask` unset, otherwise the whole request is refused
+  with `INVALID_ARGUMENT` naming the entry; the same holds for the entries of the `Update*s` batches.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Updating callers, listeners and calls
+  (`update_mask`).** New RPCs `Calls.UpdateCaller`, `UpdateCallers`, `UpdateListener`, `UpdateListeners`,
+  `UpdateCall` and `UpdateCalls`, with the messages `Update{Caller,Listener,Call}{Request,Response}` and
+  `Update{Callers,Listeners,Calls}{Request,Response}`. Each single request carries the resource (identified by its
+  `name`), a required `google.protobuf.FieldMask update_mask` (paths relative to the resource) and a
+  `field_mask`. The `update_mask` rules are those of `UpdateCampaign`: an empty mask and an unknown, output-only
+  or immutable path are `INVALID_ARGUMENT` naming the path; a named path with an unset value writes the create
+  default; a message path replaces the message, a scalar / repeated / map path replaces that field, a `oneof`
+  member path sets or clears that member, and a path below a repeated or map field is refused.
+  * **Caller**: updatable `sip_caller_config` and `common_services_config` (and any nested sub-path).
+    **Listener**: updatable `sip_base_config` and `common_services_config` (and any nested sub-path). `name` and
+    `call_name` are output only. The update changes the STORED configuration only, and the result must be valid
+    as a `StartCallerRequest` / `StartListenerRequest`. A running container and every call it takes are never
+    changed: nothing is restarted, redeployed or reconfigured, and the stored configuration is used the next time
+    the server deploys a container for that caller or listener. Updating a caller never changes a campaign (an
+    attempt of a campaign call is configured by the campaign and the campaign call).
+  * **Call**: `Call` gained `map<string, string> labels = 26`, client-defined descriptive labels and its only
+    mutable field: the only updatable path is `labels`, which replaces the whole map (at most 64 entries, keys
+    `[a-z][a-z0-9_.-]{0,62}`, values of at most 255 printable characters). It was added because a `Call` had no
+    field that can change without touching the live call; `UpdateCall` changes only the stored call record, on
+    active and ended calls alike, and never the call itself, its SIP container, its status or its media.
+  * The single RPCs answer every error as a gRPC status code. The batches take repeated single requests plus a
+    `vtsi_project_name` and a batch-level `field_mask`, apply each entry on its own (not atomic) and report one
+    `Update*Response` per entry in request order, with a failed entry's `error_message` prefixed by the gRPC status
+    code name the single RPC would have answered (e.g. `NOT_FOUND: ...`) and an overall `error_message` summary. A
+    batch is refused as a whole with `INVALID_ARGUMENT`, nothing being written, for no entry, more than 1000
+    entries, a duplicate resource, a resource of another project, an entry with its own `field_mask`, or an
+    unknown `field_mask` path.
+  * Authorization: the role that may start and stop the resource (`PROJECT_EXECUTOR` or higher on the project).
+    The returned resource is redacted like `GetCaller` / `GetListener` / `GetCall` with `call_view = FULL`; writing
+    back a redacted `common_services_config` whole overwrites the stored credentials with the withheld (empty)
+    ones, so update a sub-path instead.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **The callers and calls of a campaign.**
+  `Campaign` gained the output-only `repeated string campaign_callers = 20` and
+  `bool campaign_callers_truncated = 21`: the resource names of the callers that placed at least one attempt of
+  one of the campaign's calls (`CampaignCallAttempt.caller_name`, for calls added by `AddCallersToCampaign` and
+  by `AddScheduledCallersToCampaign` alike; a `ScheduledCaller` is not a `Caller` and is not listed), deleted
+  callers left out, ordered by the start of each caller's first attempt for the campaign, oldest first, and
+  bounded to the first 1000 names (`campaign_callers_truncated` says whether there are more). Populated by
+  `CreateCampaign` (empty), `GetCampaign`, `UpdateCampaign`, `ListCampaigns`, `StartCampaign`, `StopCampaign`,
+  `HardStopCampaign` and `ResumeCampaign`, masked like any other path, and left empty in
+  `StreamCampaignStatusResponse.campaigns` and in the `campaign` of the `Add*ToCampaign` responses. The complete,
+  paginated listing is the new campaign selector of the list RPCs: `ListCallersRequest` gained
+  `oneof campaign { string campaign_name = 5; string campaign_display_name = 6; }` (the same set of callers,
+  returned as `Caller` resources with paging, `call_view` and `field_mask`), and `CallFilter` gained
+  `oneof campaign { string campaign_name = 16; string campaign_display_name = 17; }` (the calls those attempts
+  placed, as `Call` resources, combined with the other filters by AND). The display name is resolved within the
+  request's `vtsi_project_name`; a campaign of another project, a malformed name or an empty display name sent
+  as the set member is `INVALID_ARGUMENT`, an unknown campaign `NOT_FOUND`, and a `page_token` is valid only with
+  the same selector.
 
 ### Compatibility
 
@@ -96,7 +165,11 @@ equivalent entry in the angular client). `AsteriskConfig` stays in `calls.proto`
 
 **Rolling updates.** A 9.0.0 server skips every new field as unknown: the campaign defaults are dropped, a
 mask is ignored (every field is returned), and a display-name selector sent in the new form reaches it as no
-campaign selector at all, so it can never be resolved to another campaign.
+campaign selector at all, so it can never be resolved to another campaign. It answers the new `Update*` RPCs
+with `UNIMPLEMENTED` and never returns `campaign_callers` or `Call.labels`. **A campaign selector on
+`ListCallers` / `ListCalls` sent to a 9.0.0 server is IGNORED, so it lists every caller / call of the
+project**: a client that must not act on that superset checks that the server is 9.1.0 or newer first (e.g. a
+`GetCampaign` whose response carries `campaign_callers` for a campaign known to have placed calls).
 
 *****************
 
