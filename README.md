@@ -57,6 +57,14 @@ message, field and enum value is [docs/index.md](docs/index.md) (also `docs/inde
 Errors of the `Campaigns` and `Events` services, and of `Calls.AddCallersToCampaign` /
 `Calls.AddScheduledCallersToCampaign`, are reported as gRPC status codes, never in an `error_message` field.
 
+`CommonServicesConfig`, `SipCallerConfig` and the messages they are built from are declared in `call_configs.proto`
+(no service), shared by `calls.proto` and `campaigns.proto`.
+
+Every `List*` request, and `CreateCampaign`, `GetCampaign`, `UpdateCampaign` and `DeleteCampaign`, accepts an
+optional `field_mask` for a partial response: field paths relative to the returned resource (for a listing, to its
+element type); the identifying `name` is always populated; unset or empty returns every field; an unknown path is
+`INVALID_ARGUMENT`. The mask is applied after any view and any redaction.
+
 ### Campaigns
 
 A **campaign** is a named set of outbound calls that VTSI places while keeping at most `max_parallel_calls` of them
@@ -65,14 +73,22 @@ calls being set up or connected at once; the next call starts when one ends.
 
 * **Creating and filling a campaign.** `CreateCampaign` creates an empty campaign in state `CREATED`. Calls are added
   with `Calls.AddCallersToCampaign` or `Calls.AddScheduledCallersToCampaign`, whose required `campaign_assignment`
-  names either an existing campaign (`campaign_name`, or `campaign_display_name` = project + display name) or a new
-  one (`new_campaign`). The request is atomic (the campaign, every campaign call and every scheduled caller are
+  names either an existing campaign (`campaign_name`, or `display_name`, resolved in the request's
+  `vtsi_project_name`) or a new one (`new_campaign`). The request is atomic (the campaign, every campaign call and every scheduled caller are
   stored, or nothing is), its callers are NOT started by the request itself, and `start_mode` (`CampaignStartMode`) decides whether the
   campaign starts dialling. A scheduled call of a campaign starts at or after its scheduled time AND when the
   campaign has a free slot.
 * **Names.** A campaign's resource name is `projects/<project_uuid>/campaigns/<campaign_uuid>`; an empty
   `display_name` becomes `campaign-<campaign_uuid>`. Display names are unique per project, so every RPC about one
-  campaign accepts either the resource name or a `CampaignDisplayName`.
+  campaign accepts either the resource name or the `display_name` together with the request's
+  `vtsi_project_name` (required with a display name). The `CampaignDisplayName` message of 9.0.0 was removed in
+  9.1.0; its field numbers are `reserved`.
+* **Call defaults.** `campaign_common_services_config` (a `CommonServicesConfig`) and `campaign_sip_caller_config`
+  (a `SipCallerConfig`) are the defaults of every call of the campaign. They are read live whenever a campaign call
+  is dispatched, retries included: the call's own `StartCallerRequest` config is merged over a copy of them
+  (protobuf `MergeFrom`, the call winning). Set them on `CreateCampaign` or `new_campaign`, change them with
+  `UpdateCampaign` (whole or by nested sub-path); unset, they change nothing. Both messages live in
+  `call_configs.proto`, which `calls.proto` re-exports with `import public`.
 * **Lifecycle.** `StartCampaign` starts a `CREATED` campaign. `StopCampaign` is graceful: no new call is started, the
   calls that are running continue to their natural end, then the campaign is `STOPPED`. `HardStopCampaign` hangs up
   every running call of the campaign immediately; the campaign stays `HARD_STOPPING` until the end of each call is

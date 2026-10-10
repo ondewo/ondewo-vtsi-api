@@ -2,6 +2,83 @@
 
 *****************
 
+## Release ONDEWO VTSI API 9.1.0
+
+### Breaking changes
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Source-breaking for clients: the message
+  `CampaignDisplayName` is removed.** A campaign display name is now a plain `string` member of each
+  campaign selector oneof, and the project it is resolved in is a separate top-level
+  `string vtsi_project_name`. Every old field number is `reserved` and never reused with another type, so the
+  change is wire-safe: an old client that still sends the removed message field is read by a 9.1.0 server as
+  an unknown field (the selector is then empty and the request is refused with `INVALID_ARGUMENT`), never as
+  a wrong value. Code that builds a `CampaignDisplayName` no longer compiles and must move to the new fields:
+
+  | Message | 9.0.0 | 9.1.0 |
+  | --- | --- | --- |
+  | `GetCampaignRequest`, `DeleteCampaignRequest`, `GetCampaignStatisticsRequest`, `StartCampaignRequest`, `StopCampaignRequest`, `HardStopCampaignRequest`, `ResumeCampaignRequest` | `CampaignDisplayName display_name = 2` | `string display_name = 3` + `string vtsi_project_name = 4`; `reserved 2` |
+  | `ListCampaignCallsRequest` | `CampaignDisplayName campaign_display_name = 7` | `string display_name = 8` + `string vtsi_project_name = 9`; `reserved 7`, `reserved "campaign_display_name"` |
+  | `CampaignAssignment` | `CampaignDisplayName campaign_display_name = 4` | `string display_name = 5`; `reserved 4`, `reserved "campaign_display_name"` |
+
+  `vtsi_project_name` (`projects/<project_uuid>/project`) is REQUIRED with `display_name` (`INVALID_ARGUMENT`
+  when empty or malformed) and, when sent with the resource name, must be the campaign's project. A
+  `CampaignAssignment` has no project field of its own: its project is the enclosing request's
+  `AddCallersToCampaignRequest.vtsi_project_name` / `AddScheduledCallersToCampaignRequest.vtsi_project_name`.
+  Where the old and the new member share the name `display_name` only the number can be reserved; JSON
+  clients note that `displayName` changes from an object to a string there.
+
+### New features
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Campaign-level call defaults.** `Campaign`
+  gained `CommonServicesConfig campaign_common_services_config = 18` and
+  `SipCallerConfig campaign_sip_caller_config = 19`, the defaults of every call of the campaign. They are
+  returned by every RPC that returns a campaign, settable on `CreateCampaign` and on
+  `CampaignAssignment.new_campaign`, and updatable through `UpdateCampaign` with the `update_mask` paths
+  `campaign_common_services_config` / `campaign_sip_caller_config` or any nested sub-path of them (a path
+  naming a message replaces it whole, a path naming a scalar, repeated or map field replaces exactly that
+  field). They are read LIVE whenever a campaign call is dispatched, retries included: the effective config
+  of the call is a copy of the campaign's config with the call's own `StartCallerRequest` config merged over
+  it by protobuf `MergeFrom` (the call wins for every field it sets; repeated fields are concatenated, the
+  campaign's entries first; maps are merged by key). Unset campaign defaults change nothing. Their
+  credential-bearing fields get the same role-based redaction as `Caller.common_services_config`.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Partial responses (`field_mask`) for
+  campaigns and every listing.** A `google.protobuf.FieldMask field_mask` was added to `CreateCampaignRequest`
+  (3), `GetCampaignRequest` (5), `UpdateCampaignRequest` (3), `DeleteCampaignRequest` (5, paths of
+  `DeleteCampaignResponse`), `ListCampaignsRequest` (5), `ListCampaignCallsRequest` (10), `ListCallersRequest`
+  (4), `ListListenersRequest` (4), `ListScheduledCallersRequest` (5), `ListCallsRequest` (5),
+  `ListCallLogsRequest` (8), `ListCallLogStreamsRequest` (4), `ListVtsiEventSubscriptionsRequest` (4),
+  `ListWebhooksRequest` (4) and `ListVtsiProjectsRequest` (5). The convention is the one of
+  `GetSoftphoneAccountRequest.field_mask`: paths are relative to the returned resource (for a listing, to the
+  element type), the identifying field (`name`; `log_stream` and `seq` for a `CallLogEntry`) is always
+  populated, unset or empty returns every field, an unknown path is rejected with `INVALID_ARGUMENT` naming
+  it, and nested paths through singular message fields are allowed. The mask is applied after any view and
+  any redaction, so it can only narrow a response. `ListSoftphoneAccounts` and `ListSoftphoneCertificates`
+  already had one.
+
+### Compatibility
+
+**`CommonServicesConfig`, `SipCallerConfig` and their building blocks moved to the new file
+`ondewo/vtsi/call_configs.proto`.** The moved messages are `BaseServiceConfig`, `Credentials`, `NluVtsiConfig`,
+`T2sVtsiConfig`, `S2tVtsiConfig`, `CommonServicesConfig`, `VoiceInteractionConfig`, `TurnDetectionConfig`,
+`InterruptionHandlingConfig`, `ResponseTimingConfig`, `SoftTimeoutConfig`, `AnsweringMachineDetectionConfig`,
+`SipBaseConfig`, `SipCallerConfig`, `CsiVtsiConfig`, `AudioObjectStorageConfig`,
+`AudioObjectStorageServicesActivationConfig`, `MessageBrokerConfig`, `MessageBrokerServicesActivationConfig`,
+`RabbitMqConfig`, `S2tVtsiCallbacks`, `NluVtsiCallbacks` and `T2sVtsiCallbacks`. The move was necessary because
+`calls.proto` imports `campaigns.proto`, so `campaigns.proto` could not import `calls.proto` for the new
+campaign defaults. Package, fully qualified names, field numbers and comments are unchanged (verified: each
+moved `DescriptorProto` is byte-identical), so the wire format and the JSON form do not change.
+`calls.proto` re-exports the file with `import public "ondewo/vtsi/call_configs.proto";`: python's
+`ondewo.vtsi.calls_pb2` keeps exposing every moved message (verified), and the descriptor of each moved message
+now names `ondewo/vtsi/call_configs.proto` as its file. Generated clients whose module layout follows the file
+(the javascript, typescript, nodejs and angular clients) gain a `call_configs` module and must be regenerated
+from this release as a whole. `AsteriskConfig` stays in `calls.proto`.
+
+**Rolling updates.** A 9.0.0 server skips every new field as unknown: the campaign defaults are dropped, a
+mask is ignored (every field is returned), and a display-name selector sent in the new form reaches it as no
+campaign selector at all, so it can never be resolved to another campaign.
+
+*****************
+
 ## Release ONDEWO VTSI API 9.0.0
 
 ### Breaking changes
