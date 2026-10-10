@@ -761,6 +761,16 @@ message ListVtsiEventSubscriptionsRequest {
 
     // Optional. The <code>next_page_token</code> of a previous response.
     optional string page_token = 3;
+
+    // Optional. Partial response: the field paths to populate in every returned
+    // <code>VtsiEventSubscription</code>, relative to the <code>VtsiEventSubscription</code> message (no
+    // <code>event_subscriptions.</code> prefix), e.g. <code>display_name</code>, <code>events</code>.
+    // Nested paths through singular message fields are allowed; a path below a repeated or map field is
+    // not. <code>name</code> is always populated. Unset or empty returns every field. An unknown path is
+    // rejected with <code>INVALID_ARGUMENT</code> naming it. Applied after the server&apos;s redaction, so
+    // it can only narrow the response and never populates a field that was left empty. Not part of the
+    // paging contract: a <code>page_token</code> stays valid with another mask.
+    google.protobuf.FieldMask field_mask = 4;
 }
 
 // The response message for <code>Events.ListVtsiEventSubscriptions</code>.
@@ -835,6 +845,17 @@ message ListWebhooksRequest {
 
     // Optional. The <code>next_page_token</code> of a previous response.
     optional string page_token = 3;
+
+    // Optional. Partial response: the field paths to populate in every returned <code>Webhook</code>,
+    // relative to the <code>Webhook</code> message (no <code>webhooks.</code> prefix), e.g.
+    // <code>display_name</code>, <code>url</code>, <code>delivery_statistics</code>. Nested paths through
+    // singular message fields are allowed; a path below a repeated or map field is not. <code>name</code>
+    // is always populated. Unset or empty returns every field. An unknown path is rejected with
+    // <code>INVALID_ARGUMENT</code> naming it. Applied after the masking of the custom header values (a
+    // returned value stays <code>********</code>), so it can only narrow the response and never populates a
+    // field that was left empty. Not part of the paging contract: a <code>page_token</code> stays valid
+    // with another mask.
+    google.protobuf.FieldMask field_mask = 4;
 }
 
 // The response message for <code>Events.ListWebhooks</code>.

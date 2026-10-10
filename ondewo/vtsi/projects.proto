@@ -343,6 +343,18 @@ message ListVtsiProjectsRequest {
     // Optional. Filter based on associated NLU agents.
     // Format: <pre><code>projects/&lt;Project ID&gt;/agent</code></pre>
     repeated string nlu_agent_names = 4;
+
+    // Optional. Partial response: the field paths to populate in every returned <code>VtsiProject</code>,
+    // relative to the <code>VtsiProject</code> message (no <code>vtsi_projects.</code> prefix), e.g.
+    // <code>display_name</code>, <code>vtsi_project_status</code>,
+    // <code>asterisk_configs.asterisk_configs_variables</code>. Nested paths through singular message
+    // fields are allowed; a path below a repeated or map field is not. <code>name</code> is always
+    // populated. Unset or empty returns every field the <code>vtsi_project_view</code> populates. An
+    // unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. Applied after the
+    // <code>vtsi_project_view</code> and the server&apos;s role-based redaction, so it can only narrow the
+    // response and never populates a field that was left empty. Not part of the paging contract: a
+    // <code>page_token</code> stays valid with another mask.
+    google.protobuf.FieldMask field_mask = 5;
 }
 
 // This is a protobuf message definition for the response of getting a list of VTSI projects.

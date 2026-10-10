@@ -17,6 +17,7 @@ syntax = "proto3";
 package ondewo.vtsi;
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 import "ondewo/nlu/intent.proto";
@@ -449,6 +450,18 @@ message ListCallersRequest {
     // you can specify the view to be shallow or full
     optional CallView call_view = 3;
 
+    // Optional. Partial response: the field paths to populate in every returned <code>Caller</code>,
+    // relative to the <code>Caller</code> message (no <code>callers.</code> prefix), e.g.
+    // <code>call_name</code>, <code>sip_caller_config.callee_id</code>,
+    // <code>common_services_config.nlu_vtsi_config.agent_name</code>. Nested paths through singular message
+    // fields are allowed; a path below a repeated or map field is not. <code>name</code> is always
+    // populated. Unset or empty returns every field the <code>call_view</code> populates. An unknown path
+    // is rejected with <code>INVALID_ARGUMENT</code> naming it. Applied after the <code>call_view</code>
+    // and the server&apos;s role-based redaction of <code>common_services_config</code>, so it can only
+    // narrow the response and never populates a field that was left empty. Not part of the paging contract:
+    // a <code>page_token</code> stays valid with another mask.
+    google.protobuf.FieldMask field_mask = 4;
+
 }
 
 // Represents the response for listing callers.
@@ -491,6 +504,18 @@ message ListListenersRequest {
 
     // you can specify the view to be shallow or full
     optional CallView call_view = 3;
+
+    // Optional. Partial response: the field paths to populate in every returned <code>Listener</code>,
+    // relative to the <code>Listener</code> message (no <code>listeners.</code> prefix), e.g.
+    // <code>call_name</code>, <code>common_services_config.nlu_vtsi_config.agent_name</code>. Nested paths
+    // through singular message fields are allowed; a path below a repeated or map field is not.
+    // <code>name</code> is always populated. Unset or empty returns every field the <code>call_view</code>
+    // populates. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. Applied after
+    // the <code>call_view</code> and the server&apos;s role-based redaction of
+    // <code>common_services_config</code>, so it can only narrow the response and never populates a field
+    // that was left empty. Not part of the paging contract: a <code>page_token</code> stays valid with
+    // another mask.
+    google.protobuf.FieldMask field_mask = 4;
 
 }
 
@@ -938,6 +963,18 @@ message ListScheduledCallersRequest {
     // Optional. Only return scheduled callers in one of these states.
     // An empty list returns every state.
     repeated ScheduledCallerStatus statuses = 4;
+
+    // Optional. Partial response: the field paths to populate in every returned
+    // <code>ScheduledCaller</code>, relative to the <code>ScheduledCaller</code> message (no
+    // <code>scheduled_callers.</code> prefix), e.g. <code>scheduled_time</code>,
+    // <code>sip_caller_config.callee_id</code>. Nested paths through singular message fields are allowed; a
+    // path below a repeated or map field is not. <code>name</code> is always populated. Unset or empty
+    // returns every field the <code>call_view</code> populates. An unknown path is rejected with
+    // <code>INVALID_ARGUMENT</code> naming it. Applied after the <code>call_view</code> and the
+    // server&apos;s role-based redaction of <code>common_services_config</code>, so it can only narrow the
+    // response and never populates a field that was left empty. Not part of the paging contract: a
+    // <code>page_token</code> stays valid with another mask.
+    google.protobuf.FieldMask field_mask = 5;
 
 }
 
@@ -1845,6 +1882,17 @@ message ListCallsRequest{
     // Optional. The next_page_token value returned from a previous list request.
     // Example: "current_index-1--page_size-20"
     optional string page_token = 4;
+
+    // Optional. Partial response: the field paths to populate in every returned <code>Call</code>, relative
+    // to the <code>Call</code> message (no <code>calls.</code> prefix), e.g. <code>call_type</code>,
+    // <code>phone_number</code>, <code>start_time</code>. Nested paths through singular message fields are
+    // allowed; a path below a repeated or map field is not. <code>name</code> is always populated. Unset or
+    // empty returns every field the <code>call_view</code> populates. An unknown path is rejected with
+    // <code>INVALID_ARGUMENT</code> naming it. Applied after the <code>call_view</code> and the
+    // server&apos;s role-based redaction of <code>common_services_config</code>, so it can only narrow the
+    // response and never populates a field that was left empty. Not part of the paging contract: a
+    // <code>page_token</code> stays valid with another mask.
+    google.protobuf.FieldMask field_mask = 5;
 
 }
 
