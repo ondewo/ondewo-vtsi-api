@@ -57761,24 +57761,33 @@ detecting speech. Available only when Pyannote is also the active VAD.</p></td>
           <pre>rpc SipStartSession (<a href="#ondewo.sip.SipStartSessionRequest">SipStartSessionRequest</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
           <p>Starts a new SIP session for an account registered at a SIP server. <code>RegisterAccount</code> need to be called before.</p>
+
+Not idempotent (no idempotency_level): (re)creates the SIP session and registration.
         
           <h4 id="ondewo.sip.Sip.SipEndSession" class="title-badge method">SipEndSession</h4>
 
           <pre>rpc SipEndSession (<a href="#google.protobuf.Empty">.google.protobuf.Empty</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
           <p>Ends a SIP session for an account registered at a SIP server</p>
+
+Not idempotent (no idempotency_level): tears down the session; a repeat records a new status.
         
           <h4 id="ondewo.sip.Sip.SipStartCall" class="title-badge method">SipStartCall</h4>
 
           <pre>rpc SipStartCall (<a href="#ondewo.sip.SipStartCallRequest">SipStartCallRequest</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
           <p>Starts a call in an active SIP session for an account registered at a SIP server</p>
+
+Not idempotent (no idempotency_level): a repeat dials a second call.
         
           <h4 id="ondewo.sip.Sip.SipEndCall" class="title-badge method">SipEndCall</h4>
 
           <pre>rpc SipEndCall (<a href="#ondewo.sip.SipEndCallRequest">SipEndCallRequest</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
           <p>Ends a call in an active SIP session for an account registered at a SIP server</p>
+
+Not idempotent (no idempotency_level): a repeat without a call appends its refusal to the history and ends
+a one-shot caller container; unscoped it can end the next call.
         
           <h4 id="ondewo.sip.Sip.SipTransferCall" class="title-badge method">SipTransferCall</h4>
 
@@ -57796,12 +57805,16 @@ With <code>outcome_timeout_ms &gt; 0</code> see <code>SipTransferCallRequest.out
 party in it, the invited participant included. The refusal is RETURNED as <code>TRANSFER_CALL_FAILED</code> with
 <code>exception_name=ParticipantsPresent</code> and <code>description = reason=participants-present</code>; nothing
 is sent and the call is kept.</p>
+
+Not idempotent (no idempotency_level): a repeat sends another REFER.
         
           <h4 id="ondewo.sip.Sip.SipRegisterAccount" class="title-badge method">SipRegisterAccount</h4>
 
           <pre>rpc SipRegisterAccount (<a href="#ondewo.sip.SipRegisterAccountRequest">SipRegisterAccountRequest</a>) returns (<a href="#ondewo.sip.SipStatus">SipStatus)</a></pre>
 
           <p>Registers s SIP account at a SIP server</p>
+
+Not idempotent (no idempotency_level): re-registers the account at the SIP server.
         
           <h4 id="ondewo.sip.Sip.SipGetSipStatus" class="title-badge method">SipGetSipStatus</h4>
 
@@ -57822,6 +57835,8 @@ is sent and the call is kept.</p>
           <p>Plays wav files during an ongoing call of an active SIP session</p>
 <p>Call scoping as for <code>SipTransferCall</code>: a present <code>x-ondewo-expected-call-id</code> metadatum must
 match <code>SipStatus.call_id</code>.</p>
+
+Not idempotent (no idempotency_level): a repeat plays the files again.
         
           <h4 id="ondewo.sip.Sip.SipMute" class="title-badge method">SipMute</h4>
 
@@ -57831,6 +57846,8 @@ match <code>SipStatus.call_id</code>.</p>
 <p>Call scoping as for <code>SipTransferCall</code>. Sent by the in-container speech-to-speech pipeline it mutes only
 the bot's own mixer slot; sent by a remote client it sets the operator mute of
 <code>SipSetCallMediaControl</code>, which the pipeline cannot undo.</p>
+
+Not idempotent (no idempotency_level): without a call it assigns NO_ONGOING_CALL and appends to the history.
         
           <h4 id="ondewo.sip.Sip.SipUnMute" class="title-badge method">SipUnMute</h4>
 
@@ -57838,6 +57855,8 @@ the bot's own mixer slot; sent by a remote client it sets the operator mute of
 
           <p>Un-mutes the microphone in an ongoing call of an active SIP session</p>
 <p>Call scoping and the split between the pipeline's own mute and the operator mute as for <code>SipMute</code>.</p>
+
+Not idempotent (no idempotency_level): without a call it assigns NO_ONGOING_CALL and appends to the history.
         
           <h4 id="ondewo.sip.Sip.SipReportAnsweringMachineDetected" class="title-badge method">SipReportAnsweringMachineDetected</h4>
 
@@ -57848,6 +57867,8 @@ the bot's own mixer slot; sent by a remote client it sets the operator mute of
 <p>Called by the speech-to-speech pipeline (ONDEWO-CSI) inside the same container, i.e. over loopback only.
 Refused, and the current status left untouched, when no outgoing call is connected: the returned
 <code>SipStatus</code> then carries the refusal in <code>exception_name</code> and <code>description</code></p>
+
+Not idempotent (no idempotency_level): assigns a status and records answering machine detection telemetry.
         
           <h4 id="ondewo.sip.Sip.SipSetCallMediaControl" class="title-badge method">SipSetCallMediaControl</h4>
 
@@ -57864,6 +57885,9 @@ muted while ANY owner holds a mute, and its listening is paused while ANY owner 
 <code>NoOngoingCall</code>, <code>AmdInProgress</code>, <code>CsiMediaControlFailed</code>) and never assigned to
 the shared status. When the pipeline refuses or fails, a requested pause is rolled back and a requested mute is
 kept (the safe direction); the returned fields carry the actual level.</p>
+
+Deliberately unmarked although a repeat leaves the level unchanged: a retried attempt can land after a newer
+request of the same owner and restore a stale mute or pause.
         
           <h4 id="ondewo.sip.Sip.SipStreamCallAudio" class="title-badge method">SipStreamCallAudio</h4>
 
@@ -57880,8 +57904,36 @@ connected call, answering machine detection in progress, bot still speaking at T
 <code>INVALID_ARGUMENT</code> (missing or invalid <code>config</code>, wrong frame size),
 <code>RESOURCE_EXHAUSTED</code> (stream cap reached, a second TALK). A normal end sends one <code>ended</code>
 message and then OK.</p>
+
+Not idempotent (no idempotency_level): a stream takes a slot and, in TALK, takes over the call.
         
 
+        
+          
+          
+          <h4>Methods with idempotency_level option</h4>
+          <table>
+            <thead>
+              <tr>
+                <td>Method Name</td>
+                <td>Option</td>
+              </tr>
+            </thead>
+            <tbody>
+            
+              <tr>
+                <td>SipGetSipStatus</td>
+                <td><p>NO_SIDE_EFFECTS</p></td>
+              </tr>
+            
+              <tr>
+                <td>SipGetSipStatusHistory</td>
+                <td><p>NO_SIDE_EFFECTS</p></td>
+              </tr>
+            
+            </tbody>
+          </table>
+          
         
 
       
