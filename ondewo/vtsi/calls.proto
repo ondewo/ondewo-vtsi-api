@@ -41,7 +41,8 @@ service Calls {
     // <p>Start multiple ondewo-sip callers instances for a specific nlu-project.</p>
     rpc StartCallers (StartCallersRequest) returns (StartCallersResponse);
 
-    // <p>Lists all available callers</p>
+    // <p>Lists all available callers, ordered by the caller&apos;s uuid (the last segment of <code>name</code>),
+    // ascending: a stable order, not a chronological one.</p>
     // <p>With <code>campaign_name</code> or <code>campaign_display_name</code> set, lists only the callers of that
     // campaign: the callers that placed at least one attempt of one of its campaign calls (see
     // <code>ListCallersRequest.campaign_name</code>).</p>
@@ -54,11 +55,21 @@ service Calls {
     // <code>sip_caller_config</code> and <code>common_services_config</code> or any nested sub-path of them.
     // Allowed whether or not the caller has a call running.</p>
     // <p>A running call and its container are NEVER changed: nothing is restarted, redeployed or reconfigured,
-    // and the call goes on with the configuration its container was deployed with. The stored configuration is
-    // what the server uses the next time it deploys a container for this caller; a caller whose call has
-    // ended and that the server never deploys again keeps the update only as its stored (and returned)
-    // configuration. Updating a caller never changes a campaign: the attempts of a campaign call take their
-    // configuration from the campaign and the campaign call, never from a <code>Caller</code>.</p>
+    // and the call goes on with the configuration its container was deployed with.</p>
+    // <p>When the stored configuration takes effect: a caller is ONE call (every <code>StartCaller</code> creates
+    // a new caller carrying its own configuration, and no RPC redeploys an existing one), so for a caller that
+    // is not pooled the update changes ONLY the stored and returned configuration and never any present or
+    // future call. The one case in which the server deploys a container from a caller&apos;s stored
+    // configuration is a POOLED (persistent) caller, which the server keeps warm between calls: when the server
+    // recycles the pooled callers of a project onto its Asterisk (an <code>UpdateVtsiProject</code> of a
+    // deployed project, the recovery after the project&apos;s Asterisk restarted, a change of the project&apos;s
+    // TLS trust anchor), the pooled caller it starts in place of this one is deployed from the stored, i.e.
+    // updated, configuration. An in-place restart of a pooled caller&apos;s container (the call monitor&apos;s
+    // health recovery) keeps the configuration the container was deployed with. Until it is recycled, an idle
+    // pooled caller is matched to later <code>StartCaller</code> requests by the configuration its container
+    // RUNS, never by an updated stored configuration it does not run.</p>
+    // <p>Updating a caller never changes a campaign: the attempts of a campaign call take their configuration
+    // from the campaign and the campaign call, never from a <code>Caller</code>.</p>
     // <p>Errors are gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed <code>caller.name</code>,
     // an empty <code>update_mask</code>, an unknown, output-only or immutable <code>update_mask</code> path, a
     // resulting configuration that a <code>StartCallerRequest</code> carrying it would be refused for, or an
@@ -111,9 +122,15 @@ service Calls {
     // Allowed whether or not the listener&apos;s container is running or has a call.</p>
     // <p>A running container and every call it takes are NEVER changed: nothing is restarted, redeployed or
     // reconfigured, and the running container answers its calls with the configuration it was deployed with
-    // until it is replaced. The stored configuration is what the server uses the next time it deploys a
-    // container for this listener (e.g. when it restarts the listener&apos;s container or redeploys the
-    // project); a listener the server never deploys again keeps the update only as its stored (and returned)
+    // until it is replaced.</p>
+    // <p>When the stored configuration takes effect: only when the server RECREATES the listener from it, i.e.
+    // when it recycles the listeners of the project onto its Asterisk: an <code>UpdateVtsiProject</code> of a
+    // deployed project, the recovery after the project&apos;s Asterisk restarted, or a change of the
+    // project&apos;s TLS trust anchor. The listener the server starts in place of this one is deployed from the
+    // stored, i.e. updated, configuration. An in-place restart of the listener&apos;s container (the
+    // server&apos;s restore of listener containers when it starts, the call monitor&apos;s restart of an
+    // unhealthy container, a <code>docker restart</code>) keeps the configuration the container was deployed
+    // with. A listener that is never recycled keeps the update only as its stored (and returned)
     // configuration.</p>
     // <p>Errors as for <code>UpdateCaller</code>, with <code>StartListenerRequest</code> as the validation of the
     // resulting configuration.</p>
@@ -598,9 +615,13 @@ message ListCallersRequest {
     // scheduled campaign call are placed by callers too, while its <code>ScheduledCaller</code> is not a
     // <code>Caller</code> and is never listed here). A caller that was deleted is not listed. A caller that
     // placed attempts of several campaigns (a pooled caller of the server&apos;s caller pool can) is listed for
-    // each of them. The order is the one of the unfiltered listing, and the same set, oldest first, is what
-    // <code>Campaign.campaign_callers</code> reports. A <code>page_token</code> is valid only with the same
-    // campaign selector.</p>
+    // each of them. Order: the same as without a selector, i.e. by the caller&apos;s uuid (the last segment of
+    // <code>name</code>), ascending: a stable order, not a chronological one. <code>Campaign.campaign_callers</code>
+    // reports the same SET in a different order (by the start of each caller&apos;s first attempt for the
+    // campaign, oldest first) and bounded.</p>
+    // <p>Paging: the <code>page_token</code> carries only a position and a page size (its documented format) and
+    // is not bound to the selector. Keep the selector unchanged while paging: a token sent with another selector
+    // (or none) is not rejected and returns the page at that position of THAT listing.</p>
     // <p>Errors: <code>INVALID_ARGUMENT</code> for a malformed <code>campaign_name</code>, a campaign of
     // another project than <code>vtsi_project_name</code>, or an empty <code>campaign_display_name</code>
     // sent as the set member; <code>NOT_FOUND</code> for an unknown campaign.</p>
@@ -1001,11 +1022,15 @@ message UpdateCallerResponse {
 }
 
 // The request message for <a href="index.html#ondewo.vtsi.Calls.UpdateCallers">Calls.UpdateCallers</a>.
-// <p>Rejected as a whole with <code>INVALID_ARGUMENT</code>, nothing being written, when it has no entry, more
-// than 1000 entries, two entries naming the same caller, an entry whose <code>caller.name</code> is not a caller
-// of <code>vtsi_project_name</code>, an entry with its own <code>field_mask</code> set, or an unknown
-// <code>field_mask</code> path (each naming the entry index or the path). Every other error is reported per
-// entry.</p>
+// <p>Rejected as a whole, nothing being written, with: <code>INVALID_ARGUMENT</code> for a malformed
+// <code>vtsi_project_name</code>, no entry, more than 1000 entries, two entries naming the same caller, an entry
+// whose <code>caller.name</code> is malformed or whose project segment differs from
+// <code>vtsi_project_name</code>, an entry with its own <code>field_mask</code> set, or an unknown
+// <code>field_mask</code> path (each naming the entry index or the path); <code>NOT_FOUND</code> for an unknown
+// project; with authorization enforced <code>PERMISSION_DENIED</code> for a project the caller holds no role on
+// or a role below the one <code>UpdateCaller</code> requires. Every other error is reported per entry, e.g. a
+// well-formed name of the right project that names no caller is that entry&apos;s
+// <code>NOT_FOUND</code>.</p>
 message UpdateCallersRequest {
 
     // VTSI project of every caller of the request.
@@ -1080,8 +1105,9 @@ message UpdateListenerResponse {
 }
 
 // The request message for <a href="index.html#ondewo.vtsi.Calls.UpdateListeners">Calls.UpdateListeners</a>.
-// <p>Rejected as a whole exactly like <code>UpdateCallersRequest</code> (with listeners instead of callers);
-// every other error is reported per entry.</p>
+// <p>Rejected as a whole exactly like <code>UpdateCallersRequest</code>, with listeners instead of callers and
+// <code>UpdateListener</code> as the role reference; every other error is reported per entry, e.g. a
+// well-formed name of the right project that names no listener is that entry&apos;s <code>NOT_FOUND</code>.</p>
 message UpdateListenersRequest {
 
     // VTSI project of every listener of the request.
@@ -2335,8 +2361,10 @@ message CallFilter {
     // (<code>CampaignCallAttempt.call_name</code>), whichever way the campaign call was added. An attempt
     // whose start failed placed no call and contributes none. Combined with the other filters by AND (a
     // campaign&apos;s calls are all <code>CALLER</code> calls). Neither set means any call, as before 9.1.0.
-    // Resolved within <code>ListCallsRequest.vtsi_project_name</code>; a <code>page_token</code> is valid only
-    // with the same campaign selector.
+    // Resolved within <code>ListCallsRequest.vtsi_project_name</code>. The <code>page_token</code> carries only a
+    // position and a page size (its documented format) and is not bound to the selector: keep the selector
+    // unchanged while paging, since a token sent with another selector (or none) is not rejected and returns the
+    // page at that position of THAT listing.
     // <p>Errors: <code>INVALID_ARGUMENT</code> for a malformed <code>campaign_name</code>, a campaign of another
     // project than <code>ListCallsRequest.vtsi_project_name</code>, or an empty
     // <code>campaign_display_name</code> sent as the set member; <code>NOT_FOUND</code> for an unknown
@@ -2442,10 +2470,14 @@ message UpdateCallResponse {
 }
 
 // The request message for <a href="index.html#ondewo.vtsi.Calls.UpdateCalls">Calls.UpdateCalls</a>.
-// <p>Rejected as a whole exactly like <code>UpdateCallersRequest</code> (with calls instead of callers: no entry,
-// more than 1000 entries, two entries naming the same call, a call of another project than
+// <p>Rejected as a whole exactly like <code>UpdateCallersRequest</code>, with calls instead of callers and
+// <code>UpdateCall</code> as the role reference (<code>INVALID_ARGUMENT</code> for a malformed
+// <code>vtsi_project_name</code>, no entry, more than 1000 entries, two entries naming the same call, an entry
+// whose <code>call.name</code> is malformed or whose project segment differs from
 // <code>vtsi_project_name</code>, an entry with its own <code>field_mask</code>, an unknown
-// <code>field_mask</code> path); every other error is reported per entry.</p>
+// <code>field_mask</code> path; <code>NOT_FOUND</code> for an unknown project; <code>PERMISSION_DENIED</code>);
+// every other error is reported per entry, e.g. a well-formed name of the right project that names no call is
+// that entry&apos;s <code>NOT_FOUND</code>.</p>
 message UpdateCallsRequest {
 
     // VTSI project of every call of the request.

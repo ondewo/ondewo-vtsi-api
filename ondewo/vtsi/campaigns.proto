@@ -71,7 +71,8 @@ import "ondewo/vtsi/call_configs.proto";
 // <code>CreateCampaign</code>, <code>GetCampaign</code>, <code>UpdateCampaign</code> and
 // <code>DeleteCampaign</code> accept an optional <code>field_mask</code> naming the field paths of the
 // returned resource (for a listing: of each listed element) to populate. Unset or empty returns every
-// field; the identifying <code>name</code> is always populated; an unknown path is rejected with
+// field (one exception: <code>ListCampaigns</code> returns <code>campaign_callers</code> and
+// <code>campaign_callers_truncated</code> only when its mask names them); the identifying <code>name</code> is always populated; an unknown path is rejected with
 // <code>INVALID_ARGUMENT</code> naming it; nested paths through singular message fields (e.g.
 // <code>statistics.completed</code>) are allowed, a path below a repeated or map field is not. The
 // mask is applied after any role-based redaction, so it can only narrow what the caller may see.</p>
@@ -134,7 +135,9 @@ service Campaigns {
     rpc DeleteCampaign (DeleteCampaignRequest) returns (DeleteCampaignResponse);
 
     // <p>Lists the campaigns of a project, newest first, filtered and paged, each with its
-    // statistics.</p>
+    // statistics. <code>campaign_callers</code> and <code>campaign_callers_truncated</code> are left empty
+    // unless <code>field_mask</code> names them, and a page that carries them holds at most 20 campaigns (see
+    // <code>ListCampaignsRequest.field_mask</code>).</p>
     // <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>INVALID_ARGUMENT</code>
     // for a negative <code>page_size</code>, a foreign <code>page_token</code> or an unknown
     // <code>field_mask</code> path.</p>
@@ -488,10 +491,13 @@ message Campaign {
     // more. The complete, paginated list is <code>Calls.ListCallers</code> with the campaign selector, and the
     // calls they placed are <code>Calls.ListCalls</code> with <code>CallFilter.campaign_name</code>.</p>
     // <p>Populated by <code>CreateCampaign</code> (always empty: a new campaign has placed no call),
-    // <code>GetCampaign</code>, <code>UpdateCampaign</code>, <code>ListCampaigns</code>,
-    // <code>StartCampaign</code>, <code>StopCampaign</code>, <code>HardStopCampaign</code> and
-    // <code>ResumeCampaign</code>; subject to their <code>field_mask</code> like any other path (path
-    // <code>campaign_callers</code>; a path below it is rejected). Left empty in
+    // <code>GetCampaign</code>, <code>UpdateCampaign</code>, <code>StartCampaign</code>,
+    // <code>StopCampaign</code>, <code>HardStopCampaign</code> and <code>ResumeCampaign</code>; subject to their
+    // <code>field_mask</code> like any other path (path <code>campaign_callers</code>; a path below it is
+    // rejected). <code>ListCampaigns</code> populates it ONLY when its <code>field_mask</code> names it
+    // explicitly, and an unset or empty mask, which returns every other field, leaves it empty: at up to 1000
+    // names (~90 bytes each) per campaign, a default page would otherwise exceed gRPC&apos;s default 4 MiB
+    // message limit. Left empty in
     // <code>StreamCampaignStatusResponse.campaigns</code> and in the <code>campaign</code> of
     // <code>AddCallersToCampaignResponse</code> / <code>AddScheduledCallersToCampaignResponse</code>. Setting it
     // on create is an output-only field set (<code>INVALID_ARGUMENT</code>), naming it in an
@@ -500,8 +506,9 @@ message Campaign {
 
     // Output only. True when <code>campaign_callers</code> was cut at its bound of 1000 names and the campaign
     // has more callers; read them all with <code>Calls.ListCallers</code> and the campaign selector. Populated
-    // and left unset by the same RPCs as <code>campaign_callers</code>; a <code>field_mask</code> names it
-    // like any other path (name both to read the names and whether they are complete).
+    // and left unset by the same RPCs as <code>campaign_callers</code>, and in <code>ListCampaigns</code> also
+    // only when the <code>field_mask</code> names it explicitly; a <code>field_mask</code> names it like any
+    // other path (name both to read the names and whether they are complete).
     bool campaign_callers_truncated = 21;
 }
 
@@ -929,7 +936,9 @@ message ListCampaignsRequest {
     CampaignFilter filter = 2;
 
     // Optional. Maximum campaigns per page. <code>0</code> means 20; values above 1000 are clamped
-    // to 1000; negative values are rejected with <code>INVALID_ARGUMENT</code>.
+    // to 1000 (to 20 when <code>field_mask</code> names <code>campaign_callers</code> or
+    // <code>campaign_callers_truncated</code>); negative values are rejected with
+    // <code>INVALID_ARGUMENT</code>.
     int32 page_size = 3;
 
     // Optional. The <code>next_page_token</code> of a previous response; valid only with the same
@@ -939,9 +948,14 @@ message ListCampaignsRequest {
     // Optional. Partial response: the field paths to populate in every returned <code>Campaign</code>,
     // relative to the <code>Campaign</code> message (no <code>campaigns.</code> prefix), as in
     // <a href="index.html#ondewo.vtsi.GetCampaignRequest">GetCampaignRequest.field_mask</a>.
-    // <code>name</code> is always populated. Unset or empty returns every field. An unknown path is
-    // rejected with <code>INVALID_ARGUMENT</code> naming it. Not part of the paging contract: a
-    // <code>page_token</code> stays valid with another mask.
+    // <code>name</code> is always populated. Unset or empty returns every field EXCEPT
+    // <code>campaign_callers</code> and <code>campaign_callers_truncated</code>, which are populated only when
+    // the mask names them explicitly (a page of full caller lists could exceed gRPC&apos;s default 4 MiB message
+    // limit). When the mask names either of them, the page holds at most 20 campaigns: a larger
+    // <code>page_size</code> is clamped to 20 (not rejected). For the complete, paginated callers of one
+    // campaign use <code>Calls.ListCallers</code> with the campaign selector. An unknown path is rejected with
+    // <code>INVALID_ARGUMENT</code> naming it. Not part of the paging contract: a <code>page_token</code> stays
+    // valid with another mask.
     google.protobuf.FieldMask field_mask = 5;
 }
 

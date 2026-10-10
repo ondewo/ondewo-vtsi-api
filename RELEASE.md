@@ -102,9 +102,17 @@
     **Listener**: updatable `sip_base_config` and `common_services_config` (and any nested sub-path). `name` and
     `call_name` are output only. The update changes the STORED configuration only, and the result must be valid
     as a `StartCallerRequest` / `StartListenerRequest`. A running container and every call it takes are never
-    changed: nothing is restarted, redeployed or reconfigured, and the stored configuration is used the next time
-    the server deploys a container for that caller or listener. Updating a caller never changes a campaign (an
-    attempt of a campaign call is configured by the campaign and the campaign call).
+    changed: nothing is restarted, redeployed or reconfigured. The stored configuration takes effect only when
+    the server RECREATES the resource from it, which it does when it recycles a project's listeners and pooled
+    (persistent) callers onto the project's Asterisk: an `UpdateVtsiProject` of a deployed project, the recovery
+    after the project's Asterisk restarted, a change of the project's TLS trust anchor. The listener / pooled
+    caller started in its place runs the updated configuration. An in-place container restart (the server's
+    restore of listener containers at start-up, the call monitor's health restart, `docker restart`) keeps the
+    deployed configuration. A caller that is not pooled is one call and is never deployed again, so updating it
+    changes only its stored and returned configuration and never any present or future call; an idle pooled
+    caller is matched to later `StartCaller` requests by the configuration its container runs, never by an
+    updated stored one. Updating a caller never changes a campaign (an attempt of a campaign call is configured
+    by the campaign and the campaign call).
   * **Call**: `Call` gained `map<string, string> labels = 26`, client-defined descriptive labels and its only
     mutable field: the only updatable path is `labels`, which replaces the whole map (at most 64 entries, keys
     `[a-z][a-z0-9_.-]{0,62}`, values of at most 255 printable characters). It was added because a `Call` had no
@@ -114,9 +122,12 @@
     `vtsi_project_name` and a batch-level `field_mask`, apply each entry on its own (not atomic) and report one
     `Update*Response` per entry in request order, with a failed entry's `error_message` prefixed by the gRPC status
     code name the single RPC would have answered (e.g. `NOT_FOUND: ...`) and an overall `error_message` summary. A
-    batch is refused as a whole with `INVALID_ARGUMENT`, nothing being written, for no entry, more than 1000
-    entries, a duplicate resource, a resource of another project, an entry with its own `field_mask`, or an
-    unknown `field_mask` path.
+    batch is refused as a whole, nothing being written, with `INVALID_ARGUMENT` for a malformed
+    `vtsi_project_name`, no entry, more than 1000 entries, a duplicate resource, a resource name that is
+    malformed or whose project segment differs from `vtsi_project_name`, an entry with its own `field_mask`, or an
+    unknown `field_mask` path; with `NOT_FOUND` for an unknown project; and with `PERMISSION_DENIED` when
+    authorization denies the project. A well-formed name of the right project that names no resource is that
+    entry's `NOT_FOUND`.
   * Authorization: the role that may start and stop the resource (`PROJECT_EXECUTOR` or higher on the project).
     The returned resource is redacted like `GetCaller` / `GetListener` / `GetCall` with `call_view = FULL`; writing
     back a redacted `common_services_config` whole overwrites the stored credentials with the withheld (empty)
@@ -128,8 +139,11 @@
   by `AddScheduledCallersToCampaign` alike; a `ScheduledCaller` is not a `Caller` and is not listed), deleted
   callers left out, ordered by the start of each caller's first attempt for the campaign, oldest first, and
   bounded to the first 1000 names (`campaign_callers_truncated` says whether there are more). Populated by
-  `CreateCampaign` (empty), `GetCampaign`, `UpdateCampaign`, `ListCampaigns`, `StartCampaign`, `StopCampaign`,
-  `HardStopCampaign` and `ResumeCampaign`, masked like any other path, and left empty in
+  `CreateCampaign` (empty), `GetCampaign`, `UpdateCampaign`, `StartCampaign`, `StopCampaign`, `HardStopCampaign`
+  and `ResumeCampaign`, masked like any other path. `ListCampaigns` populates the two fields ONLY when its
+  `field_mask` names them explicitly (an unset or empty mask leaves them empty) and then clamps `page_size` to 20,
+  because up to 1000 names (~90 bytes each) per campaign would push a default page past gRPC's default 4 MiB
+  message limit. Both are left empty in
   `StreamCampaignStatusResponse.campaigns` and in the `campaign` of the `Add*ToCampaign` responses. The complete,
   paginated listing is the new campaign selector of the list RPCs: `ListCallersRequest` gained
   `oneof campaign { string campaign_name = 5; string campaign_display_name = 6; }` (the same set of callers,
@@ -137,8 +151,11 @@
   `oneof campaign { string campaign_name = 16; string campaign_display_name = 17; }` (the calls those attempts
   placed, as `Call` resources, combined with the other filters by AND). The display name is resolved within the
   request's `vtsi_project_name`; a campaign of another project, a malformed name or an empty display name sent
-  as the set member is `INVALID_ARGUMENT`, an unknown campaign `NOT_FOUND`, and a `page_token` is valid only with
-  the same selector.
+  as the set member is `INVALID_ARGUMENT` and an unknown campaign `NOT_FOUND`. `ListCallers` is ordered by the
+  caller's uuid, ascending (as without a selector; `campaign_callers` holds the same set ordered by first
+  attempt). The `page_token` of both listings carries only a position and a page size and is not bound to the
+  selector: keep the selector unchanged while paging, since a token sent with another selector is not rejected
+  and returns that position of the other listing.
 
 ### Compatibility
 
