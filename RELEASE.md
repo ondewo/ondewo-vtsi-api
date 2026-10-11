@@ -82,6 +82,9 @@ Server behaviour of 9.1.0 that an existing 9.0.0 client can observe without send
 
 #### Logs
 
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Unknown project** on `StreamCallLogs`,
+  `ListCallLogs`, `GetCallLogStream`, `ListCallLogStreams` and `DeleteCallLogs`: an empty result -> `NOT_FOUND`
+  (with authorization enforced, a caller without a role on the project receives `PERMISSION_DENIED` first).
 * [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Inverted time window** (`start_time` after
   `end_time`) in a log filter: an empty page -> `INVALID_ARGUMENT`.
 * [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **`StreamCallLogs` ended because the role was
