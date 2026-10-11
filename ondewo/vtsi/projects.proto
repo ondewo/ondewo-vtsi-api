@@ -20,35 +20,191 @@ import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 
 // <p>ONDEWO VTSI API</p>
+// <p>Manages VTSI (Virtual Telephone System Integration) PROJECTS: the per-project configuration of an
+// Asterisk SIP server (its SIP trunk, its ports, its Asterisk version) together with the caller and
+// listener capacity of the project and the ONDEWO NLU agents it serves. Deploying a project starts its
+// Asterisk container; callers, listeners, campaigns and softphone accounts of the project need a
+// <code>DEPLOYED</code> project to place or take calls.</p>
+// <p>Errors are reported as gRPC status codes. The <code>error_message</code> fields of the responses
+// are never set, neither on success nor on failure (they predate the status codes and are kept for wire
+// compatibility): <code>INVALID_ARGUMENT</code> for a malformed name, an unknown <code>update_mask</code>
+// or <code>field_mask</code> path, a malformed <code>page_token</code> or an out-of-range value (each
+// naming the field); <code>NOT_FOUND</code> for an unknown project; <code>ALREADY_EXISTS</code> when
+// <code>CreateVtsiProject</code> names a project that exists; <code>FAILED_PRECONDITION</code> when the
+// project is in a status that does not allow the operation (each RPC names its cases);
+// <code>ABORTED</code> when another create, update, deploy, undeploy or delete of the same project held
+// it for longer than the server waits (about 30 seconds), in which case nothing was changed and the
+// request can be retried; <code>UNAVAILABLE</code> when the docker daemon or the database cannot be
+// reached.</p>
+// <p>Authorization (only when the server enforces it, i.e. <code>ONDEWO_VTSI_KEYCLOAK_AUTH_ENABLED</code>
+// and <code>ONDEWO_VTSI_AUTH_REQUIRED</code> are both true): a caller without a credential is
+// <code>UNAUTHENTICATED</code> whatever it sent. A caller needs a server role (<code>SERVER_ADMIN</code>,
+// <code>SERVER_MANAGER</code> or <code>SERVER_USER</code>), else every RPC is
+// <code>PERMISSION_DENIED</code>. The project roles are derived from the caller&apos;s roles on the
+// project&apos;s <code>nlu_agent_names</code>: <code>CreateVtsiProject</code>,
+// <code>GetVtsiProject</code>, <code>UpdateVtsiProject</code>, <code>DeleteVtsiProject</code>,
+// <code>DeployVtsiProject</code> and <code>UndeployVtsiProject</code> require
+// <code>PROJECT_DEVELOPER</code> or higher (<code>PROJECT_ADMIN</code>); <code>ListVtsiProjects</code>
+// is open to every project role and returns only the projects the caller holds a role on.
+// <code>SERVER_ADMIN</code> passes every project check. With enforcement on, a well-formed request naming
+// a project the caller holds no role on, an unknown project included, is answered
+// <code>PERMISSION_DENIED</code> rather than <code>NOT_FOUND</code>, so the answer does not reveal
+// whether the project exists; <code>NOT_FOUND</code> is then reserved to <code>SERVER_ADMIN</code>. With
+// enforcement off (the default) every request is served and only logged.</p>
+// <p><b>Credentials.</b> <code>AsteriskConfigsVariables.sip_trunk_password</code> is stored and returned
+// as sent (it is not write-only): <code>GetVtsiProject</code>, <code>CreateVtsiProject</code>,
+// <code>UpdateVtsiProject</code> and <code>ListVtsiProjects</code> return it to every caller allowed to
+// call them with a view that populates <code>asterisk_configs</code>. With enforcement on,
+// <code>ListVtsiProjects</code> withholds the whole <code>asterisk_configs</code> (and every other
+// configuration field) from a caller whose highest role on the project is <code>PROJECT_EXECUTOR</code>
+// or <code>PROJECT_USER</code>. Use a <code>field_mask</code> without <code>asterisk_configs</code> where
+// the password is not needed.</p>
+// <p>Events: every change emits the matching <code>VtsiEvent</code> of the project
+// (<code>VTSI_EVENT_VTSI_PROJECT_UPDATED</code>, <code>_DEPLOYED</code>, <code>_DEPLOY_FAILED</code>,
+// <code>_UNDEPLOYED</code>, <code>_UNDEPLOY_FAILED</code>, <code>_DELETED</code>) and, for every change
+// of <code>vtsi_project_status</code>, <code>VTSI_EVENT_VTSI_PROJECT_STATUS_CHANGED</code>. A request
+// with <code>validate_only</code> emits nothing.</p>
 service Projects {
 
     //////////////////////////////////////////////////////////////////////////////
     // Project endpoints
     //////////////////////////////////////////////////////////////////////////////
 
-    // <p>Create a VTSI project with configs</p>
+    // <p>Creates a VTSI project with its configuration. The project is created
+    // <code>UNDEPLOYED</code>; nothing is started. <code>max_callers</code> caller and
+    // <code>max_listeners</code> listener SIP accounts are provisioned for it and an Asterisk port is
+    // assigned when none was given.</p>
+    // <p>With <code>validate_only</code> every check of a real create runs (authorization included) and
+    // nothing is written, reserved or emitted; the would-be project is returned.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> for an empty or over-long (more than 256 characters)
+    // <code>display_name</code>, a negative <code>max_callers</code> or <code>max_listeners</code>, a port
+    // outside 0..65535, <code>asterisk_port</code> and <code>asterisk_configs.asterisk_port</code> both set
+    // and different, a malformed <code>name</code>, an invalid <code>asterisk_configs</code> (each naming
+    // the field); <code>ALREADY_EXISTS</code> when
+    // <code>vtsi_project.name</code> names an existing project (also when two creates of the same name
+    // race); <code>ABORTED</code>, <code>UNAUTHENTICATED</code>, <code>PERMISSION_DENIED</code> as in the
+    // service description.</p>
+    // <p>Authorization: <code>PROJECT_DEVELOPER</code> or higher on EVERY agent of
+    // <code>nlu_agent_names</code>; a project with no agent can only be created by
+    // <code>SERVER_ADMIN</code>.</p>
+    // <p>Idempotency: none. A retry after a lost response creates a second project unless
+    // <code>vtsi_project.name</code> is set, in which case the retry is answered
+    // <code>ALREADY_EXISTS</code>.</p>
     rpc CreateVtsiProject (CreateVtsiProjectRequest) returns (CreateVtsiProjectResponse);
 
-    // <p>Get a VTSI project with configs</p>
+    // <p>Returns a VTSI project with its configuration.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> for an empty or malformed <code>name</code> or an unknown
+    // <code>field_mask</code> path; <code>NOT_FOUND</code> for an unknown project;
+    // <code>UNAUTHENTICATED</code>, <code>PERMISSION_DENIED</code> as in the service description.</p>
+    // <p>Authorization: <code>PROJECT_DEVELOPER</code> or higher on the project.</p>
     rpc GetVtsiProject (GetVtsiProjectRequest) returns (VtsiProject);
 
-    // <p>Update a VTSI project with configs</p>
+    // <p>Updates a VTSI project: the fields named in <code>update_mask</code>, or, with no mask, the
+    // fields <code>vtsi_project</code> sets (see <code>UpdateVtsiProjectRequest.update_mask</code>).</p>
+    // <p>An update of an <code>UNDEPLOYED</code> project only writes it. An update of a
+    // <code>DEPLOYED</code> project is applied to the running Asterisk by the cheapest path that applies
+    // every change, chosen by the server: <code>display_name</code>, <code>nlu_agent_names</code> and
+    // <code>transfer_phone_number_allowlist</code> touch no Asterisk; a configuration change that Asterisk
+    // measurably applies on a reload is reloaded in place and keeps every call; every other change is a
+    // RESTART of the Asterisk container or a REDEPLOY of the project (a changed <code>max_callers</code>,
+    // <code>max_listeners</code>, Asterisk port, <code>asterisk_version</code> or managed account), and
+    // ENDS EVERY CALL of the project: a redeploy undeploys and deploys the project and recycles its
+    // listeners and pooled callers. Use <code>validate_only</code> to check an update first.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> for an empty or malformed <code>vtsi_project.name</code>,
+    // an unknown <code>update_mask</code> path (also the prefixed form <code>vtsi_project.x</code>), a mask
+    // that clears the configuration source (<code>asterisk_configs</code> with no arm set), an out-of-range
+    // value (as on create) or an unknown <code>field_mask</code> path; <code>NOT_FOUND</code> for an
+    // unknown project; <code>FAILED_PRECONDITION</code> while the project is <code>DELETING</code>;
+    // <code>ABORTED</code> when another lifecycle operation of the project held it too long or the
+    // project changed concurrently, nothing being written; <code>UNAUTHENTICATED</code>,
+    // <code>PERMISSION_DENIED</code> as in the service description. When a deployed project&apos;s
+    // Asterisk cannot be reloaded, restarted or redeployed the RPC fails (<code>INTERNAL</code> or
+    // <code>UNAVAILABLE</code>) and the project is left as the failure left it (see
+    // <code>status_message</code>).</p>
+    // <p>Authorization: <code>PROJECT_DEVELOPER</code> or higher on the project and on every agent of the
+    // stored AND of the resulting <code>nlu_agent_names</code> (removing an agent needs the same role as
+    // adding it).</p>
+    // <p>Idempotency: an update is a set of absolute values, so a retry with the same request converges
+    // to the same project (a redeploying update ends the calls of the retry&apos;s moment too).</p>
     rpc UpdateVtsiProject (UpdateVtsiProjectRequest) returns (UpdateVtsiProjectResponse);
 
-    // <p>Delete a VTSI project with configs</p>
+    // <p>Deletes a VTSI project and its configuration. A project that is deployed, deploying,
+    // undeploying or <code>DEPLOY_FAILED</code> is UNDEPLOYED FIRST, automatically, exactly as by <code>UndeployVtsiProject</code>:
+    // every call of the project ends and its listeners, callers and Asterisk container are removed. The
+    // undeploy is best effort: a failing teardown is logged and the deletion goes on. The project then
+    // moves to <code>DELETING</code>, its stored configuration is removed and the project no longer
+    // exists (<code>DELETED</code> is never returned: a deleted
+    // project is <code>NOT_FOUND</code>). Deletion is permanent.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> for an empty or malformed <code>name</code>;
+    // <code>NOT_FOUND</code> for an unknown project, also for a retry of a deletion that succeeded (the
+    // RPC is not idempotent); <code>ABORTED</code>, <code>UNAUTHENTICATED</code>,
+    // <code>PERMISSION_DENIED</code> as in the service description.</p>
+    // <p>Authorization: <code>PROJECT_DEVELOPER</code> or higher on the project.</p>
+    // <p>Events: <code>VTSI_EVENT_VTSI_PROJECT_UNDEPLOYED</code> when it had to undeploy, then
+    // <code>VTSI_EVENT_VTSI_PROJECT_DELETED</code>, the last event of the project.</p>
     rpc DeleteVtsiProject (DeleteVtsiProjectRequest) returns (DeleteVtsiProjectResponse);
 
-    // <p>Deploy a VTSI project</p>
+    // <p>Deploys a VTSI project: starts its Asterisk container with the stored configuration and waits
+    // until the container runs. SYNCHRONOUS: the RPC returns when the project is <code>DEPLOYED</code>
+    // or the deployment failed. The status moves <code>UNDEPLOYED</code> (or <code>DEPLOY_FAILED</code>)
+    // &gt; <code>DEPLOYING</code> &gt; <code>DEPLOYED</code>; on failure the half-started container is
+    // removed, the status becomes <code>DEPLOY_FAILED</code> with the reason in
+    // <code>status_message</code>, and the RPC fails. The server waits about 30 seconds for the container
+    // to run, plus the docker API timeout of each docker call (<code>ONDEWO_VTSI_DOCKER_API_TIMEOUT_S</code>,
+    // default 90 seconds); a client deadline of at least 3 minutes is recommended. Deploying applies the
+    // project&apos;s softphone accounts to the new Asterisk. No caller or listener is started: start them
+    // with the <code>Calls</code> service.</p>
+    // <p>Idempotent: deploying a <code>DEPLOYED</code> project changes nothing and succeeds (nothing is
+    // restarted); a deploy that arrives while another deploy of the project runs waits for it and then
+    // finds the project <code>DEPLOYED</code>.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> for an empty or malformed <code>name</code>;
+    // <code>NOT_FOUND</code> for an unknown project; <code>FAILED_PRECONDITION</code> while the project is
+    // <code>DELETING</code>, or <code>DEPLOYING</code> / <code>UNDEPLOYING</code> after the operation that
+    // set the status was interrupted (undeploy the project first); <code>INTERNAL</code> or
+    // <code>UNAVAILABLE</code> when the deployment failed (the project is then
+    // <code>DEPLOY_FAILED</code>); <code>ABORTED</code>, <code>UNAUTHENTICATED</code>,
+    // <code>PERMISSION_DENIED</code> as in the service description.</p>
+    // <p>Authorization: <code>PROJECT_DEVELOPER</code> or higher on the project.</p>
+    // <p>Events: <code>VTSI_EVENT_VTSI_PROJECT_DEPLOYED</code> or
+    // <code>VTSI_EVENT_VTSI_PROJECT_DEPLOY_FAILED</code>, and
+    // <code>VTSI_EVENT_VTSI_PROJECT_STATUS_CHANGED</code> per status change.</p>
     rpc DeployVtsiProject (DeployVtsiProjectRequest) returns (DeployVtsiProjectResponse);
 
-    // <p>Undeploy a VTSI project</p>
+    // <p>Undeploys a VTSI project. SYNCHRONOUS: the status moves to <code>UNDEPLOYING</code>, EVERY CALL
+    // of the project is ended (callers and listeners alike, campaign calls included), the listeners and
+    // the pooled callers are undeployed, the Asterisk container is removed, and the status becomes
+    // <code>UNDEPLOYED</code>. The registrations of the project&apos;s softphone accounts end with the
+    // container; the accounts themselves are kept and are applied again on the next deploy. The stored
+    // configuration, callers, listeners and campaigns are kept. A failed undeploy restores the previous
+    // status (or <code>UNDEPLOYED</code> when the container is already gone) and fails the RPC.</p>
+    // <p>Idempotent: undeploying an <code>UNDEPLOYED</code> project changes nothing and succeeds.
+    // Undeploying a <code>DEPLOY_FAILED</code> project removes what the failed deployment left and makes it
+    // <code>UNDEPLOYED</code>.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> for an empty or malformed <code>name</code>;
+    // <code>NOT_FOUND</code> for an unknown project; <code>FAILED_PRECONDITION</code> while the project is
+    // <code>DELETING</code>; <code>INTERNAL</code> or <code>UNAVAILABLE</code> when the teardown failed;
+    // <code>ABORTED</code>, <code>UNAUTHENTICATED</code>, <code>PERMISSION_DENIED</code> as in the service
+    // description.</p>
+    // <p>Authorization: <code>PROJECT_DEVELOPER</code> or higher on the project.</p>
+    // <p>Events: <code>VTSI_EVENT_VTSI_PROJECT_UNDEPLOYED</code> or
+    // <code>VTSI_EVENT_VTSI_PROJECT_UNDEPLOY_FAILED</code>, and
+    // <code>VTSI_EVENT_VTSI_PROJECT_STATUS_CHANGED</code> per status change.</p>
     rpc UndeployVtsiProject (UndeployVtsiProjectRequest) returns (UndeployVtsiProjectResponse);
 
-    // <p>Get a VTSI project with configs</p>
+    // <p>Lists VTSI projects, filtered, sorted and paged. With authorization enforced, only the projects
+    // the caller holds a project role on are listed (every project for <code>SERVER_ADMIN</code>), and
+    // the configuration fields are withheld from a <code>PROJECT_EXECUTOR</code> or
+    // <code>PROJECT_USER</code> (see the service description); a caller without a usable credential gets an
+    // empty page.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> for a negative <code>page_size</code>, a malformed
+    // <code>page_token</code>, an unspecified status in <code>statuses</code>, an over-long
+    // <code>display_name_contains</code>, a <code>created_after</code> that is not before
+    // <code>created_before</code>, or an unknown <code>field_mask</code> path;
+    // <code>UNAUTHENTICATED</code> as in the service description.</p>
+    // <p>Authorization: any project role (<code>PROJECT_USER</code> or higher).</p>
     rpc ListVtsiProjects (ListVtsiProjectsRequest) returns (ListVtsiProjectsResponse);
 
 }
-
 
 
 // The VTSI project with its configuration setting
@@ -62,10 +218,20 @@ message VtsiProject{
     // OPTIONAL: The display name of the project
     string display_name = 2;
 
-    // The maximum number of callers that this project can have.
+    // The maximum number of callers that this project can have, i.e. the number of caller SIP accounts
+    // provisioned on its Asterisk. <code>0</code> means NO caller can be started (it is not
+    // &quot;unlimited&quot;); negative values are refused with <code>INVALID_ARGUMENT</code>. A
+    // <code>StartCaller</code> / <code>StartCallers</code> beyond the free capacity is refused with
+    // <code>RESOURCE_EXHAUSTED</code>; an idle pooled (persistent) caller does not count. Changing it on a
+    // <code>DEPLOYED</code> project REDEPLOYS the project, which ends every running call (see
+    // <code>UpdateVtsiProject</code>); lowering it below the number of running callers is not refused.
     int32 max_callers = 3;
 
-    // The maximum number of listeners that this project can have.
+    // The maximum number of listeners that this project can have, i.e. the number of listener SIP
+    // accounts provisioned on its Asterisk. Same semantics as <code>max_callers</code>:
+    // <code>0</code> means no listener can be started, a <code>StartListener</code> /
+    // <code>StartListeners</code> beyond the free capacity is <code>RESOURCE_EXHAUSTED</code>, and a change
+    // on a <code>DEPLOYED</code> project redeploys it.
     int32 max_listeners = 4;
 
     // Configs to start the asterisk server.
@@ -92,7 +258,13 @@ message VtsiProject{
     // The number of active listeners in this project.
     int32 active_listeners = 12;
 
-    // The port of the asterisk server
+    // The port of the asterisk server. The same value as <code>asterisk_configs.asterisk_port</code>, of
+    // which it is a convenience copy: <code>asterisk_configs.asterisk_port</code> is authoritative, and
+    // every response carries the project&apos;s port in both. On create and update, <code>0</code> means
+    // &quot;not stated&quot; (on create: assign a free port); a value set here is copied into
+    // <code>asterisk_configs.asterisk_port</code>; both set and different is refused with
+    // <code>INVALID_ARGUMENT</code>. Changing the port of a <code>DEPLOYED</code> project redeploys it and
+    // voids every softphone client certificate (the certificate authorities belong to the port).
     int32 asterisk_port = 13;
 
     // Associated NLU agents.
@@ -114,12 +286,64 @@ message VtsiProject{
     // Updatable with the update mask path <pre><code>transfer_phone_number_allowlist</code></pre>.
     repeated string transfer_phone_number_allowlist = 17;
 
+    // Output only. Human-readable detail of the current <code>vtsi_project_status</code>: the reason of a
+    // <code>DEPLOY_FAILED</code> project (the same text as the <code>description</code> of the
+    // <code>VTSI_EVENT_VTSI_PROJECT_DEPLOY_FAILED</code> event), or the reason the last undeploy or update
+    // of the project failed. Empty when there is nothing to report; cleared by the next successful status
+    // change. Secrets are redacted. Ignored on create and update.
+    string status_message = 18;
+
+    // Output only. When <code>vtsi_project_status</code> last changed. Unset for a project whose status
+    // has not changed since an older server created it. Ignored on create and update.
+    google.protobuf.Timestamp status_changed_at = 19;
+
+    // Output only. Registration state of the project&apos;s SIP trunk with the carrier, as last observed
+    // on the running Asterisk (<code>pjsip show registrations</code>), refreshed every
+    // <code>ONDEWO_VTSI_ASTERISK_OBSERVER_INTERVAL_S</code> seconds (default 30), so it may lag by that
+    // much. <code>TRUNK_REGISTRATION_STATE_UNSPECIFIED</code> when the project is not
+    // <code>DEPLOYED</code> or has not been observed yet. Ignored on create and update.
+    TrunkRegistrationState trunk_registration_state = 20;
+
+    // Output only. The Asterisk version the project&apos;s container RUNS, i.e. the docker image tag of the
+    // ONDEWO Asterisk image it was deployed from: <code>asterisk_configs.asterisk_version</code> when
+    // pinned, otherwise the server default (<code>ONDEWO_VTSI_ASTERISK_IMAGE_TAG</code>) at the moment
+    // of the deployment. Empty when the project is not deployed. It can differ from what a new deployment
+    // would start, e.g. after the server default changed. Ignored on create and update.
+    string asterisk_version_effective = 21;
+
+}
+
+// Registration state of a VTSI project&apos;s SIP trunk with the carrier.
+enum TrunkRegistrationState {
+
+    // Not known: the project is not <code>DEPLOYED</code>, or its Asterisk has not been observed yet.
+    TRUNK_REGISTRATION_STATE_UNSPECIFIED = 0;
+
+    // The carrier accepted the trunk&apos;s registration (<code>Registered</code>).
+    TRUNK_REGISTRATION_STATE_REGISTERED = 1;
+
+    // The trunk is configured to register but is not registered: the registration has not completed
+    // yet, was stopped, or failed without a refusal by the carrier (<code>Unregistered</code>,
+    // <code>Stopped</code>, timeouts and any other state).
+    TRUNK_REGISTRATION_STATE_UNREGISTERED = 2;
+
+    // The carrier refused the registration (<code>Rejected</code>), typically wrong
+    // <code>sip_trunk_username</code> / <code>sip_trunk_password</code>. The Asterisk retries on its own.
+    TRUNK_REGISTRATION_STATE_REJECTED = 3;
+
+    // The project&apos;s running Asterisk has no outbound trunk registration to observe (no
+    // <code>trunk-registration</code> in <code>pjsip show registrations</code>), e.g. no SIP trunk is
+    // configured, or <code>asterisk_configs_files</code> / a target directory define none.
+    TRUNK_REGISTRATION_STATE_NOT_CONFIGURED = 4;
 }
 
 // Status of a VtsiProject.
+// Released with unprefixed value names, which are package scoped in proto3 (so no other enum of
+// <code>ondewo.vtsi</code> can declare e.g. <code>UNSPECIFIED</code>); kept for wire and source
+// compatibility.
 enum VtsiProjectStatus {
 
-    // No status specified
+    // No status specified. Never returned for a stored project.
     UNSPECIFIED = 0;
 
     // Project successfully created and undeployed
@@ -140,8 +364,16 @@ enum VtsiProjectStatus {
     // Project is currently deleting
     DELETING = 6;
 
-    // Project is deleted
+    // Project is deleted. Never returned: a deleted project no longer exists and is
+    // <code>NOT_FOUND</code>. Kept for wire compatibility.
     DELETED = 7;
+
+    // The last deployment failed: its half-started container was removed and
+    // <code>VtsiProject.status_message</code> says why. Behaves like <code>UNDEPLOYED</code>: the project
+    // can be deployed again, updated or deleted, and undeploying it makes it <code>UNDEPLOYED</code>.
+    // Since 9.1.0; a 9.0.0 server reports a failed deployment as <code>UNDEPLOYED</code>, and a client
+    // built against 9.0.0 sees the unknown value 8.
+    DEPLOY_FAILED = 8;
 
 }
 
@@ -151,7 +383,14 @@ message AsteriskConfigsVariables{
     // SIP trunk username.
     string sip_trunk_username = 1;
 
-    // SIP trunk password.
+    // SIP trunk password. A credential, but NOT write-only: it is stored as sent and returned in clear
+    // to every caller allowed to read <code>asterisk_configs</code> (see the <code>Projects</code> service
+    // description for who that is). Server logs and <code>status_message</code> redact it.
+    // On <code>UpdateVtsiProject</code> WITHOUT an <code>update_mask</code> an empty value KEEPS the stored
+    // password (an empty string cannot be told from &quot;not sent&quot;); WITH an
+    // <code>update_mask</code> naming this field, or a parent of it such as
+    // <code>asterisk_configs</code> or <code>asterisk_configs.asterisk_configs_variables</code>, an empty
+    // value CLEARS it.
     string sip_trunk_password = 2;
 
     // SIP trunk host.
@@ -280,7 +519,8 @@ message AsteriskConfigs{
         string asterisk_configs_target_directory_name = 3;
     }
 
-    // OPTIONAL: The port where Asterisk should start.
+    // OPTIONAL: The port where Asterisk should start. Authoritative copy of
+    // <code>VtsiProject.asterisk_port</code> (see there). <code>0</code> on create assigns a free port.
     int32 asterisk_port = 4;
 
     // OPTIONAL: The Asterisk version to start, given as the docker image tag of the ONDEWO
@@ -289,6 +529,7 @@ message AsteriskConfigs{
     // <pre><code>[A-Za-z0-9_][A-Za-z0-9._-]{0,127}</code></pre>.
     // Explicitly optional: when the field is not set, the server keeps using its configured
     // default (the <pre><code>ONDEWO_VTSI_ASTERISK_IMAGE_TAG</code></pre> environment variable).
+    // The version a deployed project actually runs is <code>VtsiProject.asterisk_version_effective</code>.
     // Sending an empty string is NOT the same as leaving it unset and is rejected.
     optional string asterisk_version = 5;
 }
@@ -302,17 +543,29 @@ message CreateVtsiProjectRequest{
     // <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     VtsiProject vtsi_project = 1;
 
-    // error message if there are any.
-    string error_message = 2;
+    // Deprecated: a request carries no error. Ignored by the server; leave it empty. Kept for wire
+    // compatibility.
+    string error_message = 2 [deprecated = true];
+
+    // Optional. Validate only: run every check of a real create (validation, authorization) and return
+    // the would-be project in <code>CreateVtsiProjectResponse.vtsi_project</code>, but write, reserve and
+    // emit nothing. The fields the server assigns at creation are left empty in that answer because
+    // nothing is reserved: <code>name</code> when the request gave none, the ports when the request gave
+    // <code>0</code>, <code>vtsi_project_status</code> and the audit fields. A successful validation does
+    // not guarantee that a later create succeeds (e.g. a name or port taken meanwhile). Default
+    // <code>false</code>.
+    bool validate_only = 3;
 }
 
 // Response of the create project
 message CreateVtsiProjectResponse{
 
-    // Vtsi project
+    // The created project, <code>UNDEPLOYED</code>, with its assigned name and port (with
+    // <code>validate_only</code>: the would-be project).
     VtsiProject vtsi_project = 1;
 
-    // error message if there are any.
+    // Never set: errors are reported as gRPC status codes (see the <code>Projects</code> service
+    // description). Kept for wire compatibility.
     string error_message = 2;
 }
 
@@ -324,23 +577,36 @@ message GetVtsiProjectRequest{
 
     // Optional. Specify the view of the returned VtsiProject (full view by default)
     VtsiProjectView vtsi_project_view = 2;
+
+    // Optional. Partial response: the <code>VtsiProject</code> field paths to populate, e.g.
+    // <code>display_name</code>, <code>vtsi_project_status</code>, <code>status_message</code>,
+    // <code>asterisk_configs.asterisk_version</code>. Same convention as
+    // <a href="index.html#ondewo.vtsi.ListVtsiProjectsRequest">ListVtsiProjectsRequest.field_mask</a>:
+    // <code>name</code> is always populated, unset or empty returns every field the
+    // <code>vtsi_project_view</code> populates, an unknown path is rejected with
+    // <code>INVALID_ARGUMENT</code> naming it, and the mask is applied after the view and any redaction.
+    google.protobuf.FieldMask field_mask = 3;
 }
 
-// Request to get the list of agents
+// Request to list VTSI projects. The filters are combined with AND; the values within one repeated
+// field are combined with OR; an unset field or an empty repeated field does not filter.
 message ListVtsiProjectsRequest {
 
     // Optional. Specify the view of the returned VtsiProject (full view by default)
     VtsiProjectView vtsi_project_view = 1;
 
-    // Optional. The next_page_token value returned from a previous list request.
-    // Example: "current_index-1--page_size-20"
+    // Optional. The <code>next_page_token</code> of a previous response. OPAQUE: never construct or parse
+    // it (its format is internal and may change). Keep every other request field (filters, sorting,
+    // <code>page_size</code>) unchanged while paging: a token sent with other filters or sorting is not
+    // guaranteed to be rejected and then returns that position of the other listing.
     optional string page_token = 2;
 
     // Optional. Field to define the sorting of the list of VTSI projects in the response.
-    // If not specified, the default behavior is to have no sorting.
+    // Unset or <code>NO_VTSI_PROJECT_SORTING</code>: by <code>display_name</code>, ascending (ties by the
+    // project&apos;s internal id), which is a stable order.
     optional VtsiProjectSorting vtsi_project_sorting = 3;
 
-    // Optional. Filter based on associated NLU agents.
+    // Optional. Only projects associated with at least one of these NLU agents.
     // Format: <pre><code>projects/&lt;Project ID&gt;/agent</code></pre>
     repeated string nlu_agent_names = 4;
 
@@ -355,29 +621,48 @@ message ListVtsiProjectsRequest {
     // response and never populates a field that was left empty. Not part of the paging contract: a
     // <code>page_token</code> stays valid with another mask.
     google.protobuf.FieldMask field_mask = 5;
+
+    // Optional. Maximum number of projects per page. <code>0</code> means the server default of 25;
+    // values above 1000 are clamped to 1000; negative values are rejected with
+    // <code>INVALID_ARGUMENT</code>. Fewer projects than <code>page_size</code> may be returned (e.g. after
+    // the authorization filter), and only an empty <code>next_page_token</code> means the end of the list.
+    int32 page_size = 6;
+
+    // Optional. Only projects in one of these statuses. <code>UNSPECIFIED</code> is rejected with
+    // <code>INVALID_ARGUMENT</code>.
+    repeated VtsiProjectStatus statuses = 7;
+
+    // Optional. Case-insensitive substring match against <code>display_name</code>. Empty does not
+    // filter. At most 256 characters.
+    string display_name_contains = 8;
+
+    // Optional. Only projects created at or after this instant.
+    google.protobuf.Timestamp created_after = 9;
+
+    // Optional. Only projects created strictly before this instant. A window whose start
+    // (<code>created_after</code>) is not before its end is rejected with <code>INVALID_ARGUMENT</code>.
+    google.protobuf.Timestamp created_before = 10;
 }
 
 // This is a protobuf message definition for the response of getting a list of VTSI projects.
 message ListVtsiProjectsResponse {
 
-    // The list of VTSI projects returned in the response.
-    // Use the &apos;repeated&apos; keyword to indicate that this field can contain multiple instances of VtsiProject.
+    // The VTSI projects of this page.
     repeated VtsiProject vtsi_projects = 1;
 
-    // Token to retrieve the next page of results.
-    // This field is a string that holds a token for fetching the next page of results.
-    // If there are no more results in the list, this field will be empty.
+    // Token to retrieve the next page of results. Opaque (see
+    // <code>ListVtsiProjectsRequest.page_token</code>). Empty when there are no more results.
     string next_page_token = 2;
 }
 
-// This protobuf message defines the sorting order for VTSI (Virtual Test System Infrastructure) projects.
+// This protobuf message defines the sorting order for VTSI (Virtual Telephone System Integration) projects.
 message VtsiProjectSorting {
 
     // Enum to specify the sorting field for VTSI projects.
     // Enum defining the field by which VTSI projects can be sorted
     enum VtsiProjectSortingField {
 
-        // No sorting
+        // The default order: by <code>display_name</code>, ascending.
         NO_VTSI_PROJECT_SORTING = 0;
 
         // Sort by project name such as <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>.
@@ -400,7 +685,11 @@ message VtsiProjectSorting {
     optional VtsiProjectSortingMode sorting_mode = 2;
 }
 
-// Sorting mode
+// Sorting mode.
+// Note: unlike most enums of this API the zero value is a real mode, <code>ASCENDING</code>, not an
+// <code>..._UNSPECIFIED</code> placeholder, so an unset mode means ascending. Released this way and kept
+// for wire and source compatibility (it is also reused by
+// <a href="index.html#ondewo.vtsi.SoftphoneAccountSorting">SoftphoneAccountSorting</a>).
 enum VtsiProjectSortingMode {
     // The ascending sorting mode.
     // When sorting using this mode, VtsiProject objects will be arranged
@@ -435,10 +724,13 @@ enum VtsiProjectView {
     VTSI_PROJECT_VIEW_MINIMUM = 3;
 }
 
-// Request to updated VTSI project
+// Request to update a VTSI project
 message UpdateVtsiProjectRequest{
 
-    // Project Configs.
+    // The project to update, identified by <code>vtsi_project.name</code>
+    // (<pre><code>projects/&lt;project_uuid&gt;/project</code></pre>), carrying the new values. The
+    // output-only fields (<code>vtsi_project_status</code>, the audit, counter and status fields) are
+    // ignored.
     VtsiProject vtsi_project = 1;
 
     // OPTIONAL: The mask to control which fields get updated.
@@ -471,20 +763,43 @@ message UpdateVtsiProjectRequest{
     //       instead.</li>
     // </ul>
     google.protobuf.FieldMask update_mask = 2;
+
+    // Optional. Partial response: the <code>VtsiProject</code> field paths to populate in
+    // <code>UpdateVtsiProjectResponse.vtsi_project</code>, relative to the <code>VtsiProject</code> (no
+    // <code>vtsi_project.</code> prefix). Same convention as
+    // <a href="index.html#ondewo.vtsi.GetVtsiProjectRequest">GetVtsiProjectRequest.field_mask</a>; the
+    // <code>name</code> of the response is always populated. Unset or empty returns every field. An
+    // unknown path is rejected with <code>INVALID_ARGUMENT</code> before anything is written. A mask never
+    // changes what is updated (that is <code>update_mask</code>).
+    google.protobuf.FieldMask field_mask = 3;
+
+    // Optional. Validate only: merge the update over the stored project and run every check of a real
+    // update (validation, authorization, the configuration render), and return the would-be project in
+    // <code>UpdateVtsiProjectResponse.vtsi_project</code>, but write nothing, touch no Asterisk, end no
+    // call and emit nothing. A successful validation does not guarantee that a later update succeeds
+    // (the project may change meanwhile). Default <code>false</code>.
+    bool validate_only = 4;
 }
 
-// Request to updated VTSI project
+// Response to the update of a VTSI project
 message UpdateVtsiProjectResponse{
 
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
-    // error message if there are any.
+    // Never set: errors are reported as gRPC status codes (see the <code>Projects</code> service
+    // description). Kept for wire compatibility.
     string error_message = 2;
+
+    // The project after the update (with <code>validate_only</code>: the would-be project), in the full
+    // view, redacted like <code>GetVtsiProject</code> and narrowed by
+    // <code>UpdateVtsiProjectRequest.field_mask</code>. Left unset by a 9.0.0 server.
+    VtsiProject vtsi_project = 3;
 }
 
 // Request to delete a VTSI project
-// If a deployed VTSI project was deleted then it was undeployed beforehand automatically
+// A deployed VTSI project is undeployed automatically before it is deleted (see
+// <a href="index.html#ondewo.vtsi.Projects.DeleteVtsiProject">DeleteVtsiProject</a>).
 message DeleteVtsiProjectRequest{
 
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
@@ -492,13 +807,12 @@ message DeleteVtsiProjectRequest{
 }
 
 // Response to delete a VTSI project
-// If a deployed VTSI project was deleted then it was undeployed beforehand automatically
 message DeleteVtsiProjectResponse{
 
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
-    // error message if there are any.
+    // Never set: errors are reported as gRPC status codes. Kept for wire compatibility.
     string error_message = 2;
 }
 
@@ -515,7 +829,7 @@ message DeployVtsiProjectResponse{
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
-    // error message if there are any.
+    // Never set: errors are reported as gRPC status codes. Kept for wire compatibility.
     string error_message = 2;
 
 }
@@ -523,7 +837,7 @@ message DeployVtsiProjectResponse{
 // Request to undeploy a vtsi project
 message UndeployVtsiProjectRequest{
 
-    // Project name of the VTSI project.
+    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 }
 
@@ -533,7 +847,7 @@ message UndeployVtsiProjectResponse{
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string name = 1;
 
-    // error message if there are any.
+    // Never set: errors are reported as gRPC status codes. Kept for wire compatibility.
     string error_message = 2;
 
 }

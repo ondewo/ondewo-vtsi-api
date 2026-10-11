@@ -9,7 +9,7 @@
     "ondewo/vtsi/projects.proto",
     "ondewo/vtsi/softphones.proto"
   ],
-  "optional_field_count": 114,
+  "optional_field_count": 117,
   "fields": [
     {
       "message": "ondewo.vtsi.AnsweringMachineDetectionConfig",
@@ -464,6 +464,17 @@
     },
     {
       "message": "ondewo.vtsi.CallFilter",
+      "field": "redial_recommended",
+      "number": 21,
+      "type": "bool",
+      "type_name": null,
+      "json_name": "redialRecommended",
+      "file": "ondewo/vtsi/calls.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "a80100"
+    },
+    {
+      "message": "ondewo.vtsi.CallFilter",
       "field": "start_time",
       "number": 11,
       "type": "message",
@@ -758,6 +769,17 @@
       "file": "ondewo/vtsi/logs.proto",
       "unset_hex": "",
       "explicit_default_hex": "3200"
+    },
+    {
+      "message": "ondewo.vtsi.ListCallLogsResponse",
+      "field": "total_matching_count",
+      "number": 9,
+      "type": "int64",
+      "type_name": null,
+      "json_name": "totalMatchingCount",
+      "file": "ondewo/vtsi/logs.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "4800"
     },
     {
       "message": "ondewo.vtsi.ListCallersRequest",
@@ -1099,6 +1121,17 @@
       "file": "ondewo/vtsi/softphones.proto",
       "unset_hex": "",
       "explicit_default_hex": "1000"
+    },
+    {
+      "message": "ondewo.vtsi.SoftphoneAccountFilter",
+      "field": "locked",
+      "number": 8,
+      "type": "bool",
+      "type_name": null,
+      "json_name": "locked",
+      "file": "ondewo/vtsi/softphones.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "4000"
     },
     {
       "message": "ondewo.vtsi.SoftphoneAccountSorting",

@@ -48,6 +48,10 @@ import "ondewo/vtsi/projects.proto";
 // not be updated, the RPC fails with <code>FAILED_PRECONDITION</code>; the stored change is applied by
 // the next successful change or deployment. <code>CreateSoftphoneAccount</code> and
 // <code>RotateSoftphoneCredentials</code> return their one-time secrets even then.</p>
+// <p>Authorization (only when the server enforces it, see the <code>Projects</code> service): a caller
+// without a credential is <code>UNAUTHENTICATED</code>; every RPC of this service requires
+// <code>PROJECT_DEVELOPER</code> or higher on the account&apos;s project, otherwise
+// <code>PERMISSION_DENIED</code>, also for an unknown project.</p>
 service Softphones {
 
     //////////////////////////////////////////////////////////////////////////////
@@ -68,6 +72,13 @@ service Softphones {
     // <p>The account is reachable on either TLS port only from the project&apos;s
     // <code>softphone_permit_cidrs</code> (default: the server&apos;s list, private networks unless the
     // operator changed it); see <code>AsteriskConfigsVariables.softphone_permit_cidrs</code>.</p>
+    // <p>Idempotency: with <code>idempotency_key</code> a retry after a lost response does not create a
+    // second account; it ROTATES the credentials of the account the first attempt created and returns
+    // NEW one-time secrets (see <code>CreateSoftphoneAccountRequest.idempotency_key</code>). Without a key a
+    // retry is answered <code>ALREADY_EXISTS</code> for the same <code>sip_username</code>; recover the
+    // lost secrets then with <code>RotateSoftphoneCredentials</code>.</p>
+    // <p>Events: <code>VTSI_EVENT_SOFTPHONE_ACCOUNT_CREATED</code> (a replayed key:
+    // <code>VTSI_EVENT_SOFTPHONE_CREDENTIALS_ROTATED</code>).</p>
     rpc CreateSoftphoneAccount (CreateSoftphoneAccountRequest) returns (CreateSoftphoneAccountResponse);
 
     // <p>Returns a softphone account. Never returns a secret.</p>
@@ -88,8 +99,19 @@ service Softphones {
     rpc UpdateSoftphoneAccount (UpdateSoftphoneAccountRequest) returns (SoftphoneAccount);
 
     // <p>Deletes a softphone account. Its endpoint is removed from the Asterisk, its registrations are
-    // dropped and every certificate it holds is revoked. Deletion is permanent.</p>
-    // <p>Errors: <code>NOT_FOUND</code> if the account does not exist.</p>
+    // dropped, its calls in progress are hung up and every certificate it holds is revoked. Deletion is
+    // permanent.</p>
+    // <p>Not idempotent: deleting an account that no longer exists (also a retry of a deletion that
+    // succeeded) is <code>NOT_FOUND</code>. Allowed in every project status, also while the project is
+    // being deleted.</p>
+    // <p>Errors: <code>NOT_FOUND</code> if the account does not exist; <code>INVALID_ARGUMENT</code> for a
+    // malformed name; <code>FAILED_PRECONDITION</code> when the deletion was STORED but the running
+    // Asterisk of a deployed project could not be updated (reload failed, container unreachable, or the
+    // project&apos;s Asterisk configuration stayed locked by another change for too long): the account is
+    // gone from the database and its removal from the Asterisk is applied by the next successful change or
+    // deployment, so a retry is <code>NOT_FOUND</code>; <code>INTERNAL</code> when the account was removed
+    // but one of its calls could not be hung up. Never <code>ABORTED</code>: a deletion is not compared
+    // against concurrent changes, it wins over them.</p>
     rpc DeleteSoftphoneAccount (DeleteSoftphoneAccountRequest) returns (DeleteSoftphoneAccountResponse);
 
     // <p>Lists the softphone accounts of a VTSI project, filtered, sorted and paged. Never returns a
@@ -148,7 +170,14 @@ service Softphones {
     // Revoking an already revoked certificate is idempotent and keeps the original revocation time and
     // reason.</p>
     // <p>Errors: <code>NOT_FOUND</code> if the certificate does not exist; <code>INVALID_ARGUMENT</code>
-    // for a malformed name or an over-long reason.</p>
+    // for a malformed name or an over-long reason; <code>FAILED_PRECONDITION</code> when the revocation
+    // (and the lock) was STORED but the running Asterisk of a deployed project could not be updated
+    // (reload failed, container unreachable, or the project&apos;s Asterisk configuration stayed locked by
+    // another change for too long): it is applied by the next successful change or deployment, and a
+    // retry is idempotent; <code>ABORTED</code> when the account was changed concurrently (e.g. a rotation
+    // or an update committed between the read and the write), in which case nothing was stored and the
+    // request can be retried.</p>
+    // <p>Events: <code>VTSI_EVENT_SOFTPHONE_CERTIFICATE_REVOKED</code> (not for an idempotent repeat).</p>
     rpc RevokeSoftphoneCertificate (RevokeSoftphoneCertificateRequest) returns (SoftphoneCertificate);
 
     //////////////////////////////////////////////////////////////////////////////
@@ -165,6 +194,24 @@ service Softphones {
     // <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code> account has no
     // <code>SOFTPHONE_CERTIFICATE_STATUS_ACTIVE</code> certificate.</p>
     rpc GetSoftphoneProvisioning (GetSoftphoneProvisioningRequest) returns (SoftphoneProvisioning);
+
+    //////////////////////////////////////////////////////////////////////////////
+    // Softphone registration endpoints
+    //////////////////////////////////////////////////////////////////////////////
+
+    // <p>Returns the CURRENT registrations (contacts) of a softphone account, read LIVE from the running
+    // Asterisk of the project at the moment of the request (in the manner of <code>pjsip show
+    // contacts</code>). Nothing is stored: two calls may differ, and an empty <code>contacts</code> list
+    // means no device is registered right now (a disabled or locked account never has one). Answers
+    // &quot;is the softphone of this account connected, from where, with which client, and is it
+    // reachable?&quot;.</p>
+    // <p>Errors: <code>NOT_FOUND</code> if the account does not exist; <code>INVALID_ARGUMENT</code> for a
+    // malformed name or an unknown <code>field_mask</code> path; <code>FAILED_PRECONDITION</code> if the
+    // project is not <code>DEPLOYED</code> (there is no running Asterisk to ask);
+    // <code>UNAVAILABLE</code> if the project&apos;s Asterisk could not be queried (container not running
+    // or not answering within the server&apos;s timeout); retry later.</p>
+    // <p>Read only, no event. Authorization: <code>PROJECT_DEVELOPER</code> or higher on the project.</p>
+    rpc GetSoftphoneRegistration (GetSoftphoneRegistrationRequest) returns (SoftphoneRegistration);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -220,6 +267,29 @@ enum SoftphoneCertificateStatus {
     // deleted. Still completes a TLS handshake until it expires (the Asterisk has no revocation list),
     // but no longer gets its holder the account.
     SOFTPHONE_CERTIFICATE_STATUS_REVOKED = 3;
+}
+
+// Reachability of one registered contact of a softphone account, as the project&apos;s Asterisk
+// qualifies it (SIP <code>OPTIONS</code>).
+enum SoftphoneContactStatus {
+
+    // Unspecified. Never returned.
+    SOFTPHONE_CONTACT_STATUS_UNSPECIFIED = 0;
+
+    // The contact answered the last qualify (<code>Avail</code>); <code>round_trip_ms</code> is set.
+    SOFTPHONE_CONTACT_STATUS_AVAILABLE = 1;
+
+    // The contact did not answer the last qualify (<code>Unavail</code>): the device is registered but
+    // currently unreachable, e.g. offline or behind a NAT that expired. Calls to it fail until it answers
+    // again or its registration expires.
+    SOFTPHONE_CONTACT_STATUS_UNAVAILABLE = 2;
+
+    // The contact is not qualified (<code>NonQual</code>), so its reachability is not checked.
+    SOFTPHONE_CONTACT_STATUS_NOT_QUALIFIED = 3;
+
+    // The Asterisk has not determined the reachability yet (<code>Unknown</code>, <code>Created</code>),
+    // e.g. right after the registration.
+    SOFTPHONE_CONTACT_STATUS_UNKNOWN = 4;
 }
 
 // Media encryption a softphone must use.
@@ -282,6 +352,10 @@ message SoftphoneAccount {
     // Free-form labels for organising and filtering accounts, e.g. <code>team: support</code>. Keys: 1 to
     // 63 characters of <pre><code>[a-z0-9_.-]</code></pre>, starting with a letter; values: at most 256
     // characters; at most 64 entries. Updatable (the whole map is replaced).
+    // Control characters: a KEY cannot contain one (the key pattern refuses it with
+    // <code>INVALID_ARGUMENT</code>); a VALUE is checked for its length only, so control characters
+    // (including line breaks) are accepted and stored and returned verbatim. Clients that display or log
+    // label values must escape them.
     map<string, string> labels = 9;
 
     // Asterisk dialplan extensions or patterns this softphone may dial, e.g. <code>100</code> or
@@ -316,6 +390,21 @@ message SoftphoneAccount {
 
     // Output only. Last modification time of the account, including credential rotation.
     google.protobuf.Timestamp modified_at = 18;
+
+    // Output only. Whether the account is LOCKED: <code>RevokeSoftphoneCertificate</code> revoked its
+    // ACTIVE certificate, so the account is removed from the Asterisk and cannot register or call until
+    // <code>RotateSoftphoneCredentials</code> unlocks it. Independent of <code>enabled</code>: an account
+    // is usable only when it is enabled AND not locked.
+    bool locked = 19;
+
+    // Output only. When the account was locked. Unset when it is not locked (also for an account locked
+    // by a server older than 9.1.0 whose lock time is not known).
+    google.protobuf.Timestamp locked_at = 20;
+
+    // Output only. Why the account was locked: the <code>reason</code> given to the
+    // <code>RevokeSoftphoneCertificate</code> that locked it (empty when none was given or the account is
+    // not locked).
+    string locked_reason = 21;
 }
 
 // A client certificate issued to a softphone account by the project&apos;s SOFTPHONE certificate
@@ -529,6 +618,10 @@ message SoftphoneAccountFilter {
     // certificate never match. A window whose start is not before its end is rejected with
     // <code>INVALID_ARGUMENT</code>.
     google.protobuf.Timestamp certificate_expires_after = 7;
+
+    // Only locked (<code>true</code>) or only unlocked (<code>false</code>) accounts, see
+    // <code>SoftphoneAccount.locked</code>. Unset matches both.
+    optional bool locked = 8;
 }
 
 // Narrows a softphone certificate listing. Combined like
@@ -595,6 +688,26 @@ message CreateSoftphoneAccountRequest {
     // The account to create. <code>sip_username</code> is required. Output-only fields must be left
     // unset and are otherwise rejected with <code>INVALID_ARGUMENT</code>.
     SoftphoneAccount softphone_account = 2;
+
+    // Optional client idempotency key: at most 255 printable ASCII characters, no whitespace; empty means
+    // no deduplication. The key is scoped to the VTSI project and to this RPC and retained for 24 hours by
+    // default (the server&apos;s <code>ONDEWO_VTSI_IDEMPOTENCY_KEY_RETENTION_S</code>), whichever server
+    // replica a retry reaches.
+    // <p>A retry carrying the same key and the same request does NOT create a second account. Because the
+    // server keeps no copy of the one-time secrets it handed out, it cannot replay the first response;
+    // instead the retry ROTATES the credentials of the account the first attempt created, exactly like
+    // <code>RotateSoftphoneCredentials</code> (the SIP password always, and a new certificate for a
+    // <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code> account), and returns the account with
+    // the NEW one-time secrets. The secrets of the first response, if anyone received them, stop working;
+    // a lost response is therefore always recoverable and never leaves two valid sets of secrets. This
+    // grants nothing a caller could not do anyway: both RPCs require the same role.</p>
+    // <p>Reusing a key with a different request is refused with <code>INVALID_ARGUMENT</code>. A retry that
+    // arrives while the first attempt is still running is answered <code>ABORTED</code> and may be retried
+    // later. A first attempt that fails stores nothing, so a retry after a failure runs the create again.
+    // A retry after the account was deleted is <code>NOT_FOUND</code>; a retry while the account is
+    // <code>locked</code> is refused with <code>FAILED_PRECONDITION</code> (unlock it deliberately with
+    // <code>RotateSoftphoneCredentials</code>: a replayed key must not undo a revocation).</p>
+    string idempotency_key = 3;
 }
 
 // The response message for
@@ -606,6 +719,7 @@ message CreateSoftphoneAccountResponse {
 
     // ONE-TIME secrets: the SIP password and, for
     // <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code>, the PKCS#12 bundle and its password.
+    // For a replayed <code>idempotency_key</code>: the newly rotated secrets.
     SoftphoneCredentials credentials = 2;
 }
 
@@ -816,4 +930,61 @@ message GetSoftphoneProvisioningRequest {
     // Resource name of the account to provision.
     // The format is: <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;softphone_account_uuid&gt;</code></pre>
     string name = 1;
+}
+
+// The request message for
+// <a href="index.html#ondewo.vtsi.Softphones.GetSoftphoneRegistration">Softphones.GetSoftphoneRegistration</a>.
+message GetSoftphoneRegistrationRequest {
+
+    // Resource name of the account.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;softphone_account_uuid&gt;</code></pre>
+    string name = 1;
+
+    // Optional. Partial response: the <code>SoftphoneRegistration</code> field paths to populate, e.g.
+    // <code>contacts</code>, <code>observed_at</code>. <code>softphone_account_name</code> is always
+    // populated. Unset or empty returns every field. An unknown path, or a path below
+    // <code>contacts</code> (a repeated field), is rejected with <code>INVALID_ARGUMENT</code>.
+    google.protobuf.FieldMask field_mask = 2;
+}
+
+// The live registrations of one softphone account on its project&apos;s Asterisk. Every field is output
+// only. Never carries a secret.
+message SoftphoneRegistration {
+
+    // Resource name of the softphone account.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;softphone_account_uuid&gt;</code></pre>
+    string softphone_account_name = 1;
+
+    // The currently registered contacts (devices), at most the account&apos;s <code>max_contacts</code>,
+    // ordered by <code>expire_time</code>, latest first. Empty when no device is registered.
+    repeated SoftphoneContact contacts = 2;
+
+    // When the server read the registrations from the Asterisk.
+    google.protobuf.Timestamp observed_at = 3;
+}
+
+// One registered contact (device) of a softphone account.
+message SoftphoneContact {
+
+    // The contact URI the device registered, e.g.
+    // <code>sip:alice@198.51.100.7:52114;transport=TLS</code>.
+    string uri = 1;
+
+    // The <code>User-Agent</code> header of the device&apos;s registration, e.g. <code>Z 5.6.1 v2.10.20.3</code>.
+    // Empty when the device sent none.
+    string user_agent = 2;
+
+    // The source address the registration arrived from, as <code>host:port</code> (an IPv6 host in
+    // brackets). It can differ from the host of <code>uri</code> behind a NAT.
+    string source_address = 3;
+
+    // When the registration expires unless the device refreshes it.
+    google.protobuf.Timestamp expire_time = 4;
+
+    // Round-trip time of the last qualify (SIP <code>OPTIONS</code>) in milliseconds. <code>0</code> unless
+    // <code>status</code> is <code>SOFTPHONE_CONTACT_STATUS_AVAILABLE</code>.
+    double round_trip_ms = 5;
+
+    // Reachability of the contact.
+    SoftphoneContactStatus status = 6;
 }

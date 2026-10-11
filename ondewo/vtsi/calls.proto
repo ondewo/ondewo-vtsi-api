@@ -26,6 +26,10 @@ import "ondewo/sip/sip.proto";
 // since 9.1.0 and are re-exported here: same package, same fully qualified names, same wire format.
 import public "ondewo/vtsi/call_configs.proto";
 import "ondewo/vtsi/campaigns.proto";
+// <code>ondewo.vtsi.VtsiProjectSortingMode</code> is reused by <code>CallSorting</code> rather than redeclared:
+// proto3 enum values are scoped to the package, so a second <code>ASCENDING</code> / <code>DESCENDING</code> pair
+// cannot exist.
+import "ondewo/vtsi/projects.proto";
 
 
 // <p>ONDEWO VTSI API</p>
@@ -35,20 +39,50 @@ service Calls {
     // Caller and Listener endpoints
     //////////////////////////////////////////////////////////////////////////////
 
-    // <p>Start single caller instance for a specific nlu-project.</p>
+    // <p>Starts one caller in a VTSI project: an ondewo-sip container that places one outbound call to
+    // <code>sip_caller_config.callee_id</code> (or a pooled caller of the server&apos;s caller pool that runs the same
+    // configuration). The configuration is validated first, including live checks against the upstream services;
+    // nothing is started when it fails. Not idempotent: every successful request places a new call (send it as a
+    // batch of one with an <code>idempotency_key</code> to make it idempotent). <code>validate_only</code> runs the
+    // validation alone.</p>
+    // <p>Errors are gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed or invalid request or
+    // configuration (also when the NLU credentials are refused) or an unknown <code>field_mask</code> path;
+    // <code>NOT_FOUND</code> for an unknown project; <code>FAILED_PRECONDITION</code> when an upstream config lacks
+    // the required TLS certificate (<code>UPSTREAM_TLS_REQUIRED</code>) or the project is not deployed;
+    // <code>RESOURCE_EXHAUSTED</code> when the project reached its caller limit; <code>UNAVAILABLE</code> when an
+    // upstream service could not be reached; with authorization enforced <code>PERMISSION_DENIED</code>.</p>
+    // <p>Events: <code>VTSI_EVENT_CALLER_STARTED</code> or <code>VTSI_EVENT_CALLER_START_FAILED</code>, then the
+    // events of the call (<code>VTSI_EVENT_CALL_*</code>). None with <code>validate_only</code>.</p>
+    // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p>
     rpc StartCaller (StartCallerRequest) returns (StartCallerResponse);
 
-    // <p>Start multiple ondewo-sip callers instances for a specific nlu-project.</p>
+    // <p>Starts several callers, each like <code>StartCaller</code>. Not atomic: every caller is started on its own;
+    // a caller that fails to start is rolled back and has no entry in the response, which accounts for it in
+    // <code>StartCallersResponse.error_message</code>. The project&apos;s caller limit is checked for the batch as a
+    // whole before anything is started (<code>RESOURCE_EXHAUSTED</code>, nothing started). Idempotent per
+    // <code>idempotency_key</code>.</p>
+    // <p>Authorization: as <code>StartCaller</code>.</p>
     rpc StartCallers (StartCallersRequest) returns (StartCallersResponse);
 
-    // <p>Lists all available callers, ordered by the caller&apos;s uuid (the last segment of <code>name</code>),
-    // ascending: a stable order, not a chronological one.</p>
+    // <p>Lists the callers of a VTSI project, ordered by the caller&apos;s uuid (the last segment of
+    // <code>name</code>), ascending: a stable order, not a chronological one. Paged with <code>page_size</code> /
+    // <code>page_token</code>; <code>total_size</code> counts every match.</p>
     // <p>With <code>campaign_name</code> or <code>campaign_display_name</code> set, lists only the callers of that
     // campaign: the callers that placed at least one attempt of one of its campaign calls (see
-    // <code>ListCallersRequest.campaign_name</code>).</p>
+    // <code>ListCallersRequest.campaign_name</code>). <code>active_only</code> and <code>sip_status_types</code>
+    // narrow the listing further.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> for a malformed request, an invalid selector, a negative
+    // <code>page_size</code>, a <code>page_token</code> of another listing or an unknown <code>field_mask</code>
+    // path; <code>NOT_FOUND</code> for an unknown project or campaign; with authorization enforced
+    // <code>PERMISSION_DENIED</code>.</p>
+    // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p>
     rpc ListCallers (ListCallersRequest) returns (ListCallersResponse);
 
-    // <p>Gets a caller</p>
+    // <p>Gets a caller, populated according to <code>call_view</code> and <code>field_mask</code>.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> for a malformed name or an unknown <code>field_mask</code> path;
+    // <code>NOT_FOUND</code> for an unknown project or caller, or a caller of another project; with authorization
+    // enforced <code>PERMISSION_DENIED</code>.</p>
+    // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p>
     rpc GetCaller (GetCallerRequest) returns (Caller);
 
     // <p>Updates the STORED configuration of a caller: the fields named in <code>update_mask</code>, i.e.
@@ -92,6 +126,7 @@ service Calls {
     // an update, deploy or undeploy of its project is still running (an update waits for it, for a bounded time,
     // so that a recycle of the project cannot lose it), nothing being written (retry the request); with
     // authorization enforced <code>PERMISSION_DENIED</code> for a project the caller holds no role on.</p>
+    // <p>Events: <code>VTSI_EVENT_CALLER_UPDATED</code> (none with <code>validate_only</code>).</p>
     // <p>Authorization: the role that may start and stop callers of the project (<code>PROJECT_EXECUTOR</code>
     // or higher).</p>
     rpc UpdateCaller (UpdateCallerRequest) returns (UpdateCallerResponse);
@@ -103,34 +138,80 @@ service Calls {
     // <p>Authorization: as <code>UpdateCaller</code>.</p>
     rpc UpdateCallers (UpdateCallersRequest) returns (UpdateCallersResponse);
 
-    // <p>Deletes a caller</p>
+    // <p>Deletes a caller: stops it if it still runs (hanging up its call) and removes it, so it is no longer
+    // listed or returned. Its call records (and their participants) are deleted with it and are no longer returned
+    // by <code>GetCall</code> / <code>ListCalls</code>; stop it instead to keep them.</p>
+    // <p>Errors are gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed name or an unknown
+    // <code>field_mask</code> path; <code>NOT_FOUND</code> for an unknown caller, a caller of another project, or a
+    // caller that was already deleted (so deleting is NOT idempotent: a repeat answers <code>NOT_FOUND</code>);
+    // with authorization enforced <code>PERMISSION_DENIED</code>.</p>
+    // <p>Events: <code>VTSI_EVENT_CALLER_DELETED</code> (and <code>VTSI_EVENT_CALL_STOPPED</code> for a call that
+    // was hung up).</p>
+    // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p>
     rpc DeleteCaller (DeleteCallerRequest) returns (DeleteCallerResponse);
 
-    // <p>Deletes multiple callers</p>
+    // <p>Deletes several callers, each like <code>DeleteCaller</code>. Not atomic: every caller is deleted on its own
+    // and reported in its own entry, whose <code>error_message</code> carries the gRPC status code name
+    // <code>DeleteCaller</code> would have answered (e.g. <code>NOT_FOUND: ...</code>); an entry that fails does not
+    // stop the others. The request as a whole is refused, nothing being deleted, for no entry or more than 1000
+    // distinct names, and, when <code>vtsi_project_name</code> is set, as described there.</p>
+    // <p>Authorization: as <code>DeleteCaller</code>.</p>
     rpc DeleteCallers (DeleteCallersRequest) returns (DeleteCallersResponse);
 
-    // <p>Stops a caller</p>
+    // <p>Stops a caller: hangs up its call if one is up and releases its container and SIP account. The caller
+    // stays listed (with <code>active = false</code>) until it is deleted, and its stored configuration stays
+    // updatable (see <code>UpdateCaller</code>). A pooled caller is taken out of the pool.</p>
+    // <p>Errors are gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed name or an unknown
+    // <code>field_mask</code> path; <code>NOT_FOUND</code> for an unknown caller, a caller of another project, or a
+    // caller that is already stopped (so stopping is NOT idempotent: a repeat answers <code>NOT_FOUND</code>); with
+    // authorization enforced <code>PERMISSION_DENIED</code>.</p>
+    // <p>Events: <code>VTSI_EVENT_CALLER_STOPPED</code> (and <code>VTSI_EVENT_CALL_STOPPED</code> for a call that
+    // was hung up).</p>
+    // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p>
     rpc StopCaller (StopCallerRequest) returns (StopCallerResponse);
 
-    // <p>Stops multiple callers</p>
+    // <p>Stops several callers, each like <code>StopCaller</code>, with the per-entry results and the request-level
+    // errors of <code>DeleteCallers</code>.</p>
+    // <p>Authorization: as <code>StopCaller</code>.</p>
     rpc StopCallers (StopCallersRequest) returns (StopCallersResponse);
 
-    // <p>Start single listener instance for a specific nlu-project.</p>
+    // <p>Starts one listener in a VTSI project: an ondewo-sip container registered on the project&apos;s Asterisk
+    // that answers inbound calls, one after the other (persistent). Validation, <code>validate_only</code>, errors
+    // (<code>RESOURCE_EXHAUSTED</code> for the project&apos;s listener limit) and idempotency as for
+    // <code>StartCaller</code>.</p>
+    // <p>Events: <code>VTSI_EVENT_LISTENER_STARTED</code> or <code>VTSI_EVENT_LISTENER_START_FAILED</code>. None with
+    // <code>validate_only</code>.</p>
+    // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p>
     rpc StartListener (StartListenerRequest) returns (StartListenerResponse);
 
-    // <p>Start multiple ondewo-sip listeners instances for a specific nlu-project.</p>
+    // <p>Starts several listeners, each like <code>StartListener</code>, with the batch semantics of
+    // <code>StartCallers</code> (a listener that fails to start has no entry and is accounted for in
+    // <code>StartListenersResponse.error_message</code>).</p>
+    // <p>Authorization: as <code>StartListener</code>.</p>
     rpc StartListeners (StartListenersRequest) returns (StartListenersResponse);
 
-    // <p>Stop a ondewo-sip listeners instances for a specific nlu-project.</p>
+    // <p>Stops a listener: hangs up its call if one is up and releases its container and SIP account. A stopped
+    // listener has no stored configuration left (see <code>UpdateListener</code>). Errors and idempotency as for
+    // <code>StopCaller</code> (a listener that is already stopped is <code>NOT_FOUND</code>).</p>
+    // <p>Events: <code>VTSI_EVENT_LISTENER_STOPPED</code> (and <code>VTSI_EVENT_CALL_STOPPED</code> for a call that
+    // was hung up).</p>
+    // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p>
     rpc StopListener (StopListenerRequest) returns (StopListenerResponse);
 
-    // <p>Stop multiple ondewo-sip listeners instances for a specific nlu-project.</p>
+    // <p>Stops several listeners, each like <code>StopListener</code>, with the per-entry results and the
+    // request-level errors of <code>DeleteCallers</code>.</p>
+    // <p>Authorization: as <code>StopListener</code>.</p>
     rpc StopListeners (StopListenersRequest) returns (StopListenersResponse);
 
-    // <p>Lists all available listeners</p>
+    // <p>Lists the listeners of a VTSI project, ordered by the listener&apos;s uuid (the last segment of
+    // <code>name</code>), ascending. Paging, <code>total_size</code>, filters and errors as for
+    // <code>ListCallers</code> (without a campaign selector).</p>
+    // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p>
     rpc ListListeners (ListListenersRequest) returns (ListListenersResponse);
 
-    // <p>Gets a listener</p>
+    // <p>Gets a listener, populated according to <code>call_view</code> and <code>field_mask</code>. Errors as for
+    // <code>GetCaller</code>.</p>
+    // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p>
     rpc GetListener (GetListenerRequest) returns (Listener);
 
     // <p>Updates the STORED configuration of a listener: the fields named in <code>update_mask</code>, i.e.
@@ -154,6 +235,7 @@ service Calls {
     // <p>Errors as for <code>UpdateCaller</code> (the credential rule included), with
     // <code>StartListenerRequest</code> as the validation of the resulting configuration, and
     // <code>NOT_FOUND</code> also for a stopped listener.</p>
+    // <p>Events: <code>VTSI_EVENT_LISTENER_UPDATED</code> (none with <code>validate_only</code>).</p>
     // <p>Authorization: the role that may start and stop listeners of the project (<code>PROJECT_EXECUTOR</code>
     // or higher).</p>
     rpc UpdateListener (UpdateListenerRequest) returns (UpdateListenerResponse);
@@ -163,16 +245,39 @@ service Calls {
     // <p>Authorization: as <code>UpdateListener</code>.</p>
     rpc UpdateListeners (UpdateListenersRequest) returns (UpdateListenersResponse);
 
-    // <p>Deletes a listener</p>
+    // <p>Deletes a listener: stops it if it still runs (hanging up its call) and removes it, with its call
+    // records, like <code>DeleteCaller</code>. Errors and idempotency as for <code>DeleteCaller</code> (a repeat
+    // answers <code>NOT_FOUND</code>).</p>
+    // <p>Events: <code>VTSI_EVENT_LISTENER_DELETED</code> (and <code>VTSI_EVENT_CALL_STOPPED</code> for a call that
+    // was hung up).</p>
+    // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p>
     rpc DeleteListener (DeleteListenerRequest) returns (DeleteListenerResponse);
 
-    // <p>Deletes multiple listeners</p>
+    // <p>Deletes several listeners, each like <code>DeleteListener</code>, with the per-entry results and the
+    // request-level errors of <code>DeleteCallers</code>.</p>
+    // <p>Authorization: as <code>DeleteListener</code>.</p>
     rpc DeleteListeners (DeleteListenersRequest) returns (DeleteListenersResponse);
 
-    // <p>Start a single ondewo-sip caller instance at a scheduled time</p>
+    // <p>Creates a scheduled caller: a caller that the server starts at or after <code>scheduled_time</code>, like a
+    // <code>StartCaller</code> of the stored request. The request is checked structurally now; the live checks of
+    // the configuration run when it fires, and a failure then leaves the scheduled caller
+    // <code>SCHEDULED_CALLER_STATUS_FAILED</code> with its <code>error_message</code>. A <code>scheduled_time</code> in
+    // the past is due at once. Not idempotent (use <code>StartScheduledCallers</code> with an
+    // <code>idempotency_key</code>).</p>
+    // <p>Errors are gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed request, a missing
+    // <code>scheduled_time</code>, a nested request with its own <code>field_mask</code> or
+    // <code>validate_only</code>, or an unknown <code>field_mask</code> path; <code>NOT_FOUND</code> for an unknown
+    // project; <code>RESOURCE_EXHAUSTED</code> when the project reached its caller limit; with authorization
+    // enforced <code>PERMISSION_DENIED</code>.</p>
+    // <p>Events: <code>VTSI_EVENT_SCHEDULED_CALLER_CREATED</code>; later <code>VTSI_EVENT_SCHEDULED_CALLER_FIRED</code>,
+    // <code>VTSI_EVENT_SCHEDULED_CALLER_RETRY_SCHEDULED</code> or <code>VTSI_EVENT_SCHEDULED_CALLER_FAILED</code>.</p>
+    // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p>
     rpc StartScheduledCaller (StartScheduledCallerRequest) returns (StartScheduledCallerResponse);
 
-    // <p>Start multiple ondewo-sip caller instances, each at its own scheduled time</p>
+    // <p>Creates several scheduled callers, each like <code>StartScheduledCaller</code>, at most 1000. Not atomic: an
+    // entry that fails is reported in its own <code>error_message</code> and does not stop the others. Idempotent
+    // per <code>idempotency_key</code>.</p>
+    // <p>Authorization: as <code>StartScheduledCaller</code>.</p>
     rpc StartScheduledCallers (StartScheduledCallersRequest) returns (StartScheduledCallersResponse);
 
     // <p>Adds callers to a campaign instead of starting them. The campaign then starts them, at most
@@ -187,29 +292,117 @@ service Calls {
     // behaviour as <code>AddCallersToCampaign</code>.</p>
     rpc AddScheduledCallersToCampaign (AddScheduledCallersToCampaignRequest) returns (AddScheduledCallersToCampaignResponse);
 
-    // <p>Gets a scheduled caller</p>
+    // <p>Gets a scheduled caller, populated according to <code>call_view</code> and <code>field_mask</code>.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> for a malformed name or an unknown <code>field_mask</code> path;
+    // <code>NOT_FOUND</code> for an unknown project or scheduled caller, or one of another project; with
+    // authorization enforced <code>PERMISSION_DENIED</code>.</p>
+    // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p>
     rpc GetScheduledCaller (GetScheduledCallerRequest) returns (ScheduledCaller);
 
-    // <p>Lists the scheduled callers of a vtsi-project</p>
+    // <p>Lists the scheduled callers of a VTSI project, ordered by <code>scheduled_time</code>, oldest first,
+    // optionally narrowed by state, campaign and a <code>scheduled_time</code> window. Paging,
+    // <code>total_size</code> and errors as for <code>ListCallers</code>.</p>
+    // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p>
     rpc ListScheduledCallers (ListScheduledCallersRequest) returns (ListScheduledCallersResponse);
 
-    // <p>Cancels a scheduled caller that has not fired yet</p>
+    // <p>Changes the <code>scheduled_time</code> and/or the <code>sip_caller_config.sip_headers</code> of a scheduled
+    // caller that has not fired yet; the only updatable <code>update_mask</code> paths (see
+    // <code>UpdateScheduledCallerRequest.update_mask</code>). Allowed only while the status is
+    // <code>SCHEDULED_CALLER_STATUS_PENDING</code>; for a scheduled caller of a campaign only while its campaign call
+    // is <code>CAMPAIGN_CALL_STATE_NOT_STARTED</code> (a retry of a campaign call is timed by the campaign&apos;s
+    // <code>retry_delay</code>). The check and the write are one atomic step, so a scheduled caller that fires
+    // concurrently is either updated before it fires or refused. Updating to the stored values is accepted and
+    // changes nothing.</p>
+    // <p>Errors are gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed name, an empty
+    // <code>update_mask</code>, a path that is not updatable, an unset <code>scheduled_time</code> named by the
+    // mask, invalid <code>sip_headers</code>, or an unknown <code>field_mask</code> path (each naming the path);
+    // <code>NOT_FOUND</code> for an unknown project or scheduled caller, or one of another project;
+    // <code>FAILED_PRECONDITION</code> when it is no longer PENDING (<code>reason=not-pending</code>) or its campaign
+    // call has started (<code>reason=campaign-call-started</code>); with authorization enforced
+    // <code>PERMISSION_DENIED</code>.</p>
+    // <p>Events: <code>VTSI_EVENT_SCHEDULED_CALLER_UPDATED</code> when something changed.</p>
+    // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p>
+    rpc UpdateScheduledCaller (UpdateScheduledCallerRequest) returns (ScheduledCaller);
+
+    // <p>Cancels a scheduled caller that has not fired yet: a PENDING scheduled caller becomes
+    // <code>SCHEDULED_CALLER_STATUS_CANCELLED</code> and never fires. A scheduled caller that is no longer PENDING
+    // (firing, done, failed or already cancelled) is not an error: the response says <code>cancelled = false</code>
+    // and carries its current <code>status</code>, so cancelling is idempotent.</p>
     // <p>A scheduled caller of a campaign can be cancelled while its campaign call is
     // <code>CAMPAIGN_CALL_STATE_NOT_STARTED</code> or <code>CAMPAIGN_CALL_STATE_RETRY_PENDING</code>;
     // the campaign call then becomes <code>CAMPAIGN_CALL_STATE_CANCELLED</code>. While an attempt is
     // <code>DISPATCHING</code> or <code>IN_PROGRESS</code> the request is refused:
-    // <code>cancelled = false</code> and the scheduled caller keeps its status.</p>
+    // <code>cancelled = false</code>, an <code>error_message</code> saying why, and the scheduled caller keeps its
+    // status.</p>
+    // <p>Errors are gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed name or an unknown
+    // <code>field_mask</code> path; <code>NOT_FOUND</code> for an unknown project or scheduled caller, or one of
+    // another project; with authorization enforced <code>PERMISSION_DENIED</code>.</p>
+    // <p>Events: <code>VTSI_EVENT_SCHEDULED_CALLER_CANCELLED</code>, only when <code>cancelled = true</code>.</p>
+    // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p>
     rpc CancelScheduledCaller (CancelScheduledCallerRequest) returns (CancelScheduledCallerResponse);
 
-    // <p>Stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.</p>
+    // <p>Cancels several scheduled callers, each like <code>CancelScheduledCaller</code>, at most 1000. Not atomic:
+    // every entry is applied on its own and reported in <code>CancelScheduledCallersResponse</code>, in request
+    // order; a failed entry carries an <code>error_message</code> prefixed with the gRPC status code name
+    // <code>CancelScheduledCaller</code> would have answered (e.g. <code>NOT_FOUND: ...</code>) and does not stop
+    // the others. Errors of the request as a whole (see <code>CancelScheduledCallersRequest</code>) are gRPC status
+    // codes, and then nothing is cancelled.</p>
+    // <p>Events: one <code>VTSI_EVENT_SCHEDULED_CALLER_CANCELLED</code> per entry with <code>cancelled = true</code>.</p>
+    // <p>Authorization: as <code>CancelScheduledCaller</code>.</p>
+    rpc CancelScheduledCallers (CancelScheduledCallersRequest) returns (CancelScheduledCallersResponse);
+
+    // <p>Retries a FAILED scheduled caller by creating a NEW scheduled caller from its stored request: the same
+    // <code>sip_caller_config</code> and <code>common_services_config</code>, <code>status = PENDING</code>, the
+    // <code>scheduled_time</code> of the request (unset: now), and <code>retry_of_scheduled_caller_name</code> naming
+    // the failed one, whose <code>retried_by_scheduled_caller_name</code> is set to the new one in the same atomic
+    // step. The failed scheduled caller itself is not changed otherwise, so its <code>error_message</code> and
+    // <code>fired_at</code> stay as the history of the failed attempt. Returns the new scheduled caller.</p>
+    // <p>Idempotency: a FAILED scheduled caller is retried at most once. A repeat of the request answers
+    // <code>ALREADY_EXISTS</code> naming the retry in its message (read
+    // <code>retried_by_scheduled_caller_name</code>); to retry again after the retry failed too, retry the new
+    // one.</p>
+    // <p>Errors are gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed name or an unknown
+    // <code>field_mask</code> path; <code>NOT_FOUND</code> for an unknown project or scheduled caller, or one of
+    // another project; <code>FAILED_PRECONDITION</code> for a scheduled caller that is not
+    // <code>SCHEDULED_CALLER_STATUS_FAILED</code> (<code>reason=not-failed</code>) or that belongs to a campaign
+    // (<code>reason=campaign-scheduled-caller</code>: a campaign call is retried by the campaign&apos;s
+    // <code>max_attempts</code>); <code>ALREADY_EXISTS</code> when it was already retried;
+    // <code>RESOURCE_EXHAUSTED</code> when the project reached its caller limit; with authorization enforced
+    // <code>PERMISSION_DENIED</code>.</p>
+    // <p>Events: <code>VTSI_EVENT_SCHEDULED_CALLER_CREATED</code> for the new scheduled caller.</p>
+    // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p>
+    rpc RetryScheduledCaller (RetryScheduledCallerRequest) returns (ScheduledCaller);
+
+    // <p>Stops a call: hangs it up if it is still active and stops (releases) the listener or caller that serves
+    // it, like <code>StopCaller</code> / <code>StopListener</code>. A call that already ended is not an error: its
+    // listener or caller is still released if it is deployed, and when there was nothing left to release the
+    // response carries <code>error_message = Call ... was not released</code>, so a repeat succeeds with that
+    // message.</p>
+    // <p>Errors are gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed request or an unknown
+    // <code>field_mask</code> path; <code>NOT_FOUND</code> for an unknown project or call, or a call of another
+    // project; with authorization enforced <code>PERMISSION_DENIED</code>.</p>
+    // <p>Events: <code>VTSI_EVENT_CALL_STOPPED</code>, and <code>VTSI_EVENT_CALLER_STOPPED</code> /
+    // <code>VTSI_EVENT_LISTENER_STOPPED</code> for the released resource.</p>
+    // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p>
     rpc StopCall (StopCallRequest) returns (StopCallResponse);
 
-    // <p>Stop/kill a list of ondewo-sip listener or caller instances for a specific vtsi-project.</p>
-    // <p>Stops both Listener and Caller calls</p>
+    // <p>Stops several calls of one project, each like <code>StopCall</code>, at most 1000 distinct names. Not
+    // atomic: every call is stopped on its own and reported in its own entry, in request order; a failed entry
+    // carries an <code>error_message</code> prefixed with the gRPC status code name <code>StopCall</code> would have
+    // answered and does not stop the others. No entry, more than 1000 names or a malformed
+    // <code>vtsi_project_name</code> is <code>INVALID_ARGUMENT</code>, an unknown project <code>NOT_FOUND</code>, and
+    // then nothing is stopped.</p>
+    // <p>Authorization: as <code>StopCall</code>.</p>
     rpc StopCalls (StopCallsRequest) returns (StopCallsResponse);
 
-    // <p>Stop/kill all ondewo-sip listener or caller instance for a specific nlu-project.</p>
-    // <p>Stops all Listener and Caller calls</p>
+    // <p>Stops every call of a VTSI project (listener and caller calls alike), or, with
+    // <code>call_filter</code>, those it matches, each like <code>StopCall</code>. Not atomic and not bounded in
+    // size; a project with nothing to stop answers an empty response, so the RPC is idempotent. If a stop fails
+    // part-way, the remaining calls are still stopped one by one and every call gets its own entry.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> for a malformed request, an invalid <code>call_filter</code> or an
+    // unknown <code>field_mask</code> path; <code>NOT_FOUND</code> for an unknown project or campaign; with
+    // authorization enforced <code>PERMISSION_DENIED</code>.</p>
+    // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p>
     rpc StopAllCalls (StopAllCallsRequest) returns (StopCallsResponse);
 
     // <p>Transfer a call to a phone number, a softphone account, another listener or the listener queue.</p>
@@ -232,20 +425,44 @@ service Calls {
     // Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p>
     rpc TransferCall (TransferCallRequest) returns (TransferCallResponse);
 
-    // <p>Transfer several calls, each like <code>TransferCall</code>.</p>
+    // <p>Transfer several calls, each like <code>TransferCall</code>, at most 1000. Not atomic: every transfer is
+    // run on its own and reported in its own entry, in request order; an entry <code>TransferCall</code> would have
+    // refused with a gRPC status carries that refusal in its <code>error_message</code> (prefixed with the status
+    // code name) and does not stop the others. Idempotent per entry <code>request_id</code>.</p>
     // <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s
     // Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or
     // <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced.
     // Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p>
     rpc TransferCalls (TransferCallsRequest) returns (TransferCallsResponse);
 
-    // <p>Get call log for single call instance</p>
+    // <p>Gets a call, populated according to <code>call_view</code> and <code>field_mask</code> (the call&apos;s log
+    // lines are read with <code>Logs.ListCallLogs</code>). <code>FULL</code> also returns every participant ever
+    // invited into the call (see <code>Call.participants</code>).</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> for a malformed name or an unknown <code>field_mask</code> path;
+    // <code>NOT_FOUND</code> for an unknown project or call, or a call of another project; with authorization
+    // enforced <code>PERMISSION_DENIED</code>.</p>
+    // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p>
     rpc GetCall (GetCallRequest) returns (Call);
 
-    // <p>Get call log for all call instances</p>
+    // <p>Lists the calls of a VTSI project, ended ones included, narrowed by <code>call_filter</code>, ordered by
+    // <code>call_sorting</code> (default: by <code>start_time</code>, oldest first) and paged with
+    // <code>page_size</code> / <code>page_token</code>; <code>total_size</code> counts every match.</p>
     // <p>With <code>call_filter.campaign_name</code> or <code>call_filter.campaign_display_name</code> set, lists
     // only the calls of that campaign: the calls placed by the attempts of its campaign calls.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> for a malformed request, an invalid filter, a negative
+    // <code>page_size</code>, a <code>page_token</code> of another listing or an unknown <code>field_mask</code>
+    // path; <code>NOT_FOUND</code> for an unknown project or campaign; with authorization enforced
+    // <code>PERMISSION_DENIED</code>.</p>
+    // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p>
     rpc ListCalls (ListCallsRequest) returns (ListCallsResponse);
+
+    // <p>Aggregate figures (totals, active calls, counts by SIP status type, by call type, by AMD verdict and by
+    // transfer outcome, durations, redial recommendations) over the calls of a VTSI project that
+    // <code>call_filter</code> matches; see <code>CallStatistics</code>. Read only, no side effect.</p>
+    // <p>Errors: as for <code>ListCalls</code> (an invalid filter is <code>INVALID_ARGUMENT</code>, an unknown project
+    // or campaign <code>NOT_FOUND</code>).</p>
+    // <p>Authorization: as <code>ListCalls</code> (<code>PROJECT_EXECUTOR</code> or higher on the project).</p>
+    rpc GetCallStatistics (GetCallStatisticsRequest) returns (CallStatistics);
 
     // <p>Updates the descriptive metadata of a call: the only updatable <code>update_mask</code> path is
     // <code>labels</code>. Allowed on active and ended calls. Refused for the WAITING call of a persistent
@@ -253,7 +470,8 @@ service Calls {
     // next call, which <code>ListCalls</code> returns too) with <code>FAILED_PRECONDITION</code> and
     // <code>reason=call-not-started</code> in the details: label the call once it has started. It changes only
     // the stored call record: the live call, its SIP container, its status and its media are never touched, and
-    // no event is sent to the call.</p>
+    // nothing is sent to the call. Idempotent: writing the stored labels again changes nothing.</p>
+    // <p>Events: <code>VTSI_EVENT_CALL_UPDATED</code> when the labels changed.</p>
     // <p>Errors are gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed <code>call.name</code>, an
     // empty <code>update_mask</code>, any path other than <code>labels</code> (every other field of a
     // <code>Call</code> is output only), a path below <code>labels</code>, labels outside the bounds of
@@ -317,13 +535,29 @@ service Calls {
 
     // <p>Hang up a participant of a call (ringing or joined). The participant ends as
     // <code>PARTICIPANT_STATE_LEFT</code> with <code>end_reason = REMOVED</code>; the call and the bot are not
-    // affected.</p>
+    // affected. Returns the participant after the request.</p>
+    // <p>Idempotent: a participant that already FAILED or LEFT (for whatever reason) is returned unchanged with OK,
+    // and nothing is sent.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> for a malformed request; <code>NOT_FOUND</code> with
+    // <code>reason=call-not-found</code> for an unknown call or a call of another project, and with
+    // <code>reason=participant-not-found</code> for an unknown <code>participant_id</code> or a participant of
+    // another call; <code>ABORTED</code> with <code>reason=call-control-busy</code> while another call-control
+    // request for the call runs (retry); <code>UNAVAILABLE</code> with <code>reason=asterisk-unreachable</code> when
+    // the hang-up could not be sent; with authorization enforced <code>PERMISSION_DENIED</code>.</p>
+    // <p>Events: <code>VTSI_EVENT_CALL_PARTICIPANT_LEFT</code> (or <code>VTSI_EVENT_CALL_PARTICIPANT_FAILED</code>
+    // for a participant that was still ringing).</p>
     // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher. Audited like <code>InviteToCall</code>.</p>
     rpc RemoveCallParticipant (RemoveCallParticipantRequest) returns (RemoveCallParticipantResponse);
 
     // <p>Mute the bot of a connected call and/or stop it listening to the caller, or undo either. Every request sets a
     // desired level and never toggles: a repeat answers <code>changed = false</code>. The bot stays muted while
     // anything else (a TALK take-over of <code>StreamCallAudio</code>, a participant bot policy) also holds it muted.</p>
+    // <p>Both settings <code>CALL_MEDIA_SETTING_UNCHANGED</code> is a valid read of the current state: it answers
+    // the effective <code>state</code> with <code>changed = false</code>, changes nothing, and writes no audit record
+    // and no event (see <code>SetCallMediaControlRequest.bot_voice</code>).</p>
+    // <p>Events: <code>VTSI_EVENT_CALL_BOT_MUTED</code> / <code>VTSI_EVENT_CALL_BOT_UNMUTED</code> /
+    // <code>VTSI_EVENT_CALL_LISTENING_PAUSED</code> / <code>VTSI_EVENT_CALL_LISTENING_RESUMED</code> when the
+    // effective state changed.</p>
     // <p>Errors as for <code>InviteToCall</code>, plus <code>FAILED_PRECONDITION</code> <code>reason=sip-image-too-old</code>,
     // <code>ABORTED</code> <code>reason=call-control-busy</code> (another call-control request for the call is running)
     // and <code>UNAVAILABLE</code> <code>reason=sip-unreachable</code> or <code>reason=csi-media-control-failed</code> (the
@@ -371,10 +605,13 @@ message AsteriskConfig{
     BaseServiceConfig asterisk_base_config = 1;
 }
 
-// Listener represents a listener instance that waits for incoming calls
+// Listener represents a listener instance that waits for incoming calls.
+// <p>A listener is persistent: its container takes one call after the other, and <code>call_name</code> names
+// the current call (or the record that waits for the next one). Listeners are never pooled, so a
+// <code>Listener</code> has no <code>pooled</code> field.</p>
 message Listener {
 
-    // VTSI project name with which to perform the call of the form
+    // Resource name of the listener, of the form
     // <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
     // Output only. Identifies the listener on <code>UpdateListener</code>.
     string name = 1;
@@ -392,12 +629,31 @@ message Listener {
     // (stored configuration only, see there).
     CommonServicesConfig common_services_config = 4;
 
+    // Output only. VTSI project of the listener, the project segment of <code>name</code>, of the form
+    // <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // Set in every view. A 9.0.0 server leaves it empty.
+    string vtsi_project_name = 5;
+
+    // Output only. Whether the listener&apos;s current call is active (set up or connected), i.e.
+    // <code>Call.active</code> of <code>call_name</code>; false while the listener waits for a call. The same value
+    // as <code>CallResourceStatus.active</code> of the status streams. Set in the SHALLOW and FULL views.
+    bool active = 6;
+
+    // Output only. SIP status type of the listener&apos;s current or last call (<code>Call.sip_status_type</code> of
+    // <code>call_name</code>), as <code>CallResourceStatus.sip_status_type</code>. <code>NO_SESSION</code> (the zero
+    // value) when it never had a call record. Set in the SHALLOW and FULL views.
+    ondewo.sip.SipStatus.StatusType sip_status_type = 7;
+
+    // Output only. When the listener was created (<code>StartListener</code> or a recycle by the server that
+    // recreated it). Set in the SHALLOW and FULL views.
+    google.protobuf.Timestamp created_at = 8;
+
 }
 
 // Caller represents a caller instance that initiates outbound calls
 message Caller {
 
-    // Caller name with which to perform the call of the form
+    // Resource name of the caller, of the form
     // <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
     // Output only. Identifies the caller on <code>UpdateCaller</code>.
     string name = 1;
@@ -414,6 +670,40 @@ message Caller {
     // Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI. Updatable with <code>UpdateCaller</code>
     // (stored configuration only, see there).
     CommonServicesConfig common_services_config = 4;
+
+    // Output only. VTSI project of the caller, the project segment of <code>name</code>, of the form
+    // <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // Set in every view. A 9.0.0 server leaves it empty.
+    string vtsi_project_name = 5;
+
+    // Output only. Whether the caller&apos;s current call is active (set up or connected), i.e.
+    // <code>Call.active</code> of <code>call_name</code>; false for an idle pooled caller and for a caller whose
+    // call ended. The same value as <code>CallResourceStatus.active</code> of the status streams. Set in the
+    // SHALLOW and FULL views.
+    bool active = 6;
+
+    // Output only. SIP status type of the caller&apos;s current or last call (<code>Call.sip_status_type</code> of
+    // <code>call_name</code>), as <code>CallResourceStatus.sip_status_type</code>. <code>NO_SESSION</code> (the zero
+    // value) when it never had a call record. Set in the SHALLOW and FULL views.
+    ondewo.sip.SipStatus.StatusType sip_status_type = 7;
+
+    // Output only. When the caller was created (<code>StartCaller</code>, the dispatch of a campaign attempt or of
+    // a scheduled caller, or a recycle by the server that recreated a pooled caller). Set in the SHALLOW and FULL
+    // views.
+    google.protobuf.Timestamp created_at = 8;
+
+    // Output only. Whether the caller is a POOLED (persistent) caller, which the server keeps warm between calls
+    // and reuses for later <code>StartCaller</code> requests with the same configuration, rather than a one-shot
+    // caller that is one call. Set in the SHALLOW and FULL views.
+    bool pooled = 9;
+
+    // Output only. The campaign of the caller&apos;s current or last campaign attempt
+    // (<code>CampaignCallAttempt.caller_name</code> names this caller), of the form
+    // <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre>
+    // Empty when the caller never placed a campaign attempt. A pooled caller can place attempts of several
+    // campaigns one after the other; this field names only the latest one (<code>ListCallers</code> with a campaign
+    // selector finds every caller of a campaign). Set in the SHALLOW and FULL views.
+    string campaign_name = 10;
 }
 
 
@@ -442,18 +732,34 @@ message StartListenerRequest {
     // where it has one.</p>
     google.protobuf.FieldMask field_mask = 4;
 
+    // Optional. Dry run: when true, the request runs every validation <code>StartListener</code> runs, including the live
+    // validation of the configuration against the upstream services (NLU, S2T, T2S, RabbitMQ) and the
+    // project&apos;s listener limit, but starts, deploys and stores NOTHING and emits no event. It answers with the
+    // same error a real request would answer, or with the response a real request would return, except that the
+    // returned <code>listener</code> was never created: its <code>name</code>, <code>call_name</code> and every other
+    // output-only field are empty. A request that passes a dry run can still fail for real, e.g. when the project
+    // reached its limit in between. Default false. A server older than 9.1.0 ignores this field and runs the request for real; check
+    // the server version before relying on it.
+    // <p>Where this message is an entry of another request (<code>StartListenersRequest.listener_requests</code>) it must be unset, otherwise that whole request
+    // is rejected with <code>INVALID_ARGUMENT</code> naming the entry; use the enclosing request&apos;s own
+    // <code>validate_only</code> where it has one.</p>
+    bool validate_only = 5;
+
 }
 
-// Response to start multiple listeners
+// Response to start a listener, and one entry of <code>StartListenersResponse</code>
 message StartListenerResponse {
 
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
-    // The listener that was started
+    // The listener that was started (with <code>validate_only</code>: the listener that would have been started),
+    // shaped by the request&apos;s <code>field_mask</code>
     Listener listener = 2;
 
-    // error message if you have any so if it's unhealthy
+    // Always empty: <code>StartListener</code> reports its errors as gRPC status codes, and an entry of
+    // <code>StartListenersResponse</code> exists only for a listener that was started (failures are accounted for
+    // in <code>StartListenersResponse.error_message</code>)
     string error_message = 3;
 
 }
@@ -489,6 +795,16 @@ message StartListenersRequest {
     // <code>field_mask</code> must be unset. Not part of the <code>idempotency_key</code> comparison: a retry
     // with the same key and another mask replays the first response shaped by the retry&apos;s mask.
     google.protobuf.FieldMask field_mask = 4;
+
+    // Optional. Dry run of the whole batch: every entry is validated like <code>StartListener</code> with
+    // <code>validate_only</code> (see <code>StartListenerRequest.validate_only</code>), the project&apos;s listener
+    // limit is checked for the batch as a whole, nothing is started, deployed or stored and no event is emitted.
+    // The response is shaped like a real one: one entry per listener that would have been started, and the entries
+    // that would have failed accounted for in <code>error_message</code>. The <code>idempotency_key</code> is
+    // neither read nor stored by a dry run. The entries&apos; own
+    // <code>validate_only</code> must be unset. Default false. A server older than 9.1.0 ignores this field and runs the request for real; check
+    // the server version before relying on it.
+    bool validate_only = 5;
 }
 
 // Response to start multiple listeners
@@ -497,10 +813,13 @@ message StartListenersResponse {
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
-    // The call ids that were assigned to each listener
+    // One entry per listener that was STARTED, in request order. A requested listener that failed to start was rolled
+    // back and has NO entry here (so the list can be shorter than the request); <code>error_message</code> accounts
+    // for it.
     repeated StartListenerResponse listener_responses = 2;
 
-    // overall error message if you have any so if it's unhealthy
+    // Empty when every requested listener was started. Otherwise an accounting of the batch: how many listeners were
+    // requested, how many were started, and why each of the others was not
     string error_message = 3;
 
 }
@@ -530,18 +849,35 @@ message StartCallerRequest {
     // where it has one.</p>
     google.protobuf.FieldMask field_mask = 4;
 
+    // Optional. Dry run: when true, the request runs every validation <code>StartCaller</code> runs, including the live
+    // validation of the configuration against the upstream services (NLU, S2T, T2S, RabbitMQ) and the
+    // project&apos;s caller limit, but starts, deploys and stores NOTHING and emits no event. It answers with the
+    // same error a real request would answer, or with the response a real request would return, except that the
+    // returned <code>caller</code> was never created: its <code>name</code>, <code>call_name</code> and every other
+    // output-only field are empty. A request that passes a dry run can still fail for real, e.g. when the project
+    // reached its limit in between. Default false. A server older than 9.1.0 ignores this field and runs the request for real; check
+    // the server version before relying on it.
+    // <p>Where this message is an entry of another request (<code>StartCallersRequest.caller_requests</code>,
+    // <code>StartScheduledCallerRequest.request</code>, <code>AddCallersToCampaignRequest.caller_requests</code>) it must be unset, otherwise that whole request
+    // is rejected with <code>INVALID_ARGUMENT</code> naming the entry; use the enclosing request&apos;s own
+    // <code>validate_only</code> where it has one.</p>
+    bool validate_only = 5;
+
 }
 
-// Response to start multiple listeners
+// Response to start a caller, and one entry of <code>StartCallersResponse</code>
 message StartCallerResponse {
 
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
-    // The caller that was started
+    // The caller that was started (with <code>validate_only</code>: the caller that would have been started),
+    // shaped by the request&apos;s <code>field_mask</code>
     Caller caller = 2;
 
-    // error message if you have any so if it's unhealthy
+    // Always empty: <code>StartCaller</code> reports its errors as gRPC status codes, and an entry of
+    // <code>StartCallersResponse</code> exists only for a caller that was started (failures are accounted for in
+    // <code>StartCallersResponse.error_message</code>)
     string error_message = 3;
 
 }
@@ -583,18 +919,31 @@ message StartCallersRequest {
     // with the same key and another mask replays the first response shaped by the retry&apos;s mask.
     google.protobuf.FieldMask field_mask = 5;
 
+    // Optional. Dry run of the whole batch: every entry is validated like <code>StartCaller</code> with
+    // <code>validate_only</code> (see <code>StartCallerRequest.validate_only</code>), the project&apos;s caller limit
+    // is checked for the batch as a whole, nothing is started, deployed or stored and no event is emitted. The
+    // The response is shaped like a real one: one entry per caller that would have been started, and the entries
+    // that would have failed accounted for in <code>error_message</code>. The <code>idempotency_key</code> is
+    // neither read nor stored by a dry run. The entries&apos; own
+    // <code>validate_only</code> must be unset. Default false. A server older than 9.1.0 ignores this field and runs the request for real; check
+    // the server version before relying on it.
+    bool validate_only = 6;
+
 }
 
-// Response to the start caller request
+// Response to the start callers request
 message StartCallersResponse {
 
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
-    // The call ids that were assigned to each listener
+    // One entry per caller that was STARTED, in request order. A requested caller that failed to start was rolled
+    // back and has NO entry here (so the list can be shorter than the request); <code>error_message</code> accounts
+    // for it.
     repeated StartCallerResponse caller_responses = 2;
 
-    // overall error message if you have any so if it's unhealthy
+    // Empty when every requested caller was started. Otherwise an accounting of the batch: how many callers were
+    // requested, how many were started, and why each of the others was not
     string error_message = 3;
 
     // Fields 4 and 5 carried the campaign result in unreleased 9.0.0 development builds; see
@@ -612,11 +961,14 @@ message ListCallersRequest {
     // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
-    // Optional. The next_page_token value returned from a previous list request.
-    // Example: "current_index-1--page_size-20"
+    // Optional. The <code>next_page_token</code> of a previous response. Opaque: its content is not part of the
+    // API. Valid only with the same <code>vtsi_project_name</code>, campaign selector, <code>active_only</code> and
+    // <code>sip_status_types</code>; a token issued for another listing is
+    // rejected with <code>INVALID_ARGUMENT</code>. <code>page_size</code>, <code>call_view</code> and
+    // <code>field_mask</code> may change between pages.
     optional string page_token = 2;
 
-    // you can specify the view to be shallow or full
+    // Optional. How much of each caller to populate; see <code>CallView</code>. Unset means <code>SHALLOW</code>.
     optional CallView call_view = 3;
 
     // Optional. Partial response: the field paths to populate in every returned <code>Caller</code>,
@@ -643,9 +995,8 @@ message ListCallersRequest {
     // <code>name</code>), ascending: a stable order, not a chronological one. <code>Campaign.campaign_callers</code>
     // reports the same SET in a different order (by the start of each caller&apos;s first attempt for the
     // campaign, oldest first) and bounded.</p>
-    // <p>Paging: the <code>page_token</code> carries only a position and a page size (its documented format) and
-    // is not bound to the selector. Keep the selector unchanged while paging: a token sent with another selector
-    // (or none) is not rejected and returns the page at that position of THAT listing.</p>
+    // <p>Paging: the <code>page_token</code> is bound to the selector; a token sent with another selector (or
+    // none) is rejected with <code>INVALID_ARGUMENT</code>.</p>
     // <p>Errors: <code>INVALID_ARGUMENT</code> for a malformed <code>campaign_name</code>, a campaign of
     // another project than <code>vtsi_project_name</code>, or an empty <code>campaign_display_name</code>
     // sent as the set member; <code>NOT_FOUND</code> for an unknown campaign.</p>
@@ -660,31 +1011,63 @@ message ListCallersRequest {
         string campaign_display_name = 6;
     }
 
+    // Optional. Maximum number of callers per page. <code>0</code> means the server default of 25; values above
+    // 1000 are clamped to 1000; negative values are rejected with <code>INVALID_ARGUMENT</code>. May differ between
+    // the pages of one listing.
+    int32 page_size = 7;
+
+    // Optional. Only callers whose current call is active (<code>Caller.active</code>), as
+    // <code>StreamCallerStatusRequest.active_only</code>. False does not filter.
+    bool active_only = 8;
+
+    // Optional. Only callers whose current or last call has one of these SIP status types
+    // (<code>Caller.sip_status_type</code>). A caller that never had a call has none and matches no entry. Empty
+    // does not filter. Combined with the other filters by AND.
+    repeated ondewo.sip.SipStatus.StatusType sip_status_types = 9;
+
 }
 
 // Represents the response for listing callers.
 message ListCallersResponse {
 
-    // The list of callers.
+    // The callers of this page, ordered by the caller&apos;s uuid (the last segment of <code>name</code>),
+    // ascending.
     repeated Caller callers = 1;
 
-    // Token to retrieve the next page of results.
-    // This field is a string that holds a token for fetching the next page of results.
-    // If there are no more results in the list, this field will be empty.
+    // Token to retrieve the next page of results. Opaque. Empty when there are no more results.
     string next_page_token = 2;
+
+    // The number of callers the request matches across all pages (its selector and filters, not
+    // <code>page_size</code>), counted exactly when this page was read. It can change between the pages of one
+    // listing as callers are started, stopped or deleted.
+    int32 total_size = 3;
 
 }
 
 // Represents a request to get a specific caller.
 message GetCallerRequest {
 
-    // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // VTSI project of the caller, of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // Required (empty or malformed is <code>INVALID_ARGUMENT</code>, an unknown project <code>NOT_FOUND</code>).
+    // <p>Redundant with the project segment of <code>name</code>, and the same rule holds for every single-resource
+    // request that carries both a <code>vtsi_project_name</code> and a resource name (<code>GetListener</code>,
+    // <code>GetCall</code>, <code>StopCall</code>, <code>GetScheduledCaller</code>,
+    // <code>CancelScheduledCaller</code>, <code>RetryScheduledCaller</code>, <code>TransferCall</code>,
+    // <code>InviteToCall</code>, <code>RemoveCallParticipant</code>, <code>SetCallMediaControl</code>): the
+    // resource must belong to <code>vtsi_project_name</code>, and a resource name whose project segment differs is
+    // answered <code>NOT_FOUND</code>, not <code>INVALID_ARGUMENT</code>, so that the answer never confirms that
+    // the resource exists in another project. (The batch requests, which check their entries before anything is
+    // done, answer such an entry with <code>INVALID_ARGUMENT</code> instead.)</p>
     string vtsi_project_name = 1;
 
-    // The name of caller to retrieve.
+    // The name of the caller to retrieve, of the form
+    // <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
     string name = 2;
 
-    // you can specify the view to be shallow or full
+    // Optional. How much of the caller to populate; see <code>CallView</code>. Unset means <code>SHALLOW</code>.
+    // <code>MINIMUM</code>: <code>name</code>, <code>call_name</code> and <code>vtsi_project_name</code>;
+    // <code>SHALLOW</code>: also <code>sip_caller_config</code> and the output-only state; <code>FULL</code>: also
+    // <code>common_services_config</code> (redacted by role).
     optional CallView call_view = 3;
 
     // Optional. Partial response: the field paths to populate in the returned <code>Caller</code>, relative to
@@ -705,11 +1088,13 @@ message ListListenersRequest {
     // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
-    // Optional. The next_page_token value returned from a previous list request.
-    // Example: "current_index-1--page_size-20"
+    // Optional. The <code>next_page_token</code> of a previous response. Opaque: its content is not part of the
+    // API. Valid only with the same <code>vtsi_project_name</code>, <code>active_only</code> and <code>sip_status_types</code>; a token issued for another listing is
+    // rejected with <code>INVALID_ARGUMENT</code>. <code>page_size</code>, <code>call_view</code> and
+    // <code>field_mask</code> may change between pages.
     optional string page_token = 2;
 
-    // you can specify the view to be shallow or full
+    // Optional. How much of each listener to populate; see <code>CallView</code>. Unset means <code>SHALLOW</code>.
     optional CallView call_view = 3;
 
     // Optional. Partial response: the field paths to populate in every returned <code>Listener</code>,
@@ -724,30 +1109,50 @@ message ListListenersRequest {
     // another mask.
     google.protobuf.FieldMask field_mask = 4;
 
+    // Optional. Maximum number of listeners per page, with the default, cap and validation of
+    // <code>ListCallersRequest.page_size</code>.
+    int32 page_size = 5;
+
+    // Optional. Only listeners whose current call is active (<code>Listener.active</code>), as
+    // <code>StreamListenerStatusRequest.active_only</code>. False does not filter.
+    bool active_only = 6;
+
+    // Optional. Only listeners whose current or last call has one of these SIP status types
+    // (<code>Listener.sip_status_type</code>), with the rules of <code>ListCallersRequest.sip_status_types</code>.
+    repeated ondewo.sip.SipStatus.StatusType sip_status_types = 7;
+
 }
 
 // Represents the response for listing listeners.
 message ListListenersResponse {
 
-    // The list of listeners.
+    // The listeners of this page, ordered by the listener&apos;s uuid (the last segment of <code>name</code>),
+    // ascending.
     repeated Listener listeners = 1;
 
-    // Token to retrieve the next page of results.
-    // This field is a string that holds a token for fetching the next page of results.
-    // If there are no more results in the list, this field will be empty.
+    // Token to retrieve the next page of results. Opaque. Empty when there are no more results.
     string next_page_token = 2;
+
+    // The number of listeners the request matches across all pages (its filters, not <code>page_size</code>),
+    // counted exactly when this page was read; as <code>ListCallersResponse.total_size</code>.
+    int32 total_size = 3;
 }
 
 // Represents a request to get a specific listener.
 message GetListenerRequest {
 
-    // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // VTSI project of the listener, of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // Required. Redundant with the project segment of <code>name</code>, by the rule of
+    // <code>GetCallerRequest.vtsi_project_name</code>.
     string vtsi_project_name = 1;
 
-    // The name of listener to retrieve.
+    // The name of the listener to retrieve, of the form
+    // <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
     string name = 2;
 
-    // you can specify the view to be shallow or full
+    // Optional. How much of the listener to populate; see <code>CallView</code>. Unset means <code>SHALLOW</code>.
+    // The views populate the fields as <code>GetCallerRequest.call_view</code> does, with
+    // <code>sip_base_config</code> in place of <code>sip_caller_config</code>.
     optional CallView call_view = 3;
 
     // Optional. Partial response: the field paths to populate in the returned <code>Listener</code>, relative to
@@ -775,13 +1180,16 @@ message StopListenerRequest {
 
 }
 
-// Represents a request to stop a specific listener.
+// Response to stopping a listener, and one entry of <code>StopListenersResponse</code>.
 message StopListenerResponse {
 
-    // The name of the stop listener in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
+    // The name of the stopped listener in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
     string name = 1;
 
-    // error message if there are any.
+    // Empty on success. <code>StopListener</code> reports its errors as gRPC status codes, so it is empty there. In an
+    // entry of <code>StopListenersResponse</code> it is the error of that entry, prefixed with the name of the gRPC
+    // status code <code>StopListener</code> would have answered, e.g.
+    // <code>NOT_FOUND: listener projects/.../listeners/... does not exist</code>.
     string error_message = 2;
 
 }
@@ -789,7 +1197,7 @@ message StopListenerResponse {
 // Represents a request to stop multiple listeners.
 message StopListenersRequest {
 
-    // The names of the listeners to stop in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
+    // The names of the listeners to stop, 1 to 1000 distinct names, in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
     repeated string names = 1;
 
     // Optional. Partial response: the field paths to populate in EVERY entry of
@@ -800,15 +1208,29 @@ message StopListenersRequest {
     // response: the listeners are stopped regardless.
     google.protobuf.FieldMask field_mask = 2;
 
+    // Optional. VTSI project of every listener of the request, of the form
+    // <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // When set, the request is checked as a whole like <code>UpdateListenersRequest</code> before anything is
+    // stopped, and refused with <code>INVALID_ARGUMENT</code> (naming the entry index) for a malformed
+    // <code>vtsi_project_name</code>, a name given twice, or a name that is malformed or whose project segment
+    // differs from <code>vtsi_project_name</code>; with <code>NOT_FOUND</code> for an unknown project; and with
+    // authorization enforced with <code>PERMISSION_DENIED</code> for a project the caller holds no role on. Empty
+    // keeps the behaviour of 9.0.0 clients, which do not send it: each name is checked on its own (a name of
+    // another project is that entry&apos;s <code>NOT_FOUND</code>) and a name given twice is stopped once and
+    // reported once. Either way, no entry and more than 1000 distinct names are <code>INVALID_ARGUMENT</code>.
+    string vtsi_project_name = 3;
+
 }
 
 // Response to stop multiple listeners
 message StopListenersResponse {
 
-    // responses to stop listeners
+    // One entry per distinct name of the request, in request order (a name given twice is reported once), each
+    // with its own <code>error_message</code>.
     repeated StopListenerResponse stop_listener_responses = 1;
 
-    // error message if there are any.
+    // A summary when at least one entry failed (e.g. <code>2 of 5 listeners were not stopped</code>), empty when every
+    // entry succeeded. The failed entries carry their own <code>error_message</code>.
     string error_message = 2;
 
 }
@@ -827,13 +1249,16 @@ message StopCallerRequest {
 
 }
 
-// Represents a request to stop a specific caller.
+// Response to stopping a caller, and one entry of <code>StopCallersResponse</code>.
 message StopCallerResponse {
 
-    // The name of the stop caller in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
+    // The name of the stopped caller in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
     string name = 1;
 
-    // error message if there are any.
+    // Empty on success. <code>StopCaller</code> reports its errors as gRPC status codes, so it is empty there. In an
+    // entry of <code>StopCallersResponse</code> it is the error of that entry, prefixed with the name of the gRPC
+    // status code <code>StopCaller</code> would have answered, e.g.
+    // <code>NOT_FOUND: caller projects/.../callers/... does not exist</code>.
     string error_message = 2;
 
 }
@@ -841,7 +1266,7 @@ message StopCallerResponse {
 // Represents a request to stop multiple callers.
 message StopCallersRequest {
 
-    // The names of the callers to stop in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
+    // The names of the callers to stop, 1 to 1000 distinct names, in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
     repeated string names = 1;
 
     // Optional. Partial response: the field paths to populate in EVERY entry of
@@ -852,15 +1277,29 @@ message StopCallersRequest {
     // response: the callers are stopped regardless.
     google.protobuf.FieldMask field_mask = 2;
 
+    // Optional. VTSI project of every caller of the request, of the form
+    // <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // When set, the request is checked as a whole like <code>UpdateCallersRequest</code> before anything is
+    // stopped, and refused with <code>INVALID_ARGUMENT</code> (naming the entry index) for a malformed
+    // <code>vtsi_project_name</code>, a name given twice, or a name that is malformed or whose project segment
+    // differs from <code>vtsi_project_name</code>; with <code>NOT_FOUND</code> for an unknown project; and with
+    // authorization enforced with <code>PERMISSION_DENIED</code> for a project the caller holds no role on. Empty
+    // keeps the behaviour of 9.0.0 clients, which do not send it: each name is checked on its own (a name of
+    // another project is that entry&apos;s <code>NOT_FOUND</code>) and a name given twice is stopped once and
+    // reported once. Either way, no entry and more than 1000 distinct names are <code>INVALID_ARGUMENT</code>.
+    string vtsi_project_name = 3;
+
 }
 
 // Response to stop multiple callers
 message StopCallersResponse {
 
-    // responses to stop callers
+    // One entry per distinct name of the request, in request order (a name given twice is reported once), each
+    // with its own <code>error_message</code>.
     repeated StopCallerResponse stop_caller_responses = 1;
 
-    // error message if there are any.
+    // A summary when at least one entry failed (e.g. <code>2 of 5 callers were not stopped</code>), empty when every
+    // entry succeeded. The failed entries carry their own <code>error_message</code>.
     string error_message = 2;
 
 }
@@ -879,13 +1318,16 @@ message DeleteListenerRequest {
 
 }
 
-// Represents a request to delete a specific listener.
+// Response to deleting a listener, and one entry of <code>DeleteListenersResponse</code>.
 message DeleteListenerResponse {
 
     // The name of the deleted listener in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
     string name = 1;
 
-    // error message if there are any.
+    // Empty on success. <code>DeleteListener</code> reports its errors as gRPC status codes, so it is empty there. In an
+    // entry of <code>DeleteListenersResponse</code> it is the error of that entry, prefixed with the name of the gRPC
+    // status code <code>DeleteListener</code> would have answered, e.g.
+    // <code>NOT_FOUND: listener projects/.../listeners/... does not exist</code>.
     string error_message = 2;
 
 }
@@ -893,7 +1335,7 @@ message DeleteListenerResponse {
 // Represents a request to delete multiple listeners.
 message DeleteListenersRequest {
 
-    // The names of the listeners to delete in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
+    // The names of the listeners to delete, 1 to 1000 distinct names, in the form <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
     repeated string names = 1;
 
     // Optional. Partial response: the field paths to populate in EVERY entry of
@@ -904,15 +1346,29 @@ message DeleteListenersRequest {
     // response: the listeners are deleted regardless.
     google.protobuf.FieldMask field_mask = 2;
 
+    // Optional. VTSI project of every listener of the request, of the form
+    // <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // When set, the request is checked as a whole like <code>UpdateListenersRequest</code> before anything is
+    // deleted, and refused with <code>INVALID_ARGUMENT</code> (naming the entry index) for a malformed
+    // <code>vtsi_project_name</code>, a name given twice, or a name that is malformed or whose project segment
+    // differs from <code>vtsi_project_name</code>; with <code>NOT_FOUND</code> for an unknown project; and with
+    // authorization enforced with <code>PERMISSION_DENIED</code> for a project the caller holds no role on. Empty
+    // keeps the behaviour of 9.0.0 clients, which do not send it: each name is checked on its own (a name of
+    // another project is that entry&apos;s <code>NOT_FOUND</code>) and a name given twice is deleted once and
+    // reported once. Either way, no entry and more than 1000 distinct names are <code>INVALID_ARGUMENT</code>.
+    string vtsi_project_name = 3;
+
 }
 
 // Response to delete multiple listeners
 message DeleteListenersResponse {
 
-    // responses to delete listeners
+    // One entry per distinct name of the request, in request order (a name given twice is reported once), each
+    // with its own <code>error_message</code>.
     repeated DeleteListenerResponse delete_listener_responses = 1;
 
-    // error message if there are any.
+    // A summary when at least one entry failed (e.g. <code>2 of 5 listeners were not deleted</code>), empty when every
+    // entry succeeded. The failed entries carry their own <code>error_message</code>.
     string error_message = 2;
 
 }
@@ -932,13 +1388,16 @@ message DeleteCallerRequest {
 
 }
 
-// Represents a request to delete a specific caller.
+// Response to deleting a caller, and one entry of <code>DeleteCallersResponse</code>.
 message DeleteCallerResponse {
 
     // The name of the deleted caller in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
     string name = 1;
 
-    // error message if there are any.
+    // Empty on success. <code>DeleteCaller</code> reports its errors as gRPC status codes, so it is empty there. In an
+    // entry of <code>DeleteCallersResponse</code> it is the error of that entry, prefixed with the name of the gRPC
+    // status code <code>DeleteCaller</code> would have answered, e.g.
+    // <code>NOT_FOUND: caller projects/.../callers/... does not exist</code>.
     string error_message = 2;
 
 }
@@ -946,7 +1405,7 @@ message DeleteCallerResponse {
 // Represents a request to delete multiple callers.
 message DeleteCallersRequest {
 
-    // The name of the caller to delete in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
+    // The names of the callers to delete, 1 to 1000 distinct names, in the form <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>
     repeated string names = 1;
 
     // Optional. Partial response: the field paths to populate in EVERY entry of
@@ -957,15 +1416,29 @@ message DeleteCallersRequest {
     // response: the callers are deleted regardless.
     google.protobuf.FieldMask field_mask = 2;
 
+    // Optional. VTSI project of every caller of the request, of the form
+    // <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // When set, the request is checked as a whole like <code>UpdateCallersRequest</code> before anything is
+    // deleted, and refused with <code>INVALID_ARGUMENT</code> (naming the entry index) for a malformed
+    // <code>vtsi_project_name</code>, a name given twice, or a name that is malformed or whose project segment
+    // differs from <code>vtsi_project_name</code>; with <code>NOT_FOUND</code> for an unknown project; and with
+    // authorization enforced with <code>PERMISSION_DENIED</code> for a project the caller holds no role on. Empty
+    // keeps the behaviour of 9.0.0 clients, which do not send it: each name is checked on its own (a name of
+    // another project is that entry&apos;s <code>NOT_FOUND</code>) and a name given twice is deleted once and
+    // reported once. Either way, no entry and more than 1000 distinct names are <code>INVALID_ARGUMENT</code>.
+    string vtsi_project_name = 3;
+
 }
 
 // Response to delete multiple callers
 message DeleteCallersResponse {
 
-    // responses to delete callers
+    // One entry per distinct name of the request, in request order (a name given twice is reported once), each
+    // with its own <code>error_message</code>.
     repeated DeleteCallerResponse delete_caller_responses = 1;
 
-    // error message if there are any.
+    // A summary when at least one entry failed (e.g. <code>2 of 5 callers were not deleted</code>), empty when every
+    // entry succeeded. The failed entries carry their own <code>error_message</code>.
     string error_message = 2;
 
 }
@@ -983,8 +1456,10 @@ message UpdateCallerRequest {
     // (e.g. <code>sip_caller_config.callee_id</code>, <code>sip_caller_config.sip_headers</code>,
     // <code>sip_caller_config.sip_base_config.sip_sim_version</code>,
     // <code>common_services_config.nlu_vtsi_config.agent_name</code>). An empty mask, or an unknown, output-only
-    // or immutable path (<code>name</code>, <code>call_name</code>; a nested path is checked against the message
-    // type it names), is rejected with <code>INVALID_ARGUMENT</code> naming the path, and nothing is written.
+    // or immutable path (<code>name</code>, <code>call_name</code>, <code>vtsi_project_name</code>,
+    // <code>active</code>, <code>sip_status_type</code>, <code>created_at</code>, <code>pooled</code>,
+    // <code>campaign_name</code>; a nested path is checked against the message type it names), is rejected with
+    // <code>INVALID_ARGUMENT</code> naming the path, and nothing is written.
     // <p>The semantics are those of <code>UpdateCampaignRequest.update_mask</code> for the campaign call
     // defaults:</p>
     // <ul>
@@ -1023,6 +1498,16 @@ message UpdateCallerRequest {
     // that redaction, so it can only narrow the response. In an entry of <code>UpdateCallersRequest</code> it
     // must be unset (use <code>UpdateCallersRequest.field_mask</code>).
     google.protobuf.FieldMask field_mask = 3;
+
+    // Optional. Dry run: when true, the request runs every validation <code>UpdateCaller</code> runs (the
+    // <code>update_mask</code> rules, the credential rule and the validation of the resulting configuration as a
+    // <code>StartCallerRequest</code>, the live checks against the upstream services included) but writes NOTHING
+    // and emits no event. It answers with the same error a real request would answer, or with the response a real
+    // request would return: the caller as it would be after the update. It does not wait for a running update,
+    // deploy or undeploy of the project. Default false. A server older than 9.1.0 ignores this field and runs the request for real; check
+    // the server version before relying on it. In an entry of <code>UpdateCallersRequest</code> it must be
+    // unset (use <code>UpdateCallersRequest.validate_only</code>).
+    bool validate_only = 4;
 }
 
 // The response message for <a href="index.html#ondewo.vtsi.Calls.UpdateCaller">Calls.UpdateCaller</a>, and one
@@ -1049,7 +1534,7 @@ message UpdateCallerResponse {
 // <p>Rejected as a whole, nothing being written, with: <code>INVALID_ARGUMENT</code> for a malformed
 // <code>vtsi_project_name</code>, no entry, more than 1000 entries, two entries naming the same caller, an entry
 // whose <code>caller.name</code> is malformed or whose project segment differs from
-// <code>vtsi_project_name</code>, an entry with its own <code>field_mask</code> set, or an unknown
+// <code>vtsi_project_name</code>, an entry with its own <code>field_mask</code> or <code>validate_only</code> set, or an unknown
 // <code>field_mask</code> path (each naming the entry index or the path); <code>NOT_FOUND</code> for an unknown
 // project; with authorization enforced <code>PERMISSION_DENIED</code> for a project the caller holds no role on
 // or a role below the one <code>UpdateCaller</code> requires. Every other error is reported per entry, e.g. a
@@ -1069,6 +1554,12 @@ message UpdateCallersRequest {
     // prefix), as in <code>UpdateCallerRequest.field_mask</code>. <code>caller.name</code>, <code>name</code>
     // and <code>error_message</code> of each entry and the response&apos;s own fields are always populated.
     google.protobuf.FieldMask field_mask = 3;
+
+    // Optional. Dry run of every entry, each like <code>UpdateCallerRequest.validate_only</code>: the request-level
+    // checks and every entry are validated and reported as for a real request, and nothing is written. The
+    // entries&apos; own <code>validate_only</code> must be unset. Default false. A server older than 9.1.0 ignores this field and runs the request for real; check
+    // the server version before relying on it.
+    bool validate_only = 4;
 }
 
 // The response message for <a href="index.html#ondewo.vtsi.Calls.UpdateCallers">Calls.UpdateCallers</a>.
@@ -1097,8 +1588,9 @@ message UpdateListenerRequest {
     // Required. Paths relative to <code>Listener</code>, WITHOUT a <code>listener.</code> prefix. Updatable
     // paths: <code>sip_base_config</code> and <code>common_services_config</code>, each also as any nested
     // sub-path (e.g. <code>sip_base_config.sip_sim_version</code>,
-    // <code>common_services_config.nlu_vtsi_config.agent_name</code>). <code>name</code> and
-    // <code>call_name</code> are output only. Rejections, path semantics, validation (against a
+    // <code>common_services_config.nlu_vtsi_config.agent_name</code>). <code>name</code>, <code>call_name</code>,
+    // <code>vtsi_project_name</code>, <code>active</code>, <code>sip_status_type</code> and <code>created_at</code>
+    // are output only. Rejections, path semantics, validation (against a
     // <code>StartListenerRequest</code> carrying the result) and the credential note are exactly those of
     // <code>UpdateCallerRequest.update_mask</code>.
     google.protobuf.FieldMask update_mask = 2;
@@ -1109,6 +1601,13 @@ message UpdateListenerRequest {
     // after the update, redacted, then masked). In an entry of <code>UpdateListenersRequest</code> it must be
     // unset (use <code>UpdateListenersRequest.field_mask</code>).
     google.protobuf.FieldMask field_mask = 3;
+
+    // Optional. Dry run, as <code>UpdateCallerRequest.validate_only</code> with <code>UpdateListener</code> and a
+    // <code>StartListenerRequest</code> as the validation of the result: nothing is written, the response is the
+    // listener as it would be after the update. Default false. A server older than 9.1.0 ignores this field and runs the request for real; check
+    // the server version before relying on it. In an entry of <code>UpdateListenersRequest</code>
+    // it must be unset (use <code>UpdateListenersRequest.validate_only</code>).
+    bool validate_only = 4;
 }
 
 // The response message for <a href="index.html#ondewo.vtsi.Calls.UpdateListener">Calls.UpdateListener</a>, and
@@ -1147,6 +1646,11 @@ message UpdateListenersRequest {
     // <code>name</code> and <code>error_message</code> of each entry and the response&apos;s own fields are
     // always populated.
     google.protobuf.FieldMask field_mask = 3;
+
+    // Optional. Dry run of every entry, each like <code>UpdateListenerRequest.validate_only</code>; nothing is
+    // written. The entries&apos; own <code>validate_only</code> must be unset. Default false. A server older than 9.1.0 ignores this field and runs the request for real; check
+    // the server version before relying on it.
+    bool validate_only = 4;
 }
 
 // The response message for <a href="index.html#ondewo.vtsi.Calls.UpdateListeners">Calls.UpdateListeners</a>.
@@ -1170,12 +1674,32 @@ message StartScheduledCallerRequest {
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
-    // Normal start caller request
+    // The caller to start at <code>scheduled_time</code>, validated like a <code>StartCallerRequest</code> of
+    // <code>StartCaller</code> (the live checks of the configuration run when the call is started, not when it
+    // is scheduled). Its own <code>field_mask</code> and <code>validate_only</code> must be unset, otherwise the
+    // request is refused with <code>INVALID_ARGUMENT</code>.
     StartCallerRequest request = 2;
 
-    // Time the call is scheduled
-    // TODO to be refactored with a more complex scheduling object
+    // Time at or after which the call is started, in UTC. The scheduler checks for due scheduled callers
+    // periodically, so the call starts at the first check at or after this time (typically within a few seconds),
+    // never before it. A time in the past is due at once.
     google.protobuf.Timestamp scheduled_time = 3;
+
+    // Optional. Partial response: the field paths to populate in
+    // <code>StartScheduledCallerResponse.scheduled_caller</code>, relative to the <code>ScheduledCaller</code>
+    // message (no <code>scheduled_caller.</code> prefix), e.g. <code>status</code>, <code>scheduled_time</code>,
+    // <code>sip_caller_config.callee_id</code>. Nested paths through singular message fields are allowed; a path
+    // below a repeated or map field is not. <code>scheduled_caller.name</code> and the other fields of the response
+    // are always populated. Unset or empty returns every field. An unknown path is rejected with
+    // <code>INVALID_ARGUMENT</code> naming it, before anything is created. Applied after the server&apos;s
+    // role-based redaction of <code>common_services_config</code>, so it can only narrow the response. It shapes
+    // only the response: the scheduled caller is created regardless.
+    // <p>Read only by the RPC this message is the request of. Where it is an entry of another request
+    // (<code>StartScheduledCallersRequest.scheduled_caller_requests</code>,
+    // <code>AddScheduledCallersToCampaignRequest.scheduled_caller_requests</code>) it must be unset, otherwise that
+    // whole request is rejected with <code>INVALID_ARGUMENT</code> naming the entry and nothing is created; use the
+    // enclosing request&apos;s own <code>field_mask</code> where it has one.</p>
+    google.protobuf.FieldMask field_mask = 4;
 }
 
 
@@ -1185,7 +1709,10 @@ message StartScheduledCallersRequest {
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
-    // requests to start scheduled callers
+    // The scheduled callers to create, 1 to 1000, each like <code>StartScheduledCaller</code> and on its own (not
+    // atomic: an entry that fails is reported in its <code>StartScheduledCallerResponse.error_message</code> and
+    // does not stop the others). Each entry&apos;s <code>vtsi_project_name</code> is overwritten with this
+    // request&apos;s; its <code>field_mask</code> must be unset.
     repeated StartScheduledCallerRequest scheduled_caller_requests = 2;
 
     // Field 3 was campaign_assignment in unreleased 9.0.0 development builds; use
@@ -1203,15 +1730,26 @@ message StartScheduledCallersRequest {
     // no <code>common_services_config</code>: the server keeps no second copy of the credentials it holds. To
     // make a single caller or listener idempotent, send it as a batch of one.
     string idempotency_key = 4;
+
+    // Optional. Partial response: the field paths to populate in the <code>scheduled_caller</code> of EVERY entry
+    // of <code>StartScheduledCallersResponse.scheduled_caller_responses</code>, relative to the
+    // <code>ScheduledCaller</code> message (no prefix), as in <code>StartScheduledCallerRequest.field_mask</code>.
+    // <code>scheduled_caller.name</code> and every other field of the response and of its entries are always
+    // populated. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is
+    // created. The entries&apos; own <code>field_mask</code> must be unset. Not part of the
+    // <code>idempotency_key</code> comparison: a retry with the same key and another mask replays the first
+    // response shaped by the retry&apos;s mask.
+    google.protobuf.FieldMask field_mask = 5;
 }
 
-// Response to start multiple listeners
+// Response to start multiple scheduled callers
 message StartScheduledCallersResponse {
 
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
-    // The call ids that were assigned to each listener
+    // One entry per entry of the request, in request order: the scheduled caller that was created, or the
+    // entry&apos;s error
     repeated StartScheduledCallerResponse scheduled_caller_responses = 2;
 
     // Fields 3 and 4 carried the campaign result in unreleased 9.0.0 development builds; see
@@ -1310,16 +1848,17 @@ message AddScheduledCallersToCampaignResponse {
 }
 
 
-// Response to start multiple listeners
+// Response to start a scheduled caller, and one entry of <code>StartScheduledCallersResponse</code>
 message StartScheduledCallerResponse {
 
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
-    // The scheduled caller that was created
+    // The scheduled caller that was created, shaped by the request&apos;s <code>field_mask</code>. Unset when
+    // <code>error_message</code> is set.
     ScheduledCaller scheduled_caller = 2;
 
-    // error message if you have any so if it's unhealthy
+    // Empty on success, otherwise why the scheduled caller was not created (nothing was created for this entry)
     string error_message = 3;
 
 }
@@ -1366,8 +1905,9 @@ message ScheduledCaller {
     // Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI
     CommonServicesConfig common_services_config = 4;
 
-    // Time the call is scheduled
-    // TODO to be refactored with a more complex scheduling object
+    // Time at or after which the call is started, in UTC (see
+    // <code>StartScheduledCallerRequest.scheduled_time</code>). Updatable with <code>UpdateScheduledCaller</code>
+    // while the status is <code>SCHEDULED_CALLER_STATUS_PENDING</code>.
     google.protobuf.Timestamp scheduled_time = 5;
 
     // Full SIP caller configuration, including the callee_id that will be dialled and the sip_headers
@@ -1399,35 +1939,64 @@ message ScheduledCaller {
     // <code>call_name</code> and <code>error_message</code> are those of the latest attempt. Its
     // own retry settings are not used; the campaign&apos;s apply.
     string campaign_name = 12;
+
+    // Output only. Set on a scheduled caller that <code>RetryScheduledCaller</code> created: the FAILED scheduled
+    // caller it retries, of the form
+    // <pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre>
+    // Empty for a scheduled caller created by <code>StartScheduledCaller(s)</code> or
+    // <code>AddScheduledCallersToCampaign</code>. Kept when the retried scheduled caller is deleted.
+    string retry_of_scheduled_caller_name = 13;
+
+    // Output only. Set on a FAILED scheduled caller once <code>RetryScheduledCaller</code> retried it: the
+    // scheduled caller the retry created. A FAILED scheduled caller is retried at most once; retry the newest one of
+    // a chain. Empty otherwise.
+    string retried_by_scheduled_caller_name = 14;
 }
 
 // Represents a request to get a specific scheduled caller.
 message GetScheduledCallerRequest {
 
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // Redundant with the project segment of <code>name</code>: when set it must name the same project (see
+    // <code>GetCallerRequest.vtsi_project_name</code>).
     string vtsi_project_name = 1;
 
     // The name of the scheduled caller to retrieve of the form
     // <pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre>
     string name = 2;
 
-    // you can specify the view to be shallow or full
+    // Optional. How much of the scheduled caller to populate; see <code>CallView</code>. Unset means
+    // <code>SHALLOW</code>.
     optional CallView call_view = 3;
+
+    // Optional. Partial response: the field paths to populate in the returned <code>ScheduledCaller</code>,
+    // relative to the <code>ScheduledCaller</code> message, e.g. <code>status</code>, <code>scheduled_time</code>,
+    // <code>sip_caller_config.callee_id</code>. Nested paths through singular message fields are allowed; a path
+    // below a repeated or map field is not. <code>name</code> is always populated. Unset or empty returns every
+    // field the <code>call_view</code> populates. An unknown path is rejected with <code>INVALID_ARGUMENT</code>
+    // naming it. Applied after the <code>call_view</code> and the server&apos;s role-based redaction of
+    // <code>common_services_config</code>, so it can only narrow the response and never populates a field that was
+    // left empty.
+    google.protobuf.FieldMask field_mask = 4;
 
 }
 
-// Represents a request to list the scheduled callers of a vtsi-project.
+// Represents a request to list the scheduled callers of a VTSI project.
 message ListScheduledCallersRequest {
 
     // VTSI project name for which to perform the call.
     // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
-    // Optional. The next_page_token value returned from a previous list request.
-    // Example: "current_index-1--page_size-20"
+    // Optional. The <code>next_page_token</code> of a previous response. Opaque: its content is not part of the
+    // API. Valid only with the same <code>vtsi_project_name</code>, <code>statuses</code>,
+    // <code>campaign_name</code>, <code>scheduled_after</code> and <code>scheduled_before</code>; a token issued
+    // for another listing is rejected with <code>INVALID_ARGUMENT</code>. <code>page_size</code>,
+    // <code>call_view</code> and <code>field_mask</code> may change between pages.
     optional string page_token = 2;
 
-    // you can specify the view to be shallow or full
+    // Optional. How much of each scheduled caller to populate; see <code>CallView</code>. Unset means
+    // <code>SHALLOW</code>.
     optional CallView call_view = 3;
 
     // Optional. Only return scheduled callers in one of these states.
@@ -1446,18 +2015,44 @@ message ListScheduledCallersRequest {
     // <code>page_token</code> stays valid with another mask.
     google.protobuf.FieldMask field_mask = 5;
 
+    // Optional. Maximum number of scheduled callers per page. <code>0</code> means the server default of 25;
+    // values above 1000 are clamped to 1000; negative values are rejected with <code>INVALID_ARGUMENT</code>.
+    // May differ between the pages of one listing.
+    int32 page_size = 6;
+
+    // Optional. Only the scheduled callers of this campaign (<code>ScheduledCaller.campaign_name</code>). Empty
+    // does not filter. It must be a campaign of <code>vtsi_project_name</code>: a malformed name or a campaign of
+    // another project is <code>INVALID_ARGUMENT</code>, an unknown campaign <code>NOT_FOUND</code>.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre>
+    string campaign_name = 7;
+
+    // Optional. Only scheduled callers whose <code>scheduled_time</code> is at or after this instant (inclusive).
+    // Unset does not filter.
+    google.protobuf.Timestamp scheduled_after = 8;
+
+    // Optional. Only scheduled callers whose <code>scheduled_time</code> is strictly before this instant
+    // (exclusive), so that consecutive windows never overlap. Unset does not filter. When both bounds are set,
+    // <code>scheduled_before</code> must be after <code>scheduled_after</code>, otherwise
+    // <code>INVALID_ARGUMENT</code>.
+    google.protobuf.Timestamp scheduled_before = 9;
+
 }
 
 // Represents the response for listing scheduled callers.
 message ListScheduledCallersResponse {
 
-    // The list of scheduled callers, oldest scheduled_time first.
+    // The scheduled callers of this page, ordered by <code>scheduled_time</code>, oldest first; scheduled callers
+    // with the same <code>scheduled_time</code> are ordered by their uuid (the last segment of <code>name</code>),
+    // ascending.
     repeated ScheduledCaller scheduled_callers = 1;
 
-    // Token to retrieve the next page of results.
-    // This field is a string that holds a token for fetching the next page of results.
-    // If there are no more results in the list, this field will be empty.
+    // Token to retrieve the next page of results. Opaque. Empty when there are no more results.
     string next_page_token = 2;
+
+    // The number of scheduled callers the request matches across all pages (its filters, not
+    // <code>page_size</code>), counted exactly when this page was read. It can change between the pages of one
+    // listing as scheduled callers are created or change state.
+    int32 total_size = 3;
 
 }
 
@@ -1471,13 +2066,22 @@ message CancelScheduledCallerRequest {
     // <pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre>
     string name = 2;
 
+    // Optional. Partial response: the field paths of <code>CancelScheduledCallerResponse</code> to populate, i.e.
+    // <code>status</code>, <code>cancelled</code> and <code>error_message</code> (the response carries no
+    // <code>ScheduledCaller</code>). <code>name</code> is always populated. Unset or empty returns every field. An
+    // unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is cancelled. It shapes
+    // only the response: the scheduled caller is cancelled regardless. In a <code>CancelScheduledCallers</code>
+    // batch the batch&apos;s own <code>field_mask</code> applies.
+    google.protobuf.FieldMask field_mask = 3;
+
 }
 
-// Response to cancelling a scheduled caller.
+// Response to cancelling a scheduled caller, and one entry of <code>CancelScheduledCallersResponse</code>.
 message CancelScheduledCallerResponse {
 
     // The name of the scheduled caller of the form
     // <pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre>
+    // Always populated, also for a failed entry of <code>CancelScheduledCallers</code>.
     string name = 1;
 
     // The state of the scheduled caller AFTER this request. A scheduled caller that was already
@@ -1486,18 +2090,133 @@ message CancelScheduledCallerResponse {
 
     // True when this request performed the transition to SCHEDULED_CALLER_STATUS_CANCELLED.
     // False means the scheduled caller was already in a state it cannot be cancelled from -
-    // read status to find out which one, this is not an error
+    // read status to find out which one, this is not an error. Cancelling an already cancelled scheduled caller
+    // is therefore idempotent: <code>cancelled = false</code>, <code>status = SCHEDULED_CALLER_STATUS_CANCELLED</code>.
     bool cancelled = 3;
 
-    // error message if you have any so if it's unhealthy
+    // Why the scheduled caller was not cancelled, where there is more to say than <code>status</code>: set (with
+    // <code>cancelled = false</code>) for a scheduled caller of a campaign whose attempt is dispatching or in
+    // progress; empty otherwise, also for a scheduled caller that was simply no longer PENDING.
+    // <code>CancelScheduledCaller</code> reports every other error as a gRPC status code. In an entry of
+    // <code>CancelScheduledCallersResponse</code> it is, in addition, the error of an entry that failed, prefixed
+    // with the name of the gRPC status code <code>CancelScheduledCaller</code> would have answered, e.g.
+    // <code>NOT_FOUND: scheduled caller projects/.../scheduled_callers/... does not exist</code>; <code>status</code>
+    // and <code>cancelled</code> are then left at their zero values.
     string error_message = 4;
 
 }
 
-// Request to stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.
+// The request message for
+// <a href="index.html#ondewo.vtsi.Calls.CancelScheduledCallers">Calls.CancelScheduledCallers</a>.
+// <p>Rejected as a whole, nothing being cancelled, with: <code>INVALID_ARGUMENT</code> for a malformed
+// <code>vtsi_project_name</code>, no entry, more than 1000 entries, a name given twice, a name that is malformed or
+// whose project segment differs from <code>vtsi_project_name</code>, or an unknown <code>field_mask</code> path
+// (each naming the entry index or the path); <code>NOT_FOUND</code> for an unknown project; with authorization
+// enforced <code>PERMISSION_DENIED</code> for a project the caller holds no role on or a role below the one
+// <code>CancelScheduledCaller</code> requires. Every other error is reported per entry, e.g. a well-formed name of
+// the right project that names no scheduled caller is that entry&apos;s <code>NOT_FOUND</code>.</p>
+message CancelScheduledCallersRequest {
+
+    // VTSI project of every scheduled caller of the request.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // The scheduled callers to cancel, 1 to 1000 distinct names of the form
+    // <pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre>
+    repeated string names = 2;
+
+    // Optional. Partial response: the field paths to populate in EVERY entry of
+    // <code>CancelScheduledCallersResponse.cancel_scheduled_caller_responses</code>, relative to the entry message
+    // <code>CancelScheduledCallerResponse</code>, i.e. <code>status</code>, <code>cancelled</code> and
+    // <code>error_message</code>. <code>name</code> of each entry and the response&apos;s own fields are always
+    // populated. Unset or empty returns every field. An unknown path is rejected with
+    // <code>INVALID_ARGUMENT</code> naming it, before anything is cancelled. It shapes only the response.
+    google.protobuf.FieldMask field_mask = 3;
+}
+
+// The response message for
+// <a href="index.html#ondewo.vtsi.Calls.CancelScheduledCallers">Calls.CancelScheduledCallers</a>.
+message CancelScheduledCallersResponse {
+
+    // VTSI project of the request.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // One entry per name of the request, in request order, each like the response of
+    // <code>CancelScheduledCaller</code> (an entry that could not be cancelled because of its state is
+    // <code>cancelled = false</code> without an <code>error_message</code>, as there).
+    repeated CancelScheduledCallerResponse cancel_scheduled_caller_responses = 2;
+
+    // A summary when at least one entry failed, i.e. carries an <code>error_message</code> prefixed with a gRPC
+    // status code name (e.g. <code>2 of 5 cancellations failed</code>); empty when no entry failed. An entry with
+    // <code>cancelled = false</code> because of its state is not a failure, whether or not it explains itself in
+    // <code>error_message</code>.
+    string error_message = 3;
+}
+
+// The request message for
+// <a href="index.html#ondewo.vtsi.Calls.UpdateScheduledCaller">Calls.UpdateScheduledCaller</a>.
+message UpdateScheduledCallerRequest {
+
+    // The scheduled caller to update, identified by <code>scheduled_caller.name</code>
+    // (<pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre>),
+    // carrying the new values of the fields named in <code>update_mask</code>. Its fields that no path names are
+    // ignored.
+    ScheduledCaller scheduled_caller = 1;
+
+    // Required. Paths relative to <code>ScheduledCaller</code>, WITHOUT a <code>scheduled_caller.</code> prefix.
+    // The only updatable paths are:
+    // <ul>
+    //   <li><code>scheduled_time</code>: the new time at or after which the call is started. Unset is
+    //       <code>INVALID_ARGUMENT</code> (a scheduled caller always has a time). A time in the past makes it due
+    //       at once.</li>
+    //   <li><code>sip_caller_config.sip_headers</code>: replaces the whole header map (an empty map clears it),
+    //       validated like the <code>sip_headers</code> of a <code>StartCallerRequest</code>. A path below it (e.g.
+    //       <code>sip_caller_config.sip_headers.X-Foo</code>) is rejected.</li>
+    // </ul>
+    // An empty mask, or any other path (output-only, immutable or unknown, e.g. <code>status</code>,
+    // <code>sip_caller_config</code> as a whole, <code>sip_caller_config.callee_id</code>,
+    // <code>common_services_config</code>), is rejected with <code>INVALID_ARGUMENT</code> naming the path, and
+    // nothing is written. To change anything else, cancel the scheduled caller and start a new one.
+    google.protobuf.FieldMask update_mask = 2;
+
+    // Optional. Partial response: the field paths to populate in the returned <code>ScheduledCaller</code>,
+    // relative to the <code>ScheduledCaller</code> message, with the rules of
+    // <code>GetScheduledCallerRequest.field_mask</code>. The returned scheduled caller is the one
+    // <code>GetScheduledCaller</code> with <code>call_view = FULL</code> would return after the update. An unknown
+    // path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is written.
+    google.protobuf.FieldMask field_mask = 3;
+}
+
+// The request message for
+// <a href="index.html#ondewo.vtsi.Calls.RetryScheduledCaller">Calls.RetryScheduledCaller</a>.
+message RetryScheduledCallerRequest {
+
+    // VTSI project of the scheduled caller. Redundant with the project segment of <code>name</code>: when set it
+    // must name the same project (see <code>GetCallerRequest.vtsi_project_name</code>).
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // The FAILED scheduled caller to retry, of the form
+    // <pre><code>projects/&lt;project_uuid&gt;/scheduled_callers/&lt;scheduled_caller_uuid&gt;</code></pre>
+    string name = 2;
+
+    // Optional. When the retry fires, in UTC. Unset means now: the retry is due at once and starts at the
+    // scheduler&apos;s next check. A time in the past is treated like unset.
+    google.protobuf.Timestamp scheduled_time = 3;
+
+    // Optional. Partial response: the field paths to populate in the returned (new) <code>ScheduledCaller</code>,
+    // with the rules of <code>GetScheduledCallerRequest.field_mask</code>. An unknown path is rejected with
+    // <code>INVALID_ARGUMENT</code> naming it, before anything is created.
+    google.protobuf.FieldMask field_mask = 4;
+}
+
+// Request to stop a call: hang it up and stop (release) the listener or caller that serves it.
 message StopCallRequest {
 
-    // VTSI project parent with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // VTSI project of the call, of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // Required. Redundant with the project segment of <code>call_name</code>, by the rule of
+    // <code>GetCallerRequest.vtsi_project_name</code>.
     string vtsi_project_name = 1;
 
     // call name to stop
@@ -1513,28 +2232,34 @@ message StopCallRequest {
     google.protobuf.FieldMask field_mask = 3;
 }
 
-// Response to stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.
+// Response to stop a call, and one entry of <code>StopCallsResponse</code>.
 message StopCallResponse {
 
-    // VTSI project name with which to stop the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // VTSI project of the call, of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
-    // call name to stop
+    // The call the request named
     // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     string call_name = 2;
 
-    // error messages if you have any so if it's unhealthy
+    // Empty when the call&apos;s listener or caller was released. <code>Call ... was not released</code> when there
+    // was nothing left to release (e.g. it had already been stopped); the RPC still succeeds. Errors that are not
+    // about this outcome are gRPC status codes for <code>StopCall</code>; in an entry of
+    // <code>StopCallsResponse</code> / the response of <code>StopAllCalls</code> they are the error of that entry,
+    // prefixed with the name of the gRPC status code <code>StopCall</code> would have answered, e.g.
+    // <code>NOT_FOUND: call projects/.../calls/... does not exist</code>.
     string error_message = 3;
 }
 
-// Request to stop/kill specific ondewo-sip listeners or callers instance for a specific vtsi-project.
+// Request to stop several calls, each like <code>StopCall</code>.
 message StopCallsRequest {
 
-    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // VTSI project of every call of the request, of the form
+    // <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
-    // call names to stop
+    // The calls to stop, 1 to 1000 names (a name given twice is stopped and reported once)
     // For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     repeated string call_names = 2;
@@ -1549,20 +2274,24 @@ message StopCallsRequest {
     google.protobuf.FieldMask field_mask = 3;
 }
 
-// Response to stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.
+// Response of <code>StopCalls</code> and <code>StopAllCalls</code>.
 message StopCallsResponse {
 
-    // responses to stop/kill a ondewo-sip listener or caller instance for a specific vtsi-project.
+    // One entry per stopped call: for <code>StopCalls</code> one per distinct requested name, in request order;
+    // for <code>StopAllCalls</code> one per call it stopped, ordered by <code>call_name</code>, ascending (empty when
+    // there was nothing to stop).
     repeated StopCallResponse stop_call_responses = 1;
 
-    // overall error message if you have any so if it's unhealthy
+    // Empty when no entry carries an <code>error_message</code>; otherwise the entries&apos; messages joined, so a
+    // client can log one string. Read the entries for the per-call outcome.
     string error_message = 2;
 }
 
-// Request to stop all calls of a VTSI project, so all listeners and callers
+// Request to stop all calls of a VTSI project (hang them up and release their listeners and callers), or, with
+// <code>call_filter</code>, those of them the filter matches.
 message StopAllCallsRequest {
 
-    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // VTSI project whose calls are stopped, of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
     // Optional. Partial response: the field paths to populate in EVERY entry of
@@ -1573,6 +2302,16 @@ message StopAllCallsRequest {
     // unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is stopped. It
     // shapes only the response: the calls are stopped regardless.
     google.protobuf.FieldMask field_mask = 2;
+
+    // Optional. Narrows the calls that are stopped: of the calls <code>StopAllCalls</code> stops without a filter
+    // (the project&apos;s current calls, each with the listener or caller that serves it), only those this filter
+    // matches, with the semantics, validation and errors of <code>ListCallsRequest.call_filter</code> (the
+    // campaign selector included). An invalid filter is <code>INVALID_ARGUMENT</code> and nothing is stopped.
+    // Unset or empty stops every call, as before 9.1.0. The filter is evaluated once, when the request arrives: a
+    // call that starts while the request runs is not stopped.
+    // <p>Rolling updates: a 9.0.0 server ignores this field and stops EVERY call of the project. A client that must
+    // not stop more than the filter selects checks that the server is 9.1.0 or newer first.</p>
+    CallFilter call_filter = 3;
 }
 
 // Request to transfer calls
@@ -1606,6 +2345,17 @@ message TransferCallRequest{
     // WARM only: how long the target may ring, in seconds, <code>5</code> to <code>120</code>. <code>0</code> means
     // <code>30</code>
     int32 ring_timeout_s = 7;
+
+    // Optional idempotency key, with the semantics of <code>InviteToCallRequest.request_id</code>: 1 to 255 visible
+    // ASCII characters, scoped to <code>call_name</code>. A repeated request with the same <code>call_name</code>
+    // and <code>request_id</code> returns the <code>TransferCallResponse</code> of the first request instead of
+    // transferring again, for as long as the call record exists; the same key with a different target, mode,
+    // headers or ring timeout is refused with <code>INVALID_ARGUMENT</code> and <code>reason=request-id-conflict</code>.
+    // A first request that was refused with a gRPC status stored nothing, so its retry runs again; a first request
+    // that answered an outcome (also a telephony failure such as <code>TRANSFER_OUTCOME_TIMEOUT</code>) is replayed.
+    // A replay writes no second audit record and emits no event. Empty means no deduplication. In a
+    // <code>TransferCallsRequest</code> each entry carries its own key.
+    string request_id = 8;
 
 }
 
@@ -1698,10 +2448,15 @@ message TransferCallResponse {
     // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     string call_name = 2;
 
-    // transfer id to transfer the calls to, so the phone number or voip number you want to be transferred too
+    // The legacy raw target of the request (<code>TransferCallRequest.transfer_id</code>), echoed; empty for a
+    // typed <code>target</code> (see <code>resolved_target</code>)
     string transfer_id = 3;
 
-    // error message if you have any so if it's unhealthy
+    // Empty unless the transfer failed. <code>TransferCall</code> reports a refusal before any side effect as a gRPC
+    // status and a telephony outcome in <code>outcome</code> / <code>error_reason</code>, so it is empty there. In an
+    // entry of <code>TransferCallsResponse</code> it is the error of an entry <code>TransferCall</code> would have
+    // refused with a gRPC status, prefixed with the name of that status code, e.g.
+    // <code>FAILED_PRECONDITION: reason=call-not-connected</code>.
     string error_message = 4;
 
     // Outcome of the transfer
@@ -1820,6 +2575,43 @@ enum ParticipantState {
     PARTICIPANT_STATE_LEFT = 4;
 }
 
+// <p>Why an invited participant failed or left: the typed form of <code>CallParticipant.end_reason</code>, one value
+// per string that field documents. New values may be added; a client that meets a value it does not know reads
+// <code>CallParticipant.end_reason</code> instead.</p>
+enum ParticipantEndReason {
+
+    // No end reason: the participant is still ringing or joined, or its end reason is a string this enum has no
+    // value for (read <code>CallParticipant.end_reason</code> then)
+    PARTICIPANT_END_REASON_UNSPECIFIED = 0;
+
+    // <code>NOANSWER</code>: the softphone rang until <code>ring_timeout_s</code> without being answered
+    PARTICIPANT_END_REASON_NO_ANSWER = 1;
+
+    // <code>BUSY</code>: the softphone answered busy
+    PARTICIPANT_END_REASON_BUSY = 2;
+
+    // <code>CHANUNAVAIL</code>: the softphone could not be reached (not registered, unreachable contact)
+    PARTICIPANT_END_REASON_CHANNEL_UNAVAILABLE = 3;
+
+    // <code>CALL_ENDED</code>: the call (the bot&apos;s leg) ended, which hangs up every participant
+    PARTICIPANT_END_REASON_CALL_ENDED = 4;
+
+    // <code>REMOVED</code>: <code>RemoveCallParticipant</code> hung the participant up
+    PARTICIPANT_END_REASON_REMOVED = 5;
+
+    // <code>HANGUP</code>: the participant hung up
+    PARTICIPANT_END_REASON_HANGUP = 6;
+
+    // <code>HANDED_OVER</code>: the participant took the call over from the bot (a WARM <code>TransferCall</code>)
+    PARTICIPANT_END_REASON_HANDED_OVER = 7;
+
+    // <code>JOIN_FAILED</code>: the participant answered but could not be joined into the call
+    PARTICIPANT_END_REASON_JOIN_FAILED = 8;
+
+    // <code>TIMEOUT</code>: the server gave up waiting for the participant&apos;s state
+    PARTICIPANT_END_REASON_TIMEOUT = 9;
+}
+
 // <p>A participant invited into a call</p>
 message CallParticipant {
 
@@ -1847,7 +2639,8 @@ message CallParticipant {
 
     // Why the participant failed or left: <code>NOANSWER</code>, <code>BUSY</code>, <code>CHANUNAVAIL</code>,
     // <code>CALL_ENDED</code>, <code>REMOVED</code>, <code>HANGUP</code>, <code>HANDED_OVER</code>,
-    // <code>JOIN_FAILED</code> or <code>TIMEOUT</code>
+    // <code>JOIN_FAILED</code> or <code>TIMEOUT</code>; empty while ringing or joined. Kept for clients built before
+    // <code>end_reason_type</code> existed; both are always set together.
     string end_reason = 8;
 
     // Identity of who invited the participant (audit)
@@ -1855,6 +2648,12 @@ message CallParticipant {
 
     // Bot policy applied while this participant is ringing or joined
     BotPolicyOnJoin bot_policy = 10;
+
+    // Output only. The typed form of <code>end_reason</code>: <code>PARTICIPANT_END_REASON_UNSPECIFIED</code> while
+    // ringing or joined, otherwise the value of the string in <code>end_reason</code> (e.g. <code>NOANSWER</code> is
+    // <code>PARTICIPANT_END_REASON_NO_ANSWER</code>). A 9.0.0 server leaves it unset; read <code>end_reason</code>
+    // then.
+    ParticipantEndReason end_reason_type = 11;
 }
 
 // <p>Request to invite a softphone account into a call</p>
@@ -1886,8 +2685,12 @@ message InviteToCallRequest {
     // <code>ONDEWO &lt;listener or caller name&gt;</code>
     string caller_id_display_name = 7;
 
-    // Optional idempotency key: a repeated request with the same <code>call_name</code> and <code>request_id</code>
-    // returns the participant of the first request instead of inviting again
+    // Optional idempotency key: 1 to 255 visible ASCII characters, scoped to <code>call_name</code>. A repeated
+    // request with the same <code>call_name</code> and <code>request_id</code> returns the participant of the first
+    // request (in its CURRENT state) instead of inviting again, for as long as the call record exists. The same key
+    // with a different <code>softphone_account_name</code> or <code>mode</code> is refused with
+    // <code>INVALID_ARGUMENT</code> and <code>reason=request-id-conflict</code>. Empty means no deduplication (the
+    // server generates a key of its own).
     string request_id = 8;
 }
 
@@ -1903,7 +2706,8 @@ message InviteToCallResponse {
     // The invited participant
     CallParticipant participant = 3;
 
-    // error message if you have any
+    // Always empty: errors are reported as gRPC status codes with <code>reason=&lt;token&gt;</code> in the details.
+    // Kept for wire compatibility.
     string error_message = 4;
 }
 
@@ -1916,7 +2720,9 @@ message RemoveCallParticipantRequest {
     // Name of the call
     string call_name = 2;
 
-    // Identifier of the participant (<code>CallParticipant.participant_id</code>)
+    // Identifier of the participant (<code>CallParticipant.participant_id</code>). It must be a participant of
+    // <code>call_name</code>: an unknown identifier, or one of another call, is <code>NOT_FOUND</code> with
+    // <code>reason=participant-not-found</code>.
     string participant_id = 3;
 }
 
@@ -1932,7 +2738,8 @@ message RemoveCallParticipantResponse {
     // The participant after the request
     CallParticipant participant = 3;
 
-    // error message if you have any
+    // Always empty: errors are reported as gRPC status codes with <code>reason=&lt;token&gt;</code> in the details.
+    // Kept for wire compatibility.
     string error_message = 4;
 }
 
@@ -1945,10 +2752,18 @@ message SetCallMediaControlRequest {
     // Name of the connected call
     string call_name = 2;
 
-    // <code>CALL_MEDIA_SETTING_OFF</code> mutes the bot, <code>CALL_MEDIA_SETTING_ON</code> lets it speak again
+    // <code>CALL_MEDIA_SETTING_OFF</code> mutes the bot, <code>CALL_MEDIA_SETTING_ON</code> lets it speak again,
+    // <code>CALL_MEDIA_SETTING_UNCHANGED</code> (the zero value) leaves it as it is.
+    // <p>Both <code>bot_voice</code> and <code>bot_listening</code> <code>UNCHANGED</code> is a valid READ of the
+    // call&apos;s current media control state: nothing is sent to the call, the response carries the effective
+    // <code>state</code> with <code>changed = false</code>, and no audit record and no event are written. The
+    // call must still be connected and controllable (the same refusals as a change apply). A 9.0.0 server refuses
+    // it with <code>INVALID_ARGUMENT</code>; <code>Call.media_control</code> (<code>GetCall</code>) reads the same
+    // state from any server.</p>
     CallMediaSetting bot_voice = 3;
 
-    // <code>CALL_MEDIA_SETTING_OFF</code> stops the bot listening, <code>CALL_MEDIA_SETTING_ON</code> resumes it
+    // <code>CALL_MEDIA_SETTING_OFF</code> stops the bot listening, <code>CALL_MEDIA_SETTING_ON</code> resumes it,
+    // <code>CALL_MEDIA_SETTING_UNCHANGED</code> (the zero value) leaves it as it is.
     CallMediaSetting bot_listening = 4;
 }
 
@@ -1964,10 +2779,12 @@ message SetCallMediaControlResponse {
     // Effective media control state after the request
     CallMediaControlState state = 3;
 
-    // <code>true</code> if the effective state changed
+    // <code>true</code> if the effective state changed; <code>false</code> for a repeat of the current level and for
+    // a read (both settings <code>UNCHANGED</code>)
     bool changed = 4;
 
-    // error message if you have any
+    // Always empty: errors are reported as gRPC status codes with <code>reason=&lt;token&gt;</code> in the details.
+    // Kept for wire compatibility.
     string error_message = 5;
 }
 
@@ -2137,7 +2954,10 @@ message TransferCallsRequest{
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
-    // Responses to transfer multiple calls to a phone number or voip number
+    // The transfers, 1 to 1000, applied one by one and each like <code>TransferCall</code> (not atomic: a failed
+    // entry does not stop the others). An entry with an empty <code>vtsi_project_name</code> takes this
+    // request&apos;s; an entry naming another project, or a call of another project, fails on its own (its
+    // <code>error_message</code>). Each entry may carry its own <code>request_id</code>.
     repeated TransferCallRequest transfer_call_requests = 2;
 
 }
@@ -2148,18 +2968,23 @@ message TransferCallsResponse {
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
-    // The responses for each transfer call request
+    // One entry per entry of the request, in request order: the outcome of that transfer, or its
+    // <code>error_message</code>
     repeated TransferCallResponse transfer_call_responses = 2;
 
-    // overall error message if you have any so if it's unhealthy
+    // A summary when at least one entry failed (e.g. <code>Errors occurred during the transfer of 2 out of 5
+    // calls.</code>), empty when no entry carries an <code>error_message</code>. Telephony outcomes are read from
+    // each entry&apos;s <code>outcome</code>.
     string error_message = 3;
 
 }
 
-// Request to get a call instance&apos;s call logs
+// Request to get a call
 message GetCallRequest {
 
-    // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // VTSI project of the call, of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // Required. Redundant with the project segment of <code>call_name</code>, by the rule of
+    // <code>GetCallerRequest.vtsi_project_name</code>.
     string vtsi_project_name = 1;
 
     // call name
@@ -2167,7 +2992,7 @@ message GetCallRequest {
     // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     string call_name = 2;
 
-    // you can specify the view to be shallow or full .. see above for more info
+    // Optional. How much of the call to populate; see <code>CallView</code>. Unset means <code>SHALLOW</code>.
     optional CallView call_view = 3;
 
     // Optional. Partial response: the field paths to populate in the returned <code>Call</code>, relative to the
@@ -2181,7 +3006,11 @@ message GetCallRequest {
     google.protobuf.FieldMask field_mask = 4;
 }
 
-// Call view options
+// How much of a <code>Call</code>, <code>Caller</code>, <code>Listener</code> or <code>ScheduledCaller</code> a read
+// RPC populates. The <code>call_view</code> fields that take it are <code>optional</code>, so an unset view can be
+// told apart from <code>MINIMUM</code>; each request documents what an unset view means. Quirk kept for wire
+// compatibility: the zero value is <code>MINIMUM</code>, not an <code>*_UNSPECIFIED</code> sentinel, so a client
+// that SETS the field to its zero value asks for the minimum view.
 enum CallView {
 
     // Gives only minimum info about the call
@@ -2194,24 +3023,29 @@ enum CallView {
     FULL = 2;
 }
 
-// Call view options
+// Whether a call is active (set up or connected) or not, as a filter value of <code>CallFilter.call_status</code>.
 enum CallStatus {
 
-    // Unspecified call status
+    // Unspecified call status: does not filter
     CALL_STATUS_UNSPECIFIED = 0;
 
-    // Call is active
+    // Call is active (<code>Call.active</code> is true)
     CALL_STATUS_ACTIVE = 1;
 
-    // Call is inactive
+    // Call is inactive (<code>Call.active</code> is false): ended, or the waiting call of a persistent listener or
+    // pooled caller
     CALL_STATUS_INACTIVE = 2;
 }
 
 
-// CallType
+// The kind of resource a call, a status or a statistics bucket belongs to.
+// <p>Quirk kept for wire compatibility: the zero value is <code>BOTH</code>, not an <code>*_UNSPECIFIED</code>
+// sentinel. It is never the type of a stored call: <code>Call.call_type</code> is <code>LISTENER</code>,
+// <code>CALLER</code> or, for a call placed by a scheduled caller, <code>SCHEDULED_CALLER</code>. In
+// <code>CallFilter.call_types</code> an empty list, or a list holding <code>BOTH</code>, matches every call.</p>
 enum CallType {
 
-    // Both listener and caller
+    // Both listener and caller: the zero value, used only as "any type" in a filter; never a stored call&apos;s type
     BOTH = 0;
 
     // Listener
@@ -2224,7 +3058,9 @@ enum CallType {
     SCHEDULED_CALLER = 3;
 }
 
-// Call
+// A call of a listener or caller: one record per call, kept after the call ended. Every field is output only
+// except <code>labels</code> (see <code>UpdateCall</code>). The WAITING record of a persistent listener or pooled
+// caller (status <code>NO_ONGOING_CALL</code>, not active, no start time) is a <code>Call</code> too.
 message Call {
 
     // call name
@@ -2232,25 +3068,29 @@ message Call {
     // For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre>
     string name = 1;
 
-    // sip account used
+    // The SIP account (on the project&apos;s Asterisk) the call&apos;s container registered with, e.g.
+    // <code>ondewo0007</code>
     string sip_account = 2;
 
-    // container name which you get from docker ps
+    // Name of the call&apos;s ondewo-sip container, as <code>docker ps</code> shows it
     string container_name = 3;
 
-    // Listener or caller enum .. if not specified
+    // <code>LISTENER</code>, <code>CALLER</code> or <code>SCHEDULED_CALLER</code>; never <code>BOTH</code> (see
+    // <code>CallType</code>)
     CallType call_type = 4;
 
-    // callee voip id or callee phone number
+    // The callee (outbound call) or the calling party (inbound call): a phone number or a VoIP id, as dialled or
+    // as received
     string phone_number = 5;
 
-    // start time of log
+    // When the call started (the SIP call was set up); unset for the waiting record of a persistent listener or
+    // pooled caller
     google.protobuf.Timestamp start_time = 6;
 
-    // end time of log
+    // When the call ended; unset while the call is active
     google.protobuf.Timestamp end_time = 7;
 
-    // current sip status type
+    // The call&apos;s current SIP status type, or its last one once the call ended
     ondewo.sip.SipStatus.StatusType sip_status_type = 8;
 
     // current sip status
@@ -2262,19 +3102,19 @@ message Call {
     // All container health statuses
     optional AllServicesStatuses services_statuses = 11;
 
-    // Is a call active or not
+    // Whether the call is active, i.e. set up or connected
     bool active = 12;
 
-    // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // VTSI project of the call, of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 13;
 
     // Detailed configuration of the services used for the call such as S2T, T2S, NLU, SIP and CSI
     optional CommonServicesConfig common_services_config = 14;
 
-    // SIP port of the call
+    // Port (1 to 65535) of the gRPC server of the call&apos;s ondewo-sip container
     optional int32 sip_port = 15;
 
-    // CSI port of the call
+    // Port (1 to 65535) of the gRPC server of the call&apos;s CSI (speech-to-speech) process
     optional int32 csi_port = 16;
 
     // NLU session name
@@ -2308,7 +3148,11 @@ message Call {
     // Set in the SHALLOW and FULL views
     CallMediaControlState media_control = 22;
 
-    // Participants invited into the call. FULL view: all of them; SHALLOW view: those still ringing or joined
+    // Participants invited into the call (<code>InviteToCall</code>), oldest invitation first. FULL view: all of
+    // them, including those that FAILED or LEFT; SHALLOW view: only those still RINGING or JOINED; MINIMUM view:
+    // none. So the complete participant history of a call is read with <code>GetCall</code>,
+    // <code>call_view = FULL</code> (and <code>field_mask = participants</code> to read nothing else). Participants
+    // are kept as long as the call record.
     repeated CallParticipant participants = 23;
 
     // The last transfer attempt of the call; unset if there was none. Set in the SHALLOW and FULL views
@@ -2324,8 +3168,9 @@ message Call {
     // <code>UpdateCall</code> / <code>UpdateCalls</code> with the <code>update_mask</code> path
     // <code>labels</code>, which REPLACES the whole map (an empty map clears it); a path below it (e.g.
     // <code>labels.ticket</code>) is rejected. Bounds, each refused with <code>INVALID_ARGUMENT</code> naming
-    // the label: at most 64 entries; a key of 1 to 63 characters from <code>[a-z0-9_.-]</code>, starting with a
-    // lowercase letter; a value of at most 255 printable characters (Unicode allowed, no control characters).
+    // the label: at most 64 entries; a key of 1 to 63 characters of <pre><code>[a-z0-9_.-]</code></pre>, starting
+    // with a letter; a value of at most 256 characters. These are exactly the bounds of
+    // <code>SoftphoneAccount.labels</code>.
     // Stored with the call record, so they survive the end of the call and are kept as long as the record.
     // The waiting call of a persistent listener or pooled caller (status <code>NO_ONGOING_CALL</code>, not
     // active) cannot be labelled: <code>FAILED_PRECONDITION</code> with <code>reason=call-not-started</code>.
@@ -2335,64 +3180,87 @@ message Call {
 
 }
 
-// Definition of a CallFilter, representing filters for querying calls.
+// Narrows a set of calls of one project: the calls <code>ListCalls</code> lists, <code>GetCallStatistics</code>
+// counts and <code>StopAllCalls</code> stops. Every field is optional; an unset field, or an empty repeated field
+// or map, does not filter. Fields are combined with AND, the values within one repeated field with OR (except
+// <code>caller_names</code> and <code>listener_names</code>, which are OR-ed with each other), and the entries
+// of <code>labels</code> with AND. The project is the enclosing request&apos;s <code>vtsi_project_name</code>.
+// An invalid value is rejected with <code>INVALID_ARGUMENT</code> naming the field, before anything is read or
+// stopped.
 message CallFilter {
 
-    // Optional: Filter by call names.
+    // Optional: Filter by call names (<code>Call.name</code>), exact match.
     repeated string call_names = 1;
 
-    // Optional: Filter by NLU session names.
+    // Optional: Filter by NLU session names (<code>Call.nlu_session_name</code>), exact match.
     repeated string nlu_session_names = 2;
 
-    // Optional: Filter by SIP accounts.
+    // Optional: Filter by SIP accounts (<code>Call.sip_account</code>), exact match.
     repeated string sip_accounts = 3;
 
-    // Optional: Filter by phone numbers.
+    // Optional: Filter by phone numbers (<code>Call.phone_number</code>), exact match as stored (no
+    // normalisation: <code>+43...</code> and <code>0043...</code> are different values).
     repeated string phone_numbers = 4;
 
-    // Optional: Filter by container names.
+    // Optional: Filter by container names (<code>Call.container_name</code>), exact match.
     repeated string container_names = 5;
 
-    // Optional: Filter by SIP ports.
-    repeated string sip_ports = 6;
+    // Deprecated: use <code>sip_port_numbers</code>. Filter by SIP ports given as decimal strings, e.g.
+    // <code>"5060"</code>; a value that is not a decimal integer is <code>INVALID_ARGUMENT</code>. Still honoured,
+    // OR-ed with <code>sip_port_numbers</code>.
+    repeated string sip_ports = 6 [deprecated = true];
 
-    // Optional: Filter by CSI ports.
-    repeated string csi_ports = 7;
+    // Deprecated: use <code>csi_port_numbers</code>. Filter by CSI ports given as decimal strings, with the rules of
+    // <code>sip_ports</code>. Still honoured, OR-ed with <code>csi_port_numbers</code>.
+    repeated string csi_ports = 7 [deprecated = true];
 
-    // Optional: Filter by call types (both by default, or only listeners, or only callers).
+    // Optional: Filter by call types (<code>Call.call_type</code>). Empty, or a list containing <code>BOTH</code>,
+    // matches every type.
     repeated CallType call_types = 8;
 
-    // Optional: Filter based on SIP status types.
+    // Optional: Filter by the call&apos;s current or last SIP status type (<code>Call.sip_status_type</code>).
     repeated ondewo.sip.SipStatus.StatusType sip_status_types = 9;
 
-    // Optional: Filter based on active or inactive calls.
+    // Optional: Only active (<code>CALL_STATUS_ACTIVE</code>) or only inactive (<code>CALL_STATUS_INACTIVE</code>)
+    // calls. Unset or <code>CALL_STATUS_UNSPECIFIED</code> does not filter.
     optional CallStatus call_status = 10;
 
-    // Optional: Start time of the log.
+    // Optional: Only calls that STARTED at or after this instant: <code>Call.start_time &gt;= start_time</code>
+    // (inclusive). Calls without a start time (the waiting call of a persistent listener or pooled caller) never
+    // match while it is set. Unset, or the zero timestamp, does not filter.
+    // <p>The window is on two different instants, the start and the end of the call; it is NOT an overlap test.
+    // With both bounds set a call matches when it started at or after <code>start_time</code> AND ended at or
+    // before <code>end_time</code>, i.e. it lies entirely inside the window. To find the calls that were running
+    // at some instant, use <code>call_status</code> and the duration bounds instead.</p>
     optional google.protobuf.Timestamp start_time = 11;
 
-    // Optional: End time of the log.
+    // Optional: Only calls that ENDED at or before this instant: <code>Call.end_time &lt;= end_time</code>
+    // (inclusive). An active call has no end time and therefore never matches while it is set. Unset, or the zero
+    // timestamp, does not filter. See <code>start_time</code> for the window semantics.
     optional google.protobuf.Timestamp end_time = 12;
 
-    // Optional: Match only sessions for which the duration in seconds is larger or equal.
+    // Optional: Match only calls whose duration in seconds is larger than or equal to this value (inclusive). The
+    // duration is <code>end_time - start_time</code>, and for an active call the time since its start, so an active
+    // call can match. <code>0</code> does not filter, so the explicit value 0 is the same as unset.
     optional float duration_in_s_min = 13;
 
-    // Optional: Match only calls for which the duration in seconds is smaller or equal.
+    // Optional: Match only calls whose duration in seconds is smaller than or equal to this value (inclusive),
+    // computed as for <code>duration_in_s_min</code>. <code>0</code> does not filter.
     optional float duration_in_s_max = 14;
 
-    // Optional: Platform responses sent to the user. Default is text: <code>Platform.PLATFORM_UNSPECIFIED</code>
+    // Optional: Filter by the NLU message platform of the call (<code>Call.platforms</code>), e.g.
+    // <code>Platform.PLATFORM_UNSPECIFIED</code> (the default platform: text).
     repeated ondewo.nlu.Intent.Message.Platform platforms = 15;
 
     // Optional: Only the calls of one campaign, i.e. the calls placed by the attempts of its campaign calls
     // (<code>CampaignCallAttempt.call_name</code>), whichever way the campaign call was added. An attempt
     // whose start failed placed no call and contributes none. Combined with the other filters by AND (a
     // campaign&apos;s calls are all <code>CALLER</code> calls). Neither set means any call, as before 9.1.0.
-    // Resolved within <code>ListCallsRequest.vtsi_project_name</code>. The <code>page_token</code> carries only a
-    // position and a page size (its documented format) and is not bound to the selector: keep the selector
-    // unchanged while paging, since a token sent with another selector (or none) is not rejected and returns the
-    // page at that position of THAT listing.
+    // Resolved within the request&apos;s <code>vtsi_project_name</code>. Like every field of the filter, it is part
+    // of the paging contract of <code>ListCalls</code>: a <code>page_token</code> sent with another selector (or
+    // none) is rejected with <code>INVALID_ARGUMENT</code>.
     // <p>Errors: <code>INVALID_ARGUMENT</code> for a malformed <code>campaign_name</code>, a campaign of another
-    // project than <code>ListCallsRequest.vtsi_project_name</code>, or an empty
+    // project than the request&apos;s <code>vtsi_project_name</code>, or an empty
     // <code>campaign_display_name</code> sent as the set member; <code>NOT_FOUND</code> for an unknown
     // campaign.</p>
     oneof campaign {
@@ -2402,10 +3270,73 @@ message CallFilter {
         string campaign_name = 16;
 
         // Exact, case-sensitive <code>display_name</code> of the campaign, resolved within
-        // <code>ListCallsRequest.vtsi_project_name</code>.
+        // the request&apos;s <code>vtsi_project_name</code>.
         string campaign_display_name = 17;
     }
 
+    // Optional: Only calls carrying every one of these labels (<code>Call.labels</code>). An entry with an empty
+    // value matches on the presence of the key alone; otherwise the value must match exactly (case-sensitive).
+    // Keys must satisfy the key bounds of <code>Call.labels</code> and at most 64 entries are accepted, otherwise
+    // <code>INVALID_ARGUMENT</code> naming the key. Same semantics as <code>SoftphoneAccountFilter.labels</code>.
+    map<string, string> labels = 18;
+
+    // Optional: Only calls placed by one of these callers (the calls whose <code>name</code> lies below one of
+    // them). Each entry is a caller resource name of the request&apos;s project,
+    // <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>; a malformed name or a
+    // caller of another project is <code>INVALID_ARGUMENT</code>, while a well-formed name that names no caller
+    // (also a deleted one) simply matches no call. Combined with <code>listener_names</code> by OR: a call matches
+    // when it belongs to one of the named callers or one of the named listeners. Both empty does not filter.
+    repeated string caller_names = 19;
+
+    // Optional: Only calls taken by one of these listeners, with the rules of <code>caller_names</code> (OR-ed with
+    // it). Each entry is of the form
+    // <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>
+    repeated string listener_names = 20;
+
+    // Optional: Only calls whose <code>Call.redial_recommended</code> equals this value. Unset does not filter.
+    // <code>false</code> matches only calls whose field is SET to false (AMD ended the call with a voice message
+    // left, or on a fax); calls on which AMD did not decide, i.e. whose field is unset, match neither value.
+    optional bool redial_recommended = 21;
+
+    // Optional: Only calls whose last transfer attempt (<code>Call.last_transfer.outcome</code>) had one of these
+    // outcomes. <code>TRANSFER_OUTCOME_UNSPECIFIED</code> in the list matches the calls without any transfer
+    // attempt. Empty does not filter.
+    repeated TransferOutcome transfer_outcomes = 22;
+
+    // Optional: Filter by SIP ports (<code>Call.sip_port</code>), 1 to 65535 each, otherwise
+    // <code>INVALID_ARGUMENT</code>. Replaces the deprecated string field <code>sip_ports</code>; when both are set
+    // their values are combined (OR).
+    repeated int32 sip_port_numbers = 23;
+
+    // Optional: Filter by CSI ports (<code>Call.csi_port</code>), 1 to 65535 each, otherwise
+    // <code>INVALID_ARGUMENT</code>. Replaces the deprecated string field <code>csi_ports</code>; when both are set
+    // their values are combined (OR).
+    repeated int32 csi_port_numbers = 24;
+
+}
+
+// Sorting of a <code>ListCalls</code> listing.
+message CallSorting {
+
+    // The field by which calls are sorted.
+    enum CallSortingField {
+
+        // The default order of <code>ListCalls</code> (see <code>ListCallsResponse.calls</code>): by
+        // <code>start_time</code>, ascending. <code>sorting_mode</code> is ignored.
+        NO_CALL_SORTING = 0;
+
+        // Sort by <code>Call.start_time</code>. Calls without a start time (the waiting call of a persistent listener
+        // or pooled caller) come last in either mode.
+        SORT_CALL_BY_START_TIME = 1;
+    }
+
+    // The sorting field. Unset means <code>NO_CALL_SORTING</code>.
+    CallSortingField sorting_field = 1;
+
+    // The sorting mode: <code>ASCENDING</code> (the zero value, oldest first) or <code>DESCENDING</code> (newest
+    // first). Calls with the same value are ordered by their uuid (the last segment of <code>name</code>),
+    // ascending, in either mode, so the order is stable across pages.
+    VtsiProjectSortingMode sorting_mode = 2;
 }
 
 
@@ -2415,14 +3346,18 @@ message ListCallsRequest{
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
-    // you can specify the view to be shallow or full .. see above for more info
+    // Optional. How much of each call to populate; see <code>CallView</code>. Unset means
+    // <code>SHALLOW</code>.
     optional CallView call_view = 2;
 
-    // Optional. A filter to narrow the response down to sessions of interest.
+    // Optional. A filter to narrow the response down to calls of interest; see <code>CallFilter</code>. Unset or
+    // empty lists every call of the project.
     optional CallFilter call_filter = 3;
 
-    // Optional. The next_page_token value returned from a previous list request.
-    // Example: "current_index-1--page_size-20"
+    // Optional. The <code>next_page_token</code> of a previous response. Opaque: its content is not part of the
+    // API. Valid only with the same <code>vtsi_project_name</code>, <code>call_filter</code> and
+    // <code>call_sorting</code>; a token issued for another listing is rejected with <code>INVALID_ARGUMENT</code>.
+    // <code>page_size</code>, <code>call_view</code> and <code>field_mask</code> may change between pages.
     optional string page_token = 4;
 
     // Optional. Partial response: the field paths to populate in every returned <code>Call</code>, relative
@@ -2436,18 +3371,31 @@ message ListCallsRequest{
     // <code>page_token</code> stays valid with another mask.
     google.protobuf.FieldMask field_mask = 5;
 
+    // Optional. Maximum number of calls per page. <code>0</code> means the server default of 25; values above
+    // 1000 are clamped to 1000; negative values are rejected with <code>INVALID_ARGUMENT</code>. May differ between
+    // the pages of one listing.
+    int32 page_size = 6;
+
+    // Optional. Sorting of the listing. Unset keeps the default order (see <code>ListCallsResponse.calls</code>).
+    CallSorting call_sorting = 7;
+
 }
 
-// Response to list all VoipInfos
+// Response to list the calls of a project
 message ListCallsResponse{
 
-    // The list of calls returned in the response
+    // The calls of this page, in the order <code>call_sorting</code> asked for. The default order (no
+    // <code>call_sorting</code>, or <code>NO_CALL_SORTING</code>) is by <code>start_time</code>, oldest first,
+    // calls without a start time (the waiting call of a persistent listener or pooled caller) last, and calls with
+    // the same start time by their uuid (the last segment of <code>name</code>), ascending.
     repeated Call calls = 1;
 
-    // Token to retrieve the next page of results.
-    // This field is a string that holds a token for fetching the next page of results.
-    // If there are no more results in the list, this field will be empty.
+    // Token to retrieve the next page of results. Opaque. Empty when there are no more results.
     string next_page_token = 2;
+
+    // The number of calls the request matches across all pages (its filter, not <code>page_size</code>), counted
+    // exactly when this page was read. It can change between the pages of one listing as calls are created.
+    int32 total_size = 3;
 
 }
 
@@ -2535,6 +3483,115 @@ message UpdateCallsResponse {
     string error_message = 3;
 }
 
+// The request message for <a href="index.html#ondewo.vtsi.Calls.GetCallStatistics">Calls.GetCallStatistics</a>.
+message GetCallStatisticsRequest {
+
+    // VTSI project whose calls are counted.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Optional. Counts only the calls this filter matches, with exactly the semantics, validation and errors of
+    // <code>ListCallsRequest.call_filter</code> (the campaign selector included). Unset or empty counts every call
+    // of the project that <code>ListCalls</code> would list, the waiting call of a persistent listener or pooled
+    // caller included.
+    CallFilter call_filter = 2;
+}
+
+// Number of calls with one SIP status type, an entry of <code>CallStatistics.sip_status_type_counts</code>.
+message SipStatusTypeCount {
+
+    // The SIP status type (<code>Call.sip_status_type</code>, the call&apos;s current or last status).
+    ondewo.sip.SipStatus.StatusType sip_status_type = 1;
+
+    // Number of matching calls whose <code>Call.sip_status_type</code> is <code>sip_status_type</code>.
+    int32 count = 2;
+}
+
+// Number of calls of one type, an entry of <code>CallStatistics.call_type_counts</code>.
+message CallTypeCount {
+
+    // <code>LISTENER</code>, <code>CALLER</code> or <code>SCHEDULED_CALLER</code>; never <code>BOTH</code>, which
+    // is not the type of a stored call.
+    CallType call_type = 1;
+
+    // Number of matching calls of that type.
+    int32 count = 2;
+}
+
+// Number of calls with one answering machine detection verdict, an entry of
+// <code>CallStatistics.amd_verdict_counts</code>.
+message AmdVerdictCount {
+
+    // The verdict, read from <code>Call.sip_status.amd_result.verdict</code>.
+    ondewo.sip.AnsweringMachineDetectionResult.Verdict verdict = 1;
+
+    // Number of matching calls with that verdict.
+    int32 count = 2;
+}
+
+// Number of calls whose last transfer attempt had one outcome, an entry of
+// <code>CallStatistics.transfer_outcome_counts</code>.
+message TransferOutcomeCount {
+
+    // The outcome of the call&apos;s last transfer attempt (<code>Call.last_transfer.outcome</code>).
+    TransferOutcome outcome = 1;
+
+    // Number of matching calls whose last transfer attempt had that outcome.
+    int32 count = 2;
+}
+
+// Aggregate figures over the calls of a project that a <code>CallFilter</code> matches, as returned by
+// <a href="index.html#ondewo.vtsi.Calls.GetCallStatistics">Calls.GetCallStatistics</a>.
+// <p>Every figure is computed in ONE read of the call records, so the figures are consistent with each other at
+// the moment of that read (e.g. the entries of <code>sip_status_type_counts</code> add up to <code>total</code>).
+// Every <code>*_counts</code> list holds one entry per value that occurs at least once (a value with count 0 is
+// left out), ordered by the enum number, ascending.</p>
+message CallStatistics {
+
+    // VTSI project of the request.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Number of matching calls: the <code>total_size</code> a <code>ListCalls</code> with the same filter would
+    // report at the same moment.
+    int32 total = 2;
+
+    // Number of matching calls that are active (<code>Call.active</code>).
+    int32 active = 3;
+
+    // Matching calls by their current or last SIP status type. The counts add up to <code>total</code>.
+    repeated SipStatusTypeCount sip_status_type_counts = 4;
+
+    // Matching calls by type (<code>LISTENER</code>, <code>CALLER</code>, <code>SCHEDULED_CALLER</code>). The
+    // counts add up to
+    // <code>total</code>.
+    repeated CallTypeCount call_type_counts = 5;
+
+    // Number of matching calls that have a duration, i.e. that started and ended (<code>start_time</code> and
+    // <code>end_time</code> both set). Active calls and the waiting call of a persistent listener or pooled caller
+    // have none. The denominator of <code>average_duration_s</code>.
+    int32 ended_calls = 6;
+
+    // Sum of the durations (<code>end_time - start_time</code>) of the <code>ended_calls</code>, in seconds.
+    double total_duration_s = 7;
+
+    // <code>total_duration_s / ended_calls</code>, in seconds; <code>0</code> when <code>ended_calls</code> is 0.
+    double average_duration_s = 8;
+
+    // Number of matching calls with <code>Call.redial_recommended</code> = true.
+    int32 redial_recommended = 9;
+
+    // Matching calls by the verdict of their answering machine detection
+    // (<code>Call.sip_status.amd_result.verdict</code>). Calls without an AMD result are not counted here, so the
+    // counts add up to the number of calls that carry one.
+    repeated AmdVerdictCount amd_verdict_counts = 10;
+
+    // Matching calls by the outcome of their last transfer attempt (<code>Call.last_transfer.outcome</code>).
+    // Calls without a transfer attempt are not counted here, so the counts add up to the number of calls that
+    // carry one.
+    repeated TransferOutcomeCount transfer_outcome_counts = 11;
+}
+
 // Status of ondewo-sip instance
 message AllServicesStatuses {
 
@@ -2557,10 +3614,10 @@ message AllServicesStatuses {
 // Status of service
 message ServiceStatus {
 
-    // health status
+    // Whether the service answered its health check
     bool healthy = 1;
 
-    // error messages if you have any so if it's unhealthy
+    // Why the service is unhealthy; empty when <code>healthy</code> is true
     string error_message = 2;
 }
 

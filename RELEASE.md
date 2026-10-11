@@ -30,33 +30,72 @@
   Where the old and the new member share the name `display_name` only the number can be reserved; JSON
   clients note that `displayName` changes from an object to a string there.
 
+### Behaviour changes
+
+Server behaviour of 9.1.0 that an existing 9.0.0 client can observe without sending any new field (old -> new):
+
+#### Calls
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **`SetCallMediaControl` with both settings
+  `CALL_MEDIA_SETTING_UNCHANGED`:** `INVALID_ARGUMENT` -> a read of the current media control state
+  (`changed = false`, no audit record, no event).
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Batch entry `error_message`:** free text ->
+  prefixed with the name of the gRPC status code the single RPC would have answered (e.g. `NOT_FOUND: ...`), in
+  `StopCallers`, `StopListeners`, `DeleteCallers`, `DeleteListeners`, `StopCalls` and `TransferCalls`; the
+  batch-level `error_message` is a summary.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Order of the `Stop*` / `Delete*` batch
+  entries:** unspecified -> request order (`StopCallers`, `StopListeners`, `DeleteCallers`, `DeleteListeners`:
+  one entry per distinct name; `StopCalls`: one entry per distinct requested name).
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Page tokens of `ListCallers`,
+  `ListListeners`, `ListScheduledCallers` and `ListCalls`:** a documented position format, accepted with any
+  filter -> OPAQUE and bound to the `vtsi_project_name` and the filters / selectors / sorting of the listing; a
+  token issued for another listing is `INVALID_ARGUMENT`. `page_size`, `call_view` and `field_mask` may still
+  change between pages. The four responses now report `total_size`, the exact number of matches across all
+  pages. The default `page_size` is unchanged (25; at most 1000; negative is `INVALID_ARGUMENT`).
+
+#### Events
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Concurrent changes of the same event
+  subscription or webhook:** not detected -> the change that lost the race is refused with `ABORTED`,
+  nothing written (retry).
+
+#### Projects
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Unknown project:** `FAILED_PRECONDITION` ->
+  `NOT_FOUND` (with authorization enforced, a caller without a role on the project, an unknown one included,
+  receives `PERMISSION_DENIED`, so the answer does not reveal whether the project exists).
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **`CreateVtsiProject` naming a project that
+  exists:** `FAILED_PRECONDITION` -> `ALREADY_EXISTS`.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **`DeployVtsiProject` on a `DEPLOYED`
+  project:** `INVALID_ARGUMENT` -> idempotent success (nothing is restarted); a deploy arriving while another
+  deploy of the project runs waits for it and then finds the project `DEPLOYED`.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Project lifecycle lock timeout** (another
+  create, update, deploy, undeploy or delete of the same project held it too long): `INTERNAL` -> `ABORTED`.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **A failed `DeployVtsiProject`:** the project
+  ends `UNDEPLOYED` -> it ends in the new status `DEPLOY_FAILED` (value `8`), with the reason in
+  `VtsiProject.status_message`. `DEPLOY_FAILED` behaves like `UNDEPLOYED` (deploy again, update, delete);
+  undeploying it makes it `UNDEPLOYED`. A client built against 9.0.0 sees value `8` as an unknown enum value.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Page tokens of `ListVtsiProjects`:**
+  documented as OPAQUE (never construct or parse one). Keep every other request field unchanged while paging: a
+  token sent with other filters or sorting is not guaranteed to be rejected. The default `page_size` is
+  unchanged (25; at most 1000; negative is `INVALID_ARGUMENT`).
+
+#### Logs
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Inverted time window** (`start_time` after
+  `end_time`) in a log filter: an empty page -> `INVALID_ARGUMENT`.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **`StreamCallLogs` ended because the role was
+  revoked or the credential expired:** only an error status -> a final message carrying a `resume_token` (and
+  `end_reason_code`), then the error status.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Page tokens of `ListCallLogStreams`:**
+  documented as OPAQUE; keep every other request field unchanged while paging (a token sent with another
+  filter is not guaranteed to be rejected). The default `page_size` is unchanged (25; at most 1000; negative is
+  `INVALID_ARGUMENT`).
+
 ### New features
 
-* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Campaign-level call defaults.** `Campaign`
-  gained `CommonServicesConfig campaign_common_services_config = 18` and
-  `SipCallerConfig campaign_sip_caller_config = 19`, the defaults of every call of the campaign. They are
-  returned by `CreateCampaign`, `GetCampaign`, `UpdateCampaign`, `ListCampaigns`, `StartCampaign`,
-  `StopCampaign`, `HardStopCampaign` and `ResumeCampaign`, and always left unset in
-  `StreamCampaignStatusResponse.campaigns` and in the `campaign` of `AddCallersToCampaignResponse` /
-  `AddScheduledCallersToCampaignResponse`. They are settable on `CreateCampaign` and on
-  `CampaignAssignment.new_campaign`, and updatable through `UpdateCampaign` with the `update_mask` paths
-  `campaign_common_services_config` / `campaign_sip_caller_config` or any nested sub-path of them (a path
-  naming a message replaces it whole, a path naming a scalar, repeated or map field replaces exactly that
-  field, a path naming a `oneof` member sets it when the request sets it and otherwise clears it only if it
-  is the stored active member, and a path below a repeated or map field is `INVALID_ARGUMENT`). They are read
-  LIVE whenever a campaign call is dispatched, retries included: the effective config of the call is a copy
-  of the campaign's config with the call's own `StartCallerRequest` config merged over it by protobuf
-  `MergeFrom` (the call wins for every field it sets; repeated fields are concatenated, the campaign's
-  entries first; maps are merged by key). The one exception is the callee: `callee_id` is resolved once,
-  when the call is added (the call's own, else the campaign's at that moment), stored as
-  `CampaignCall.phone_number` and dialled by every attempt, so updating the campaign's `callee_id` affects
-  only calls added afterwards (an `AddCallersToCampaign` / `AddScheduledCallersToCampaign` that took the
-  default callee while such an update committed is refused with `ABORTED` and adds nothing). Unset campaign
-  defaults change nothing; clearing every field of a default by sub-paths removes it, and a field of the
-  update that no `update_mask` path names is neither written nor validated. Their credential-bearing fields
-  are returned only to a caller authorization resolved a role for that may see the whole project
-  (`SERVER_ADMIN`, `PROJECT_ADMIN`, `PROJECT_DEVELOPER`); everyone else, every caller with authorization
-  disabled or only monitored included, receives the identity and routing fields only.
+#### Across services
+
 * [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Partial responses (`field_mask`) for
   campaigns and every listing.** A `google.protobuf.FieldMask field_mask` was added to `CreateCampaignRequest`
   (3), `GetCampaignRequest` (5), `UpdateCampaignRequest` (3), `DeleteCampaignRequest` (5, paths of
@@ -70,6 +109,21 @@
   it, and nested paths through singular message fields are allowed. The mask is applied after any view and
   any redaction, so it can only narrow a response. `ListSoftphoneAccounts` and `ListSoftphoneCertificates`
   already had one.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Dry runs (`validate_only`).** `bool
+  validate_only` was added to `StartCallerRequest` (5), `StartCallersRequest` (6), `StartListenerRequest` (5),
+  `StartListenersRequest` (5), `UpdateCallerRequest` (4), `UpdateCallersRequest` (4), `UpdateListenerRequest` (4),
+  `UpdateListenersRequest` (4), `CreateVtsiProjectRequest` (3), `UpdateVtsiProjectRequest` (4) and
+  `DeleteCallLogsRequest` (3). It runs every check of the real request (validation, authorization, the live
+  checks against the upstream services and the project limit; for a project update the merge over the stored
+  project and the configuration render) but starts, deploys, writes, reserves and deletes nothing, emits no
+  event and touches no Asterisk; it answers with the same error or with the would-be resource (server-assigned
+  and output-only fields empty on a start or create; `DeleteCallLogs` reports what would be deleted). A dry run
+  neither reads nor stores an `idempotency_key`. In an entry of a batch (`StartCallers`, `StartListeners`,
+  `StartScheduledCaller(s)`, `AddCallersToCampaign`, `AddScheduledCallersToCampaign`, the `Update*s` batches) it
+  must be unset, otherwise the whole request is `INVALID_ARGUMENT`.
+
+#### Calls
+
 * [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Partial responses (`field_mask`) for every
   CRUD RPC of callers, listeners and calls.** A `google.protobuf.FieldMask field_mask` was added to
   `StartCallerRequest` (4), `StartCallersRequest` (5), `StartListenerRequest` (4), `StartListenersRequest` (4),
@@ -125,7 +179,7 @@
     update and lose it), and answers `ABORTED`, writing nothing, when that time runs out.
   * **Call**: `Call` gained `map<string, string> labels = 26`, client-defined descriptive labels and its only
     mutable field: the only updatable path is `labels`, which replaces the whole map (at most 64 entries, keys
-    `[a-z][a-z0-9_.-]{0,62}`, values of at most 255 printable characters). It was added because a `Call` had no
+    `[a-z][a-z0-9_.-]{0,62}`, values of at most 256 characters, checked for their length only, so control characters are accepted and returned verbatim; exactly the bounds of `SoftphoneAccount.labels`). It was added because a `Call` had no
     field that can change without touching the live call; `UpdateCall` changes only the stored call record, on
     active and ended calls alike, and never the call itself, its SIP container, its status or its media. The
     WAITING call of a persistent listener or pooled caller (`NO_ONGOING_CALL`, not active), which `ListCalls`
@@ -144,6 +198,99 @@
     The returned resource is redacted like `GetCaller` / `GetListener` / `GetCall` with `call_view = FULL`; writing
     back a redacted `common_services_config` whole overwrites the stored credentials with the withheld (empty)
     ones, so update a sub-path instead.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Updating, batch-cancelling and retrying
+  scheduled callers.** Three new `Calls` RPCs:
+  * `UpdateScheduledCaller(UpdateScheduledCallerRequest) returns (ScheduledCaller)`: changes the
+    `scheduled_time` and/or `sip_caller_config.sip_headers` of a scheduled caller, the only updatable
+    `update_mask` paths. Allowed only while it is `SCHEDULED_CALLER_STATUS_PENDING` (for a campaign's scheduled
+    caller only while its campaign call is `NOT_STARTED`), otherwise `FAILED_PRECONDITION`
+    (`reason=not-pending` / `reason=campaign-call-started`); the check and the write are atomic against the
+    scheduler. Takes `update_mask` and `field_mask`.
+  * `CancelScheduledCallers(CancelScheduledCallersRequest) returns (CancelScheduledCallersResponse)`: up to 1000
+    names, each like `CancelScheduledCaller`, not atomic, one `CancelScheduledCallerResponse` per name in request
+    order; a failed entry's `error_message` is prefixed with the gRPC status code name (`NOT_FOUND: ...`). The
+    request is refused as a whole with the `Update*s` checks (malformed project, no entry, more than 1000,
+    duplicates, a name of another project, an unknown `field_mask` path).
+  * `RetryScheduledCaller(RetryScheduledCallerRequest) returns (ScheduledCaller)`: retries a
+    `SCHEDULED_CALLER_STATUS_FAILED` scheduled caller by creating a NEW `PENDING` scheduled caller from its stored
+    request, at the requested `scheduled_time` (unset: now), so the failed one stays as history. The two are
+    linked by the new output-only `ScheduledCaller.retry_of_scheduled_caller_name = 13` and
+    `retried_by_scheduled_caller_name = 14`. A FAILED scheduled caller is retried at most once (a repeat is
+    `ALREADY_EXISTS`); a campaign's scheduled caller is refused (`FAILED_PRECONDITION`,
+    `reason=campaign-scheduled-caller`), its campaign retries it.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Call statistics.** New RPC
+  `Calls.GetCallStatistics(GetCallStatisticsRequest) returns (CallStatistics)`: over the calls of a project that a
+  `CallFilter` matches, `total`, `active`, `sip_status_type_counts` (`SipStatusTypeCount`), `call_type_counts`
+  (`CallTypeCount`), `ended_calls`, `total_duration_s` / `average_duration_s` (seconds, `double`),
+  `redial_recommended`, `amd_verdict_counts` (`AmdVerdictCount`, from `Call.sip_status.amd_result.verdict`) and
+  `transfer_outcome_counts` (`TransferOutcomeCount`, from `Call.last_transfer.outcome`). Counts are typed entry
+  messages, one per value that occurs, ordered by enum number. Authorization as `ListCalls`.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **State on `Caller` and `Listener`.** New
+  output-only fields, set in the SHALLOW and FULL views (`vtsi_project_name` in every view): `Listener` gained
+  `vtsi_project_name = 5`, `active = 6`, `sip_status_type = 7`, `created_at = 8`; `Caller` gained the same four
+  plus `pooled = 9` and `campaign_name = 10` (the campaign of its latest campaign attempt, empty if none).
+  `active` and `sip_status_type` carry the values of `CallResourceStatus` of the status streams. A listener is
+  never pooled, so `Listener` has no `pooled` field. They are output only for `UpdateCaller` /
+  `UpdateListener`.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Idempotent transfers.**
+  `TransferCallRequest.request_id = 8` with the semantics of `InviteToCallRequest.request_id`: scoped to the
+  call, a repeat returns the first `TransferCallResponse` instead of transferring again, a reuse with other
+  parameters is `INVALID_ARGUMENT` `reason=request-id-conflict`. Each `TransferCallsRequest` entry carries its own.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Richer call filtering and sorting.**
+  `CallFilter` gained `map<string, string> labels = 18` (every entry must match, an empty value matches the key's
+  presence; as `SoftphoneAccountFilter.labels`), `repeated string caller_names = 19` and `listener_names = 20`
+  (OR-ed with each other), `optional bool redial_recommended = 21`, `repeated TransferOutcome transfer_outcomes =
+  22` (`TRANSFER_OUTCOME_UNSPECIFIED` matches calls without a transfer) and `repeated int32 sip_port_numbers = 23`
+  / `csi_port_numbers = 24`, which replace the string fields `sip_ports` / `csi_ports` (now
+  `[deprecated = true]`, still honoured and OR-ed with the new ones). `ListCallsRequest` gained `CallSorting
+  call_sorting = 7` (new message `CallSorting` with `CallSortingField` `NO_CALL_SORTING` / `SORT_CALL_BY_START_TIME`
+  and the reused `VtsiProjectSortingMode`). The `start_time` / `end_time` window is documented precisely: a call
+  matches when it started at or after `start_time` and ended at or before `end_time` (both inclusive; an active
+  call never matches an `end_time`, a call without a start time never matches a `start_time`); it is not an
+  overlap test. One new field carries the `optional` keyword and is declared in `presence/expected_optional.txt`:
+  `CallFilter.redial_recommended`.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Paging with `page_size` and `total_size`.**
+  `int32 page_size` was added to `ListCallersRequest` (7), `ListListenersRequest` (5), `ListScheduledCallersRequest`
+  (6) and `ListCallsRequest` (6): `0` means the server default of 25, above 1000 is clamped to 1000, negative is
+  `INVALID_ARGUMENT`; it may differ between the pages of one listing. `int32 total_size = 3` was added to the four
+  list responses: the exact number of matches across all pages, counted when the page was read. The page token
+  rules are under Behaviour changes; the internal token format is no longer documented.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **More list filters.** `ListCallersRequest`
+  gained `bool active_only = 8` and `repeated ondewo.sip.SipStatus.StatusType sip_status_types = 9`,
+  `ListListenersRequest` `active_only = 6` and `sip_status_types = 7` (as the status stream requests);
+  `ListScheduledCallersRequest` gained `string campaign_name = 7`, `google.protobuf.Timestamp scheduled_after = 8`
+  (inclusive) and `scheduled_before = 9` (exclusive).
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Stopping a selection of calls.**
+  `StopAllCallsRequest` gained `CallFilter call_filter = 3`: unset stops every call as before; set, only the
+  matching calls are stopped (see Compatibility before sending it).
+
+#### Campaigns
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Campaign-level call defaults.** `Campaign`
+  gained `CommonServicesConfig campaign_common_services_config = 18` and
+  `SipCallerConfig campaign_sip_caller_config = 19`, the defaults of every call of the campaign. They are
+  returned by `CreateCampaign`, `GetCampaign`, `UpdateCampaign`, `ListCampaigns`, `StartCampaign`,
+  `StopCampaign`, `HardStopCampaign` and `ResumeCampaign`, and always left unset in
+  `StreamCampaignStatusResponse.campaigns` and in the `campaign` of `AddCallersToCampaignResponse` /
+  `AddScheduledCallersToCampaignResponse`. They are settable on `CreateCampaign` and on
+  `CampaignAssignment.new_campaign`, and updatable through `UpdateCampaign` with the `update_mask` paths
+  `campaign_common_services_config` / `campaign_sip_caller_config` or any nested sub-path of them (a path
+  naming a message replaces it whole, a path naming a scalar, repeated or map field replaces exactly that
+  field, a path naming a `oneof` member sets it when the request sets it and otherwise clears it only if it
+  is the stored active member, and a path below a repeated or map field is `INVALID_ARGUMENT`). They are read
+  LIVE whenever a campaign call is dispatched, retries included: the effective config of the call is a copy
+  of the campaign's config with the call's own `StartCallerRequest` config merged over it by protobuf
+  `MergeFrom` (the call wins for every field it sets; repeated fields are concatenated, the campaign's
+  entries first; maps are merged by key). The one exception is the callee: `callee_id` is resolved once,
+  when the call is added (the call's own, else the campaign's at that moment), stored as
+  `CampaignCall.phone_number` and dialled by every attempt, so updating the campaign's `callee_id` affects
+  only calls added afterwards (an `AddCallersToCampaign` / `AddScheduledCallersToCampaign` that took the
+  default callee while such an update committed is refused with `ABORTED` and adds nothing). Unset campaign
+  defaults change nothing; clearing every field of a default by sub-paths removes it, and a field of the
+  update that no `update_mask` path names is neither written nor validated. Their credential-bearing fields
+  are returned only to a caller authorization resolved a role for that may see the whole project
+  (`SERVER_ADMIN`, `PROJECT_ADMIN`, `PROJECT_DEVELOPER`); everyone else, every caller with authorization
+  disabled or only monitored included, receives the identity and routing fields only.
 * [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **The callers and calls of a campaign.**
   `Campaign` gained the output-only `repeated string campaign_callers = 20` and
   `bool campaign_callers_truncated = 21`: the resource names of the callers that placed at least one attempt of
@@ -169,11 +316,311 @@
   request's `vtsi_project_name`; a campaign of another project, a malformed name or an empty display name sent
   as the set member is `INVALID_ARGUMENT` and an unknown campaign `NOT_FOUND`. `ListCallers` is ordered by the
   caller's uuid, ascending (as without a selector; `campaign_callers` holds the same set ordered by first
-  attempt). The `page_token` of both listings carries only a position and a page size and is not bound to the
-  selector: keep the selector unchanged while paging, since a token sent with another selector is not rejected
-  and returns that position of the other listing.
+  attempt). The `page_token` of both listings is opaque and bound to the
+  selector (and to every other filter of the listing): a token sent with another selector, or none, is rejected
+  with `INVALID_ARGUMENT`.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Calling windows for campaigns.** `Campaign`
+  gained `CampaignCallingWindow calling_window = 22` and the output-only `bool outside_calling_window = 23`, with
+  the new messages `CampaignCallingWindow` (`string time_zone = 1`, an IANA name; `repeated CallingWindowSlot
+  slots = 2`; output-only `google.protobuf.Timestamp next_window_start = 3`) and `CallingWindowSlot`
+  (`CallingWindowDayOfWeek day_of_week = 1`, `int32 start_minute = 2`, `int32 end_minute = 3`, minutes after local
+  midnight, start inclusive, end exclusive) and the enum `CallingWindowDayOfWeek` (ISO numbering, Monday = 1;
+  defined in `campaigns.proto` so no `google/type` import is needed). A campaign with a window starts calls
+  (first attempts, retries, due scheduled calls) only inside a slot, in the window's time zone (daylight saving
+  followed); outside every slot it stays `RUNNING` with `outside_calling_window = true` and starts nothing, and a
+  running call is never ended by a slot ending. 1 to 50 slots, `0 <= start_minute < end_minute <= 1440`, no slot
+  across midnight (split it), overlapping slots form their union; an invalid window is `INVALID_ARGUMENT`.
+  Settable on `CreateCampaign` and `CampaignAssignment.new_campaign`, copied by `CloneCampaign`, updatable with the
+  `update_mask` paths `calling_window`, `calling_window.time_zone` and `calling_window.slots`. Unset (the default)
+  means at any time, as before. New events `VTSI_EVENT_CAMPAIGN_CALLING_WINDOW_OPENED` (520, attribute
+  `window_end`) and `VTSI_EVENT_CAMPAIGN_CALLING_WINDOW_CLOSED` (521, attribute `next_window_start`).
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Cancelling and retrying campaign calls.** New
+  RPCs `Campaigns.CancelCampaignCalls` and `Campaigns.RetryCampaignCalls` with
+  `CancelCampaignCalls{Request,Response}`, `RetryCampaignCalls{Request,Response}` and `CampaignCallRefusal`. Both
+  take the campaign selector of `GetCampaign` (`name = 1` / `display_name = 2` plus `vtsi_project_name = 3`) and
+  select calls by `repeated string campaign_call_names = 4`, `repeated CampaignCallState states = 5`, or both, at
+  most 1000 calls per request (`remaining_count` reports what is left). Cancel turns `NOT_STARTED` /
+  `RETRY_PENDING` calls into `CANCELLED` (their scheduled caller is cancelled with them) and, mirroring
+  `CancelScheduledCaller`, refuses a call whose attempt is `DISPATCHING` / `IN_PROGRESS` (`reason=attempt-in-progress`)
+  without hanging anything up; refusals are results, not errors. Retry puts `FAILED` / `CANCELLED` calls back to
+  `RETRY_PENDING` (or `NOT_STARTED` when they never made an attempt) with `int32 additional_attempts = 6` more
+  attempts (0 means 1, at most 10) and an optional `google.protobuf.Timestamp not_before = 7`; a `COMPLETED`
+  campaign becomes `RUNNING` again, exactly as when calls are added to it. `CampaignCall.max_attempts` now reports
+  the call's own raised limit for a requeued call. New event `VTSI_EVENT_CAMPAIGN_CALL_REQUEUED` (519);
+  cancellations emit the existing `VTSI_EVENT_CAMPAIGN_CALL_CANCELLED`.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Reading one campaign call.** New RPC
+  `Campaigns.GetCampaignCall(GetCampaignCallRequest) returns (CampaignCall)`, with `string name = 1`
+  (`projects/<project_uuid>/campaigns/<campaign_uuid>/campaign_calls/<campaign_call_uuid>`),
+  `bool include_attempts = 2` and `google.protobuf.FieldMask field_mask = 3`.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Cloning a campaign server side.** New RPC
+  `Campaigns.CloneCampaign(CloneCampaignRequest) returns (Campaign)`: source selector `source_name = 1` /
+  `source_display_name = 2`, `vtsi_project_name = 3` (source and clone share the project), `new_display_name = 4`,
+  `bool include_calls = 5`, `repeated CampaignCallState call_states = 6`, `field_mask = 7` and
+  `idempotency_key = 8`. The clone is `CREATED` with the source's settings, call defaults and calling window; the
+  stored credentials of the call defaults are copied on the server, so they survive a clone although a
+  `PROJECT_EXECUTOR` never sees them (a Get-then-Create round trip would copy the redacted values). With
+  `include_calls`, the selected calls are copied as new `NOT_STARTED` calls with their own configuration and fixed
+  `phone_number`; scheduled calls get new scheduled callers. Atomic. Emits `VTSI_EVENT_CAMPAIGN_CREATED` with the
+  attributes `cloned_from` and `copied_call_count`.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Idempotent campaign creation and forced
+  deletion.** `CreateCampaignRequest` gained `string idempotency_key = 4` with the semantics of
+  `AddCallersToCampaignRequest.idempotency_key` (a replayed campaign carries no call defaults).
+  `DeleteCampaignRequest` gained `bool force = 6`: a `RUNNING`, `STOPPING` or `HARD_STOPPING` campaign is hard
+  stopped and deleted once every hang-up is confirmed, the RPC waiting at most
+  `ONDEWO_VTSI_CAMPAIGN_FORCE_DELETE_WAIT_S` (30 s) and otherwise answering `DEADLINE_EXCEEDED` with the hard stop
+  in effect (repeat the request). Without `force` nothing changes.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **More campaign statistics and listing
+  filters.** `CampaignStatistics` gained `google.protobuf.Duration average_connected_duration = 13` (mean connected
+  time of finished, connected attempts) and `int32 answering_machine_detected = 14` (attempts in which an
+  answering machine was detected). `ListCampaignCallsRequest` gained `repeated string phone_numbers = 11` (OR with
+  `phone_number`), `repeated CampaignCallSource sources = 12`, `google.protobuf.Timestamp finish_time_min = 13` /
+  `finish_time_max = 14`, `google.protobuf.Timestamp modified_since = 15`, `int32 min_attempts = 16` and
+  `repeated string campaign_call_names = 17`. `CampaignFilter` gained `created_after = 4`, `created_before = 5`,
+  `string created_by = 6` and `modified_since = 7`; `ListCampaignsRequest` gained `CampaignOrderBy order_by = 6`
+  with the new enum `CampaignOrderBy` (`UNSPECIFIED` = newest first as before, `CREATED_AT_DESC`,
+  `MODIFIED_AT_DESC`, `DISPLAY_NAME_ASC`; ties by `name`). The order is a property of the listing, so it is on the
+  request rather than in the filter; a `page_token` is bound to it.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Typed stream end reasons.** New enum
+  `StreamEndReason` (`UNSPECIFIED`, `MAX_DURATION`, `CLIENT_TOO_SLOW`, `SUBSCRIPTION_DELETED`,
+  `SUBSCRIPTION_DISABLED`, `PROJECT_DELETED`, `SERVER_SHUTDOWN`), defined once in `campaigns.proto`, carried next
+  to the free-text `end_reason` as `StreamCampaignStatusResponse.end_reason_type = 6` and
+  `SubscribeVtsiEventsResponse.end_reason_type = 5`. `StreamCampaignStatusRequest` gained
+  `repeated CampaignState states = 5`.
+
+#### Events
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Webhook signatures.** `Webhook` gained the
+  write-only `string signing_secret = 14` (32 to 256 printable ASCII characters, returned as `********`). With a
+  secret, every request carries `X-Ondewo-Vtsi-Signature: t=<unix seconds>,v1=<hex HMAC-SHA256 of "<t>.<body>">`;
+  for `ONDEWO_VTSI_WEBHOOK_SIGNING_ROTATION_GRACE_S` (24 h) after a rotation (`update_mask` path `signing_secret`)
+  the header carries a second `v1` signed with the previous secret. Writing `********` keeps the secret, an empty
+  string removes it. Every header the server sends is now documented at the `Events` service, including the new
+  `X-Ondewo-Vtsi-Webhook`, `X-Ondewo-Vtsi-Redelivery` and `X-Ondewo-Vtsi-Test`.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Event replay and redelivery from the
+  journal.** `SubscribeVtsiEventsRequest` gained `google.protobuf.Timestamp start_time = 5`: the stream first
+  replays the journaled events from that time, then continues live; mutually exclusive with `resume_token`
+  (`INVALID_ARGUMENT`), `OUT_OF_RANGE` when older than `ONDEWO_VTSI_EVENT_JOURNAL_RETENTION_S` (24 h). New RPC
+  `Events.RedeliverWebhookEvents` with `RedeliverWebhookEvents{Request,Response}`: sends journaled events to a
+  webhook again, either by `repeated string event_ids = 2` or by a window `start_time = 3` / `end_time = 4` (the
+  events the webhook's enabled subscriptions select), narrowed by `VtsiEventFilter filter = 5`; at most 1000 per
+  request; the response reports `enqueued_count`, `not_in_journal_count`, `not_enqueued_count` and
+  `next_start_time`. Needs `PROJECT_DEVELOPER`.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Excluding events and new update events.**
+  `VtsiEventSubscription` gained `repeated VtsiEvent excluded_events = 14` and `VtsiEventFilter` gained
+  `bool all_events = 4` and `repeated VtsiEvent excluded_events = 5` (e.g. every event except
+  `VTSI_EVENT_CALL_SIP_STATUS_CHANGED`). New events `VTSI_EVENT_CALL_UPDATED` (122), `VTSI_EVENT_CALLER_UPDATED`
+  (207), `VTSI_EVENT_LISTENER_UPDATED` (307) and `VTSI_EVENT_SCHEDULED_CALLER_UPDATED` (405), each with the
+  attribute `updated_fields`, for the 9.1.0 `Update*` RPCs.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Realistic webhook tests.**
+  `TestWebhookRequest` gained `VtsiEvent sample_event = 2`: the test request is shaped like that real event, with
+  placeholder values (all-zero uuids), the attribute `test=true` and the header `X-Ondewo-Vtsi-Test: true`.
+
+#### Projects
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Project status detail, trunk registration
+  and effective Asterisk version.** `VtsiProject` gained the output-only fields `string status_message = 18`
+  (why the last deployment, undeploy or update failed; cleared by the next successful status change; secrets
+  redacted), `google.protobuf.Timestamp status_changed_at = 19`,
+  `TrunkRegistrationState trunk_registration_state = 20` and `string asterisk_version_effective = 21` (the
+  ONDEWO Asterisk image tag the deployed container runs, i.e. the pinned `asterisk_version` or the server
+  default at deployment time; empty when not deployed). The new enum `TrunkRegistrationState` has
+  `TRUNK_REGISTRATION_STATE_UNSPECIFIED = 0` (not deployed or not observed yet), `_REGISTERED = 1`,
+  `_UNREGISTERED = 2`, `_REJECTED = 3` and `_NOT_CONFIGURED = 4`; it reflects the last observation of
+  `pjsip show registrations` on the running Asterisk and may lag by `ONDEWO_VTSI_ASTERISK_OBSERVER_INTERVAL_S`
+  (default 30 s). `VtsiProjectStatus` gained `DEPLOY_FAILED = 8` (see Behaviour changes).
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **`UpdateVtsiProject` returns the project.**
+  `UpdateVtsiProjectResponse` gained `VtsiProject vtsi_project = 3` (the project after the update, full view,
+  redacted like `GetVtsiProject`), narrowed by the new `UpdateVtsiProjectRequest.field_mask = 3`.
+  `GetVtsiProjectRequest` gained `google.protobuf.FieldMask field_mask = 3` as well; both follow the
+  `field_mask` convention of this release.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Filtering and page size for
+  `ListVtsiProjects`.** `ListVtsiProjectsRequest` gained `int32 page_size = 6` (`0` = the server default of
+  25, clamped to 1000, negative = `INVALID_ARGUMENT`), `repeated VtsiProjectStatus statuses = 7`,
+  `string display_name_contains = 8` (case-insensitive, at most 256 characters) and
+  `google.protobuf.Timestamp created_after = 9` / `created_before = 10` (an inverted window is
+  `INVALID_ARGUMENT`), combined with AND like `SoftphoneAccountFilter`. The default order is now documented:
+  `display_name` ascending.
+
+#### Logs
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Log counts, export and typed stream end.**
+  * `ListCallLogsRequest.include_counts = 9` fills the new `ListCallLogsResponse.total_matching_count = 9`
+    (`optional int64`) and `map<string, int64> count_by_level = 10` (keyed by the `ondewo.nlu.LogSeverity` value
+    name) over the whole filtered history; both are upper bounds when `scope_limited_filters` is non-empty.
+  * New RPC `Logs.ExportCallLogs(ExportCallLogsRequest) returns (stream ExportCallLogsResponse)` exports the
+    matching entries oldest first as `LOG_EXPORT_FORMAT_TEXT` (the zero value `LOG_EXPORT_FORMAT_UNSPECIFIED`
+    means TEXT), `_NDJSON` or `_CSV` (new enum `LogExportFormat`), with `include_metadata` choosing between
+    timestamp/severity/message and every field. The same filter semantics and server-side secret redaction as
+    `ListCallLogs` apply, content filters across the whole window; a bounded window (`start_time` AND
+    `end_time`, start before end) is required. Chunks are at most 1 MiB; an export is capped at
+    `ONDEWO_VTSI_LOG_EXPORT_MAX_ENTRIES` (default 1,000,000) entries and `ONDEWO_VTSI_LOG_EXPORT_MAX_BYTES`
+    (default 1 GiB), reported by `truncated = true` on the last message (`last = true`); at most
+    `ONDEWO_VTSI_LOG_MAX_CONCURRENT_EXPORTS` (default 2) exports per server, otherwise `RESOURCE_EXHAUSTED`.
+  * New enum `LogStreamEndReason` (`UNSPECIFIED`, `ALL_CAPTURES_TERMINATED`, `MAX_DURATION`, `SERVER_SHUTDOWN`,
+    `PERMISSION_REVOKED`, `CREDENTIALS_EXPIRED`) in the new `StreamCallLogsResponse.end_reason_code = 7`; the
+    string `end_reason` stays as human-readable text.
+  * `ListCallLogStreamsRequest` gained `int32 page_size = 5` (`0` = the server default of 25, clamped to 1000,
+    negative = `INVALID_ARGUMENT`) and `repeated LogCaptureState capture_states = 6`; `GetCallLogStreamRequest`
+    gained `google.protobuf.FieldMask field_mask = 3`; `CallLogStream` gained `string vtsi_project_name = 22`.
+  * `CallLogFilter` gained `repeated int32 sip_port_numbers = 32`, `csi_port_numbers = 33` and
+    `asterisk_port_numbers = 34` (1..65535); the string `sip_ports`, `csi_ports` and `asterisk_ports` are
+    deprecated and still honoured (combined with the new fields by OR).
+
+#### Softphones
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Softphone lock state, live registrations and
+  idempotent creation.**
+  * `SoftphoneAccount` gained the output-only `bool locked = 19`, `google.protobuf.Timestamp locked_at = 20` and
+    `string locked_reason = 21` (an account locked by `RevokeSoftphoneCertificate` until
+    `RotateSoftphoneCredentials`), and `SoftphoneAccountFilter` gained `optional bool locked = 8`.
+  * New RPC `Softphones.GetSoftphoneRegistration(GetSoftphoneRegistrationRequest) returns
+    (SoftphoneRegistration)` reads the current contacts of an account LIVE from the project's Asterisk:
+    `SoftphoneRegistration{softphone_account_name, repeated SoftphoneContact contacts, observed_at}` with
+    `SoftphoneContact{uri, user_agent, source_address, expire_time, double round_trip_ms, status}` and the new
+    enum `SoftphoneContactStatus` (`UNSPECIFIED`, `AVAILABLE`, `UNAVAILABLE`, `NOT_QUALIFIED`, `UNKNOWN`).
+    `FAILED_PRECONDITION` when the project is not `DEPLOYED`, `UNAVAILABLE` when its Asterisk cannot be
+    queried. Requires `PROJECT_DEVELOPER`.
+  * `CreateSoftphoneAccountRequest` gained `string idempotency_key = 3` (same key rules and retention as the
+    `Calls` keys). Because the server keeps no copy of the one-time secrets, a retry with the same key and request
+    does not replay them: it rotates the credentials of the account the first attempt created (like
+    `RotateSoftphoneCredentials`) and returns NEW secrets, so a lost response is always recoverable and never
+    leaves two valid secret sets. A retry for a deleted account is `NOT_FOUND`, for a locked account
+    `FAILED_PRECONDITION` (a replay must not undo a revocation).
+
+### Improvements
+
+#### Calls
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **`field_mask` on the scheduled-caller RPCs.**
+  `google.protobuf.FieldMask field_mask` was added to `GetScheduledCallerRequest` (4), `StartScheduledCallerRequest`
+  (4), `StartScheduledCallersRequest` (5) and `CancelScheduledCallerRequest` (3), with the convention of the
+  "Partial responses" entries above; a `StartScheduledCallerRequest` that is an entry of `StartScheduledCallers` /
+  `AddScheduledCallersToCampaign` must leave its own `field_mask` unset.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Project-checked Stop/Delete batches.**
+  `string vtsi_project_name = 3` was added to `StopCallersRequest`, `DeleteCallersRequest`, `StopListenersRequest`
+  and `DeleteListenersRequest`. When set, the batch is checked as a whole like the `Update*s` batches (malformed
+  project, duplicates, a name of another project are `INVALID_ARGUMENT`, nothing is done); empty keeps the 9.0.0
+  checks. The rule for single requests that carry both a resource name and a `vtsi_project_name` is documented
+  once (`GetCallerRequest.vtsi_project_name`): a resource of another project is `NOT_FOUND`, never
+  `INVALID_ARGUMENT`, so the answer does not confirm it exists elsewhere.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Typed participant end reason.** New enum
+  `ParticipantEndReason` (`PARTICIPANT_END_REASON_UNSPECIFIED`, `_NO_ANSWER`, `_BUSY`, `_CHANNEL_UNAVAILABLE`,
+  `_CALL_ENDED`, `_REMOVED`, `_HANGUP`, `_HANDED_OVER`, `_JOIN_FAILED`, `_TIMEOUT`) and
+  `CallParticipant.end_reason_type = 11` beside the kept string `end_reason`.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Documentation of `calls.proto` and
+  `call_configs.proto`.** Every Start / Stop / Delete RPC (single and batch), `StopCall(s)`, `StopAllCalls`,
+  `TransferCall(s)`, `RemoveCallParticipant` (unknown participant, participant of another call, idempotent on an
+  already left or failed participant), `SetCallMediaControl`, the scheduled-caller RPCs, `GetCall` / `ListCalls`
+  now document errors, idempotency (stopping an already stopped caller or listener is `NOT_FOUND`; `StopCall` of
+  an ended call succeeds with `Call ... was not released`; deleting removes the call records with the resource),
+  roles (`PROJECT_EXECUTOR`; call supervision `PROJECT_DEVELOPER` + `ENFORCE`), batch limits (1000), non-atomicity
+  and events. Default orderings are documented (callers and listeners by uuid; scheduled callers by
+  `scheduled_time`; calls by `start_time`, oldest first, calls without a start time last), as are the unset
+  `call_view` (`SHALLOW`), the zero-value quirks of `CallView` (`MINIMUM = 0`) and `CallType` (`BOTH = 0`, never a
+  stored call's type), the `StartCallers` / `StartListeners` responses (one entry per STARTED resource; failures
+  only in the batch `error_message`) and the units of the duration fields. In `call_configs.proto`:
+  `SipCallerConfig.callee_id` (required, at most 2048 characters, the phone-number pattern for values without a
+  letter or `@`), `sip_headers` (at most 64 entries), `BaseServiceConfig.host` / `port` (1 to 65535),
+  `RabbitMqConfig.port` (AMQP) and `port_2` (management port, `RABBIT_PORT_2`), the callback lists (validated but
+  not executed by any component), the defaults of `InterruptionHandlingConfig.enabled` and
+  `transcribe_on_disabled_interruptions` (both false), the endpointing-delay range (0 - 10) and the min &lt;= max
+  rule (`INVALID_ARGUMENT`), the turn-detection prompts (no length limit, refused with `VAD` / `AUDIO_MODEL`) and
+  `NluVtsiConfig.language_code` (not validated by VTSI). Stale copy-paste comments were replaced.
+
+#### Campaigns
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **`field_mask` on the campaign lifecycle RPCs.**
+  `StartCampaignRequest`, `StopCampaignRequest`, `HardStopCampaignRequest` and `ResumeCampaignRequest` gained
+  `google.protobuf.FieldMask field_mask = 5` (their responses and `Campaign.campaign_callers` already referred to
+  one), with the convention of `GetCampaignRequest.field_mask`.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Complete error, authorization and limit
+  documentation for `Campaigns`.** `StreamCampaignStatus` documents its keep-alive
+  (`ONDEWO_VTSI_STATUS_STREAM_KEEPALIVE_S`, 15 s), maximum duration (`ONDEWO_VTSI_STATUS_STREAM_MAX_DURATION_S`,
+  3600 s) and the errors for malformed or foreign campaign names. The campaign limits are documented with their
+  environment variables (`ONDEWO_VTSI_CAMPAIGN_MAX_CALLS` 100000, `..._DEFAULT_MAX_PARALLEL_CALLS` 1,
+  `..._MAX_PARALLEL_CALLS_LIMIT` 1000, `..._MAX_ATTEMPTS_LIMIT` 10, `..._DEFAULT_RETRY_DELAY_S` 60 s, 1000 entries
+  per `Add*ToCampaign` request), and so are the bounds of the `CampaignStatistics` counters. `DeleteCampaign`
+  documents that `ListCalls` / `ListCallers` with the selector of a deleted campaign answer `NOT_FOUND`.
+  `CAMPAIGN_START_MODE_UNSPECIFIED` keeps its released name; the docs now say what it means.
+
+#### Events
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **`field_mask` on the subscription and webhook
+  RPCs.** `CreateVtsiEventSubscriptionRequest` (3), `GetVtsiEventSubscriptionRequest` (2),
+  `UpdateVtsiEventSubscriptionRequest` (3), `DeleteVtsiEventSubscriptionRequest` (2, paths of the response),
+  `CreateWebhookRequest` (3), `GetWebhookRequest` (2), `UpdateWebhookRequest` (3) and `DeleteWebhookRequest` (2,
+  paths of the response) gained `google.protobuf.FieldMask field_mask`, with the convention of
+  `GetCampaignRequest.field_mask`.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Every event attribute is documented.** Each
+  `VtsiEvent` value now lists its attribute keys and the other `VtsiEventMessage` fields it sets, and the enum
+  documents the value formats (base-10 counts, `true`/`false`, RFC 3339 UTC times, comma-separated
+  `updated_fields`, campaign states without the `CAMPAIGN_STATE_` prefix) and the limits (20 attributes, 256
+  characters per value). Documented, not changed: `phone_number` is in clear on call status and campaign call
+  events, and the WARM transfer leg reports `mode` as `WARM` in upper case.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Complete error and authorization
+  documentation for `Events`.** Every `Events` RPC lists its errors (`INVALID_ARGUMENT` including malformed names
+  and mask paths, `NOT_FOUND`, `PERMISSION_DENIED`, `UNAUTHENTICATED`, `ABORTED`, `FAILED_PRECONDITION`,
+  `OUT_OF_RANGE`, `RESOURCE_EXHAUSTED`, `UNAVAILABLE`), the service has an errors and an authorization section like
+  `Campaigns`, and every request name field states its format. Webhook and subscription display names are
+  documented as not unique, possibly empty and without a generated default. `WEBHOOK_HTTP_METHOD_UNSPECIFIED`
+  keeps its released name and is documented as POST.
+
+#### Projects
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **The `Projects` service is documented like
+  `Softphones`.** A service description now states the error model (gRPC status codes; the
+  `error_message` response fields are never set, on success or failure), authorization
+  (`PROJECT_DEVELOPER` or higher for every RPC but `ListVtsiProjects`, which is open to every project role and
+  lists only the caller's projects; `UNAUTHENTICATED` without a credential; `PERMISSION_DENIED` instead
+  of `NOT_FOUND` for a project the caller holds no role on), the visibility of `sip_trunk_password` and the
+  events emitted. Every RPC documents its errors, authorization and idempotency. `DeployVtsiProject` and
+  `UndeployVtsiProject` are documented as synchronous (recommended client deadline: 3 minutes), idempotent
+  on `DEPLOYED` / `UNDEPLOYED`, and `FAILED_PRECONDITION` while the project is `DELETING`; undeploying ends
+  every call of the project and the softphone registrations with the container. `DeleteVtsiProject` documents
+  its automatic undeploy. `UpdateVtsiProject` documents which changes are reloaded in place and which restart
+  or redeploy the Asterisk and end every call.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Project field semantics.**
+  `sip_trunk_password` is documented as stored and returned in clear (not write-only), with its update rule
+  (empty keeps it without an `update_mask`, clears it with one); `max_callers` / `max_listeners` `0` means no
+  capacity (not unlimited), exceeding them is `RESOURCE_EXHAUSTED` on the `Calls` RPCs and changing them on a
+  deployed project redeploys it; `VtsiProject.asterisk_port` is documented as a copy of the authoritative
+  `AsteriskConfigs.asterisk_port`. `CreateVtsiProjectRequest.error_message` is deprecated
+  (`[deprecated = true]`, ignored). The quirks of `VtsiProjectSortingMode` (`ASCENDING = 0`) and of the
+  unprefixed `VtsiProjectStatus` values (and `DELETED`, which is never returned) are documented rather than
+  renamed. Comment fixes: the `ListVtsiProjects` RPC and request descriptions, the VTSI expansion (Virtual
+  Telephone System Integration), the `UpdateVtsiProjectRequest` / `Response` titles and the
+  `UndeployVtsiProjectRequest` name format.
+
+#### Logs
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **The `Logs` service is documented like
+  `Softphones`.** A service description states redaction, the error model and authorization
+  (`PROJECT_DEVELOPER` or higher for every RPC). The limits are documented with their server variables:
+  `max_lines` (`0` or negative = `ONDEWO_VTSI_LOG_DEFAULT_MAX_LINES`, default 5000; clamped to
+  `ONDEWO_VTSI_LOG_HARD_MAX_LINES`, default 50000), `tail_lines` (negative = 0; clamped to the hard cap), the
+  stream maximum duration (`ONDEWO_VTSI_LOG_STREAM_MAX_DURATION_S`, default 3600 s), the concurrent stream
+  limit (`ONDEWO_VTSI_LOG_MAX_CONCURRENT_STREAMS`, default 16) and the absence of keep-alive messages.
+  `DeleteCallLogs` documents its role, idempotency, that a time window alone is a valid filter, and its race
+  with live capture (entries captured after the deletion are stored again). The mismatch of
+  `GetCallLogStreamRequest.vtsi_project_name` and `name` is `INVALID_ARGUMENT`. `CallLogEntry.call` covers
+  callers and listeners, `CallLogStream.voip_call_name` its three formats, and `ListCallLogStreams` its order
+  (`capture_started_at`, newest first).
+
+#### Softphones
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Softphone documentation.** The
+  `Softphones` service states its authorization (`PROJECT_DEVELOPER` or higher for every RPC);
+  `DeleteSoftphoneAccount` documents `FAILED_PRECONDITION` (deletion stored, Asterisk not updated), that it is
+  not idempotent and never `ABORTED`; `RevokeSoftphoneCertificate` documents `FAILED_PRECONDITION` and
+  `ABORTED`; `SoftphoneAccount.labels` states that a value is checked for its length only (at most 256
+  characters), so control characters in values are accepted and returned verbatim, exactly as for
+  `Call.labels`.
 
 ### Compatibility
+
+Every addition is wire compatible with 9.0.0: apart from the `CampaignDisplayName` removal under Breaking
+changes, no field was renumbered, retyped or removed, new fields take the next free number of their message,
+new enum values take new numbers, and deprecated fields keep their number and type.
 
 **`CommonServicesConfig`, `SipCallerConfig` and their building blocks moved to the new file
 `ondewo/vtsi/call_configs.proto`.** The moved messages are `BaseServiceConfig`, `Credentials`, `NluVtsiConfig`,
@@ -183,8 +630,9 @@
 `AudioObjectStorageServicesActivationConfig`, `MessageBrokerConfig`, `MessageBrokerServicesActivationConfig`,
 `RabbitMqConfig`, `S2tVtsiCallbacks`, `NluVtsiCallbacks` and `T2sVtsiCallbacks`. The move was necessary because
 `calls.proto` imports `campaigns.proto`, so `campaigns.proto` could not import `calls.proto` for the new
-campaign defaults. Package, fully qualified names, field numbers and comments are unchanged (verified: each
-moved `DescriptorProto` is byte-identical), so the wire format and the JSON form do not change.
+campaign defaults. Package, fully qualified names, field numbers and types are unchanged (verified: each
+moved `DescriptorProto` is byte-identical), so the wire format and the JSON form do not change. Their
+COMMENTS did change: 9.1.0 documents the moved messages in detail (see Improvements, Calls).
 `calls.proto` re-exports the file with `import public "ondewo/vtsi/call_configs.proto";`: python's
 `ondewo.vtsi.calls_pb2` keeps exposing every moved message (verified), and the descriptor of each moved message
 now names `ondewo/vtsi/call_configs.proto` as its file (so `calls_pb2.DESCRIPTOR.message_types_by_name` no
@@ -196,13 +644,39 @@ client whose public API lists the generated files by hand must add the new one (
 `export * from './api/ondewo/vtsi/call_configs_pb.d'` in the nodejs client's `public-api.d.ts`, and the
 equivalent entry in the angular client). `AsteriskConfig` stays in `calls.proto`.
 
-**Rolling updates.** A 9.0.0 server skips every new field as unknown: the campaign defaults are dropped, a
-mask is ignored (every field is returned), and a display-name selector sent in the new form reaches it as no
-campaign selector at all, so it can never be resolved to another campaign. It answers the new `Update*` RPCs
-with `UNIMPLEMENTED` and never returns `campaign_callers` or `Call.labels`. **A campaign selector on
-`ListCallers` / `ListCalls` sent to a 9.0.0 server is IGNORED, so it lists every caller / call of the
-project**: a client that must not act on that superset checks that the server is 9.1.0 or newer first (e.g. a
-`GetCampaign` whose response carries `campaign_callers` for a campaign known to have placed calls).
+**`calls.proto` now imports `projects.proto`** for `VtsiProjectSortingMode` (used by `CallSorting`). Clients
+whose module layout follows the file (javascript, typescript, nodejs, angular) now load `projects_pb` from
+`calls_pb`; nothing is re-exported.
+
+**Rolling updates: send the new fields only to a 9.1.0 server.** A 9.0.0 server skips every new field as
+unknown and answers every new RPC (`Update{Caller,Callers,Listener,Listeners,Call,Calls}`,
+`UpdateScheduledCaller`, `CancelScheduledCallers`, `RetryScheduledCaller`, `GetCallStatistics`,
+`CancelCampaignCalls`, `RetryCampaignCalls`, `GetCampaignCall`, `CloneCampaign`, `RedeliverWebhookEvents`,
+`ExportCallLogs`, `GetSoftphoneRegistration`) with `UNIMPLEMENTED`. Ignored fields that are dangerous rather
+than merely ineffective:
+
+* **`validate_only` requests are EXECUTED for real**: a dry-run `StartCaller(s)`, `StartListener(s)`,
+  `UpdateCaller(s)`, `UpdateListener(s)`, `CreateVtsiProject`, `UpdateVtsiProject` or `DeleteCallLogs` starts,
+  writes or deletes.
+* **`StopAllCallsRequest.call_filter` is ignored, so EVERY call of the project is stopped.**
+* **`excluded_events` is ignored, so the excluded events are still delivered**; `start_time` on
+  `SubscribeVtsiEvents` is ignored too, so the stream starts live without a replay.
+* **A campaign selector on `ListCallers` / `ListCalls` is ignored, so it lists every caller / call of the
+  project**, and the other new list filters (`active_only`, `sip_status_types`, `campaign_name`,
+  `scheduled_after` / `scheduled_before`, the new `CallFilter` and `CallLogFilter` fields, the `ListVtsiProjects`
+  and `ListCallLogStreams` filters) are ignored as well, so the listing returns the unfiltered set.
+* `TransferCallRequest.request_id` is ignored, so a retried transfer transfers again; `CreateCampaignRequest`
+  and `CloneCampaignRequest` `idempotency_key` and `DeleteCampaignRequest.force` are ignored; a replayed
+  softphone `idempotency_key` creates nothing new but is answered `ALREADY_EXISTS`.
+
+Otherwise: the campaign defaults and the calling window are dropped (no calling window is enforced), a
+`field_mask` is ignored (every field is returned), `page_size`, `call_sorting` and `order_by` are ignored, no
+webhook signature is sent, `include_counts` returns no counts, and a display-name campaign selector sent in the
+new form reaches it as no campaign selector at all, so it can never be resolved to another campaign. It never
+returns the new output fields (`campaign_callers`, `Call.labels`, `total_size`, the `Caller` / `Listener` state,
+`end_reason_type`, the project status detail, ...). A client checks that the server is 9.1.0 or newer first,
+e.g. that `GetVtsiProject` returns `status_changed_at`, or that a `GetCampaign` for a campaign known to have
+placed calls carries `campaign_callers`.
 
 *****************
 
