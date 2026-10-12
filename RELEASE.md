@@ -51,7 +51,9 @@ Server behaviour of 9.1.0 that an existing 9.0.0 client can observe without send
   filter -> OPAQUE and bound to the `vtsi_project_name` and the filters / selectors / sorting of the listing; a
   token issued for another listing is `INVALID_ARGUMENT`. `page_size`, `call_view` and `field_mask` may still
   change between pages. The four responses now report `total_size`, the exact number of matches across all
-  pages. The default `page_size` is unchanged (25; at most 1000; negative is `INVALID_ARGUMENT`).
+  pages. The default `page_size` is unchanged (25; at most 1000; negative is `INVALID_ARGUMENT`), and a request
+  with `page_size` `0` keeps the page size its `page_token` was issued with, so a 9.0.0 client that set its size
+  in the position token keeps that page length on every page.
 
 #### Events
 

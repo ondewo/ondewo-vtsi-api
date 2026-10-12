@@ -1011,9 +1011,9 @@ message ListCallersRequest {
         string campaign_display_name = 6;
     }
 
-    // Optional. Maximum number of callers per page. <code>0</code> means the server default of 25; values above
-    // 1000 are clamped to 1000; negative values are rejected with <code>INVALID_ARGUMENT</code>. May differ between
-    // the pages of one listing.
+    // Optional. Maximum number of callers per page. <code>0</code> keeps the page size the <code>page_token</code>
+    // was issued with, and means the server default of 25 on a first page; values above 1000 are clamped to 1000;
+    // negative values are rejected with <code>INVALID_ARGUMENT</code>. May differ between the pages of one listing.
     int32 page_size = 7;
 
     // Optional. Only callers whose current call is active (<code>Caller.active</code>), as
@@ -2015,9 +2015,10 @@ message ListScheduledCallersRequest {
     // <code>page_token</code> stays valid with another mask.
     google.protobuf.FieldMask field_mask = 5;
 
-    // Optional. Maximum number of scheduled callers per page. <code>0</code> means the server default of 25;
-    // values above 1000 are clamped to 1000; negative values are rejected with <code>INVALID_ARGUMENT</code>.
-    // May differ between the pages of one listing.
+    // Optional. Maximum number of scheduled callers per page. <code>0</code> keeps the page size the
+    // <code>page_token</code> was issued with, and means the server default of 25 on a first page; values above
+    // 1000 are clamped to 1000; negative values are rejected with <code>INVALID_ARGUMENT</code>. May differ between
+    // the pages of one listing.
     int32 page_size = 6;
 
     // Optional. Only the scheduled callers of this campaign (<code>ScheduledCaller.campaign_name</code>). Empty
@@ -3371,9 +3372,9 @@ message ListCallsRequest{
     // <code>page_token</code> stays valid with another mask.
     google.protobuf.FieldMask field_mask = 5;
 
-    // Optional. Maximum number of calls per page. <code>0</code> means the server default of 25; values above
-    // 1000 are clamped to 1000; negative values are rejected with <code>INVALID_ARGUMENT</code>. May differ between
-    // the pages of one listing.
+    // Optional. Maximum number of calls per page. <code>0</code> keeps the page size the <code>page_token</code>
+    // was issued with, and means the server default of 25 on a first page; values above 1000 are clamped to 1000;
+    // negative values are rejected with <code>INVALID_ARGUMENT</code>. May differ between the pages of one listing.
     int32 page_size = 6;
 
     // Optional. Sorting of the listing. Unset keeps the default order (see <code>ListCallsResponse.calls</code>).
