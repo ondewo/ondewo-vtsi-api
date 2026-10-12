@@ -336,7 +336,9 @@ unrelease: build_utils_docker_image unrelease_to_github_via_docker_image ## Undo
 	-git fetch --prune
 	@echo "Unrelease of ${ONDEWO_VTSI_API_VERSION} complete"
 
-CLIENTS := python nodejs typescript angular js
+# Every published ondewo-vtsi-client-<language> SDK. Each one is a repository with its own `ondewo_release` and `TEST`
+# targets, so `release_client` drives them all alike.
+CLIENTS := python nodejs typescript angular js cpp csharp go java php rust
 
 release_all_clients: ## Release all clients IN PARALLEL; one failing client does not abort the others
 	@echo "Releasing all clients in parallel for ${ONDEWO_VTSI_API_VERSION} ..."; \
@@ -374,7 +376,10 @@ GENERIC_RELEASE_NOTES=\n*****************\n\n\\\#\\\# Release ONDEWO VTSI REPONA
 release_client:
 	$(eval REPO_NAME:= $(shell echo ${GENERIC_CLIENT} | cut -d "-" -f 4 | cut -d '.' -f 1))
 	$(eval REPO_DIR:= $(shell echo "ondewo-vtsi-client-${REPO_NAME}"))
-	$(eval UPPER_REPO_NAME:= $(shell echo ${REPO_NAME} | perl -pe 's/^(.)/\u$$1/'))
+	@# CLIENT_DISPLAY_NAME overrides the capitalised repository suffix where the client's RELEASE.md heading
+	@# spells its language differently ("C++" for cpp, "PHP" for php).
+	$(eval UPPER_REPO_NAME:= $(if ${CLIENT_DISPLAY_NAME},${CLIENT_DISPLAY_NAME},$(shell echo ${REPO_NAME} | perl -pe 's/^(.)/\u$$1/')))
+	$(eval UPPER_REPO_NAME_RE:= $(subst +,\+,${UPPER_REPO_NAME}))
 # Get newest Proto-Compiler Version
 	$(eval PROTO_COMPILER:= $(shell curl https://api.github.com/repos/ondewo/ondewo-proto-compiler/tags | grep "\"name\"" | head -1 | cut -d '"' -f 4))
 # Clone Repo
@@ -408,15 +413,18 @@ release_client:
 # unguarded insert -> 2 identical headings, `MD024/no-duplicate-heading`, exit 1, file NOT repaired
 # by fix: true; guarded -> 1 heading, 0 errors, exit 0. ondewo-nlu-client-angular already carries two
 # byte-identical "## Release ONDEWO NLU Angular Client 3.5.0" blocks from exactly this failure.
-	cd ${REPO_DIR} && if grep -qE "^#+ Release ONDEWO VTSI ${UPPER_REPO_NAME} Client ${ONDEWO_VTSI_API_VERSION}$$" ${RELEASEMD}; then \
+	cd ${REPO_DIR} && if grep -qE "^#+ Release ONDEWO VTSI ${UPPER_REPO_NAME_RE} Client ${ONDEWO_VTSI_API_VERSION}$$" ${RELEASEMD}; then \
 		echo "${RELEASEMD} already documents ${ONDEWO_VTSI_API_VERSION} - keeping the curated entry, not inserting the generated notes"; \
 	else \
 		perl -i -ne 'BEGIN{open my $$f,"<","../temp-notes-${REPO_NAME}" or die; @notes=<$$f>; close $$f} print; print @notes if /Release History/' ${RELEASEMD}; \
 	fi
 	cd ${REPO_DIR} && head -20 ${RELEASEMD}
-	cd ${REPO_DIR} && perl -i -pe 's/ONDEWO_VTSI_VERSION.*=.*/ONDEWO_VTSI_VERSION=${ONDEWO_VTSI_API_VERSION}/' Makefile
-	cd ${REPO_DIR} && perl -i -pe 's{ONDEWO_PROTO_COMPILER_GIT_BRANCH.*=.*}{ONDEWO_PROTO_COMPILER_GIT_BRANCH=tags/${PROTO_COMPILER}}' Makefile
-	cd ${REPO_DIR} && perl -i -pe 's{VTSI_API_GIT_BRANCH.*=.*}{VTSI_API_GIT_BRANCH=tags/${ONDEWO_VTSI_API_VERSION}}' Makefile && head -30 Makefile
+# Anchored on the ASSIGNMENT at the start of a line. Unanchored, the rewrite also hit every line that merely
+# MENTIONS the variable before an `=`: in ondewo-vtsi-client-go it cut the closing quote off two `echo` lines of the
+# go.mod check that every release runs, and in ondewo-vtsi-client-csharp it truncated a comment.
+	cd ${REPO_DIR} && perl -i -pe 's/^ONDEWO_VTSI_VERSION\s*=.*/ONDEWO_VTSI_VERSION=${ONDEWO_VTSI_API_VERSION}/' Makefile
+	cd ${REPO_DIR} && perl -i -pe 's{^ONDEWO_PROTO_COMPILER_GIT_BRANCH\s*=.*}{ONDEWO_PROTO_COMPILER_GIT_BRANCH=tags/${PROTO_COMPILER}}' Makefile
+	cd ${REPO_DIR} && perl -i -pe 's{^((?:ONDEWO_)?VTSI_API_GIT_BRANCH)\s*=.*}{$$1=tags/${ONDEWO_VTSI_API_VERSION}}' Makefile && head -30 Makefile
 
 # Build new code
 	bash -c 'set -o pipefail; make -C ${REPO_DIR} ondewo_release | tee build_log_${REPO_NAME}.txt'
@@ -459,6 +467,48 @@ release_js_client: ## Release JS Client
 	@echo "Start releasing Js Client"
 	make release_client GENERIC_CLIENT=${JS_CLIENT} RELEASEMD="src/RELEASE.md"
 	@echo "End releasing Js Client \n \n \n"
+
+CPP_CLIENT="git@github.com:ondewo/ondewo-vtsi-client-cpp.git"
+
+release_cpp_client: ## Release C++ Client
+	@echo "Start releasing C++ Client"
+	make release_client GENERIC_CLIENT=${CPP_CLIENT} RELEASEMD="RELEASE.md" CLIENT_DISPLAY_NAME="C++"
+	@echo "End releasing C++ Client \n \n \n"
+
+CSHARP_CLIENT="git@github.com:ondewo/ondewo-vtsi-client-csharp.git"
+
+release_csharp_client: ## Release C# Client
+	@echo "Start releasing Csharp Client"
+	make release_client GENERIC_CLIENT=${CSHARP_CLIENT} RELEASEMD="RELEASE.md"
+	@echo "End releasing Csharp Client \n \n \n"
+
+GO_CLIENT="git@github.com:ondewo/ondewo-vtsi-client-go.git"
+
+release_go_client: ## Release Go Client
+	@echo "Start releasing Go Client"
+	make release_client GENERIC_CLIENT=${GO_CLIENT} RELEASEMD="RELEASE.md"
+	@echo "End releasing Go Client \n \n \n"
+
+JAVA_CLIENT="git@github.com:ondewo/ondewo-vtsi-client-java.git"
+
+release_java_client: ## Release Java Client
+	@echo "Start releasing Java Client"
+	make release_client GENERIC_CLIENT=${JAVA_CLIENT} RELEASEMD="RELEASE.md"
+	@echo "End releasing Java Client \n \n \n"
+
+PHP_CLIENT="git@github.com:ondewo/ondewo-vtsi-client-php.git"
+
+release_php_client: ## Release PHP Client
+	@echo "Start releasing PHP Client"
+	make release_client GENERIC_CLIENT=${PHP_CLIENT} RELEASEMD="RELEASE.md" CLIENT_DISPLAY_NAME="PHP"
+	@echo "End releasing PHP Client \n \n \n"
+
+RUST_CLIENT="git@github.com:ondewo/ondewo-vtsi-client-rust.git"
+
+release_rust_client: ## Release Rust Client
+	@echo "Start releasing Rust Client"
+	make release_client GENERIC_CLIENT=${RUST_CLIENT} RELEASEMD="RELEASE.md"
+	@echo "End releasing Rust Client \n \n \n"
 
 ########################################################
 #		GITHUB
