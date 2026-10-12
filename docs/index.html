@@ -65896,6 +65896,22 @@ their values are combined (OR). </p></td>
                   <td><p> </p></td>
                 </tr>
               
+                <tr>
+                  <td>campaign_name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>Resource name of the campaign.
+The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>campaign_display_name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>Exact, case-sensitive <code>display_name</code> of the campaign, resolved within
+<code>ListCallsRequest.vtsi_project_name</code>. </p></td>
+                </tr>
+              
             </tbody>
           </table>
 
@@ -66847,6 +66863,18 @@ another project is that entry&apos;s <code>NOT_FOUND</code>) and a name given tw
 reported once. Either way, no entry and more than 1000 distinct names are <code>INVALID_ARGUMENT</code>. </p></td>
                 </tr>
               
+                <tr>
+                  <td>field_mask</td>
+                  <td><a href="#google.protobuf.FieldMask">google.protobuf.FieldMask</a></td>
+                  <td></td>
+                  <td><p>Optional. Partial response: the field paths to populate in EVERY entry of
+<code>DeleteCallersResponse.delete_caller_responses</code>, relative to the entry message <code>DeleteCallerResponse</code>, i.e.
+<code>error_message</code> (the entries carry no <code>Caller</code>). <code>name</code> of each entry and the
+response&apos;s own fields are always populated. Unset or empty returns every field. An unknown path is
+rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is deleted. It shapes only the
+response: the callers are deleted regardless. </p></td>
+                </tr>
+              
             </tbody>
           </table>
 
@@ -67000,6 +67028,18 @@ another project is that entry&apos;s <code>NOT_FOUND</code>) and a name given tw
 reported once. Either way, no entry and more than 1000 distinct names are <code>INVALID_ARGUMENT</code>. </p></td>
                 </tr>
               
+                <tr>
+                  <td>field_mask</td>
+                  <td><a href="#google.protobuf.FieldMask">google.protobuf.FieldMask</a></td>
+                  <td></td>
+                  <td><p>Optional. Partial response: the field paths to populate in EVERY entry of
+<code>DeleteListenersResponse.delete_listener_responses</code>, relative to the entry message <code>DeleteListenerResponse</code>, i.e.
+<code>error_message</code> (the entries carry no <code>Listener</code>). <code>name</code> of each entry and the
+response&apos;s own fields are always populated. Unset or empty returns every field. An unknown path is
+rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is deleted. It shapes only the
+response: the listeners are deleted regardless. </p></td>
+                </tr>
+              
             </tbody>
           </table>
 
@@ -67124,6 +67164,20 @@ of the project that <code>ListCalls</code> would list, the waiting call of a per
 caller included. </p></td>
                 </tr>
               
+                <tr>
+                  <td>field_mask</td>
+                  <td><a href="#google.protobuf.FieldMask">google.protobuf.FieldMask</a></td>
+                  <td></td>
+                  <td><p>Optional. Partial response: the field paths to populate in the returned <code>Call</code>, relative to the
+<code>Call</code> message, e.g. <code>call_type</code>, <code>phone_number</code>, <code>labels</code>,
+<code>sip_status.status_type</code>. Nested paths through singular message fields are allowed; a path
+below a repeated or map field is not. <code>name</code> is always populated. Unset or empty returns every
+field the <code>call_view</code> populates. An unknown path is rejected with <code>INVALID_ARGUMENT</code>
+naming it. Applied after the <code>call_view</code> and the server&apos;s role-based redaction of
+<code>common_services_config</code>, so it can only narrow the response and never populates a field that
+was left empty. </p></td>
+                </tr>
+              
             </tbody>
           </table>
 
@@ -67189,6 +67243,19 @@ role-based redaction of <code>common_services_config</code>, so it can only narr
 populates a field that was left empty. </p></td>
                 </tr>
               
+                <tr>
+                  <td>field_mask</td>
+                  <td><a href="#google.protobuf.FieldMask">google.protobuf.FieldMask</a></td>
+                  <td></td>
+                  <td><p>Optional. Partial response: the field paths to populate in the returned <code>Caller</code>, relative to
+the <code>Caller</code> message, e.g. <code>call_name</code>, <code>sip_caller_config.callee_id</code>. Nested paths through singular message fields are allowed;
+a path below a repeated or map field is not. <code>name</code> is always populated. Unset or empty
+returns every field the <code>call_view</code> populates. An unknown path is rejected with
+<code>INVALID_ARGUMENT</code> naming it. Applied after the <code>call_view</code> and the server&apos;s
+role-based redaction of <code>common_services_config</code>, so it can only narrow the response and never
+populates a field that was left empty. </p></td>
+                </tr>
+              
             </tbody>
           </table>
 
@@ -67230,6 +67297,19 @@ Required. Redundant with the project segment of <code>name</code>, by the rule o
                   <td><p>Optional. How much of the listener to populate; see <code>CallView</code>. Unset means <code>SHALLOW</code>.
 The views populate the fields as <code>GetCallerRequest.call_view</code> does, with
 <code>sip_base_config</code> in place of <code>sip_caller_config</code>. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>field_mask</td>
+                  <td><a href="#google.protobuf.FieldMask">google.protobuf.FieldMask</a></td>
+                  <td></td>
+                  <td><p>Optional. Partial response: the field paths to populate in the returned <code>Listener</code>, relative to
+the <code>Listener</code> message, e.g. <code>call_name</code>, <code>common_services_config.nlu_vtsi_config.agent_name</code>. Nested paths through singular message fields are allowed;
+a path below a repeated or map field is not. <code>name</code> is always populated. Unset or empty
+returns every field the <code>call_view</code> populates. An unknown path is rejected with
+<code>INVALID_ARGUMENT</code> naming it. Applied after the <code>call_view</code> and the server&apos;s
+role-based redaction of <code>common_services_config</code>, so it can only narrow the response and never
+populates a field that was left empty. </p></td>
                 </tr>
               
                 <tr>
@@ -67531,6 +67611,38 @@ negative values are rejected with <code>INVALID_ARGUMENT</code>. May differ betw
 does not filter. Combined with the other filters by AND. </p></td>
                 </tr>
               
+                <tr>
+                  <td>field_mask</td>
+                  <td><a href="#google.protobuf.FieldMask">google.protobuf.FieldMask</a></td>
+                  <td></td>
+                  <td><p>Optional. Partial response: the field paths to populate in every returned <code>Caller</code>,
+relative to the <code>Caller</code> message (no <code>callers.</code> prefix), e.g.
+<code>call_name</code>, <code>sip_caller_config.callee_id</code>,
+<code>common_services_config.nlu_vtsi_config.agent_name</code>. Nested paths through singular message
+fields are allowed; a path below a repeated or map field is not. <code>name</code> is always
+populated. Unset or empty returns every field the <code>call_view</code> populates. An unknown path
+is rejected with <code>INVALID_ARGUMENT</code> naming it. Applied after the <code>call_view</code>
+and the server&apos;s role-based redaction of <code>common_services_config</code>, so it can only
+narrow the response and never populates a field that was left empty. Not part of the paging contract:
+a <code>page_token</code> stays valid with another mask. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>campaign_name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>Resource name of the campaign. It must be a campaign of <code>vtsi_project_name</code>.
+The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>campaign_display_name</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>Exact, case-sensitive <code>display_name</code> of the campaign, resolved within
+<code>vtsi_project_name</code>. </p></td>
+                </tr>
+              
             </tbody>
           </table>
 
@@ -67651,6 +67763,21 @@ negative values are rejected with <code>INVALID_ARGUMENT</code>. May differ betw
                   <td><a href="#ondewo.vtsi.CallSorting">CallSorting</a></td>
                   <td></td>
                   <td><p>Optional. Sorting of the listing. Unset keeps the default order (see <code>ListCallsResponse.calls</code>). </p></td>
+                </tr>
+              
+                <tr>
+                  <td>field_mask</td>
+                  <td><a href="#google.protobuf.FieldMask">google.protobuf.FieldMask</a></td>
+                  <td></td>
+                  <td><p>Optional. Partial response: the field paths to populate in every returned <code>Call</code>, relative
+to the <code>Call</code> message (no <code>calls.</code> prefix), e.g. <code>call_type</code>,
+<code>phone_number</code>, <code>start_time</code>. Nested paths through singular message fields are
+allowed; a path below a repeated or map field is not. <code>name</code> is always populated. Unset or
+empty returns every field the <code>call_view</code> populates. An unknown path is rejected with
+<code>INVALID_ARGUMENT</code> naming it. Applied after the <code>call_view</code> and the
+server&apos;s role-based redaction of <code>common_services_config</code>, so it can only narrow the
+response and never populates a field that was left empty. Not part of the paging contract: a
+<code>page_token</code> stays valid with another mask. </p></td>
                 </tr>
               
             </tbody>
@@ -67775,6 +67902,22 @@ another mask. </p></td>
                   <td>repeated</td>
                   <td><p>Optional. Only listeners whose current or last call has one of these SIP status types
 (<code>Listener.sip_status_type</code>), with the rules of <code>ListCallersRequest.sip_status_types</code>. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>field_mask</td>
+                  <td><a href="#google.protobuf.FieldMask">google.protobuf.FieldMask</a></td>
+                  <td></td>
+                  <td><p>Optional. Partial response: the field paths to populate in every returned <code>Listener</code>,
+relative to the <code>Listener</code> message (no <code>listeners.</code> prefix), e.g.
+<code>call_name</code>, <code>common_services_config.nlu_vtsi_config.agent_name</code>. Nested paths
+through singular message fields are allowed; a path below a repeated or map field is not.
+<code>name</code> is always populated. Unset or empty returns every field the <code>call_view</code>
+populates. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. Applied after
+the <code>call_view</code> and the server&apos;s role-based redaction of
+<code>common_services_config</code>, so it can only narrow the response and never populates a field
+that was left empty. Not part of the paging contract: a <code>page_token</code> stays valid with
+another mask. </p></td>
                 </tr>
               
             </tbody>
@@ -69234,6 +69377,19 @@ call that starts while the request runs is not stopped.
 not stop more than the filter selects checks that the server is 9.1.0 or newer first.</p> </p></td>
                 </tr>
               
+                <tr>
+                  <td>field_mask</td>
+                  <td><a href="#google.protobuf.FieldMask">google.protobuf.FieldMask</a></td>
+                  <td></td>
+                  <td><p>Optional. Partial response: the field paths to populate in EVERY entry of
+<code>StopCallsResponse.stop_call_responses</code>, relative to the entry message
+<code>StopCallResponse</code>, i.e. <code>vtsi_project_name</code> and <code>error_message</code> (the
+entries carry no <code>Call</code>). <code>call_name</code> of each entry and
+<code>StopCallsResponse.error_message</code> are always populated. Unset or empty returns every field. An
+unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is stopped. It
+shapes only the response: the calls are stopped regardless. </p></td>
+                </tr>
+              
             </tbody>
           </table>
 
@@ -69443,6 +69599,18 @@ authorization enforced with <code>PERMISSION_DENIED</code> for a project the cal
 keeps the behaviour of 9.0.0 clients, which do not send it: each name is checked on its own (a name of
 another project is that entry&apos;s <code>NOT_FOUND</code>) and a name given twice is stopped once and
 reported once. Either way, no entry and more than 1000 distinct names are <code>INVALID_ARGUMENT</code>. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>field_mask</td>
+                  <td><a href="#google.protobuf.FieldMask">google.protobuf.FieldMask</a></td>
+                  <td></td>
+                  <td><p>Optional. Partial response: the field paths to populate in EVERY entry of
+<code>StopCallersResponse.stop_caller_responses</code>, relative to the entry message <code>StopCallerResponse</code>, i.e.
+<code>error_message</code> (the entries carry no <code>Caller</code>). <code>name</code> of each entry and the
+response&apos;s own fields are always populated. Unset or empty returns every field. An unknown path is
+rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is stopped. It shapes only the
+response: the callers are stopped regardless. </p></td>
                 </tr>
               
             </tbody>
@@ -69677,6 +69845,18 @@ authorization enforced with <code>PERMISSION_DENIED</code> for a project the cal
 keeps the behaviour of 9.0.0 clients, which do not send it: each name is checked on its own (a name of
 another project is that entry&apos;s <code>NOT_FOUND</code>) and a name given twice is stopped once and
 reported once. Either way, no entry and more than 1000 distinct names are <code>INVALID_ARGUMENT</code>. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>field_mask</td>
+                  <td><a href="#google.protobuf.FieldMask">google.protobuf.FieldMask</a></td>
+                  <td></td>
+                  <td><p>Optional. Partial response: the field paths to populate in EVERY entry of
+<code>StopListenersResponse.stop_listener_responses</code>, relative to the entry message <code>StopListenerResponse</code>, i.e.
+<code>error_message</code> (the entries carry no <code>Listener</code>). <code>name</code> of each entry and the
+response&apos;s own fields are always populated. Unset or empty returns every field. An unknown path is
+rejected with <code>INVALID_ARGUMENT</code> naming it, before anything is stopped. It shapes only the
+response: the listeners are stopped regardless. </p></td>
                 </tr>
               
             </tbody>
@@ -78275,6 +78455,20 @@ values above 1000 are clamped to 1000; negative values are rejected with
                   <td><p>Optional. Only log streams in one of these capture states, e.g.
 <code>LOG_CAPTURE_STATE_CAPTURING</code> for the containers being captured now. Empty matches every
 state. <code>LOG_CAPTURE_STATE_UNSPECIFIED</code> is rejected with <code>INVALID_ARGUMENT</code>. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>field_mask</td>
+                  <td><a href="#google.protobuf.FieldMask">google.protobuf.FieldMask</a></td>
+                  <td></td>
+                  <td><p>Optional. Partial response: the field paths to populate in every returned <code>CallLogStream</code>,
+relative to the <code>CallLogStream</code> message (no <code>log_streams.</code> prefix), e.g.
+<code>container_name</code>, <code>capture_state</code>. Nested paths through singular message fields are
+allowed; a path below a repeated or map field is not. <code>name</code> is always populated. Unset or
+empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it.
+Applied after the server&apos;s redaction, so it can only narrow the response and never populates a
+field that was left empty. Not part of the paging contract: a <code>page_token</code> stays valid
+with another mask. </p></td>
                 </tr>
               
             </tbody>

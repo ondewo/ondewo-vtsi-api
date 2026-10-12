@@ -48,6 +48,7 @@ ondewo.vtsi.CallFilter.call_status
 ondewo.vtsi.CallFilter.duration_in_s_max
 ondewo.vtsi.CallFilter.duration_in_s_min
 ondewo.vtsi.CallFilter.end_time
+ondewo.vtsi.CallFilter.redial_recommended                                    # new field in 9.1.0 (OND233-367)
 ondewo.vtsi.CallFilter.start_time
 ondewo.vtsi.CallLogFilter.end_time
 ondewo.vtsi.CallLogFilter.include_unleveled_lines
@@ -75,6 +76,7 @@ ondewo.vtsi.ListCallLogsRequest.filter
 ondewo.vtsi.ListCallLogsRequest.max_lines
 ondewo.vtsi.ListCallLogsRequest.oldest_first
 ondewo.vtsi.ListCallLogsRequest.resume_token
+ondewo.vtsi.ListCallLogsResponse.total_matching_count                        # new field in 9.1.0 (OND233-367)
 ondewo.vtsi.ListCallersRequest.call_view
 ondewo.vtsi.ListCallersRequest.page_token
 ondewo.vtsi.ListCallsRequest.call_filter
@@ -106,6 +108,7 @@ ondewo.vtsi.SoftTimeoutConfig.max_per_generation
 ondewo.vtsi.SoftTimeoutConfig.timeout_seconds
 ondewo.vtsi.SoftphoneAccount.enabled                                         # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.SoftphoneAccountFilter.enabled                                   # new field in 9.0.0 (OND233-367)
+ondewo.vtsi.SoftphoneAccountFilter.locked                                    # new field in 9.1.0 (OND233-367)
 ondewo.vtsi.SoftphoneAccountSorting.sorting_field                            # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.SoftphoneAccountSorting.sorting_mode                             # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.StreamCallLogsRequest.after_seq

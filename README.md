@@ -57,6 +57,42 @@ message, field and enum value is [docs/index.md](docs/index.md) (also `docs/inde
 Errors of the `Campaigns` and `Events` services, and of `Calls.AddCallersToCampaign` /
 `Calls.AddScheduledCallersToCampaign`, are reported as gRPC status codes, never in an `error_message` field.
 
+`CommonServicesConfig`, `SipCallerConfig` and the messages they are built from are declared in `call_configs.proto`
+(no service), shared by `calls.proto` and `campaigns.proto`.
+
+Every `List*` request, `CreateCampaign`, `GetCampaign`, `UpdateCampaign` and `DeleteCampaign`, and the CRUD RPCs of
+callers, listeners and calls (`StartCaller(s)`, `GetCaller`, `UpdateCaller(s)`, `StopCaller(s)`, `DeleteCaller(s)`,
+`StartListener(s)`, `GetListener`, `UpdateListener(s)`, `StopListener(s)`, `DeleteListener(s)`, `GetCall`,
+`UpdateCall(s)`, `StopCall(s)`, `StopAllCalls`; not the scheduled-caller RPCs) accept an optional `field_mask` for a
+partial response: field paths relative to the returned resource (for a listing, to its element type; for a response
+that wraps the resource, e.g. `StartCallerResponse.caller`, to the wrapped resource; for a `Stop*` / `Delete*`
+response, which carries no resource, to the response itself, in a batch to each entry message); the identifying field
+(`name`; `call_name` for a `StopCallResponse`; `log_stream` and `seq` for a `CallLogEntry`) is always populated; unset
+or empty returns every field (except that `ListCampaigns` returns `Campaign.campaign_callers` only when the mask names
+it); an unknown path is `INVALID_ARGUMENT`. The mask is applied after any view and any redaction and never changes
+what the RPC does.
+
+### Updating callers, listeners and calls
+
+`UpdateCaller`, `UpdateListener` and `UpdateCall` (and the batches `UpdateCallers`, `UpdateListeners`,
+`UpdateCalls`) take the resource and a required `update_mask` with the rules of `UpdateCampaign`. A caller's
+`sip_caller_config` / `common_services_config` and a listener's `sip_base_config` / `common_services_config` (or any
+nested sub-path) are updatable: the update changes the STORED configuration and never a running container or its
+calls. It takes effect only when the server recreates a listener or a pooled (persistent) caller from it, i.e. when it
+recycles them onto the project's Asterisk (`UpdateVtsiProject` of a deployed project, recovery after an Asterisk
+restart, a TLS trust-anchor change); an in-place container restart keeps the deployed configuration, and a caller that
+is not pooled is never deployed again, so updating it changes only the stored and returned record. A call's only
+updatable field is `labels`, client-defined descriptive metadata that changes only the stored call record. The
+batches apply every entry on its own and report one result per entry.
+
+### The callers and calls of a campaign
+
+`Campaign.campaign_callers` names the callers that placed the campaign's calls (by first attempt, oldest first, at
+most 1000, see `campaign_callers_truncated`; in `ListCampaigns` only when the `field_mask` names it, with at most 20
+campaigns per page). The complete, paginated listings are `ListCallers` with
+`ListCallersRequest.campaign_name` (or `campaign_display_name`) and `ListCalls` with `CallFilter.campaign_name` (or
+`campaign_display_name`), returning ordinary `Caller` and `Call` resources.
+
 ### Campaigns
 
 A **campaign** is a named set of outbound calls that VTSI places while keeping at most `max_parallel_calls` of them
@@ -65,14 +101,22 @@ calls being set up or connected at once; the next call starts when one ends.
 
 * **Creating and filling a campaign.** `CreateCampaign` creates an empty campaign in state `CREATED`. Calls are added
   with `Calls.AddCallersToCampaign` or `Calls.AddScheduledCallersToCampaign`, whose required `campaign_assignment`
-  names either an existing campaign (`campaign_name`, or `campaign_display_name` = project + display name) or a new
-  one (`new_campaign`). The request is atomic (the campaign, every campaign call and every scheduled caller are
+  names either an existing campaign (`campaign_name`, or `display_name`, resolved in the request's
+  `vtsi_project_name`) or a new one (`new_campaign`). The request is atomic (the campaign, every campaign call and every scheduled caller are
   stored, or nothing is), its callers are NOT started by the request itself, and `start_mode` (`CampaignStartMode`) decides whether the
   campaign starts dialling. A scheduled call of a campaign starts at or after its scheduled time AND when the
   campaign has a free slot.
 * **Names.** A campaign's resource name is `projects/<project_uuid>/campaigns/<campaign_uuid>`; an empty
   `display_name` becomes `campaign-<campaign_uuid>`. Display names are unique per project, so every RPC about one
-  campaign accepts either the resource name or a `CampaignDisplayName`.
+  campaign accepts either the resource name or the `display_name` together with the request's
+  `vtsi_project_name` (required with a display name). The `CampaignDisplayName` message of 9.0.0 was removed in
+  9.1.0; its field numbers are `reserved`.
+* **Call defaults.** `campaign_common_services_config` (a `CommonServicesConfig`) and `campaign_sip_caller_config`
+  (a `SipCallerConfig`) are the defaults of every call of the campaign. They are read live whenever a campaign call
+  is dispatched, retries included: the call's own `StartCallerRequest` config is merged over a copy of them
+  (protobuf `MergeFrom`, the call winning). Set them on `CreateCampaign` or `new_campaign`, change them with
+  `UpdateCampaign` (whole or by nested sub-path); unset, they change nothing. Both messages live in
+  `call_configs.proto`, which `calls.proto` re-exports with `import public`.
 * **Lifecycle.** `StartCampaign` starts a `CREATED` campaign. `StopCampaign` is graceful: no new call is started, the
   calls that are running continue to their natural end, then the campaign is `STOPPED`. `HardStopCampaign` hangs up
   every running call of the campaign immediately; the campaign stays `HARD_STOPPING` until the end of each call is

@@ -20,6 +20,8 @@ import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 // <code>ondewo.sip.SipStatus.StatusType</code> is the per-call status of a campaign call.
 import "ondewo/sip/sip.proto";
+// <code>CommonServicesConfig</code> and <code>SipCallerConfig</code>, the campaign-level call defaults.
+import "ondewo/vtsi/call_configs.proto";
 
 // <p>ONDEWO VTSI API</p>
 // <p>Manages the CAMPAIGNS of a VTSI project. A campaign is a named set of outbound calls that VTSI
@@ -40,15 +42,80 @@ import "ondewo/sip/sip.proto";
 // the ongoing calls finish and starts no new ones; <code>HardStopCampaign</code> ends the ongoing
 // calls immediately and starts no new ones; <code>ResumeCampaign</code> continues a stopped or hard
 // stopped campaign with the calls that have not finished yet.</p>
-// <p>Every RPC about ONE campaign accepts either its resource name or its display name
-// (<a href="index.html#ondewo.vtsi.CampaignDisplayName">CampaignDisplayName</a>); display names are
-// unique within a project.</p>
+// <p>Every RPC about ONE campaign accepts either its resource name or its display name. Display names
+// are unique within a project, so a display name is resolved within the project named by the
+// request&apos;s top-level <code>vtsi_project_name</code>, which is REQUIRED with a display name
+// (<code>INVALID_ARGUMENT</code> when it is empty or malformed) and checked against the campaign
+// when a resource name is used. (The <code>CampaignDisplayName</code> message of 9.0.0, which
+// carried the project and the display name together, was removed in 9.1.0; its field numbers are
+// <code>reserved</code>.)</p>
+// <p>A malformed selector is <code>INVALID_ARGUMENT</code> for every authenticated caller, with or
+// without authorization enforced (also when authorization could resolve no project from it): neither
+// the resource name nor the display name set (also how an old 9.0.0 client&apos;s removed
+// <code>CampaignDisplayName</code> arrives), a malformed resource name, a display name with an empty
+// or malformed <code>vtsi_project_name</code>, and a <code>vtsi_project_name</code> that is not the
+// project of the resource name. With authorization enforced, a well-formed request naming a project
+// the caller holds no role on (an unknown project included) is refused with
+// <code>PERMISSION_DENIED</code> before any lookup, so it is not answered <code>NOT_FOUND</code>, and
+// a caller without a credential is <code>UNAUTHENTICATED</code> whatever it sent.</p>
+// <p>Campaign-level call defaults: <code>campaign_common_services_config</code> and
+// <code>campaign_sip_caller_config</code> of a <code>Campaign</code> are the defaults of EVERY call of
+// the campaign. They are read LIVE when a campaign call is dispatched (every attempt, retries
+// included): the effective configuration of the call is a copy of the campaign&apos;s config with the
+// call&apos;s own <code>StartCallerRequest</code> config merged over it (protobuf
+// <code>MergeFrom</code>), see <a href="index.html#ondewo.vtsi.Campaign">Campaign</a>. The one exception
+// is the callee: <code>campaign_sip_caller_config.callee_id</code> is resolved and FIXED when a call is
+// added (it is that call&apos;s <code>CampaignCall.phone_number</code>), so every attempt of a call dials the
+// number its campaign call reports.</p>
+// <p>Partial responses: <code>ListCampaigns</code>, <code>ListCampaignCalls</code>,
+// <code>CreateCampaign</code>, <code>GetCampaign</code>, <code>UpdateCampaign</code>,
+// <code>DeleteCampaign</code> (paths of <code>DeleteCampaignResponse</code>), the four lifecycle RPCs
+// <code>StartCampaign</code>, <code>StopCampaign</code>, <code>HardStopCampaign</code> and
+// <code>ResumeCampaign</code>, <code>CloneCampaign</code> and <code>GetCampaignCall</code> accept an optional
+// <code>field_mask</code> naming the field paths of the returned resource (for a listing: of each listed
+// element) to populate. A mask never changes what the RPC does. Unset or empty returns every
+// field (one exception: <code>ListCampaigns</code> returns <code>campaign_callers</code> and
+// <code>campaign_callers_truncated</code> only when its mask names them); the identifying <code>name</code> is always populated; an unknown path is rejected with
+// <code>INVALID_ARGUMENT</code> naming it; nested paths through singular message fields (e.g.
+// <code>statistics.completed</code>) are allowed, a path below a repeated or map field is not. The
+// mask is applied after any role-based redaction, so it can only narrow what the caller may see.</p>
+// <p>Callers and calls of a campaign: <code>Campaign.campaign_callers</code> names the callers that placed
+// its calls (bounded); <code>Calls.ListCallers</code> with <code>ListCallersRequest.campaign_name</code> /
+// <code>campaign_display_name</code> lists them paginated as <code>Caller</code> resources, and
+// <code>Calls.ListCalls</code> with <code>CallFilter.campaign_name</code> /
+// <code>campaign_display_name</code> lists the calls they placed as <code>Call</code> resources.</p>
+// <p>Calling window: a campaign with a <code>calling_window</code> starts calls (first attempts, retries and
+// due scheduled calls alike) only inside one of the window&apos;s weekly slots, in the window&apos;s time zone.
+// Outside every slot it stays <code>RUNNING</code> and reports <code>outside_calling_window = true</code>; calls
+// already running are never ended by a slot ending. See
+// <a href="index.html#ondewo.vtsi.CampaignCallingWindow">CampaignCallingWindow</a>.</p>
+// <p>Limits and defaults of the server (environment variables of ondewo-vtsi, read at start-up): at most
+// <code>ONDEWO_VTSI_CAMPAIGN_MAX_CALLS</code> (100000) calls per campaign; <code>max_parallel_calls</code>
+// defaults to <code>ONDEWO_VTSI_CAMPAIGN_DEFAULT_MAX_PARALLEL_CALLS</code> (1) and is at most
+// <code>ONDEWO_VTSI_CAMPAIGN_MAX_PARALLEL_CALLS_LIMIT</code> (1000); <code>max_attempts</code> defaults to 1
+// and is at most <code>ONDEWO_VTSI_CAMPAIGN_MAX_ATTEMPTS_LIMIT</code> (10); <code>retry_delay</code> defaults
+// to <code>ONDEWO_VTSI_CAMPAIGN_DEFAULT_RETRY_DELAY_S</code> (60 s); one <code>AddCallersToCampaign</code> /
+// <code>AddScheduledCallersToCampaign</code> request carries at most 1000 entries (a fixed server limit,
+// <code>INVALID_ARGUMENT</code> above it); <code>CancelCampaignCalls</code> and <code>RetryCampaignCalls</code>
+// act on at most 1000 calls per request. The status stream is bounded by
+// <code>ONDEWO_VTSI_STATUS_STREAM_MAX_DURATION_S</code> (3600 s), sends a keep-alive after
+// <code>ONDEWO_VTSI_STATUS_STREAM_KEEPALIVE_S</code> (15 s) without a change and at most
+// <code>ONDEWO_VTSI_STATUS_STREAM_MAX_CONCURRENT</code> (16) status streams are open per server replica.</p>
+// <p>Authorization (when enforced): every RPC of this service needs <code>PROJECT_EXECUTOR</code> or a
+// higher role (<code>PROJECT_DEVELOPER</code>, <code>PROJECT_ADMIN</code>) on the campaign&apos;s project, or
+// <code>SERVER_ADMIN</code>; credential-bearing call defaults are returned only to the roles named at
+// <code>Campaign.campaign_common_services_config</code>.</p>
 // <p>Errors are reported as gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed name,
 // filter, field mask or value; <code>NOT_FOUND</code> for an unknown project, campaign or campaign
-// call; <code>ALREADY_EXISTS</code> for a <code>display_name</code> already used in the project;
+// call (with authorization enforced: <code>PERMISSION_DENIED</code> for a project the caller holds
+// no role on, or a role below <code>PROJECT_EXECUTOR</code>); <code>UNAUTHENTICATED</code> for a request
+// without a valid credential while authorization is enforced; <code>ALREADY_EXISTS</code> for a
+// <code>display_name</code> already used in the project;
 // <code>FAILED_PRECONDITION</code> for a state that does not allow the operation (each RPC names its
 // cases); <code>ABORTED</code> when a concurrent change won, nothing was stored and the request can
-// be retried; <code>RESOURCE_EXHAUSTED</code> when the server has no free stream slot.</p>
+// be retried; <code>DEADLINE_EXCEEDED</code> for a forced <code>DeleteCampaign</code> whose hang-ups were not
+// confirmed in time (the hard stop stays in effect, retry the request); <code>RESOURCE_EXHAUSTED</code> when
+// the server has no free stream slot.</p>
 service Campaigns {
 
     //////////////////////////////////////////////////////////////////////////////
@@ -58,53 +125,108 @@ service Campaigns {
     // <p>Creates a campaign in state <code>CAMPAIGN_STATE_CREATED</code>. Calls are added with
     // <code>AddCallersToCampaign</code> / <code>AddScheduledCallersToCampaign</code>; nothing is dialled before
     // <code>StartCampaign</code>.</p>
+    // <p>With an <code>idempotency_key</code>, a retry of the same request returns the first attempt&apos;s
+    // campaign instead of creating a second one (see <code>CreateCampaignRequest.idempotency_key</code>).
+    // Emits <code>VTSI_EVENT_CAMPAIGN_CREATED</code>.</p>
     // <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>ALREADY_EXISTS</code> if
-    // the <code>display_name</code> is used in the project; <code>INVALID_ARGUMENT</code> for an
-    // output-only field that was set or an out-of-range value.</p>
+    // the <code>display_name</code> is used in the project; <code>INVALID_ARGUMENT</code> for a malformed
+    // <code>vtsi_project_name</code>, an output-only field that was set, an out-of-range value, an invalid
+    // <code>calling_window</code>, a malformed <code>idempotency_key</code>, an <code>idempotency_key</code>
+    // reused with a different request or an unknown <code>field_mask</code> path; <code>ABORTED</code> while
+    // a first attempt with the same <code>idempotency_key</code> is still running.</p>
     rpc CreateCampaign (CreateCampaignRequest) returns (Campaign);
 
-    // <p>Returns a campaign including its statistics.</p>
-    // <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for a malformed name.</p>
+    // <p>Returns a campaign including its statistics, its call defaults and its callers
+    // (<code>campaign_callers</code>).</p>
+    // <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for a malformed name, a
+    // <code>display_name</code> without <code>vtsi_project_name</code> or an unknown
+    // <code>field_mask</code> path.</p>
     rpc GetCampaign (GetCampaignRequest) returns (Campaign);
 
     // <p>Updates the fields named in <code>update_mask</code>: <code>display_name</code>,
-    // <code>max_parallel_calls</code>, <code>max_attempts</code>, <code>retry_delay</code>. Allowed in
-    // every state. Lowering <code>max_parallel_calls</code> never ends a running call: the campaign
-    // starts no new call until fewer than the new maximum are running.</p>
+    // <code>max_parallel_calls</code>, <code>max_attempts</code>, <code>retry_delay</code>,
+    // <code>campaign_common_services_config</code>, <code>campaign_sip_caller_config</code> and
+    // <code>calling_window</code> (each also by a nested sub-path). Allowed in every state. A changed
+    // <code>calling_window</code> applies from the next dispatch decision (within about one second); it never
+    // ends a running call. Lowering <code>max_parallel_calls</code>
+    // never ends a running call: the campaign starts no new call until fewer than the new maximum are
+    // running. A changed call default applies to every campaign call dispatched after the update,
+    // retries included; a call already dispatched keeps the configuration it was started with. The
+    // exception is <code>campaign_sip_caller_config.callee_id</code>, which is fixed per call when the call
+    // is added and therefore applies only to calls added after the update.</p>
+    // <p>Emits <code>VTSI_EVENT_CAMPAIGN_UPDATED</code> (attribute <code>updated_fields</code>) and, when
+    // <code>max_parallel_calls</code> changed, <code>VTSI_EVENT_CAMPAIGN_MAX_PARALLEL_CALLS_CHANGED</code>.</p>
     // <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for an empty mask, an unknown,
-    // output-only or immutable path, or an out-of-range value; <code>ALREADY_EXISTS</code> for a
-    // <code>display_name</code> used by another campaign of the project.</p>
+    // output-only or immutable path, an out-of-range value, an invalid <code>calling_window</code> or an
+    // unknown <code>field_mask</code> path; <code>ALREADY_EXISTS</code> for a
+    // <code>display_name</code> used by another campaign of the project; <code>ABORTED</code> when a concurrent
+    // update of the same campaign won (nothing was written; retry).</p>
     rpc UpdateCampaign (UpdateCampaignRequest) returns (Campaign);
 
     // <p>Deletes a campaign and its campaign calls. Its scheduled callers that have not fired yet are
     // cancelled. Calls that already ran are not touched and stay visible through
-    // <code>ListCalls</code>.</p>
-    // <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> while the campaign is
-    // <code>RUNNING</code>, <code>STOPPING</code> or <code>HARD_STOPPING</code> (stop or hard stop it
-    // first).</p>
+    // <code>ListCalls</code>, but no longer as calls OF the campaign: the attempt history that linked them
+    // to it is deleted with it, so <code>ListCalls</code> with <code>CallFilter.campaign_name</code> /
+    // <code>campaign_display_name</code> of a deleted campaign answers <code>NOT_FOUND</code> (list them by
+    // caller or without the campaign selector), and <code>Calls.ListCallers</code> with the campaign selector
+    // likewise.</p>
+    // <p>With <code>force</code>, a campaign that is <code>RUNNING</code>, <code>STOPPING</code> or
+    // <code>HARD_STOPPING</code> is hard stopped first (exactly as by <code>HardStopCampaign</code>) and deleted
+    // as soon as the end of each of its calls is confirmed. The RPC waits for that, at most
+    // <code>ONDEWO_VTSI_CAMPAIGN_FORCE_DELETE_WAIT_S</code> (30 s by default) and never past the client&apos;s
+    // deadline; when the hang-ups are not confirmed by then it answers <code>DEADLINE_EXCEEDED</code>, the
+    // campaign stays <code>HARD_STOPPING</code> (then <code>HARD_STOPPED</code>) and is NOT deleted: repeat the
+    // request. Idempotent: a repeated forced delete of a campaign that is still hard stopping waits again.</p>
+    // <p>Emits <code>VTSI_EVENT_CAMPAIGN_DELETED</code> (preceded, with <code>force</code> on a running
+    // campaign, by <code>VTSI_EVENT_CAMPAIGN_HARD_STOP_REQUESTED</code> and
+    // <code>VTSI_EVENT_CAMPAIGN_HARD_STOPPED</code>).</p>
+    // <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> without <code>force</code> while
+    // the campaign is <code>RUNNING</code>, <code>STOPPING</code> or <code>HARD_STOPPING</code> (stop or hard
+    // stop it first, or set <code>force</code>); <code>DEADLINE_EXCEEDED</code> with <code>force</code> as
+    // described above; <code>INVALID_ARGUMENT</code> for a malformed name, a <code>display_name</code> without
+    // <code>vtsi_project_name</code> or an unknown <code>field_mask</code> path.</p>
     rpc DeleteCampaign (DeleteCampaignRequest) returns (DeleteCampaignResponse);
 
-    // <p>Lists the campaigns of a project, newest first, filtered and paged, each with its
-    // statistics.</p>
+    // <p>Lists the campaigns of a project, filtered, ordered by <code>ListCampaignsRequest.order_by</code>
+    // (newest first by default) and paged, each with its
+    // statistics. <code>campaign_callers</code> and <code>campaign_callers_truncated</code> are left empty
+    // unless <code>field_mask</code> names them, and a page that carries them holds at most 20 campaigns (see
+    // <code>ListCampaignsRequest.field_mask</code>).</p>
     // <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>INVALID_ARGUMENT</code>
-    // for a negative <code>page_size</code> or a foreign <code>page_token</code>.</p>
+    // for a malformed <code>vtsi_project_name</code>, a negative <code>page_size</code>, a foreign
+    // <code>page_token</code> (also one issued for another filter or <code>order_by</code>), an unknown
+    // <code>order_by</code> or <code>states</code> value, <code>created_after</code> not before
+    // <code>created_before</code> or an unknown <code>field_mask</code> path.</p>
     rpc ListCampaigns (ListCampaignsRequest) returns (ListCampaignsResponse);
 
     // <p>Returns the progress of a campaign: how many of its calls are not started, in progress,
     // waiting for a retry, completed, failed and cancelled, and how many attempts were made.</p>
-    // <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for a malformed name.</p>
+    // <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for a malformed name or a
+    // <code>display_name</code> without <code>vtsi_project_name</code>.</p>
     rpc GetCampaignStatistics (GetCampaignStatisticsRequest) returns (CampaignStatistics);
 
     // <p>Lists the calls of a campaign in the order they were added, filtered and paged, each with
     // its current SIP status, the SIP status description and its attempts.</p>
+    // <p>The filters of <code>ListCampaignCallsRequest</code> are combined by AND; the values of one
+    // repeated filter by OR.</p>
     // <p>Errors: <code>NOT_FOUND</code>; <code>INVALID_ARGUMENT</code> for a negative
-    // <code>page_size</code> or a foreign <code>page_token</code>.</p>
+    // <code>page_size</code>, a foreign <code>page_token</code> (also one issued for another filter), a
+    // <code>display_name</code> without <code>vtsi_project_name</code>, a malformed campaign call name or one
+    // of another campaign in <code>campaign_call_names</code>, more than 1000 <code>phone_numbers</code> or
+    // <code>campaign_call_names</code>, a negative <code>min_attempts</code>, an unknown enum value in
+    // <code>states</code> / <code>sources</code>, <code>finish_time_min</code> not before
+    // <code>finish_time_max</code> or an unknown <code>field_mask</code> path.</p>
     rpc ListCampaignCalls (ListCampaignCallsRequest) returns (ListCampaignCallsResponse);
 
     // <p>Starts a <code>CAMPAIGN_STATE_CREATED</code> campaign. Idempotent on a
     // <code>RUNNING</code> campaign.</p>
+    // <p>A campaign with a <code>calling_window</code> started outside every slot is <code>RUNNING</code>
+    // with <code>outside_calling_window = true</code> and dials from the next slot on. Emits
+    // <code>VTSI_EVENT_CAMPAIGN_STARTED</code> (nothing on the idempotent repeat).</p>
     // <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> in any other state (use
-    // <code>ResumeCampaign</code> for a stopped campaign).</p>
+    // <code>ResumeCampaign</code> for a stopped campaign); <code>INVALID_ARGUMENT</code> for a malformed name, neither selector set, a
+    // <code>display_name</code> without <code>vtsi_project_name</code> or a <code>vtsi_project_name</code>
+    // that is not the campaign&apos;s project, or an unknown <code>field_mask</code> path.</p>
     rpc StartCampaign (StartCampaignRequest) returns (Campaign);
 
     // <p>Stops a campaign gracefully: no new call is started, the calls that are running continue
@@ -113,7 +235,9 @@ service Campaigns {
     // Idempotent on <code>STOPPING</code>, <code>STOPPED</code>, <code>HARD_STOPPING</code> and
     // <code>HARD_STOPPED</code>.</p>
     // <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> on a
-    // <code>COMPLETED</code> campaign.</p>
+    // <code>COMPLETED</code> campaign; <code>INVALID_ARGUMENT</code> for a malformed name, neither selector set, a
+    // <code>display_name</code> without <code>vtsi_project_name</code> or a <code>vtsi_project_name</code>
+    // that is not the campaign&apos;s project, or an unknown <code>field_mask</code> path.</p>
     rpc StopCampaign (StopCampaignRequest) returns (Campaign);
 
     // <p>Stops a campaign immediately: no new call is started and the server hangs up every running
@@ -128,7 +252,9 @@ service Campaigns {
     // Returns the campaign in <code>HARD_STOPPING</code> (or already <code>HARD_STOPPED</code>).
     // Idempotent on <code>HARD_STOPPING</code> and <code>HARD_STOPPED</code>.</p>
     // <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> on a
-    // <code>COMPLETED</code> campaign.</p>
+    // <code>COMPLETED</code> campaign; <code>INVALID_ARGUMENT</code> for a malformed name, neither selector set, a
+    // <code>display_name</code> without <code>vtsi_project_name</code> or a <code>vtsi_project_name</code>
+    // that is not the campaign&apos;s project, or an unknown <code>field_mask</code> path.</p>
     rpc HardStopCampaign (HardStopCampaignRequest) returns (Campaign);
 
     // <p>Resumes a <code>STOPPING</code>, <code>STOPPED</code> or <code>HARD_STOPPED</code>
@@ -136,18 +262,140 @@ service Campaigns {
     // Idempotent on <code>RUNNING</code>.</p>
     // <p>Errors: <code>NOT_FOUND</code>; <code>FAILED_PRECONDITION</code> on <code>CREATED</code>
     // (use <code>StartCampaign</code>), <code>HARD_STOPPING</code> (wait until it is
-    // <code>HARD_STOPPED</code>) and <code>COMPLETED</code>.</p>
+    // <code>HARD_STOPPED</code>) and <code>COMPLETED</code>; <code>INVALID_ARGUMENT</code> for a malformed name, neither selector set, a
+    // <code>display_name</code> without <code>vtsi_project_name</code> or a <code>vtsi_project_name</code>
+    // that is not the campaign&apos;s project, or an unknown <code>field_mask</code> path.</p>
     rpc ResumeCampaign (ResumeCampaignRequest) returns (Campaign);
 
     // <p>Streams the status and progress of the campaigns of a project. The first message is a
     // snapshot (<code>snapshot = true</code>) of every matching campaign; every later message
     // carries only the campaigns (and, with <code>include_calls</code>, the campaign calls) that
-    // changed. An empty message is sent as a keep-alive. The stream ends when the client
-    // disconnects or the server-side maximum stream duration is reached
-    // (<code>end_reason</code> set on the last message).</p>
-    // <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>RESOURCE_EXHAUSTED</code>
-    // when the server has no free stream slot.</p>
+    // changed. Changes are polled every <code>ONDEWO_VTSI_STATUS_STREAM_POLL_INTERVAL_S</code> (1 s by
+    // default). An empty message is sent as a keep-alive when nothing changed for
+    // <code>ONDEWO_VTSI_STATUS_STREAM_KEEPALIVE_S</code> (15 s by default).</p>
+    // <p>The stream ends when the client disconnects, or the server ends it with a last message carrying
+    // <code>end_reason</code> and <code>end_reason_type</code>: at the maximum stream duration
+    // <code>ONDEWO_VTSI_STATUS_STREAM_MAX_DURATION_S</code> (3600 s by default,
+    // <code>STREAM_END_REASON_MAX_DURATION</code>), when the server shuts down
+    // (<code>STREAM_END_REASON_SERVER_SHUTDOWN</code>) and when the project is deleted
+    // (<code>STREAM_END_REASON_PROJECT_DELETED</code>). Reconnect and treat the new snapshot as authoritative.
+    // A client that blocks one send for longer than <code>ONDEWO_VTSI_STREAM_STALL_TIMEOUT_S</code> (30 s by
+    // default) is disconnected without a last message (the RPC ends <code>CANCELLED</code>). While
+    // authorization is enforced, the caller&apos;s role is re-checked periodically; a revoked role ends the
+    // RPC with <code>PERMISSION_DENIED</code>, an expired credential with <code>UNAUTHENTICATED</code>.</p>
+    // <p>Errors: <code>NOT_FOUND</code> if the project does not exist; <code>INVALID_ARGUMENT</code> for a
+    // malformed <code>vtsi_project_name</code>, a malformed entry of <code>campaign_names</code>, a campaign
+    // name of another project, or an unknown value or <code>CAMPAIGN_STATE_UNSPECIFIED</code> in
+    // <code>states</code> (a well-formed campaign name of the project that names no campaign is accepted and
+    // matches nothing); <code>RESOURCE_EXHAUSTED</code> when the server has no free stream slot
+    // (<code>ONDEWO_VTSI_STATUS_STREAM_MAX_CONCURRENT</code>, 16 per replica by default).</p>
     rpc StreamCampaignStatus (StreamCampaignStatusRequest) returns (stream StreamCampaignStatusResponse);
+
+    //////////////////////////////////////////////////////////////////////////////
+    // Campaign call endpoints
+    //////////////////////////////////////////////////////////////////////////////
+
+    // <p>Returns one call of a campaign, with its current SIP status and, with
+    // <code>include_attempts</code>, its attempts. Read-only, no event.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> for a malformed <code>name</code> or an unknown
+    // <code>field_mask</code> path; <code>NOT_FOUND</code> for an unknown project, campaign or campaign call
+    // (also one deleted with its campaign); <code>PERMISSION_DENIED</code> / <code>UNAUTHENTICATED</code> as
+    // for every RPC of this service.</p>
+    rpc GetCampaignCall (GetCampaignCallRequest) returns (CampaignCall);
+
+    // <p>Cancels calls of a campaign that have not started an attempt that is still running: each selected
+    // call in <code>CAMPAIGN_CALL_STATE_NOT_STARTED</code> or <code>CAMPAIGN_CALL_STATE_RETRY_PENDING</code>
+    // becomes <code>CAMPAIGN_CALL_STATE_CANCELLED</code> (its <code>finish_time</code> set, counted in
+    // <code>CampaignStatistics.cancelled</code>); the scheduled caller of a call added by
+    // <code>AddScheduledCallersToCampaign</code> is cancelled with it. Mirrors
+    // <code>Calls.CancelScheduledCaller</code>: a call whose attempt is <code>DISPATCHING</code> or
+    // <code>IN_PROGRESS</code> is NOT cancelled (and its call is not hung up; use
+    // <code>HardStopCampaign</code> or <code>Calls.StopCall</code>) and is reported in <code>refused</code>,
+    // like a call that is already finished; a refusal is not an error.</p>
+    // <p>Selection: <code>campaign_call_names</code>, <code>states</code>, or both (then a named call must
+    // also be in one of the states). At most 1000 calls are acted on per request: with <code>states</code>
+    // the first 1000 matching calls by <code>position</code>, and <code>remaining_count</code> says how many
+    // more match; repeat the request until it is 0. Each call is cancelled atomically on its own (the request
+    // as a whole is not atomic); a call that a replica starts dispatching while the request runs is refused,
+    // never cancelled half-way. Allowed in every campaign state. When it leaves a <code>RUNNING</code>
+    // campaign without an unfinished call, the campaign becomes <code>COMPLETED</code> at the next engine
+    // tick. Idempotent: a repeat refuses the calls it already cancelled with
+    // <code>reason=already-finished</code>.</p>
+    // <p>Emits <code>VTSI_EVENT_CAMPAIGN_CALL_CANCELLED</code> per cancelled call,
+    // <code>VTSI_EVENT_SCHEDULED_CALLER_CANCELLED</code> per cancelled scheduled caller, and the usual
+    // throttled <code>VTSI_EVENT_CAMPAIGN_PROGRESS</code>.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> for a malformed selector (as <code>GetCampaign</code>), neither
+    // <code>campaign_call_names</code> nor <code>states</code> set, more than 1000 names, a malformed campaign
+    // call name or one of another campaign, a state other than <code>NOT_STARTED</code> /
+    // <code>RETRY_PENDING</code> in <code>states</code>; <code>NOT_FOUND</code> for an unknown project or
+    // campaign (an unknown but well-formed campaign call name of the campaign is a refusal with
+    // <code>reason=not-found</code>, not an error).</p>
+    rpc CancelCampaignCalls (CancelCampaignCallsRequest) returns (CancelCampaignCallsResponse);
+
+    // <p>Puts FAILED or CANCELLED calls of a campaign back into the queue with a fresh attempt budget: each
+    // selected call gets <code>additional_attempts</code> more attempts on top of the attempts it already
+    // made, and becomes <code>CAMPAIGN_CALL_STATE_RETRY_PENDING</code> with <code>next_attempt_time</code> =
+    // the later of now and <code>not_before</code> (or <code>CAMPAIGN_CALL_STATE_NOT_STARTED</code> when it
+    // never made an attempt, e.g. a scheduled call cancelled before it fired). <code>finish_time</code> and
+    // <code>last_error</code> are cleared; <code>attempt_history</code> is kept and continues with the next
+    // <code>attempt_number</code>. The call keeps its <code>phone_number</code> and its own configuration;
+    // the campaign&apos;s call defaults are read live at the next dispatch as for every attempt.</p>
+    // <p>A call added by <code>AddScheduledCallersToCampaign</code> keeps following its scheduled caller,
+    // which returns to <code>SCHEDULED</code> with its scheduled time moved to the call&apos;s
+    // <code>next_attempt_time</code> (<code>VTSI_EVENT_SCHEDULED_CALLER_UPDATED</code>).</p>
+    // <p>Effect on the campaign: a <code>COMPLETED</code> campaign becomes <code>RUNNING</code> again (as when
+    // calls are added by a <code>CampaignAssignment</code>); every other state is kept, so a stopped campaign
+    // runs the calls after <code>ResumeCampaign</code> and a <code>CREATED</code> one after
+    // <code>StartCampaign</code>. The calls are dispatched under <code>max_parallel_calls</code> and the
+    // <code>calling_window</code> like any other.</p>
+    // <p>Selection exactly as <code>CancelCampaignCalls</code> (names, states or both; at most 1000 calls per
+    // request, <code>remaining_count</code>); a selected call that is not <code>FAILED</code> or
+    // <code>CANCELLED</code> is reported in <code>refused</code>. A failure that cannot succeed by repetition
+    // (e.g. a rejected credential) is retried too: fix its cause first, otherwise the campaign may be
+    // auto-stopped again. Not idempotent: each request adds a new budget to the calls it requeues, but a
+    // repeat finds them <code>RETRY_PENDING</code> / <code>NOT_STARTED</code> and refuses them.</p>
+    // <p>Emits <code>VTSI_EVENT_CAMPAIGN_CALL_REQUEUED</code> per requeued call (attributes
+    // <code>attempt_limit</code>, <code>next_attempt_time</code>), <code>VTSI_EVENT_CAMPAIGN_RESUMED</code>
+    // when a <code>COMPLETED</code> campaign became <code>RUNNING</code>, and the throttled
+    // <code>VTSI_EVENT_CAMPAIGN_PROGRESS</code>.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> as <code>CancelCampaignCalls</code>, except that
+    // <code>states</code> may only hold <code>FAILED</code> / <code>CANCELLED</code>, plus
+    // <code>additional_attempts</code> outside 0 to <code>ONDEWO_VTSI_CAMPAIGN_MAX_ATTEMPTS_LIMIT</code> (10)
+    // and <code>not_before</code> more than 7 days ahead; <code>NOT_FOUND</code> for an unknown project or
+    // campaign; <code>FAILED_PRECONDITION</code> when the campaign is <code>HARD_STOPPING</code> (wait until it
+    // is <code>HARD_STOPPED</code>).</p>
+    rpc RetryCampaignCalls (RetryCampaignCallsRequest) returns (RetryCampaignCallsResponse);
+
+    // <p>Creates a new campaign in the same project as a copy of an existing one, server side, so the
+    // stored credentials of its call defaults are preserved without ever being returned to the client (a
+    // Get-then-Create round trip would copy the REDACTED defaults). Copied: <code>max_parallel_calls</code>,
+    // <code>max_attempts</code>, <code>retry_delay</code>, <code>campaign_common_services_config</code>,
+    // <code>campaign_sip_caller_config</code> and <code>calling_window</code>. Not copied: the state (the
+    // clone is <code>CAMPAIGN_STATE_CREATED</code>), statistics, callers and every other output-only
+    // field.</p>
+    // <p>With <code>include_calls</code>, the source&apos;s calls whose state is in <code>call_states</code>
+    // (empty: every state) are copied as new <code>NOT_STARTED</code> calls in their original order
+    // (<code>position</code> renumbered from 1), each with its own stored configuration and its fixed
+    // <code>phone_number</code>, no attempt and no history. A copied call that was added by
+    // <code>AddScheduledCallersToCampaign</code> gets a new scheduled caller with the same scheduled time
+    // (a time in the past is due as soon as the clone runs). The whole clone is atomic: the campaign and every
+    // copied call (and scheduled caller) are stored, or nothing is. The source is read in one consistent
+    // snapshot and is not changed.</p>
+    // <p>With an <code>idempotency_key</code>, a retry of the same request returns the first attempt&apos;s
+    // clone (see <code>CreateCampaignRequest.idempotency_key</code>). Emits
+    // <code>VTSI_EVENT_CAMPAIGN_CREATED</code> for the clone with the attributes <code>cloned_from</code>
+    // (the source&apos;s resource name) and <code>copied_call_count</code>, and, when calls were copied,
+    // <code>VTSI_EVENT_CAMPAIGN_CALLS_ADDED</code> and one <code>VTSI_EVENT_SCHEDULED_CALLER_CREATED</code> per
+    // new scheduled caller.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> for a malformed source selector (as <code>GetCampaign</code>),
+    // a <code>new_display_name</code> over 128 characters, <code>call_states</code> without
+    // <code>include_calls</code> or holding an unknown value, a malformed or reused
+    // <code>idempotency_key</code> or an unknown <code>field_mask</code> path; <code>NOT_FOUND</code> for an
+    // unknown project or source campaign; <code>ALREADY_EXISTS</code> when <code>new_display_name</code> is used
+    // in the project; <code>FAILED_PRECONDITION</code> when the copied calls would exceed
+    // <code>ONDEWO_VTSI_CAMPAIGN_MAX_CALLS</code>; <code>ABORTED</code> while a first attempt with the same
+    // <code>idempotency_key</code> is still running.</p>
+    rpc CloneCampaign (CloneCampaignRequest) returns (Campaign);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -163,7 +411,9 @@ enum CampaignState {
     // Created; calls may be added, nothing is dialled until <code>StartCampaign</code>.
     CAMPAIGN_STATE_CREATED = 1;
 
-    // Calls are being started, at most <code>max_parallel_calls</code> at a time.
+    // Calls are being started, at most <code>max_parallel_calls</code> at a time. A campaign with a
+    // <code>calling_window</code> stays in this state outside its slots and starts no call there; see
+    // <code>Campaign.outside_calling_window</code>.
     CAMPAIGN_STATE_RUNNING = 2;
 
     // <code>StopCampaign</code> was requested, or the server stopped the campaign after repeated
@@ -216,10 +466,15 @@ enum CampaignCallState {
 }
 
 // Whether adding calls to a campaign also starts it.
+// <p>Note: unlike most enums of this API, the zero value <code>CAMPAIGN_START_MODE_UNSPECIFIED</code> is not
+// "no value" but a behaviour of its own (the default described below), which differs from both named
+// values for an existing <code>CREATED</code> campaign. It keeps its released name for wire and source
+// compatibility; send it (or leave the field unset) to get that default.</p>
 enum CampaignStartMode {
 
     // The default: a NEW campaign is created <code>RUNNING</code>; an EXISTING campaign keeps its
-    // state (except that a <code>COMPLETED</code> one becomes <code>RUNNING</code> again).
+    // state (except that a <code>COMPLETED</code> one becomes <code>RUNNING</code> again). An existing
+    // <code>CREATED</code> campaign therefore stays <code>CREATED</code>.
     CAMPAIGN_START_MODE_UNSPECIFIED = 0;
 
     // Start the campaign: a new one is created <code>RUNNING</code>, an existing
@@ -265,6 +520,94 @@ enum CampaignCallAttemptOutcome {
     CAMPAIGN_CALL_ATTEMPT_OUTCOME_CANCELLED = 4;
 }
 
+// Day of the week of a <code>CallingWindowSlot</code>, in the window&apos;s time zone. Defined here rather
+// than reusing <code>google.type.DayOfWeek</code> so that this file needs no further import in any
+// generated client; the numbering is the same (ISO 8601, Monday = 1).
+enum CallingWindowDayOfWeek {
+
+    // Unspecified. Refused in a slot with <code>INVALID_ARGUMENT</code>.
+    CALLING_WINDOW_DAY_OF_WEEK_UNSPECIFIED = 0;
+
+    // Monday.
+    CALLING_WINDOW_DAY_OF_WEEK_MONDAY = 1;
+
+    // Tuesday.
+    CALLING_WINDOW_DAY_OF_WEEK_TUESDAY = 2;
+
+    // Wednesday.
+    CALLING_WINDOW_DAY_OF_WEEK_WEDNESDAY = 3;
+
+    // Thursday.
+    CALLING_WINDOW_DAY_OF_WEEK_THURSDAY = 4;
+
+    // Friday.
+    CALLING_WINDOW_DAY_OF_WEEK_FRIDAY = 5;
+
+    // Saturday.
+    CALLING_WINDOW_DAY_OF_WEEK_SATURDAY = 6;
+
+    // Sunday.
+    CALLING_WINDOW_DAY_OF_WEEK_SUNDAY = 7;
+}
+
+// Order of a <code>ListCampaigns</code> listing. Every order breaks ties by the campaign&apos;s resource
+// <code>name</code>, ascending, so paging is stable.
+enum CampaignOrderBy {
+
+    // The default: <code>created_at</code>, newest first (the order of every release before this value
+    // existed); identical to <code>CAMPAIGN_ORDER_BY_CREATED_AT_DESC</code>.
+    CAMPAIGN_ORDER_BY_UNSPECIFIED = 0;
+
+    // <code>created_at</code>, newest first.
+    CAMPAIGN_ORDER_BY_CREATED_AT_DESC = 1;
+
+    // <code>modified_at</code>, most recently modified first (state changes by the server included). A
+    // campaign modified while a client pages can move between pages; page with
+    // <code>CREATED_AT_DESC</code> when a complete, duplicate-free walk is required.
+    CAMPAIGN_ORDER_BY_MODIFIED_AT_DESC = 2;
+
+    // <code>display_name</code>, ascending, compared byte-wise (case-sensitive, <code>B</code> before
+    // <code>a</code>).
+    CAMPAIGN_ORDER_BY_DISPLAY_NAME_ASC = 3;
+}
+
+// Why the SERVER ended a stream. Carried, next to the free-text <code>end_reason</code>, on the last
+// message of <code>Campaigns.StreamCampaignStatus</code>
+// (<code>StreamCampaignStatusResponse.end_reason_type</code>) and of <code>Events.SubscribeVtsiEvents</code>
+// (<code>SubscribeVtsiEventsResponse.end_reason_type</code>). A stream ended by the client, by a gRPC status
+// or by a broken connection carries no last message at all. Defined in this file because
+// <code>events.proto</code> imports it and not the other way round. New values may be added: treat an
+// unknown value like <code>STREAM_END_REASON_UNSPECIFIED</code> (reconnect).
+enum StreamEndReason {
+
+    // Not ended by the server (every message but the last one), or a server that predates this field
+    // (then only <code>end_reason</code> is set): reconnect.
+    STREAM_END_REASON_UNSPECIFIED = 0;
+
+    // The server&apos;s maximum stream duration was reached. Reconnect (with the
+    // <code>resume_token</code> where the stream has one).
+    STREAM_END_REASON_MAX_DURATION = 1;
+
+    // The client read too slowly and the server&apos;s buffer for the stream overflowed; events were
+    // skipped (<code>SubscribeVtsiEventsResponse.dropped_event_count</code>). Reconnect with the
+    // <code>resume_token</code>; the skipped events are replayed from the journal while it still holds
+    // them.
+    STREAM_END_REASON_CLIENT_TOO_SLOW = 2;
+
+    // The event subscription the stream was opened with was deleted. Do not reconnect with it.
+    STREAM_END_REASON_SUBSCRIPTION_DELETED = 3;
+
+    // The event subscription the stream was opened with was disabled. Reconnecting with it is refused
+    // with <code>FAILED_PRECONDITION</code> until it is enabled again.
+    STREAM_END_REASON_SUBSCRIPTION_DISABLED = 4;
+
+    // The project of the stream was deleted. Do not reconnect.
+    STREAM_END_REASON_PROJECT_DELETED = 5;
+
+    // The server replica serving the stream is shutting down. Reconnect (another replica serves it).
+    STREAM_END_REASON_SERVER_SHUTDOWN = 6;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // Resources
 //////////////////////////////////////////////////////////////////////////////
@@ -289,21 +632,28 @@ message Campaign {
     string display_name = 4;
 
     // Maximum number of calls of this campaign that are being started or are running at the same
-    // time. <code>0</code> on create means the server default (1); the allowed range is 1 to the
-    // server limit (1000 by default). The project&apos;s <code>max_callers</code> still bounds the
+    // time. <code>0</code> on create means the server default
+    // (<code>ONDEWO_VTSI_CAMPAIGN_DEFAULT_MAX_PARALLEL_CALLS</code>, 1 by default); the allowed range is 1 to the
+    // server limit (<code>ONDEWO_VTSI_CAMPAIGN_MAX_PARALLEL_CALLS_LIMIT</code>, 1000 by default). The
+    // project&apos;s <code>max_callers</code> still bounds the
     // number of callers that exist at all. Updatable; lowering it never ends a running call.
     int32 max_parallel_calls = 5;
 
     // Maximum number of attempts per call, the first one included. <code>0</code> on create means
-    // the server default of 1, i.e. no retry; the allowed range is 1 to 10. Updatable. It is read
+    // the server default of 1, i.e. no retry; the allowed range is 1 to
+    // <code>ONDEWO_VTSI_CAMPAIGN_MAX_ATTEMPTS_LIMIT</code> (10 by default). Updatable. It is read
     // LIVE, never snapshotted per call: every decision after an attempt fails uses the value current
     // at that moment, and a call waiting in <code>RETRY_PENDING</code> whose <code>attempts</code>
     // is no longer below a lowered value becomes <code>FAILED</code> at the next check (its last
-    // error stays). Raising it never revives a <code>FAILED</code> call.
+    // error stays). Raising it never revives a <code>FAILED</code> call; <code>RetryCampaignCalls</code>
+    // does. A call requeued by <code>RetryCampaignCalls</code> may exceed it (see
+    // <code>CampaignCall.max_attempts</code>).
     int32 max_attempts = 6;
 
     // Time to wait after a failed attempt before the next one is started. Unset on create means the
-    // server default (60 s); allowed range 0 s to 7 days. Updatable.
+    // server default (<code>ONDEWO_VTSI_CAMPAIGN_DEFAULT_RETRY_DELAY_S</code>, 60 s by default); allowed range
+    // 0 s to 7 days. Updatable. With a <code>calling_window</code>, a retry that falls due outside every slot
+    // waits for the next slot.
     google.protobuf.Duration retry_delay = 7;
 
     // Output only. Lifecycle state.
@@ -337,6 +687,202 @@ message Campaign {
 
     // Output only. When the campaign reached <code>COMPLETED</code>.
     google.protobuf.Timestamp completed_at = 17;
+
+    // Optional. Default <code>CommonServicesConfig</code> of EVERY call of the campaign (speech-to-text,
+    // NLU, text-to-speech, CSI and voice interaction). Settable on <code>CreateCampaign</code> and on
+    // <code>CampaignAssignment.new_campaign</code>; updatable with the <code>update_mask</code> path
+    // <code>campaign_common_services_config</code> or a nested sub-path of it (e.g.
+    // <code>campaign_common_services_config.nlu_vtsi_config.agent_name</code>). Unset (the default)
+    // changes nothing: every call runs exactly with its own <code>StartCallerRequest</code> config, as
+    // before 9.1.0.
+    // <p>Read LIVE, never snapshotted per call: whenever a campaign call is dispatched (its first
+    // attempt and every retry) the server reads the campaign&apos;s CURRENT value. The effective
+    // <code>common_services_config</code> of that call is:</p>
+    // <pre><code>effective = copy(campaign.campaign_common_services_config)
+    // effective.MergeFrom(caller_request.common_services_config)</code></pre>
+    // <p>i.e. protobuf <code>MergeFrom</code> semantics, the call&apos;s own value WINNING:</p>
+    // <ul>
+    //   <li>a singular scalar, enum or string the call sets to a non-default value (or, for an
+    //       <code>optional</code> field, sets at all) replaces the campaign&apos;s value; one the call
+    //       leaves at its default keeps the campaign&apos;s value. A plain (non-<code>optional</code>)
+    //       scalar therefore cannot be reset to its zero value by the call;</li>
+    //   <li>a message field is merged recursively by the same rules;</li>
+    //   <li>a repeated field is CONCATENATED, the campaign&apos;s entries first (e.g.
+    //       <code>nlu_vtsi_config.contexts</code>, the lists of the <code>csi_vtsi_config</code>
+    //       callbacks, <code>voice_interaction_config.response_timing_config.soft_timeout_config.messages</code>);</li>
+    //   <li>a map field is merged by key, the call&apos;s entry winning on a shared key;</li>
+    //   <li>a oneof member the call sets replaces whichever member the campaign set (e.g.
+    //       <code>nlu_vtsi_config.credentials</code> versus <code>nlu_vtsi_config.auth_token</code>).</li>
+    // </ul>
+    // <p>The effective configuration is validated exactly as a <code>StartCallerRequest</code> carrying it,
+    // so an entry of <code>AddCallersToCampaign</code> / <code>AddScheduledCallersToCampaign</code> may leave
+    // out what the campaign supplies. Because the default is read live, an update that makes the effective
+    // configuration of a not yet dispatched call invalid fails that call at dispatch as a failure that
+    // cannot succeed by repetition (it is not retried).</p>
+    // <p>Returned by <code>CreateCampaign</code>, <code>GetCampaign</code>, <code>UpdateCampaign</code>,
+    // <code>ListCampaigns</code>, <code>StartCampaign</code>, <code>StopCampaign</code>,
+    // <code>HardStopCampaign</code> and <code>ResumeCampaign</code>. Left UNSET (whatever is stored) in
+    // <code>StreamCampaignStatusResponse.campaigns</code> and in the <code>campaign</code> of
+    // <code>AddCallersToCampaignResponse</code> / <code>AddScheduledCallersToCampaignResponse</code>; read
+    // it with <code>GetCampaign</code>.</p>
+    // <p>Credentials: the credential-bearing fields (NLU credentials and tokens, gRPC certificates,
+    // message broker and object store settings, callbacks, transcribe and synthesize request configs)
+    // are stored like the <code>common_services_config</code> of a started caller; the server never logs
+    // them. They are RETURNED only to a caller whose role on the project was resolved with authorization
+    // enforced and who may see the whole project (<code>SERVER_ADMIN</code>, <code>PROJECT_ADMIN</code>,
+    // <code>PROJECT_DEVELOPER</code>). Every other caller receives only the identity and routing fields
+    // (agent, language, initial intent, platform, service hosts and ports, CSI control messages, voice
+    // interaction config): a <code>PROJECT_EXECUTOR</code>, and also every caller when authorization is
+    // disabled or only monitored, because a <code>Campaign</code> has no view that could leave the config
+    // out by default. A client that reads such a campaign and writes the whole config back with
+    // <code>update_mask</code> path <code>campaign_common_services_config</code> overwrites the stored
+    // credentials with the withheld (empty) ones; update a sub-path instead.</p>
+    CommonServicesConfig campaign_common_services_config = 18;
+
+    // Optional. Default <code>SipCallerConfig</code> of EVERY call of the campaign (SIP image version,
+    // callee and SIP headers). Settable on <code>CreateCampaign</code> and on
+    // <code>CampaignAssignment.new_campaign</code>; updatable with the <code>update_mask</code> path
+    // <code>campaign_sip_caller_config</code> or a nested sub-path of it (e.g.
+    // <code>campaign_sip_caller_config.sip_headers</code>). Unset (the default) changes nothing.
+    // <p>Read LIVE at every dispatch and merged exactly like
+    // <code>campaign_common_services_config</code>: the effective <code>sip_caller_config</code> of a call
+    // is a copy of this value with the call&apos;s own <code>StartCallerRequest.sip_caller_config</code>
+    // merged over it (<code>MergeFrom</code>, the call winning); <code>sip_headers</code> are merged by
+    // key with the call&apos;s header winning on a shared name.</p>
+    // <p>EXCEPT <code>callee_id</code>, which is resolved ONCE, when the call is added to the campaign: the
+    // call&apos;s own <code>callee_id</code> or, when that is empty, this value&apos;s
+    // <code>callee_id</code> at that moment. The result is stored as <code>CampaignCall.phone_number</code>
+    // and is the <code>callee_id</code> of every attempt of that call, retries included. A later update of
+    // <code>campaign_sip_caller_config.callee_id</code> (or of the whole config) therefore changes the callee
+    // only of calls added after it, never of calls already in the campaign, so the number a campaign call
+    // reports (and that <code>ListCampaignCallsRequest.phone_number</code> filters on) is always the number
+    // it dials. An <code>AddCallersToCampaign</code> / <code>AddScheduledCallersToCampaign</code> request of
+    // which an entry takes the default callee is refused with <code>ABORTED</code> (nothing is added; retry
+    // it) when an update of the default callee commits while the request runs, so no call added after an
+    // update dials the previous default.</p>
+    // <p>Returned by the same RPCs as <code>campaign_common_services_config</code> and left unset in the
+    // same responses.</p>
+    SipCallerConfig campaign_sip_caller_config = 19;
+
+    // Output only. Resource names
+    // (<pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;</code></pre>) of the callers of the
+    // campaign: the callers that placed at least one attempt of one of its campaign calls
+    // (<code>CampaignCallAttempt.caller_name</code>), whichever way the call was added. A scheduled campaign
+    // call is placed by a caller too and counts; its <code>ScheduledCaller</code> is not a
+    // <code>Caller</code> and is in <code>CampaignCall.scheduled_caller_name</code> instead. A caller that was
+    // deleted is not listed (its name stays in the attempt history), and a caller that placed attempts of
+    // several campaigns (a pooled caller can) is listed in each of them. Exactly the set
+    // <code>Calls.ListCallers</code> returns with <code>ListCallersRequest.campaign_name</code>.
+    // <p>Order: by the start of the first attempt each caller placed for the campaign, oldest first, each name
+    // once. Bounded: at most the first 1000 names; <code>campaign_callers_truncated</code> says whether there are
+    // more. Bounded in work too: the server reads only the campaign&apos;s earliest 10000 attempts, by start, to
+    // compute it, so a campaign with 10000 or more attempts reports <code>campaign_callers_truncated</code>, also
+    // with fewer than 1000 names. The complete, paginated list is <code>Calls.ListCallers</code> with the
+    // campaign selector, and the calls they placed are <code>Calls.ListCalls</code> with
+    // <code>CallFilter.campaign_name</code>.</p>
+    // <p>On <code>UpdateCampaign</code> and the four lifecycle RPCs the change has already been applied when the
+    // callers are read; when that read fails, the RPC still succeeds and returns the campaign with
+    // <code>campaign_callers</code> empty and <code>campaign_callers_truncated</code> true (read them with
+    // <code>GetCampaign</code>).</p>
+    // <p>Populated by <code>CreateCampaign</code> (always empty: a new campaign has placed no call),
+    // <code>GetCampaign</code>, <code>UpdateCampaign</code>, <code>StartCampaign</code>,
+    // <code>StopCampaign</code>, <code>HardStopCampaign</code> and <code>ResumeCampaign</code>; subject to their
+    // <code>field_mask</code> like any other path (path <code>campaign_callers</code>; a path below it is
+    // rejected). <code>ListCampaigns</code> populates it ONLY when its <code>field_mask</code> names it
+    // explicitly, and an unset or empty mask, which returns every other field, leaves it empty: at up to 1000
+    // names (~90 bytes each) per campaign, a default page would otherwise exceed gRPC&apos;s default 4 MiB
+    // message limit. Left empty in
+    // <code>StreamCampaignStatusResponse.campaigns</code> and in the <code>campaign</code> of
+    // <code>AddCallersToCampaignResponse</code> / <code>AddScheduledCallersToCampaignResponse</code>. Setting it
+    // on create is an output-only field set (<code>INVALID_ARGUMENT</code>), naming it in an
+    // <code>update_mask</code> is rejected as output only.</p>
+    repeated string campaign_callers = 20;
+
+    // Output only. True when <code>campaign_callers</code> may be incomplete: it was cut at its bound of 1000
+    // names and the campaign has more callers, the campaign has 10000 or more attempts (the most the server
+    // reads for it), or (on <code>UpdateCampaign</code> and the lifecycle RPCs only) the callers could not be
+    // read after the change was applied. Read them all with <code>Calls.ListCallers</code> and the campaign
+    // selector. Populated
+    // and left unset by the same RPCs as <code>campaign_callers</code>, and in <code>ListCampaigns</code> also
+    // only when the <code>field_mask</code> names it explicitly; a <code>field_mask</code> names it like any
+    // other path (name both to read the names and whether they are complete).
+    bool campaign_callers_truncated = 21;
+
+    // Optional. When calls of the campaign may be started: weekly slots in an IANA time zone, see
+    // <a href="index.html#ondewo.vtsi.CampaignCallingWindow">CampaignCallingWindow</a>. Unset (the default)
+    // means at any time, as before this field existed. Settable on <code>CreateCampaign</code>,
+    // <code>CampaignAssignment.new_campaign</code> and copied by <code>CloneCampaign</code>; updatable with the
+    // <code>update_mask</code> path <code>calling_window</code> (replaces the whole window; unset removes it)
+    // or the sub-paths <code>calling_window.time_zone</code> and <code>calling_window.slots</code> (the
+    // repeated field is replaced whole). Its output-only fields must be unset on create and are rejected in
+    // an <code>update_mask</code>. An invalid window is rejected with <code>INVALID_ARGUMENT</code> naming the
+    // problem (see <code>CampaignCallingWindow</code>). Returned by every RPC that returns a
+    // <code>Campaign</code>, <code>StreamCampaignStatusResponse.campaigns</code> and the <code>campaign</code>
+    // of the <code>Add*ToCampaign</code> responses included.
+    CampaignCallingWindow calling_window = 22;
+
+    // Output only. True while the campaign is <code>RUNNING</code>, has a <code>calling_window</code> and the
+    // current time is outside every slot of it, i.e. it starts no call until
+    // <code>calling_window.next_window_start</code>. False in every other case (no window, inside a slot, or
+    // another state). Evaluated when the campaign is read, so it is exact for the moment of the response;
+    // <code>VTSI_EVENT_CAMPAIGN_CALLING_WINDOW_OPENED</code> / <code>..._CLOSED</code> report the edges of a
+    // running campaign. Returned like <code>calling_window</code>.
+    bool outside_calling_window = 23;
+}
+
+// When the calls of a campaign may be started: a set of weekly slots, each a day of the week and a range
+// of minutes of that day, in one time zone.
+// <p>Effect: the campaign engine starts an attempt (a first attempt, a retry, or a due scheduled call) only
+// while the current time, converted to <code>time_zone</code>, lies inside a slot. Outside every slot a
+// <code>RUNNING</code> campaign stays <code>RUNNING</code>, reports
+// <code>Campaign.outside_calling_window = true</code> and starts nothing; calls keep their state
+// (<code>NOT_STARTED</code> / <code>RETRY_PENDING</code>) and are started from the next slot on, under
+// <code>max_parallel_calls</code>, in their usual order. A call already started when a slot ends is NEVER
+// ended by it and may run past the slot; its retry, if any, waits for the next slot. Statistics and the
+// campaign&apos;s state machine are otherwise unaffected; stop, hard stop and resume work as without a
+// window.</p>
+// <p>Validation (<code>INVALID_ARGUMENT</code> naming the problem, on <code>CreateCampaign</code>,
+// <code>UpdateCampaign</code>, <code>CampaignAssignment.new_campaign</code>): <code>time_zone</code> must be a
+// name of the IANA time zone database known to the server (e.g. <code>Europe/Vienna</code>, <code>UTC</code>;
+// not an offset such as <code>+02:00</code>); at least one and at most 50 slots; each slot with a day other
+// than <code>CALLING_WINDOW_DAY_OF_WEEK_UNSPECIFIED</code>, <code>0 &lt;= start_minute &lt; end_minute
+// &lt;= 1440</code>. A slot cannot span midnight: split it into two slots on consecutive days. Slots may overlap
+// or touch; the window is their union.</p>
+// <p>Local time: slot boundaries are wall-clock times in <code>time_zone</code>, so they follow daylight saving
+// changes. A boundary that does not exist on a given day (the hour skipped when clocks go forward) takes effect
+// at the first instant after it that exists; a boundary that occurs twice (the hour repeated when clocks go
+// back) takes effect at its first occurrence.</p>
+message CampaignCallingWindow {
+
+    // Required. IANA time zone name in which the slots are read, e.g. <code>Europe/Vienna</code>. At most
+    // 64 characters.
+    string time_zone = 1;
+
+    // Required. The weekly slots, 1 to 50. Order is irrelevant.
+    repeated CallingWindowSlot slots = 2;
+
+    // Output only. The start of the next slot strictly after the moment the campaign was read, as an
+    // absolute time (UTC); while inside a slot, the start of the slot after the current one ends (the end of
+    // a run of overlapping or touching slots). Unset when the window has no future slot (cannot happen for a
+    // valid window) and in requests. Computed when read, also when the campaign is not <code>RUNNING</code>.
+    google.protobuf.Timestamp next_window_start = 3;
+}
+
+// One weekly slot of a <code>CampaignCallingWindow</code>: on <code>day_of_week</code>, from
+// <code>start_minute</code> (inclusive) to <code>end_minute</code> (exclusive), counted in minutes after local
+// midnight of <code>CampaignCallingWindow.time_zone</code>. Example: Monday 09:00 to 17:30 is
+// <code>{day_of_week: CALLING_WINDOW_DAY_OF_WEEK_MONDAY, start_minute: 540, end_minute: 1050}</code>.
+message CallingWindowSlot {
+
+    // Required. The day, in the window&apos;s time zone.
+    CallingWindowDayOfWeek day_of_week = 1;
+
+    // Start of the slot in minutes after local midnight, inclusive: 0 to 1439.
+    int32 start_minute = 2;
+
+    // End of the slot in minutes after local midnight, exclusive: 1 to 1440 (1440 = the end of the day),
+    // greater than <code>start_minute</code>.
+    int32 end_minute = 3;
 }
 
 // Progress of a campaign. Every call of the campaign is counted in exactly one of
@@ -353,6 +899,14 @@ message Campaign {
 // not finished: a call waiting for its next attempt is still being worked on)</li>
 // <li>not started = <code>not_started</code></li>
 // </ul>
+// <p>Bounds: every call counter is at most the campaign&apos;s number of calls, itself at most
+// <code>ONDEWO_VTSI_CAMPAIGN_MAX_CALLS</code> (100000 by default); <code>total_attempts</code> and
+// <code>answering_machine_detected</code> are at most that times the attempt limit (10 by default, plus the
+// budgets added by <code>RetryCampaignCalls</code>), far below the <code>int32</code> range.
+// <code>total_attempts</code>, <code>calls_retried</code> and <code>answering_machine_detected</code> never
+// decrease; the state buckets move as calls change state (<code>RetryCampaignCalls</code> moves calls out of
+// <code>failed</code> / <code>cancelled</code>). The statistics are computed when read, from one consistent
+// snapshot.</p>
 message CampaignStatistics {
 
     // Resource name of the campaign.
@@ -390,6 +944,17 @@ message CampaignStatistics {
 
     // Calls that needed more than one attempt (<code>attempts</code> &gt; 1), whatever their state.
     int32 calls_retried = 12;
+
+    // Mean connected time of the campaign&apos;s FINISHED attempts that were connected: from the moment the
+    // attempt&apos;s call reached <code>OUTGOING_CALL_CONNECTED</code> to the moment it ended, averaged over
+    // those attempts (a running call is not counted until it ended). Unset when no attempt has connected and
+    // ended yet. Millisecond precision.
+    google.protobuf.Duration average_connected_duration = 13;
+
+    // Attempts whose call reported <code>OUTGOING_CALL_ANSWERING_MACHINE_DETECTED</code> (answering machine
+    // detection), whatever the call did next; each attempt counts once. <code>0</code> also when answering
+    // machine detection is not configured for the campaign&apos;s calls.
+    int32 answering_machine_detected = 14;
 }
 
 // One attempt of a campaign call.
@@ -440,7 +1005,10 @@ message CampaignCall {
     // State of the call.
     CampaignCallState state = 4;
 
-    // The callee: <code>SipCallerConfig.callee_id</code> of the call&apos;s request.
+    // The callee: <code>SipCallerConfig.callee_id</code> of the call&apos;s request or, when the request
+    // leaves it empty, of <code>Campaign.campaign_sip_caller_config</code> at the time the call was added.
+    // Fixed from then on: every attempt of the call dials exactly this number, whatever later updates of
+    // the campaign&apos;s <code>campaign_sip_caller_config</code> say.
     string phone_number = 5;
 
     // How the call was added.
@@ -455,8 +1023,10 @@ message CampaignCall {
     // Attempts started so far.
     int32 attempts = 9;
 
-    // The campaign&apos;s CURRENT <code>max_attempts</code> (read live, see
-    // <code>Campaign.max_attempts</code>); repeated here so a page of calls is readable alone.
+    // The attempt limit of this call: the campaign&apos;s CURRENT <code>max_attempts</code> (read live, see
+    // <code>Campaign.max_attempts</code>), repeated here so a page of calls is readable alone. For a call
+    // requeued by <code>RetryCampaignCalls</code> it is the larger of that value and the call&apos;s own
+    // limit set by the requeue (its attempts at the time plus <code>additional_attempts</code>).
     int32 max_attempts = 10;
 
     // Caller of the current or last attempt.
@@ -497,17 +1067,6 @@ message CampaignCall {
     repeated CampaignCallAttempt attempt_history = 22;
 }
 
-// Identifies a campaign by its display name, which is unique within a project.
-message CampaignDisplayName {
-
-    // VTSI project of the campaign.
-    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
-    string vtsi_project_name = 1;
-
-    // Exact, case-sensitive <code>display_name</code> of the campaign.
-    string display_name = 2;
-}
-
 // Assigns the callers of an <code>AddCallersToCampaign</code> / <code>AddScheduledCallersToCampaign</code>
 // request to a campaign. The calls are NOT started by the request itself but added to the
 // campaign, which starts them under its <code>max_parallel_calls</code> limit.
@@ -520,12 +1079,22 @@ message CampaignDisplayName {
 // <code>CREATED</code>); <code>COMPLETED</code> accepts them and becomes <code>RUNNING</code>.</p>
 // <p>Errors, as gRPC status codes of the <code>AddCallersToCampaign</code> /
 // <code>AddScheduledCallersToCampaign</code> RPC: <code>NOT_FOUND</code> for an unknown
-// <code>campaign_name</code> / <code>campaign_display_name</code>
+// <code>campaign_name</code> / <code>display_name</code>
 // or a campaign deleted while the request ran; <code>INVALID_ARGUMENT</code> for a campaign of
 // another project, an invalid <code>new_campaign</code> (an output-only field set, a value out of
 // range) or an invalid caller entry (the message names its index); <code>ALREADY_EXISTS</code> for a
 // <code>new_campaign.display_name</code> used in the project; <code>FAILED_PRECONDITION</code> when
 // the campaign would exceed the server&apos;s maximum number of calls per campaign.</p>
+// <p>The project of the campaign is the project of the enclosing request:
+// <code>AddCallersToCampaignRequest.vtsi_project_name</code> /
+// <code>AddScheduledCallersToCampaignRequest.vtsi_project_name</code>. It is where a new campaign is
+// created, where <code>display_name</code> is resolved, and the project a <code>campaign_name</code>
+// must belong to.</p>
+// <p>Every caller entry of the request is validated against its EFFECTIVE configuration, i.e. the
+// campaign&apos;s <code>campaign_common_services_config</code> / <code>campaign_sip_caller_config</code>
+// with the entry&apos;s own config merged over it (see
+// <a href="index.html#ondewo.vtsi.Campaign">Campaign</a>), so an entry may leave out what the campaign
+// supplies.</p>
 message CampaignAssignment {
 
     // Which campaign.
@@ -535,19 +1104,29 @@ message CampaignAssignment {
         // The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre>
         string campaign_name = 1;
 
-        // Create a new campaign with these settings and add the calls to it. Only
-        // <code>display_name</code>, <code>max_parallel_calls</code>, <code>max_attempts</code> and
-        // <code>retry_delay</code> are read; output-only fields must be unset.
+        // Create a new campaign with these settings, in the enclosing request&apos;s project, and add the
+        // calls to it. Only <code>display_name</code>, <code>max_parallel_calls</code>,
+        // <code>max_attempts</code>, <code>retry_delay</code>, <code>campaign_common_services_config</code>,
+        // <code>campaign_sip_caller_config</code> and <code>calling_window</code> are read; output-only fields
+        // (<code>calling_window.next_window_start</code> included) must be unset.
         Campaign new_campaign = 2;
 
-        // Add the calls to the existing campaign with this display name. Its
-        // <code>vtsi_project_name</code> must be the request&apos;s project.
-        CampaignDisplayName campaign_display_name = 4;
+        // Add the calls to the existing campaign with this exact, case-sensitive display name, resolved
+        // within the enclosing request&apos;s project
+        // (<code>AddCallersToCampaignRequest.vtsi_project_name</code> /
+        // <code>AddScheduledCallersToCampaignRequest.vtsi_project_name</code>). Replaces the 9.0.0
+        // <code>CampaignDisplayName campaign_display_name = 4</code>.
+        string display_name = 5;
     }
 
     // Whether the campaign starts dialling; see <code>CampaignStartMode</code>. The default starts a
     // new campaign and leaves an existing one in its state.
     CampaignStartMode start_mode = 3;
+
+    // Field 4 was the 9.0.0 <code>CampaignDisplayName campaign_display_name</code> selector; the
+    // message was removed in 9.1.0.
+    reserved 4;
+    reserved "campaign_display_name";
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -562,23 +1141,77 @@ message CreateCampaignRequest {
     // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
     string vtsi_project_name = 1;
 
-    // The campaign to create. Output-only fields must be unset.
+    // The campaign to create. Output-only fields must be unset. <code>campaign_common_services_config</code>
+    // and <code>campaign_sip_caller_config</code> may be set: they become the defaults of every call of
+    // the campaign (see <a href="index.html#ondewo.vtsi.Campaign">Campaign</a>).
     Campaign campaign = 2;
+
+    // Optional. Partial response: the <code>Campaign</code> field paths to populate, relative to the
+    // returned <code>Campaign</code> and WITHOUT a <code>campaign.</code> prefix, e.g. <code>state</code>,
+    // <code>statistics.completed</code>,
+    // <code>campaign_common_services_config.nlu_vtsi_config.agent_name</code>. Nested paths through
+    // singular message fields are allowed; a path below a repeated or map field is not.
+    // <code>name</code> is always populated. Unset or empty returns every field. An unknown path is
+    // rejected with <code>INVALID_ARGUMENT</code> naming it. The mask is applied after the server&apos;s
+    // role-based redaction, so it never reveals a redacted value. It shapes only the response: the
+    // whole campaign is created regardless.
+    google.protobuf.FieldMask field_mask = 3;
+
+    // Optional client idempotency key, with the semantics of
+    // <code>AddCallersToCampaignRequest.idempotency_key</code>: at most 255 printable ASCII characters, no
+    // whitespace; empty means no deduplication. A retry carrying the same key returns the response of the
+    // first successful attempt (the same campaign, as it was returned then) instead of creating a second
+    // campaign, whichever server replica it reaches, for as long as the server retains the key (24 hours by
+    // default). The key is scoped to the VTSI project and to this RPC. Reusing a key with a different request
+    // is refused with <code>INVALID_ARGUMENT</code>; <code>field_mask</code> is not part of that comparison (a
+    // retry with another mask is the same request and its response is shaped by the retry&apos;s mask). A
+    // retry that arrives while the first attempt is still running is answered <code>ABORTED</code> and may be
+    // retried later. A first attempt that fails stores nothing, so a retry after a failure runs the request
+    // again. A replayed response carries no <code>campaign_common_services_config</code> and no
+    // <code>campaign_sip_caller_config</code>: the server keeps no second copy of the credentials it holds;
+    // read them with <code>GetCampaign</code>.
+    string idempotency_key = 4;
 }
 
 // The request message for
 // <a href="index.html#ondewo.vtsi.Campaigns.GetCampaign">Campaigns.GetCampaign</a>.
 message GetCampaignRequest {
 
-    // Which campaign.
+    // Which campaign. Exactly one must be set; neither is rejected with <code>INVALID_ARGUMENT</code>.
     oneof campaign {
 
         // Resource name of the campaign.
+        // The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre>
         string name = 1;
 
-        // The campaign with this display name.
-        CampaignDisplayName display_name = 2;
+        // Exact, case-sensitive <code>display_name</code> of the campaign, resolved within
+        // <code>vtsi_project_name</code>, which is then required. Replaces the 9.0.0
+        // <code>CampaignDisplayName display_name = 2</code>.
+        string display_name = 3;
     }
+
+    // VTSI project of the campaign.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // REQUIRED with <code>display_name</code>: empty or malformed is rejected with
+    // <code>INVALID_ARGUMENT</code>, an unknown project with <code>NOT_FOUND</code>. Optional with
+    // <code>name</code>: when set, it must be the project of the campaign
+    // (<code>INVALID_ARGUMENT</code> otherwise).
+    string vtsi_project_name = 4;
+
+    // Optional. Partial response: the <code>Campaign</code> field paths to populate, relative to the
+    // returned <code>Campaign</code> and WITHOUT a <code>campaign.</code> prefix, e.g. <code>state</code>,
+    // <code>statistics.completed</code>,
+    // <code>campaign_common_services_config.nlu_vtsi_config.agent_name</code>. Nested paths through
+    // singular message fields are allowed; a path below a repeated or map field is not.
+    // <code>name</code> is always populated. Unset or empty returns every field. An unknown path is
+    // rejected with <code>INVALID_ARGUMENT</code> naming it. The mask is applied after the server&apos;s
+    // role-based redaction, so it never reveals a redacted value.
+    google.protobuf.FieldMask field_mask = 5;
+
+    // Field 2 was the 9.0.0 <code>CampaignDisplayName display_name</code> selector; the message was
+    // removed in 9.1.0. The name <code>display_name</code> is reused by the string selector above,
+    // so only the number is reserved.
+    reserved 2;
 }
 
 // The request message for
@@ -591,26 +1224,95 @@ message UpdateCampaignRequest {
 
     // Required. Paths WITHOUT a <code>campaign.</code> prefix. Updatable paths:
     // <code>display_name</code>, <code>max_parallel_calls</code>, <code>max_attempts</code>,
-    // <code>retry_delay</code>. An empty mask, or an unknown, output-only or immutable path, is
-    // rejected with <code>INVALID_ARGUMENT</code> naming the path. A path in the mask with an unset
-    // value writes the create default (<code>display_name</code> empty writes
+    // <code>retry_delay</code>, <code>campaign_common_services_config</code> and
+    // <code>campaign_sip_caller_config</code>, the last two also as any nested sub-path (e.g.
+    // <code>campaign_common_services_config.nlu_vtsi_config.agent_name</code>,
+    // <code>campaign_sip_caller_config.sip_headers</code>). An empty mask, or an unknown, output-only
+    // or immutable path (a nested path is checked against the message type it names), is rejected
+    // with <code>INVALID_ARGUMENT</code> naming the path. A path in the mask with an unset value
+    // writes the create default (<code>display_name</code> empty writes
     // <code>campaign-&lt;campaign_uuid&gt;</code>).
+    // <p>The two call-default configs follow <code>FieldMask</code> semantics:</p>
+    // <ul>
+    //   <li>a path naming a message field (<code>campaign_common_services_config</code>, or a
+    //       submessage below it such as <code>campaign_common_services_config.nlu_vtsi_config</code>)
+    //       REPLACES that whole message with the one sent; an unset one clears it (clearing
+    //       <code>campaign_common_services_config</code> or <code>campaign_sip_caller_config</code>
+    //       removes the campaign default);</li>
+    //   <li>a path naming a scalar, repeated or map field below them replaces exactly that field; a
+    //       repeated or map field is replaced as a whole, never appended to;</li>
+    //   <li>a field below them that no path names is left untouched, and is not validated either: only
+    //       what the paths write must be valid;</li>
+    //   <li>clearing, by sub-paths, every field of a stored default removes the default (it then reads
+    //       back unset, exactly as after clearing the whole config);</li>
+    //   <li>a path naming a member of a <code>oneof</code> (e.g.
+    //       <code>campaign_common_services_config.nlu_vtsi_config.auth_token</code> in the
+    //       <code>authentication</code> oneof) SETS that member, clearing the other members, when the
+    //       request&apos;s <code>campaign</code> has that member set; when it does not, the path CLEARS the
+    //       member if it is the stored active one and changes nothing otherwise (another active member
+    //       is kept);</li>
+    //   <li>a path BELOW a repeated or map field (e.g.
+    //       <code>campaign_sip_caller_config.sip_headers.X-Foo</code>) is rejected with
+    //       <code>INVALID_ARGUMENT</code> naming it: name the repeated or map field itself;</li>
+    //   <li>a path and a sub-path of it in the same mask act as the shorter path alone.</li>
+    // </ul>
     google.protobuf.FieldMask update_mask = 2;
+
+    // Optional. Partial response: the <code>Campaign</code> field paths to populate, relative to the
+    // returned <code>Campaign</code> and WITHOUT a <code>campaign.</code> prefix, e.g. <code>state</code>,
+    // <code>statistics.completed</code>,
+    // <code>campaign_common_services_config.nlu_vtsi_config.agent_name</code>. Nested paths through
+    // singular message fields are allowed; a path below a repeated or map field is not.
+    // <code>name</code> is always populated. Unset or empty returns every field. An unknown path is
+    // rejected with <code>INVALID_ARGUMENT</code> naming it. The mask is applied after the server&apos;s
+    // role-based redaction, so it never reveals a redacted value.
+    google.protobuf.FieldMask field_mask = 3;
 }
 
 // The request message for
 // <a href="index.html#ondewo.vtsi.Campaigns.DeleteCampaign">Campaigns.DeleteCampaign</a>.
 message DeleteCampaignRequest {
 
-    // Which campaign.
+    // Which campaign. Exactly one must be set; neither is rejected with <code>INVALID_ARGUMENT</code>.
     oneof campaign {
 
         // Resource name of the campaign.
+        // The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre>
         string name = 1;
 
-        // The campaign with this display name.
-        CampaignDisplayName display_name = 2;
+        // Exact, case-sensitive <code>display_name</code> of the campaign, resolved within
+        // <code>vtsi_project_name</code>, which is then required. Replaces the 9.0.0
+        // <code>CampaignDisplayName display_name = 2</code>.
+        string display_name = 3;
     }
+
+    // VTSI project of the campaign.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // REQUIRED with <code>display_name</code>: empty or malformed is rejected with
+    // <code>INVALID_ARGUMENT</code>, an unknown project with <code>NOT_FOUND</code>. Optional with
+    // <code>name</code>: when set, it must be the project of the campaign
+    // (<code>INVALID_ARGUMENT</code> otherwise).
+    string vtsi_project_name = 4;
+
+    // Optional. Partial response: the <code>DeleteCampaignResponse</code> field paths to populate, e.g.
+    // <code>deleted_campaign_call_count</code>. <code>name</code> is always populated. Unset or empty
+    // returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. It
+    // shapes only the response: the campaign is deleted regardless.
+    google.protobuf.FieldMask field_mask = 5;
+
+    // Optional. Delete also a campaign that is <code>RUNNING</code>, <code>STOPPING</code> or
+    // <code>HARD_STOPPING</code>: the server hard stops it (every running call is hung up, see
+    // <code>HardStopCampaign</code>) and deletes it once the end of each call is confirmed, waiting at most
+    // <code>ONDEWO_VTSI_CAMPAIGN_FORCE_DELETE_WAIT_S</code> (30 s by default, bounded by the client&apos;s
+    // deadline); otherwise <code>DEADLINE_EXCEEDED</code>, and the campaign stays hard stopped and undeleted
+    // (repeat the request). <code>false</code> (the default): such a campaign is refused with
+    // <code>FAILED_PRECONDITION</code>, as before. No effect on a campaign in any other state.
+    bool force = 6;
+
+    // Field 2 was the 9.0.0 <code>CampaignDisplayName display_name</code> selector; the message was
+    // removed in 9.1.0. The name <code>display_name</code> is reused by the string selector above,
+    // so only the number is reserved.
+    reserved 2;
 }
 
 // The response message for
@@ -639,6 +1341,24 @@ message CampaignFilter {
     // Only the campaign whose <code>display_name</code> is exactly this (case-sensitive). Empty
     // means no constraint. Combined with the other fields by AND.
     string display_name = 3;
+
+    // Only campaigns created at or after this time (<code>created_at &gt;= created_after</code>). Unset means
+    // no lower bound.
+    google.protobuf.Timestamp created_after = 4;
+
+    // Only campaigns created strictly before this time (<code>created_at &lt; created_before</code>). Unset
+    // means no upper bound. When both are set, <code>created_after</code> must be before
+    // <code>created_before</code> (<code>INVALID_ARGUMENT</code> otherwise).
+    google.protobuf.Timestamp created_before = 5;
+
+    // Only campaigns whose <code>created_by</code> is exactly this user (case-sensitive, the value the server
+    // returns in <code>Campaign.created_by</code>). Empty means no constraint.
+    string created_by = 6;
+
+    // Only campaigns modified at or after this time (<code>modified_at &gt;= modified_since</code>; state
+    // changes made by the server count as modifications). Unset means no constraint. Useful for incremental
+    // polling with <code>CAMPAIGN_ORDER_BY_MODIFIED_AT_DESC</code>.
+    google.protobuf.Timestamp modified_since = 7;
 }
 
 // The request message for
@@ -653,19 +1373,40 @@ message ListCampaignsRequest {
     CampaignFilter filter = 2;
 
     // Optional. Maximum campaigns per page. <code>0</code> means 20; values above 1000 are clamped
-    // to 1000; negative values are rejected with <code>INVALID_ARGUMENT</code>.
+    // to 1000 (to 20 when <code>field_mask</code> names <code>campaign_callers</code> or
+    // <code>campaign_callers_truncated</code>); negative values are rejected with
+    // <code>INVALID_ARGUMENT</code>.
     int32 page_size = 3;
 
     // Optional. The <code>next_page_token</code> of a previous response; valid only with the same
     // project and filter.
     optional string page_token = 4;
+
+    // Optional. Partial response: the field paths to populate in every returned <code>Campaign</code>,
+    // relative to the <code>Campaign</code> message (no <code>campaigns.</code> prefix), as in
+    // <a href="index.html#ondewo.vtsi.GetCampaignRequest">GetCampaignRequest.field_mask</a>.
+    // <code>name</code> is always populated. Unset or empty returns every field EXCEPT
+    // <code>campaign_callers</code> and <code>campaign_callers_truncated</code>, which are populated only when
+    // the mask names them explicitly (a page of full caller lists could exceed gRPC&apos;s default 4 MiB message
+    // limit). When the mask names either of them, the page holds at most 20 campaigns: a larger
+    // <code>page_size</code> is clamped to 20 (not rejected). For the complete, paginated callers of one
+    // campaign use <code>Calls.ListCallers</code> with the campaign selector. An unknown path is rejected with
+    // <code>INVALID_ARGUMENT</code> naming it. Not part of the paging contract: a <code>page_token</code> stays
+    // valid with another mask.
+    google.protobuf.FieldMask field_mask = 5;
+
+    // Optional. Order of the listing; unset means newest first (<code>CAMPAIGN_ORDER_BY_CREATED_AT_DESC</code>),
+    // as before this field existed. Part of the paging contract: a <code>page_token</code> is valid only with
+    // the <code>order_by</code> it was issued for (<code>INVALID_ARGUMENT</code> otherwise). An unknown value
+    // is rejected with <code>INVALID_ARGUMENT</code>.
+    CampaignOrderBy order_by = 6;
 }
 
 // The response message for
 // <a href="index.html#ondewo.vtsi.Campaigns.ListCampaigns">Campaigns.ListCampaigns</a>.
 message ListCampaignsResponse {
 
-    // The campaigns of this page, newest first.
+    // The campaigns of this page, in the request&apos;s <code>order_by</code> (newest first by default).
     repeated Campaign campaigns = 1;
 
     // Token for the next page. Empty when there are no more results.
@@ -676,30 +1417,57 @@ message ListCampaignsResponse {
 // <a href="index.html#ondewo.vtsi.Campaigns.GetCampaignStatistics">Campaigns.GetCampaignStatistics</a>.
 message GetCampaignStatisticsRequest {
 
-    // Which campaign.
+    // Which campaign. Exactly one must be set; neither is rejected with <code>INVALID_ARGUMENT</code>.
     oneof campaign {
 
         // Resource name of the campaign.
+        // The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre>
         string name = 1;
 
-        // The campaign with this display name.
-        CampaignDisplayName display_name = 2;
+        // Exact, case-sensitive <code>display_name</code> of the campaign, resolved within
+        // <code>vtsi_project_name</code>, which is then required. Replaces the 9.0.0
+        // <code>CampaignDisplayName display_name = 2</code>.
+        string display_name = 3;
     }
+
+    // VTSI project of the campaign.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // REQUIRED with <code>display_name</code>: empty or malformed is rejected with
+    // <code>INVALID_ARGUMENT</code>, an unknown project with <code>NOT_FOUND</code>. Optional with
+    // <code>name</code>: when set, it must be the project of the campaign
+    // (<code>INVALID_ARGUMENT</code> otherwise).
+    string vtsi_project_name = 4;
+
+    // Field 2 was the 9.0.0 <code>CampaignDisplayName display_name</code> selector; the message was
+    // removed in 9.1.0. The name <code>display_name</code> is reused by the string selector above,
+    // so only the number is reserved.
+    reserved 2;
 }
 
 // The request message for
 // <a href="index.html#ondewo.vtsi.Campaigns.ListCampaignCalls">Campaigns.ListCampaignCalls</a>.
 message ListCampaignCallsRequest {
 
-    // Which campaign.
+    // Which campaign. Exactly one must be set; neither is rejected with <code>INVALID_ARGUMENT</code>.
     oneof campaign {
 
         // Resource name of the campaign.
+        // The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre>
         string campaign_name = 1;
 
-        // The campaign with this display name.
-        CampaignDisplayName campaign_display_name = 7;
+        // Exact, case-sensitive <code>display_name</code> of the campaign, resolved within
+        // <code>vtsi_project_name</code>, which is then required. Replaces the 9.0.0
+        // <code>CampaignDisplayName campaign_display_name = 7</code>.
+        string display_name = 8;
     }
+
+    // VTSI project of the campaign.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // REQUIRED with <code>display_name</code>: empty or malformed is rejected with
+    // <code>INVALID_ARGUMENT</code>, an unknown project with <code>NOT_FOUND</code>. Optional with
+    // <code>campaign_name</code>: when set, it must be the project of the campaign
+    // (<code>INVALID_ARGUMENT</code> otherwise).
+    string vtsi_project_name = 9;
 
     // Only calls in one of these states. Empty means every state.
     repeated CampaignCallState states = 2;
@@ -712,11 +1480,61 @@ message ListCampaignCallsRequest {
     int32 page_size = 4;
 
     // Optional. The <code>next_page_token</code> of a previous response; valid only with the same
-    // campaign and filter.
+    // campaign and filter (every filter field above and below, the 9.1.0 ones included).
     optional string page_token = 5;
 
     // Populate <code>CampaignCall.attempt_history</code>.
     bool include_attempts = 6;
+
+    // Optional. Partial response: the field paths to populate in every returned
+    // <code>CampaignCall</code>, relative to the <code>CampaignCall</code> message (no
+    // <code>campaign_calls.</code> prefix), e.g. <code>state</code>, <code>phone_number</code>,
+    // <code>attempt_history</code>. Nested paths through singular message fields are allowed; a path
+    // below a repeated or map field (e.g. <code>attempt_history.outcome</code>) is not. <code>name</code>
+    // is always populated. Unset or empty returns every field. An unknown path is rejected with
+    // <code>INVALID_ARGUMENT</code> naming it. <code>attempt_history</code> is still populated only with
+    // <code>include_attempts</code>: a mask naming it without <code>include_attempts</code> returns it
+    // empty. Not part of the paging contract: a <code>page_token</code> stays valid with another mask.
+    google.protobuf.FieldMask field_mask = 10;
+
+    // Only calls to one of these callees (exact match on <code>phone_number</code>), at most 1000 entries.
+    // Combined with <code>phone_number</code> by OR (a call matches when its number is
+    // <code>phone_number</code> or one of these); both empty means every callee.
+    repeated string phone_numbers = 11;
+
+    // Only calls added in one of these ways. Empty means every source. An unknown value or
+    // <code>CAMPAIGN_CALL_SOURCE_UNSPECIFIED</code> is rejected with <code>INVALID_ARGUMENT</code>.
+    repeated CampaignCallSource sources = 12;
+
+    // Only calls that finished (<code>finish_time</code> set: <code>COMPLETED</code>, <code>FAILED</code>,
+    // <code>CANCELLED</code>) at or after this time. A call without <code>finish_time</code> never matches
+    // when this or <code>finish_time_max</code> is set. Unset means no lower bound.
+    google.protobuf.Timestamp finish_time_min = 13;
+
+    // Only calls that finished strictly before this time. Unset means no upper bound. When both are set,
+    // <code>finish_time_min</code> must be before <code>finish_time_max</code> (<code>INVALID_ARGUMENT</code>
+    // otherwise).
+    google.protobuf.Timestamp finish_time_max = 14;
+
+    // Only calls whose <code>modified_at</code> is at or after this time, i.e. that changed since then
+    // (incremental reads). Unset means no constraint.
+    google.protobuf.Timestamp modified_since = 15;
+
+    // Only calls with at least this many attempts started (<code>attempts &gt;= min_attempts</code>).
+    // <code>0</code> means no constraint; negative is rejected with <code>INVALID_ARGUMENT</code>.
+    int32 min_attempts = 16;
+
+    // Only these calls, by resource name
+    // (<pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;/campaign_calls/&lt;campaign_call_uuid&gt;</code></pre>),
+    // at most 1000. Each must be a call name of the request&apos;s campaign: a malformed name or one of
+    // another campaign is rejected with <code>INVALID_ARGUMENT</code>; a well-formed name of the campaign
+    // that names no call matches nothing. Empty means no constraint.
+    repeated string campaign_call_names = 17;
+
+    // Field 7 was the 9.0.0 <code>CampaignDisplayName campaign_display_name</code> selector; the
+    // message was removed in 9.1.0.
+    reserved 7;
+    reserved "campaign_display_name";
 }
 
 // The response message for
@@ -734,60 +1552,156 @@ message ListCampaignCallsResponse {
 // <a href="index.html#ondewo.vtsi.Campaigns.StartCampaign">Campaigns.StartCampaign</a>.
 message StartCampaignRequest {
 
-    // Which campaign.
+    // Which campaign. Exactly one must be set; neither is rejected with <code>INVALID_ARGUMENT</code>.
     oneof campaign {
 
         // Resource name of the campaign.
+        // The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre>
         string name = 1;
 
-        // The campaign with this display name.
-        CampaignDisplayName display_name = 2;
+        // Exact, case-sensitive <code>display_name</code> of the campaign, resolved within
+        // <code>vtsi_project_name</code>, which is then required. Replaces the 9.0.0
+        // <code>CampaignDisplayName display_name = 2</code>.
+        string display_name = 3;
     }
+
+    // VTSI project of the campaign.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // REQUIRED with <code>display_name</code>: empty or malformed is rejected with
+    // <code>INVALID_ARGUMENT</code>, an unknown project with <code>NOT_FOUND</code>. Optional with
+    // <code>name</code>: when set, it must be the project of the campaign
+    // (<code>INVALID_ARGUMENT</code> otherwise).
+    string vtsi_project_name = 4;
+
+    // Optional. Partial response: the <code>Campaign</code> field paths to populate, relative to the
+    // returned <code>Campaign</code>, exactly as
+    // <a href="index.html#ondewo.vtsi.GetCampaignRequest">GetCampaignRequest.field_mask</a>.
+    // <code>name</code> is always populated. Unset or empty returns every field. An unknown path is
+    // rejected with <code>INVALID_ARGUMENT</code> naming it, before the state is changed. It shapes only the
+    // response: the state change is applied regardless.
+    google.protobuf.FieldMask field_mask = 5;
+
+    // Field 2 was the 9.0.0 <code>CampaignDisplayName display_name</code> selector; the message was
+    // removed in 9.1.0. The name <code>display_name</code> is reused by the string selector above,
+    // so only the number is reserved.
+    reserved 2;
 }
 
 // The request message for
 // <a href="index.html#ondewo.vtsi.Campaigns.StopCampaign">Campaigns.StopCampaign</a>.
 message StopCampaignRequest {
 
-    // Which campaign.
+    // Which campaign. Exactly one must be set; neither is rejected with <code>INVALID_ARGUMENT</code>.
     oneof campaign {
 
         // Resource name of the campaign.
+        // The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre>
         string name = 1;
 
-        // The campaign with this display name.
-        CampaignDisplayName display_name = 2;
+        // Exact, case-sensitive <code>display_name</code> of the campaign, resolved within
+        // <code>vtsi_project_name</code>, which is then required. Replaces the 9.0.0
+        // <code>CampaignDisplayName display_name = 2</code>.
+        string display_name = 3;
     }
+
+    // VTSI project of the campaign.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // REQUIRED with <code>display_name</code>: empty or malformed is rejected with
+    // <code>INVALID_ARGUMENT</code>, an unknown project with <code>NOT_FOUND</code>. Optional with
+    // <code>name</code>: when set, it must be the project of the campaign
+    // (<code>INVALID_ARGUMENT</code> otherwise).
+    string vtsi_project_name = 4;
+
+    // Optional. Partial response: the <code>Campaign</code> field paths to populate, relative to the
+    // returned <code>Campaign</code>, exactly as
+    // <a href="index.html#ondewo.vtsi.GetCampaignRequest">GetCampaignRequest.field_mask</a>.
+    // <code>name</code> is always populated. Unset or empty returns every field. An unknown path is
+    // rejected with <code>INVALID_ARGUMENT</code> naming it, before the state is changed. It shapes only the
+    // response: the state change is applied regardless.
+    google.protobuf.FieldMask field_mask = 5;
+
+    // Field 2 was the 9.0.0 <code>CampaignDisplayName display_name</code> selector; the message was
+    // removed in 9.1.0. The name <code>display_name</code> is reused by the string selector above,
+    // so only the number is reserved.
+    reserved 2;
 }
 
 // The request message for
 // <a href="index.html#ondewo.vtsi.Campaigns.HardStopCampaign">Campaigns.HardStopCampaign</a>.
 message HardStopCampaignRequest {
 
-    // Which campaign.
+    // Which campaign. Exactly one must be set; neither is rejected with <code>INVALID_ARGUMENT</code>.
     oneof campaign {
 
         // Resource name of the campaign.
+        // The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre>
         string name = 1;
 
-        // The campaign with this display name.
-        CampaignDisplayName display_name = 2;
+        // Exact, case-sensitive <code>display_name</code> of the campaign, resolved within
+        // <code>vtsi_project_name</code>, which is then required. Replaces the 9.0.0
+        // <code>CampaignDisplayName display_name = 2</code>.
+        string display_name = 3;
     }
+
+    // VTSI project of the campaign.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // REQUIRED with <code>display_name</code>: empty or malformed is rejected with
+    // <code>INVALID_ARGUMENT</code>, an unknown project with <code>NOT_FOUND</code>. Optional with
+    // <code>name</code>: when set, it must be the project of the campaign
+    // (<code>INVALID_ARGUMENT</code> otherwise).
+    string vtsi_project_name = 4;
+
+    // Optional. Partial response: the <code>Campaign</code> field paths to populate, relative to the
+    // returned <code>Campaign</code>, exactly as
+    // <a href="index.html#ondewo.vtsi.GetCampaignRequest">GetCampaignRequest.field_mask</a>.
+    // <code>name</code> is always populated. Unset or empty returns every field. An unknown path is
+    // rejected with <code>INVALID_ARGUMENT</code> naming it, before the state is changed. It shapes only the
+    // response: the state change is applied regardless.
+    google.protobuf.FieldMask field_mask = 5;
+
+    // Field 2 was the 9.0.0 <code>CampaignDisplayName display_name</code> selector; the message was
+    // removed in 9.1.0. The name <code>display_name</code> is reused by the string selector above,
+    // so only the number is reserved.
+    reserved 2;
 }
 
 // The request message for
 // <a href="index.html#ondewo.vtsi.Campaigns.ResumeCampaign">Campaigns.ResumeCampaign</a>.
 message ResumeCampaignRequest {
 
-    // Which campaign.
+    // Which campaign. Exactly one must be set; neither is rejected with <code>INVALID_ARGUMENT</code>.
     oneof campaign {
 
         // Resource name of the campaign.
+        // The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre>
         string name = 1;
 
-        // The campaign with this display name.
-        CampaignDisplayName display_name = 2;
+        // Exact, case-sensitive <code>display_name</code> of the campaign, resolved within
+        // <code>vtsi_project_name</code>, which is then required. Replaces the 9.0.0
+        // <code>CampaignDisplayName display_name = 2</code>.
+        string display_name = 3;
     }
+
+    // VTSI project of the campaign.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // REQUIRED with <code>display_name</code>: empty or malformed is rejected with
+    // <code>INVALID_ARGUMENT</code>, an unknown project with <code>NOT_FOUND</code>. Optional with
+    // <code>name</code>: when set, it must be the project of the campaign
+    // (<code>INVALID_ARGUMENT</code> otherwise).
+    string vtsi_project_name = 4;
+
+    // Optional. Partial response: the <code>Campaign</code> field paths to populate, relative to the
+    // returned <code>Campaign</code>, exactly as
+    // <a href="index.html#ondewo.vtsi.GetCampaignRequest">GetCampaignRequest.field_mask</a>.
+    // <code>name</code> is always populated. Unset or empty returns every field. An unknown path is
+    // rejected with <code>INVALID_ARGUMENT</code> naming it, before the state is changed. It shapes only the
+    // response: the state change is applied regardless.
+    google.protobuf.FieldMask field_mask = 5;
+
+    // Field 2 was the 9.0.0 <code>CampaignDisplayName display_name</code> selector; the message was
+    // removed in 9.1.0. The name <code>display_name</code> is reused by the string selector above,
+    // so only the number is reserved.
+    reserved 2;
 }
 
 // The request message for
@@ -811,13 +1725,25 @@ message StreamCampaignStatusRequest {
     // Also stream every campaign call that changes after the stream opened. The snapshot never
     // contains campaign calls; read them with <code>ListCampaignCalls</code>.
     bool include_calls = 3;
+
+    // Only campaigns in one of these states. Empty means every state. Combined with
+    // <code>campaign_names</code> / <code>campaign_display_names</code> by AND. The snapshot carries the
+    // matching campaigns in a selected state. Later, a campaign that ENTERS a selected state is sent (with
+    // every field, as in a snapshot), and a campaign that LEAVES the selection is sent once more with its new
+    // state and then no longer (so a client sees why it left); a campaign deleted while selected is reported
+    // in <code>deleted_campaign_names</code>. With <code>include_calls</code>, only calls of campaigns that are
+    // selected at the moment are sent. <code>CAMPAIGN_STATE_UNSPECIFIED</code> or an unknown value is rejected
+    // with <code>INVALID_ARGUMENT</code>.
+    repeated CampaignState states = 5;
 }
 
 // The response message for
 // <a href="index.html#ondewo.vtsi.Campaigns.StreamCampaignStatus">Campaigns.StreamCampaignStatus</a>.
 message StreamCampaignStatusResponse {
 
-    // Campaigns that changed (every matching campaign in the snapshot), with their statistics.
+    // Campaigns that changed (every matching campaign in the snapshot), with their statistics. The call
+    // defaults <code>campaign_common_services_config</code> and <code>campaign_sip_caller_config</code>
+    // are always left unset here; read them with <code>GetCampaign</code>.
     repeated Campaign campaigns = 1;
 
     // Campaign calls that changed, when <code>include_calls</code> is set.
@@ -830,6 +1756,233 @@ message StreamCampaignStatusResponse {
     bool snapshot = 4;
 
     // Set on the last message when the server ended the stream, e.g. at the maximum stream
-    // duration. Empty otherwise.
+    // duration. Empty otherwise. Human-readable; branch on <code>end_reason_type</code> instead.
     string end_reason = 5;
+
+    // Set on the last message when the server ended the stream, next to <code>end_reason</code>:
+    // <code>STREAM_END_REASON_MAX_DURATION</code>, <code>STREAM_END_REASON_SERVER_SHUTDOWN</code> or
+    // <code>STREAM_END_REASON_PROJECT_DELETED</code>. <code>STREAM_END_REASON_UNSPECIFIED</code> on every other
+    // message (and on the last message of a server that predates this field).
+    StreamEndReason end_reason_type = 6;
+}
+
+// The request message for
+// <a href="index.html#ondewo.vtsi.Campaigns.GetCampaignCall">Campaigns.GetCampaignCall</a>.
+message GetCampaignCallRequest {
+
+    // Required. Resource name of the campaign call.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;/campaign_calls/&lt;campaign_call_uuid&gt;</code></pre>
+    // Empty or malformed is rejected with <code>INVALID_ARGUMENT</code>; authorization is checked on its
+    // project segment.
+    string name = 1;
+
+    // Populate <code>CampaignCall.attempt_history</code> (every attempt, oldest first). <code>false</code>
+    // (the default) leaves it empty.
+    bool include_attempts = 2;
+
+    // Optional. Partial response: the <code>CampaignCall</code> field paths to populate, relative to the
+    // returned <code>CampaignCall</code>, e.g. <code>state</code>, <code>attempts</code>,
+    // <code>attempt_history</code>. A path below a repeated field (e.g. <code>attempt_history.outcome</code>)
+    // is rejected. <code>name</code> is always populated. Unset or empty returns every field. An unknown path
+    // is rejected with <code>INVALID_ARGUMENT</code> naming it. <code>attempt_history</code> is still populated
+    // only with <code>include_attempts</code>.
+    google.protobuf.FieldMask field_mask = 3;
+}
+
+// One campaign call a <code>CancelCampaignCalls</code> / <code>RetryCampaignCalls</code> request did not act on,
+// and why. A refusal is a result, not an error.
+message CampaignCallRefusal {
+
+    // Resource name of the campaign call, as named in the request or as matched by its states.
+    string campaign_call_name = 1;
+
+    // State of the call when it was refused; <code>CAMPAIGN_CALL_STATE_UNSPECIFIED</code> for
+    // <code>reason=not-found</code>.
+    CampaignCallState state = 2;
+
+    // Why, a stable kebab-case token: <code>attempt-in-progress</code> (the call is
+    // <code>DISPATCHING</code> or <code>IN_PROGRESS</code>), <code>already-finished</code> (cancel: the call is
+    // <code>COMPLETED</code>, <code>FAILED</code> or <code>CANCELLED</code>), <code>not-finished</code> (retry:
+    // the call is not <code>FAILED</code> or <code>CANCELLED</code>), <code>completed</code> (retry: a
+    // <code>COMPLETED</code> call is never retried), <code>state-not-selected</code> (the named call is not in
+    // one of the request&apos;s <code>states</code>), <code>not-found</code> (no such call in the campaign).
+    string reason = 3;
+}
+
+// The request message for
+// <a href="index.html#ondewo.vtsi.Campaigns.CancelCampaignCalls">Campaigns.CancelCampaignCalls</a>.
+message CancelCampaignCallsRequest {
+
+    // Which campaign. Exactly one must be set; neither is rejected with <code>INVALID_ARGUMENT</code>.
+    oneof campaign {
+
+        // Resource name of the campaign.
+        // The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre>
+        string name = 1;
+
+        // Exact, case-sensitive <code>display_name</code> of the campaign, resolved within
+        // <code>vtsi_project_name</code>, which is then required.
+        string display_name = 2;
+    }
+
+    // VTSI project of the campaign.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // REQUIRED with <code>display_name</code>: empty or malformed is rejected with
+    // <code>INVALID_ARGUMENT</code>, an unknown project with <code>NOT_FOUND</code>. Optional with
+    // <code>name</code>: when set, it must be the project of the campaign
+    // (<code>INVALID_ARGUMENT</code> otherwise).
+    string vtsi_project_name = 3;
+
+    // The calls to cancel, by resource name
+    // (<pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;/campaign_calls/&lt;campaign_call_uuid&gt;</code></pre>),
+    // at most 1000, duplicates ignored. Each must be a call name of this campaign (a malformed name or one
+    // of another campaign is <code>INVALID_ARGUMENT</code>). Empty with non-empty <code>states</code> means
+    // every call in those states.
+    repeated string campaign_call_names = 4;
+
+    // Cancel the calls in one of these states: only <code>CAMPAIGN_CALL_STATE_NOT_STARTED</code> and
+    // <code>CAMPAIGN_CALL_STATE_RETRY_PENDING</code> are allowed (<code>INVALID_ARGUMENT</code> for any other
+    // value). With <code>campaign_call_names</code>, narrows the named calls (a named call in another state is
+    // refused with <code>reason=state-not-selected</code>). At least one of the two fields must be set.
+    repeated CampaignCallState states = 5;
+}
+
+// The response message for
+// <a href="index.html#ondewo.vtsi.Campaigns.CancelCampaignCalls">Campaigns.CancelCampaignCalls</a>.
+message CancelCampaignCallsResponse {
+
+    // Resource name of the campaign.
+    string campaign_name = 1;
+
+    // The calls this request cancelled (now <code>CAMPAIGN_CALL_STATE_CANCELLED</code>), by
+    // <code>position</code>.
+    repeated string cancelled_campaign_call_names = 2;
+
+    // The selected calls this request did not cancel, with the reason, by <code>position</code> (refusals of
+    // unknown names last, in request order).
+    repeated CampaignCallRefusal refused = 3;
+
+    // With <code>states</code> only (no names): how many further calls matched after the first 1000 that
+    // this request acted on. Repeat the request while it is above 0. <code>0</code> otherwise.
+    int32 remaining_count = 4;
+}
+
+// The request message for
+// <a href="index.html#ondewo.vtsi.Campaigns.RetryCampaignCalls">Campaigns.RetryCampaignCalls</a>.
+message RetryCampaignCallsRequest {
+
+    // Which campaign. Exactly one must be set; neither is rejected with <code>INVALID_ARGUMENT</code>.
+    oneof campaign {
+
+        // Resource name of the campaign.
+        // The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre>
+        string name = 1;
+
+        // Exact, case-sensitive <code>display_name</code> of the campaign, resolved within
+        // <code>vtsi_project_name</code>, which is then required.
+        string display_name = 2;
+    }
+
+    // VTSI project of the campaign.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // REQUIRED with <code>display_name</code>: empty or malformed is rejected with
+    // <code>INVALID_ARGUMENT</code>, an unknown project with <code>NOT_FOUND</code>. Optional with
+    // <code>name</code>: when set, it must be the project of the campaign
+    // (<code>INVALID_ARGUMENT</code> otherwise).
+    string vtsi_project_name = 3;
+
+    // The calls to requeue, by resource name, at most 1000, duplicates ignored; same rules as
+    // <code>CancelCampaignCallsRequest.campaign_call_names</code>.
+    repeated string campaign_call_names = 4;
+
+    // Requeue the calls in one of these states: only <code>CAMPAIGN_CALL_STATE_FAILED</code> and
+    // <code>CAMPAIGN_CALL_STATE_CANCELLED</code> are allowed (<code>INVALID_ARGUMENT</code> for any other
+    // value). With <code>campaign_call_names</code>, narrows the named calls. At least one of the two fields
+    // must be set.
+    repeated CampaignCallState states = 5;
+
+    // Attempts each requeued call may make from now on, on top of the attempts it already made: its attempt
+    // limit becomes <code>attempts + additional_attempts</code> (never below the campaign&apos;s live
+    // <code>max_attempts</code>), reported as <code>CampaignCall.max_attempts</code>. <code>0</code> means 1;
+    // allowed 0 to <code>ONDEWO_VTSI_CAMPAIGN_MAX_ATTEMPTS_LIMIT</code> (10 by default). Between the new
+    // attempts the campaign&apos;s <code>retry_delay</code> applies as usual.
+    int32 additional_attempts = 6;
+
+    // Optional. The first new attempt starts no earlier than this time (and, with a
+    // <code>calling_window</code>, inside a slot). Unset or in the past means as soon as the campaign has a
+    // free slot. At most 7 days ahead (<code>INVALID_ARGUMENT</code> otherwise).
+    google.protobuf.Timestamp not_before = 7;
+}
+
+// The response message for
+// <a href="index.html#ondewo.vtsi.Campaigns.RetryCampaignCalls">Campaigns.RetryCampaignCalls</a>.
+message RetryCampaignCallsResponse {
+
+    // Resource name of the campaign.
+    string campaign_name = 1;
+
+    // The calls this request requeued (now <code>RETRY_PENDING</code> or <code>NOT_STARTED</code>), by
+    // <code>position</code>.
+    repeated string requeued_campaign_call_names = 2;
+
+    // The selected calls this request did not requeue, with the reason (see
+    // <code>CancelCampaignCallsResponse.refused</code>).
+    repeated CampaignCallRefusal refused = 3;
+
+    // With <code>states</code> only: how many further calls matched after the first 1000. Repeat the request
+    // while it is above 0. <code>0</code> otherwise.
+    int32 remaining_count = 4;
+
+    // State of the campaign after the request (a <code>COMPLETED</code> campaign that got a call back is
+    // <code>CAMPAIGN_STATE_RUNNING</code>).
+    CampaignState campaign_state = 5;
+}
+
+// The request message for
+// <a href="index.html#ondewo.vtsi.Campaigns.CloneCampaign">Campaigns.CloneCampaign</a>.
+message CloneCampaignRequest {
+
+    // The campaign to copy. Exactly one must be set; neither is rejected with <code>INVALID_ARGUMENT</code>.
+    oneof source {
+
+        // Resource name of the source campaign.
+        // The format is: <pre><code>projects/&lt;project_uuid&gt;/campaigns/&lt;campaign_uuid&gt;</code></pre>
+        string source_name = 1;
+
+        // Exact, case-sensitive <code>display_name</code> of the source campaign, resolved within
+        // <code>vtsi_project_name</code>, which is then required.
+        string source_display_name = 2;
+    }
+
+    // VTSI project of the source AND of the clone: a campaign is only cloned within its project (its stored
+    // credentials never move to another project).
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    // REQUIRED with <code>source_display_name</code>: empty or malformed is rejected with
+    // <code>INVALID_ARGUMENT</code>, an unknown project with <code>NOT_FOUND</code>. Optional with
+    // <code>source_name</code>: when set, it must be the project of the source (<code>INVALID_ARGUMENT</code>
+    // otherwise).
+    string vtsi_project_name = 3;
+
+    // Display name of the clone, unique within the project, at most 128 characters. Empty means
+    // <code>campaign-&lt;campaign_uuid&gt;</code> of the clone, as on <code>CreateCampaign</code>.
+    string new_display_name = 4;
+
+    // Also copy the source&apos;s calls (see <code>Campaigns.CloneCampaign</code>). <code>false</code> (the
+    // default): the clone has no call.
+    bool include_calls = 5;
+
+    // With <code>include_calls</code>: copy only the calls in one of these states (e.g.
+    // <code>CAMPAIGN_CALL_STATE_FAILED</code> to call the failed numbers again in a new campaign). Empty means
+    // every state. Set without <code>include_calls</code>, or holding <code>CAMPAIGN_CALL_STATE_UNSPECIFIED</code>
+    // or an unknown value, is rejected with <code>INVALID_ARGUMENT</code>.
+    repeated CampaignCallState call_states = 6;
+
+    // Optional. Partial response: the field paths of the returned clone to populate, exactly as
+    // <a href="index.html#ondewo.vtsi.CreateCampaignRequest">CreateCampaignRequest.field_mask</a>.
+    google.protobuf.FieldMask field_mask = 7;
+
+    // Optional client idempotency key with the semantics of
+    // <a href="index.html#ondewo.vtsi.CreateCampaignRequest">CreateCampaignRequest.idempotency_key</a>
+    // (scoped to the project and to this RPC; a replayed clone carries no call defaults).
+    string idempotency_key = 8;
 }
