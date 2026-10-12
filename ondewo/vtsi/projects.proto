@@ -16,7 +16,6 @@ syntax = "proto3";
 
 package ondewo.vtsi;
 import "google/protobuf/field_mask.proto";
-import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 
 // <p>ONDEWO VTSI API</p>

@@ -15,10 +15,7 @@
 syntax = "proto3";
 
 package ondewo.vtsi;
-import "google/api/annotations.proto";
-import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
-import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 import "ondewo/nlu/intent.proto";
 import "ondewo/sip/sip.proto";

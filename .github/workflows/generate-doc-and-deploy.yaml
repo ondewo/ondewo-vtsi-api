@@ -18,7 +18,7 @@ jobs:
   # This workflow contains a single job called "generate-docs"
   generate-doc-and-deploy:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -39,6 +39,11 @@ jobs:
       #     export PATH=$(go env GOPATH)/bin:$PATH
       #     mkdir -p docs
       #     protoc -I. -Igoogleapis --doc_opt=markdown,nlu.md --doc_out=docs $(find ondewo -name '*.proto' | sort)
+
+      # The shared doc action always passes -Igoogleapis; this repository keeps its google protos in ./google (found
+      # through -I.), so an empty directory is all it needs to stop protoc warning that the path does not exist.
+      - name: Provide the include path the doc action expects
+        run: mkdir -p googleapis
 
       - name: Generate documentation from ONDEWO proto files 🔧
         uses: ondewo/ondewo-protoc-gen-doc-action@master
