@@ -49,8 +49,10 @@ jobs:
         uses: ondewo/ondewo-protoc-gen-doc-action@master
 
 
+      # Only a push to master publishes. A pull request generates the documentation as a check and nothing more:
+      # deploying from it committed docs/ to master behind the open pull request, which then conflicted with it.
       - name: Deploy 🚀
-        if: ${{ !env.ACT }}
+        if: ${{ !env.ACT && github.event_name != 'pull_request' }}
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: master # The branch the action should deploy to.
