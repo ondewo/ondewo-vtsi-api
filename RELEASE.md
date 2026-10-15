@@ -2,6 +2,41 @@
 
 *****************
 
+## Release ONDEWO VTSI API 9.2.0
+
+### Improvements
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **No proto change since 9.1.0.** The `ondewo.vtsi` protos and every vendored
+  `ondewo/nlu`, `ondewo/qa`, `ondewo/s2t`, `ondewo/t2s` and `ondewo/sip` file are byte-identical to 9.1.0; a
+  9.1.0 client and a 9.2.0 client speak the same wire.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) The `ondewo-sip-api` submodule is pinned to
+  [5.5.2](https://github.com/ondewo/ondewo-sip-api/releases/tag/5.5.2) (was 5.5.0), the version the
+  `ondewo-sip-client` packages are released at; its `ondewo/sip` protos are unchanged.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) Release process: `make release_all_clients` runs every client's read-only `release_preflight` first
+  and releases nothing if one fails; a client counts as already released (SKIP) only when its tag is on origin
+  AND its `release_verify` passes; one devops-accounts clone per run, handed to each client as an absolute
+  path and deleted on every exit path; the client clone and the client build run under `umask 022` so the
+  clients' docker toolchains can read their own checkout.
+
+### Client SDKs
+
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) **Python - breaking:** the singular `Calls` wrappers `delete_caller`, `stop_caller`, `stop_listener`
+  and `delete_listener` now take the singular request and call the singular RPC (`DeleteCaller`, ...); they
+  used to take the plural request and call the plural RPC. Code that passed a plural request must call the
+  plural wrapper (`delete_callers`, `stop_callers`, `stop_listeners`, `delete_listeners`) instead. New wrappers
+  `get_scheduled_caller`, `list_scheduled_callers` and `cancel_scheduled_caller`, so every `ondewo.vtsi` RPC has
+  a sync and an async wrapper. That is why this release is 9.2.0 and not 9.1.1.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) Every client (python, nodejs, typescript, angular, js, cpp, csharp, go, java, php, rust) implements the
+  same release contract: a read-only `release_preflight` (credentials valid, version new on origin and on the
+  registry, release notes present), the full test suite before anything is committed or published, publishing
+  before anything is pushed where the registry allows it, and a `release_verify` that waits until the registry
+  serves the version. API-surface tests derive the expected services and RPCs from these protos instead of
+  hard-coded lists.
+* [[OND233-367]](https://ondewo.atlassian.net/browse/OND233-367) CI of the clients runs on `ubuntu-24.04` with current action majors, on master, release branches and
+  tags; the npm clients install with `npm ci`, the rust client builds with `--locked`.
+
+*****************
+
 ## Release ONDEWO VTSI API 9.1.0
 
 ### Breaking changes
