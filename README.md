@@ -310,8 +310,8 @@ make ondewo_release PRESENCE_PY=.venv/bin/python   # then release with the same 
 ```
 
 The override does reach the guard through `make ondewo_release`, even though that target runs the
-release in a **sub-make** (`run_release_with_devops` calls `make release $(info)`): a variable set on
-the make command line is passed down through `MAKEFLAGS`. Measured, not assumed — it is the
+release in a **sub-make** (`scripts/with_devops_accounts.sh --github-token make release`): a variable
+set on the make command line is passed down through `MAKEFLAGS`. Measured, not assumed — it is the
 non-obvious half, since the target you type is not the target that runs the guard. Exporting
 `PRESENCE_PY` in the environment happens to work too, because the makefile declares it with `?=`,
 but prefer the command line: that form also wins against a makefile assignment, so it keeps working
@@ -327,29 +327,81 @@ steps are free to run concurrently and in any order — measured on GNU Make 4.3
 step list ran fully inverted under `-j4`, tagging before the guard had read a single proto.
 
 ---
-The `make ondewo_release` command can be divided into 5 steps:
+The `make ondewo_release` command runs these steps, in this order:
 
+* `spc` (read-only): the version is `MAJOR.MINOR.PATCH`, neither `release/<version>` nor the tag
+  `<version>` exists locally or on origin (anchored ref lookups; an unreadable origin fails closed), and
+  `RELEASE.md` has a non-empty `## Release ONDEWO VTSI API <version>` section
+* `scripts/with_devops_accounts.sh --github-token`: clones ondewo-devops-accounts into a private
+  `mktemp -d` directory OUTSIDE the checkout, reads `GITHUB_GH_TOKEN` into the environment of the
+  release sub-make, and deletes the clone **before** the release starts (and on every failure path)
 * running the proto field-presence guard (`presence_check`), which stops the release if it cannot run
-* cloning the devops-accounts repository and extracting the credentials
 * creating and pushing the release branch
 * creating and pushing the release tag
-* creating the GitHub release
+* creating the GitHub release in the pinned `Dockerfile.utils` image, which refuses empty notes; gh
+  reads the token from `GH_TOKEN` of that one command, so nothing is persisted by `gh auth login`
 
-The variable for the GitHub Access Token is inside the Makefile, but the value is overwritten during
-`make ondewo_release`, because it is passed from the devops-accounts repo as an argument to the actual `release` command.
+The token never appears on a command line (where `/proc/<pid>/cmdline` would show it to every user on
+the host) or in the console; `python3 scripts/check_release_credentials_hygiene.py` checks the Makefile
+and the workflows for that.
+
+`make -n ondewo_release` prints the wrapper line only: it deliberately calls `make`, not `$(MAKE)`,
+because make executes `$(MAKE)` lines even under `-n` and a dry run would clone the credentials. Use
+`make -n release` to see the release steps.
 
 ## Automatic Release Process - Clients
 
-Every available Client of this API can be released from this repository, to make the release process for major and minor changes easier.
+All eleven `ondewo-vtsi-client-<language>` SDKs (`CLIENTS` in the Makefile: python nodejs typescript
+angular js cpp csharp go java php rust) are released from this repository, after the API itself.
+Each client repository implements the same contract, so the driver treats them all alike:
 
-The generic `release_client` command depends on 4 variables:
+| Client target | Side effects | Used for |
+| --- | --- | --- |
+| `release_preflight` | none | credentials valid, version new on origin and on the registry, notes present, host tools there |
+| `ondewo_release` | the release | the release itself; it starts with `release_preflight` |
+| `release_verify` | none | the tag exists, the GitHub release has a body, and the registry serves the version |
 
-* `ONDEWO_VTSI_API_VERSION` -- Current API version
-* `GENERIC_CLIENT` -- specifies `SSH git link` to client-repository
-* `RELEASEMD` -- position of `RELEASE.md` inside the client-repository
-* `GENERIC_RELEASE_NOTES` -- template text of client release notes
+```bash
+make preflight_all_clients           # read-only: every client's release_preflight, serially
+make release_all_clients             # preflight_all_clients, then all clients in parallel
+make release_python_client           # one client (likewise release_<language>_client)
+make preflight_python_client         # one client's preflight (likewise preflight_<language>_client)
+make check_proto_compiler_is_latest  # optional: is ONDEWO_PROTO_COMPILER_VERSION the newest compiler tag?
+```
 
-To release all clients in sequence, use the `make release_all_clients` command.
+What `release_all_clients` does (`scripts/release_client.sh` per client):
+
+1. Clones ondewo-devops-accounts **once** into a private `mktemp -d` directory outside every
+   repository (`scripts/with_devops_accounts.sh`) and hands each client its own copy as
+   `DEVOPS_ACCOUNT_DIR`; every copy and the clone are deleted on every exit path, Ctrl-C included.
+2. Runs `preflight_all_clients`. **A single failing preflight stops the run before any client is
+   released.**
+3. Releases the clients in parallel, each into a fresh `release_run_<language>.log` (mode 600), and prints a
+   summary. One failing client does not abort the others; the run fails if any client failed.
+
+For every client, in preflight and release alike, the driver clones the client, inserts the generated
+release notes into its `RELEASE.md` unless it already documents the version, and rewrites the anchored
+`ONDEWO_VTSI_VERSION=`, `ONDEWO_PROTO_COMPILER_GIT_BRANCH=tags/<ONDEWO_PROTO_COMPILER_VERSION>` and
+`(ONDEWO_)VTSI_API_GIT_BRANCH=` assignments of its Makefile. Then what origin already has decides:
+
+| On the client's origin | Result |
+| --- | --- |
+| tag `<version>` and `release_verify` passes | **SKIP**: already released and verified |
+| tag `<version>` but `release_verify` fails | **FAILED**: a half-finished release; finish it by hand |
+| branch `release/<version>` but no tag | **FAILED**: a half-finished release; finish or undo it by hand |
+| neither | preflight: `release_preflight`; release: `ondewo_release`, then `release_verify` |
+
+A client is reported RELEASED only when its `release_verify` passed after the release. A client whose
+Makefile lacks `release_preflight` or `release_verify` fails with `client <x> lacks release_preflight`
+(or `release_verify`) instead of being skipped. The client clone is removed on every exit path; files a
+client container wrote as root are removed through a digest-pinned busybox container, never `sudo`.
+
+The proto compiler is pinned exactly in `ONDEWO_PROTO_COMPILER_VERSION`; move it deliberately.
+
+**Host requirements:** git (with SSH access to GitHub and Bitbucket), make, perl, bash and docker,
+plus whatever each client's own release documents. The behaviour above is tested against fake client
+repositories by `python3 scripts/test_release_driver.py` (also run by the `Release credential hygiene`
+workflow).
 
 ## Proto Documentation
 

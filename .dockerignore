@@ -1,0 +1,10 @@
+# ALLOW-LIST: the `docker build .` of Dockerfile.utils (make build_utils_docker_image) sends only what that
+# Dockerfile COPYs. Everything else stays out of the build context - in particular an
+# ondewo-devops-accounts clone (credentials), the ondewo-vtsi-client-* clones of a client release, the
+# release_run_*.log / build_log_*.txt release logs, .git and the api submodules.
+*
+!Makefile
+!LICENSE
+!README.md
+!RELEASE.md
+!ondewo
