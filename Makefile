@@ -1,14 +1,15 @@
-export
+# There is deliberately NO bare `export` here. It exported EVERY variable of this file into every recipe,
+# and so into each client's `ondewo_release` (including the GITHUB_GH_TOKEN placeholder and a relative
+# DEVOPS_ACCOUNT_DIR). A recipe that needs a value from the environment gets it from the environment it was
+# started with; the client release scripts hand each client only DEVOPS_ACCOUNT_DIR.
 # ---------------- BEFORE RELEASE ----------------
 # 1 - Update Version Number
 # 2 - Update RELEASE.md
-# 3 - make update_setup
-# -------------- Release Process Steps --------------
-# 1 - Get Credentials from devops-accounts repo
-# 2 - Create Release Branch and push
-# 3 - Create Release Tag and push
-# 4 - GitHub Release
-# 5 - PyPI Release
+# 3 - make build, commit and push its output
+# -------------- Release Process Steps (make ondewo_release) --------------
+# 1 - spc: branch and tag are new (locally and on origin), RELEASE.md has notes for the version
+# 2 - Get the GitHub token from a temporary devops-accounts clone, delete the clone
+# 3 - presence_check, create the release branch and the tag, create the GitHub release
 
 ########################################################
 # 		Variables
@@ -36,12 +37,17 @@ GITHUB_GH_TOKEN?=ENTER_YOUR_TOKEN_HERE
 # 8.5.0 entry says `claimed_by` is deliberately **not** exposed, and the old pattern sliced that entry to
 # 23 lines instead of 36, cutting off mid-sentence. All 35 separators in RELEASE.md are exactly 17
 # asterisks, so ^\*{5} cannot match anything but a separator.
+#
+# The opening heading is ANCHORED and the version quoted (\Q..\E): unanchored, `9.1.1` also opened the
+# range on a `9.1.10` heading (and on any line merely mentioning the heading text), and its dots matched
+# any character.
 CURRENT_RELEASE_NOTES=`cat RELEASE.md \
-	| perl -ne 'print if /Release ONDEWO VTSI API ${ONDEWO_VTSI_API_VERSION}/../^\*{5}/'`
+	| perl -ne 'print if /^\#+ Release ONDEWO VTSI API \Q${ONDEWO_VTSI_API_VERSION}\E$$/../^\*{5}/'`
 
 GH_REPO="https://github.com/ondewo/ondewo-vtsi-api"
-DEVOPS_ACCOUNT_GIT="ondewo-devops-accounts"
-DEVOPS_ACCOUNT_DIR="./${DEVOPS_ACCOUNT_GIT}"
+DEVOPS_ACCOUNT_GIT=ondewo-devops-accounts
+# scripts/with_devops_accounts.sh clones this ONCE per run into `mktemp -d` and removes it on every exit path.
+DEVOPS_ACCOUNT_GIT_URL?=git@bitbucket.org:ondewo/${DEVOPS_ACCOUNT_GIT}.git
 IMAGE_UTILS_NAME=ondewo-vtsi-api-utils:${ONDEWO_VTSI_API_VERSION}
 .DEFAULT_GOAL := help
 
@@ -164,8 +170,8 @@ githubio_logic_pre:
 githubio_logic: | githubio_logic_pre
 	$(eval REPO_NAME:= $(shell echo ${GH_REPO} | cut -d "-" -f 2 ))
 	$(eval REPO_NAME_UPPER:= $(shell echo ${GH_REPO} | cut -d "-" -f 2 | perl -pe 's/(.+)/\U$$1/'))
-	@git branch | grep "*" | grep -q "master" || (echo "Not on master branch"  & rm -rf ondewo.github.io && exit 1)
-	@! cat ondewo.github.io/data.js | perl -ne "print if /name: '${REPO_NAME_UPPER}'/../end: ''/" | grep -q "number: '${ONDEWO_VTSI_API_VERSION}'" || (echo "Already Released" && exit 1)
+	@git branch | grep "*" | grep -q "master" || (echo "Not on master branch" && rm -rf ondewo.github.io && exit 1)
+	@! cat ondewo.github.io/data.js | perl -ne "print if /name: '${REPO_NAME_UPPER}'/../end: ''/" | grep -qF "number: '${ONDEWO_VTSI_API_VERSION}'" || (echo "Already Released" && exit 1)
 	$(eval VERSION_LINE:= $(shell cat -n ondewo.github.io/data.js | perl -ne "print if /name: '${REPO_NAME_UPPER}'/../end: ''/" | grep "versions: " -A 1 | tail -1 | grep -o -E '[0-9]+' | head -1 | perl -pe 's/^0+//'))
 	@cat ondewo.github.io/script_object.txt | perl -pe "s/VERSION/${ONDEWO_VTSI_API_VERSION}/g; s/TECHNOLOGY/${REPO_NAME}/g" > .tmp_insert_object.txt
 	@perl -i -pe 'BEGIN{local $$/; open my $$f,"<",".tmp_insert_object.txt" or die; $$ins=<$$f>; close $$f} print $$ins if $$. == ${VERSION_LINE}' ondewo.github.io/data.js
@@ -314,21 +320,22 @@ create_release_tag: ## Create Release Tag and push it to origin
 	git tag -a ${ONDEWO_VTSI_API_VERSION} -m "release/${ONDEWO_VTSI_API_VERSION}"
 	git push origin ${ONDEWO_VTSI_API_VERSION}
 
-login_to_gh: ## Login to Github CLI with Access Token
-	@printf '%s\n' "$${GITHUB_GH_TOKEN}" | gh auth login -p ssh --with-token
-
-build_gh_release: ## Generate Github Release with CLI
-	gh release create --repo $(GH_REPO) "$(ONDEWO_VTSI_API_VERSION)" -n "$(CURRENT_RELEASE_NOTES)" -t "Release ${ONDEWO_VTSI_API_VERSION}"
+# gh reads the token from GH_TOKEN of the ONE command that needs it: no `gh auth login`, so nothing is
+# persisted in a gh config anywhere, and the value never reaches argv (`$${...}` is expanded by the shell).
+build_gh_release: ## Generate Github Release with CLI; refuses empty release notes
+	@notes="$(CURRENT_RELEASE_NOTES)"; \
+	if [ -z "$$notes" ]; then echo "ERROR: RELEASE.md has no notes for ${ONDEWO_VTSI_API_VERSION}; refusing an empty GitHub release" && exit 1; fi; \
+	GH_TOKEN="$${GITHUB_GH_TOKEN}" gh release create --repo $(GH_REPO) "$(ONDEWO_VTSI_API_VERSION)" -n "$$notes" -t "Release ${ONDEWO_VTSI_API_VERSION}"
 
 delete_gh_release: ## Delete GitHub Release, release branch and release tag via gh CLI
-	-gh release delete --repo $(GH_REPO) "$(ONDEWO_VTSI_API_VERSION)" --yes
-	-gh api repos/ondewo/ondewo-vtsi-api/git/refs/heads/release/${ONDEWO_VTSI_API_VERSION} -X DELETE
-	-gh api repos/ondewo/ondewo-vtsi-api/git/refs/tags/${ONDEWO_VTSI_API_VERSION} -X DELETE
+	-@GH_TOKEN="$${GITHUB_GH_TOKEN}" gh release delete --repo $(GH_REPO) "$(ONDEWO_VTSI_API_VERSION)" --yes
+	-@GH_TOKEN="$${GITHUB_GH_TOKEN}" gh api repos/ondewo/ondewo-vtsi-api/git/refs/heads/release/${ONDEWO_VTSI_API_VERSION} -X DELETE
+	-@GH_TOKEN="$${GITHUB_GH_TOKEN}" gh api repos/ondewo/ondewo-vtsi-api/git/refs/tags/${ONDEWO_VTSI_API_VERSION} -X DELETE
 
 unrelease_to_github_via_docker_image: ## Unrelease from Github via docker
 	@docker run --rm \
 		-e GITHUB_GH_TOKEN \
-		${IMAGE_UTILS_NAME} make login_to_gh delete_gh_release
+		${IMAGE_UTILS_NAME} make delete_gh_release
 
 unrelease: build_utils_docker_image unrelease_to_github_via_docker_image ## Undo a release: delete the GitHub release, release branch, and release tag
 	-git branch -d "release/${ONDEWO_VTSI_API_VERSION}"
@@ -336,16 +343,67 @@ unrelease: build_utils_docker_image unrelease_to_github_via_docker_image ## Undo
 	-git fetch --prune
 	@echo "Unrelease of ${ONDEWO_VTSI_API_VERSION} complete"
 
-# Every published ondewo-vtsi-client-<language> SDK. Each one is a repository with its own `ondewo_release` and `TEST`
-# targets, so `release_client` drives them all alike.
+# Every published ondewo-vtsi-client-<language> SDK. Each repository implements the client release
+# contract: `release_preflight` (read-only: credentials valid, version new on origin and registry, notes
+# present, host tools there), `ondewo_release`, and `release_verify` (read-only: tag, GitHub release body
+# and the registry serving the version). scripts/release_client.sh drives all eleven alike.
 CLIENTS := python nodejs typescript angular js cpp csharp go java php rust
 
-release_all_clients: ## Release all clients IN PARALLEL; one failing client does not abort the others
-	@echo "Releasing all clients in parallel for ${ONDEWO_VTSI_API_VERSION} ..."; \
+# The ondewo-proto-compiler every client is built with, pinned EXACTLY and written into each client's
+# ONDEWO_PROTO_COMPILER_GIT_BRANCH as tags/<version>. It used to be "the first tag the GitHub API
+# returned": unauthenticated (60 requests/hour, so a rate-limited run wrote an empty `tags/`), in an
+# undocumented order, and any new compiler tag silently moved every client's pin mid-release. Move it
+# deliberately; `make check_proto_compiler_is_latest` tells you when a newer tag exists.
+ONDEWO_PROTO_COMPILER_VERSION=5.15.7
+
+CLIENT_GIT_URL_PREFIX?=git@github.com:ondewo/ondewo-vtsi-client-
+# The RELEASE.md a client's release slices its notes from (the js family keeps it in src/).
+CLIENT_RELEASE_MD=$(if $(filter nodejs typescript angular js,$(1)),src/RELEASE.md,RELEASE.md)
+# How the client's RELEASE.md headings spell the language: capitalised name, except "C++" and "PHP".
+CLIENT_DISPLAY_NAME_cpp=C++
+CLIENT_DISPLAY_NAME_php=PHP
+CLIENT_DISPLAY_NAME=$(or $(CLIENT_DISPLAY_NAME_$(1)),$(shell printf '%s' '$(1)' | perl -pe 's/^(.)/\u$$1/'))
+
+# Emitted markdownlint-clean, and deliberately on ONE line. Every ` \n` used to leave a trailing space on
+# each generated line and a leading space on the list item, and make's line-continuation collapses
+# `\<newline><tab>` to a further space, so the block tripped MD009/MD007/MD022/MD012/MD032 in EVERY client and the
+# first pre-commit run of every release `Failed - files were modified by this hook` (10 auto-fixes in the
+# Python client for 8.6.0 alone). It self-healed on the re-run, but it also left the heading as
+# `\#\# Release ... <VERSION> ` WITH a trailing space, so nothing can anchor a `$$` grep on that heading.
+# Keep this byte-identical to what markdownlint normalises to: no trailing spaces, a blank line around
+# the heading and around the list. It reaches scripts/release_client.sh VERBATIM through the environment
+# (RELEASE_NOTES_TEMPLATE below), never on a command line, so a backtick in a note is never
+# command-substituted; the script turns `\n` into newlines, drops the other backslashes and ends the
+# notes in exactly one newline.
+GENERIC_RELEASE_NOTES=\n*****************\n\n\\\#\\\# Release ONDEWO VTSI REPONAME Client ${ONDEWO_VTSI_API_VERSION}\n\n\\\#\\\#\\\# Improvements\n\n* Tracking API Version [${ONDEWO_VTSI_API_VERSION}](https://github.com/ondewo/ondewo-vtsi-api/releases/tag/${ONDEWO_VTSI_API_VERSION}) ( [Documentation](https://ondewo.github.io/ondewo-vtsi-api/) )\n
+
+# One devops-accounts clone per run: reuses DEVOPS_ACCOUNT_DIR when an outer target already made one.
+#
+# The lines that start the wrapper call `make`, NOT `$(MAKE)`, on purpose: make EXECUTES every recipe line
+# that mentions $(MAKE) even under `make -n`, so `make -n release_all_clients` used to clone
+# ondewo-devops-accounts for real. With a plain `make` a dry run only prints the wrapper line; dry-run the
+# inner targets (release_all_clients_after_preflight, release_client CLIENT=<x>, release) to see the steps.
+WITH_DEVOPS_ACCOUNTS=DEVOPS_ACCOUNT_GIT_URL="$(DEVOPS_ACCOUNT_GIT_URL)" scripts/with_devops_accounts.sh
+
+# $(call run_client_script,<preflight|release>,<client>)
+run_client_script=$(if $(filter $(2),$(CLIENTS)),,$(error CLIENT='$(2)' is not one of: $(CLIENTS)))$(WITH_DEVOPS_ACCOUNTS) scripts/release_client.sh $(1) $(2) "$(CLIENT_GIT_URL_PREFIX)$(2).git" "$(call CLIENT_RELEASE_MD,$(2))" "$(call CLIENT_DISPLAY_NAME,$(2))" "$(ONDEWO_VTSI_API_VERSION)" "$(ONDEWO_PROTO_COMPILER_VERSION)"
+preflight_client release_client: export RELEASE_NOTES_TEMPLATE=$(GENERIC_RELEASE_NOTES)
+
+release_all_clients: ## Preflight EVERY client, then release them IN PARALLEL; one failing client does not abort the others
+	@$(WITH_DEVOPS_ACCOUNTS) make --no-print-directory release_all_clients_after_preflight
+
+# preflight_all_clients is a PREREQUISITE: a single failing preflight stops the run before any client
+# releases. `.NOTPARALLEL:` (see `release`) keeps it ahead of the recipe even under `make -j`.
+# A client counts as released only when its release_verify passed; SKIP means "already released AND
+# release_verify passes" - a half-finished release is FAILED, never SKIP (scripts/release_client.sh).
+release_all_clients_after_preflight: preflight_all_clients
+	@umask 077; \
+	echo "Releasing all clients in parallel for ${ONDEWO_VTSI_API_VERSION} ..."; \
 	rm -f .already_released_marker-* .client_status-*; \
 	for c in $(CLIENTS); do \
-		( if make release_$${c}_client > release_run_$${c}.log 2>&1; then echo RELEASED > .client_status-$$c; \
-		  elif [ -f .already_released_marker-$$c ]; then echo SKIP > .client_status-$$c; \
+		rm -f release_run_$$c.log; \
+		( if $(MAKE) --no-print-directory release_client CLIENT=$$c > release_run_$$c.log 2>&1; then \
+			if [ -f .already_released_marker-$$c ]; then echo SKIP > .client_status-$$c; else echo RELEASED > .client_status-$$c; fi; \
 		  else echo FAILED > .client_status-$$c; fi ) & \
 	done; \
 	wait; \
@@ -359,156 +417,37 @@ release_all_clients: ## Release all clients IN PARALLEL; one failing client does
 	echo "==============================================================="; \
 	rm -f .already_released_marker-* .client_status-*; \
 	if [ "$$failed" = 1 ]; then echo "RESULT: one or more clients FAILED (the others released independently)."; exit 1; fi; \
-	echo "RESULT: all clients released or already up-to-date."
+	echo "RESULT: all clients released and verified, or already released and verified."
 
-GENERIC_CLIENT?=
-RELEASEMD?=
-# Emitted markdownlint-clean, and deliberately on ONE line. Every ` \n` used to leave a trailing space on
-# each generated line and a leading space on the list item, and make's line-continuation collapses
-# `\<newline><tab>` to a further space, so the block tripped MD009/MD007/MD022/MD012/MD032 in EVERY client and the
-# first pre-commit run of every release `Failed - files were modified by this hook` (10 auto-fixes in the
-# Python client for 8.6.0 alone). It self-healed on the re-run, but it also left the heading as
-# `\#\# Release ... <VERSION> ` WITH a trailing space, so nothing can anchor a `$$` grep on that heading.
-# Keep this byte-identical to what markdownlint normalises to: no trailing spaces, a blank line around
-# the heading and around the list.
-GENERIC_RELEASE_NOTES=\n*****************\n\n\\\#\\\# Release ONDEWO VTSI REPONAME Client ${ONDEWO_VTSI_API_VERSION}\n\n\\\#\\\#\\\# Improvements\n\n* Tracking API Version [${ONDEWO_VTSI_API_VERSION}](https://github.com/ondewo/ondewo-vtsi-api/releases/tag/${ONDEWO_VTSI_API_VERSION}) ( [Documentation](https://ondewo.github.io/ondewo-vtsi-api/) )\n
+preflight_all_clients: ## Run every client's read-only release_preflight, serially; fails if ANY client fails
+	@$(WITH_DEVOPS_ACCOUNTS) make --no-print-directory preflight_all_clients_with_devops
 
-release_client:
-	$(eval REPO_NAME:= $(shell echo ${GENERIC_CLIENT} | cut -d "-" -f 4 | cut -d '.' -f 1))
-	$(eval REPO_DIR:= $(shell echo "ondewo-vtsi-client-${REPO_NAME}"))
-	@# CLIENT_DISPLAY_NAME overrides the capitalised repository suffix where the client's RELEASE.md heading
-	@# spells its language differently ("C++" for cpp, "PHP" for php).
-	$(eval UPPER_REPO_NAME:= $(if ${CLIENT_DISPLAY_NAME},${CLIENT_DISPLAY_NAME},$(shell echo ${REPO_NAME} | perl -pe 's/^(.)/\u$$1/')))
-	$(eval UPPER_REPO_NAME_RE:= $(subst +,\+,${UPPER_REPO_NAME}))
-# Get newest Proto-Compiler Version
-	$(eval PROTO_COMPILER:= $(shell curl https://api.github.com/repos/ondewo/ondewo-proto-compiler/tags | grep "\"name\"" | head -1 | cut -d '"' -f 4))
-# Clone Repo
-	rm -rf ${REPO_DIR} || sudo rm -rf ${REPO_DIR}
-	rm -f build_log_${REPO_NAME}.txt
+preflight_all_clients_with_devops:
+	@failed=""; \
+	for c in $(CLIENTS); do \
+		$(MAKE) --no-print-directory preflight_client CLIENT=$$c || failed="$$failed $$c"; \
+	done; \
+	if [ -n "$$failed" ]; then echo "PREFLIGHT FAILED for:$$failed - nothing was released"; exit 1; fi; \
+	echo "PREFLIGHT OK for: $(CLIENTS)"
 
-	@# printf '%b', not echo: echo appends a newline of its own on top of the trailing \n, which left a
-	@# second blank line before the previous entry's separator (markdownlint MD012 used to eat it).
-	@# Read through the environment (line 1 is a bare `export`) rather than interpolating the value into
-	@# the command text: interpolated, the value has to carry its own double quotes and the shell still
-	@# command-substitutes any backtick in it - which would gut a `` `Foo` is renamed to `Bar` `` note.
-	@# The final `perl -0777` normalises the file to EXACTLY one trailing newline. printf '%b' adds none of
-	@# its own (that is the point - echo's extra one produced a doubled blank line), so a GENERIC_RELEASE_NOTES
-	@# override that does not end in \n yields a file with no final newline; the insert below then swallows the
-	@# blank line before the next ***** separator - measured with the client's markdownlint-cli2 v0.23.0:
-	@# `MD032/blanks-around-lists`, 1 auto-fix, i.e. the exact `Failed - files were modified by this hook`
-	@# first run this recipe was changed to stop producing. Normalised: 0 errors, 0 fixes. The default value
-	@# already ends in \n, so its generated file is byte-identical (238 bytes) with and without this step.
-	@printf '%b' "$$GENERIC_RELEASE_NOTES" > temp-notes-${REPO_NAME} && perl -i -pe 's/\\//g' temp-notes-${REPO_NAME} && perl -i -pe 's/REPONAME/${UPPER_REPO_NAME}/g' temp-notes-${REPO_NAME} && perl -0777 -i -pe 's/\n*\z/\n/' temp-notes-${REPO_NAME}
-	git clone ${GENERIC_CLIENT}
-# Check if Client is already uptodate with API Version
-	@! git -C ${REPO_DIR} branch -a | grep -q ${ONDEWO_VTSI_API_VERSION} || (echo "Already Released ${ONDEWO_VTSI_API_VERSION} \n\n\n"  && touch .already_released_marker-${REPO_NAME} && rm -rf ${REPO_DIR} && rm -f temp-notes-${REPO_NAME} && exit 1)
+preflight_client: ## Preflight ONE client: make preflight_client CLIENT=<language>
+	@$(call run_client_script,preflight,$(CLIENT))
 
-# Change Version Number and RELEASE NOTES
-# Only insert the generated boilerplate when the client does not already document this version. A client
-# whose RELEASE.md was written by hand ahead of the release would otherwise get a SECOND
-# "Release ONDEWO VTSI <Name> Client <VERSION>" heading, which buries the curated entry (the notes slice
-# takes the FIRST match) and trips markdownlint MD024, which does NOT auto-fix, so the client's own
-# pre-commit fails and the release aborts. Measured against the real ondewo-vtsi-client-python
-# RELEASE.md (it already documents 8.6.0) with the client's own markdownlint-cli2 v0.23.0 config:
-# unguarded insert -> 2 identical headings, `MD024/no-duplicate-heading`, exit 1, file NOT repaired
-# by fix: true; guarded -> 1 heading, 0 errors, exit 0. ondewo-nlu-client-angular already carries two
-# byte-identical "## Release ONDEWO NLU Angular Client 3.5.0" blocks from exactly this failure.
-	cd ${REPO_DIR} && if grep -qE "^#+ Release ONDEWO VTSI ${UPPER_REPO_NAME_RE} Client ${ONDEWO_VTSI_API_VERSION}$$" ${RELEASEMD}; then \
-		echo "${RELEASEMD} already documents ${ONDEWO_VTSI_API_VERSION} - keeping the curated entry, not inserting the generated notes"; \
-	else \
-		perl -i -ne 'BEGIN{open my $$f,"<","../temp-notes-${REPO_NAME}" or die; @notes=<$$f>; close $$f} print; print @notes if /Release History/' ${RELEASEMD}; \
-	fi
-	cd ${REPO_DIR} && head -20 ${RELEASEMD}
-# Anchored on the ASSIGNMENT at the start of a line. Unanchored, the rewrite also hit every line that merely
-# MENTIONS the variable before an `=`: in ondewo-vtsi-client-go it cut the closing quote off two `echo` lines of the
-# go.mod check that every release runs, and in ondewo-vtsi-client-csharp it truncated a comment.
-	cd ${REPO_DIR} && perl -i -pe 's/^ONDEWO_VTSI_VERSION\s*=.*/ONDEWO_VTSI_VERSION=${ONDEWO_VTSI_API_VERSION}/' Makefile
-	cd ${REPO_DIR} && perl -i -pe 's{^ONDEWO_PROTO_COMPILER_GIT_BRANCH\s*=.*}{ONDEWO_PROTO_COMPILER_GIT_BRANCH=tags/${PROTO_COMPILER}}' Makefile
-	cd ${REPO_DIR} && perl -i -pe 's{^((?:ONDEWO_)?VTSI_API_GIT_BRANCH)\s*=.*}{$$1=tags/${ONDEWO_VTSI_API_VERSION}}' Makefile && head -30 Makefile
+release_client: ## Release ONE client (its own release starts with release_preflight): make release_client CLIENT=<language>
+	@$(call run_client_script,release,$(CLIENT))
 
-# Build new code
-	bash -c 'set -o pipefail; make -C ${REPO_DIR} ondewo_release | tee build_log_${REPO_NAME}.txt'
-	make -C ${REPO_DIR} TEST
-# Remove everything from Release
-	sudo rm -rf ${REPO_DIR}
-	rm -f temp-notes-${REPO_NAME}
+# make release_<language>_client / make preflight_<language>_client, e.g. release_python_client
+release_%_client:
+	@$(MAKE) --no-print-directory release_client CLIENT=$*
 
-PYTHON_CLIENT="git@github.com:ondewo/ondewo-vtsi-client-python.git"
+preflight_%_client:
+	@$(MAKE) --no-print-directory preflight_client CLIENT=$*
 
-release_python_client: ## Release Python Client
-	@echo "Start releasing Python Client"
-	make release_client GENERIC_CLIENT=${PYTHON_CLIENT} RELEASEMD="RELEASE.md"
-	@echo "End releasing Python Client \n \n \n"
-
-NODEJS_CLIENT="git@github.com:ondewo/ondewo-vtsi-client-nodejs.git"
-
-release_nodejs_client: ## Release NodeJs Client
-	@echo "Start releasing Nodejs Client"
-	make release_client GENERIC_CLIENT=${NODEJS_CLIENT} RELEASEMD="src/RELEASE.md"
-	@echo "End releasing Nodejs Client \n \n \n"
-
-TYPESCRIPT_CLIENT="git@github.com:ondewo/ondewo-vtsi-client-typescript.git"
-
-release_typescript_client: ## Release Typescript Client
-	@echo "Start releasing Typescript Client"
-	make release_client GENERIC_CLIENT=${TYPESCRIPT_CLIENT} RELEASEMD="src/RELEASE.md"
-	@echo "End releasing Typescript Client \n \n \n"
-
-ANGULAR_CLIENT="git@github.com:ondewo/ondewo-vtsi-client-angular.git"
-
-release_angular_client: ## Release Angular Client
-	@echo "Start releasing Angular Client"
-	make release_client GENERIC_CLIENT=${ANGULAR_CLIENT} RELEASEMD="src/RELEASE.md"
-	@echo "End releasing Angular Client \n \n \n"
-
-JS_CLIENT="git@github.com:ondewo/ondewo-vtsi-client-js.git"
-
-release_js_client: ## Release JS Client
-	@echo "Start releasing Js Client"
-	make release_client GENERIC_CLIENT=${JS_CLIENT} RELEASEMD="src/RELEASE.md"
-	@echo "End releasing Js Client \n \n \n"
-
-CPP_CLIENT="git@github.com:ondewo/ondewo-vtsi-client-cpp.git"
-
-release_cpp_client: ## Release C++ Client
-	@echo "Start releasing C++ Client"
-	make release_client GENERIC_CLIENT=${CPP_CLIENT} RELEASEMD="RELEASE.md" CLIENT_DISPLAY_NAME="C++"
-	@echo "End releasing C++ Client \n \n \n"
-
-CSHARP_CLIENT="git@github.com:ondewo/ondewo-vtsi-client-csharp.git"
-
-release_csharp_client: ## Release C# Client
-	@echo "Start releasing Csharp Client"
-	make release_client GENERIC_CLIENT=${CSHARP_CLIENT} RELEASEMD="RELEASE.md"
-	@echo "End releasing Csharp Client \n \n \n"
-
-GO_CLIENT="git@github.com:ondewo/ondewo-vtsi-client-go.git"
-
-release_go_client: ## Release Go Client
-	@echo "Start releasing Go Client"
-	make release_client GENERIC_CLIENT=${GO_CLIENT} RELEASEMD="RELEASE.md"
-	@echo "End releasing Go Client \n \n \n"
-
-JAVA_CLIENT="git@github.com:ondewo/ondewo-vtsi-client-java.git"
-
-release_java_client: ## Release Java Client
-	@echo "Start releasing Java Client"
-	make release_client GENERIC_CLIENT=${JAVA_CLIENT} RELEASEMD="RELEASE.md"
-	@echo "End releasing Java Client \n \n \n"
-
-PHP_CLIENT="git@github.com:ondewo/ondewo-vtsi-client-php.git"
-
-release_php_client: ## Release PHP Client
-	@echo "Start releasing PHP Client"
-	make release_client GENERIC_CLIENT=${PHP_CLIENT} RELEASEMD="RELEASE.md" CLIENT_DISPLAY_NAME="PHP"
-	@echo "End releasing PHP Client \n \n \n"
-
-RUST_CLIENT="git@github.com:ondewo/ondewo-vtsi-client-rust.git"
-
-release_rust_client: ## Release Rust Client
-	@echo "Start releasing Rust Client"
-	make release_client GENERIC_CLIENT=${RUST_CLIENT} RELEASEMD="RELEASE.md"
-	@echo "End releasing Rust Client \n \n \n"
+check_proto_compiler_is_latest: ## Fail when ondewo-proto-compiler has a newer release tag than ONDEWO_PROTO_COMPILER_VERSION (needs gh)
+	@latest=$$(gh api --paginate repos/ondewo/ondewo-proto-compiler/tags --jq '.[].name' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$$' | sort -V | tail -1); \
+	if [ -z "$$latest" ]; then echo "ERROR: could not read the ondewo-proto-compiler tags" && exit 2; fi; \
+	if [ "$$latest" = "$(ONDEWO_PROTO_COMPILER_VERSION)" ]; then echo "ONDEWO_PROTO_COMPILER_VERSION=$(ONDEWO_PROTO_COMPILER_VERSION) is the newest tag"; \
+	else echo "ondewo-proto-compiler $$latest is newer than ONDEWO_PROTO_COMPILER_VERSION=$(ONDEWO_PROTO_COMPILER_VERSION)" && exit 1; fi
 
 ########################################################
 #		GITHUB
@@ -518,7 +457,7 @@ build_and_release_to_github_via_docker: build build_utils_docker_image release_t
 build_utils_docker_image: ## Build utils docker image
 	docker build -f Dockerfile.utils -t ${IMAGE_UTILS_NAME} .
 
-push_to_gh: login_to_gh build_gh_release ## Logs into GitHub CLI and Releases
+push_to_gh: build_gh_release ## Creates the GitHub release
 	@echo 'Released to Github'
 
 release_to_github_via_docker_image: ## Release to Github via docker
@@ -529,34 +468,29 @@ release_to_github_via_docker_image: ## Release to Github via docker
 ########################################################
 #		DEVOPS-ACCOUNTS
 
-ondewo_release: spc clone_devops_accounts run_release_with_devops ## Release with credentials from devops-accounts repo
-	@rm -rf ${DEVOPS_ACCOUNT_GIT}
+# scripts/with_devops_accounts.sh --github-token clones ondewo-devops-accounts into a private `mktemp -d`,
+# reads GITHUB_GH_TOKEN (anchored to its definition line) into the ENVIRONMENT of the sub-make, deletes the
+# clone, and only then runs the release. Nothing is cloned into this checkout, the token never reaches
+# argv (`make release NAME=<value>` would put it in /proc/<pid>/cmdline), and the clone is removed on every
+# exit path, including a failure or Ctrl-C.
+ondewo_release: spc ## Release with the GitHub token from a temporary devops-accounts clone
+	@$(WITH_DEVOPS_ACCOUNTS) --github-token make release
 
-ondewo_unrelease: clone_devops_accounts run_unrelease_with_devops ## Unrelease with credentials from devops-accounts repo
-	@rm -rf ${DEVOPS_ACCOUNT_GIT}
+ondewo_unrelease: ## Unrelease with the GitHub token from a temporary devops-accounts clone
+	@$(WITH_DEVOPS_ACCOUNTS) --github-token make unrelease
 
-clone_devops_accounts: ## Clones devops-accounts repo
-	@if [ -d $(DEVOPS_ACCOUNT_GIT) ]; then rm -Rf $(DEVOPS_ACCOUNT_GIT); fi
-	git clone git@bitbucket.org:ondewo/${DEVOPS_ACCOUNT_GIT}.git
-
-# The token is loaded into the sub-make's ENVIRONMENT (anchored to the definition line). `make release
-# NAME=<value>` would put it on make's argv, which /proc/<pid>/cmdline shows to every user on the host.
-run_release_with_devops: ## Gets Credentials from devops-repo and runs release with them
-	@set -a \
-		&& eval "$$(grep -h -E '^GITHUB_GH_TOKEN=' ${DEVOPS_ACCOUNT_DIR}/account_github.env)" \
-		&& set +a \
-		&& $(MAKE) release
-
-# The token is loaded into the sub-make's ENVIRONMENT (anchored to the definition line). `make unrelease
-# NAME=<value>` would put it on make's argv, which /proc/<pid>/cmdline shows to every user on the host.
-run_unrelease_with_devops: ## Gets Credentials from devops-repo and runs unrelease with them
-	@set -a \
-		&& eval "$$(grep -h -E '^GITHUB_GH_TOKEN=' ${DEVOPS_ACCOUNT_DIR}/account_github.env)" \
-		&& set +a \
-		&& $(MAKE) unrelease
-
-spc: ## Checks if the Release Branch, Tag and Pypi version already exist
-	$(eval filtered_branches:= $(shell git branch --all | grep "release/${ONDEWO_VTSI_API_VERSION}"))
-	$(eval filtered_tags:= $(shell git tag --list | grep "${ONDEWO_VTSI_API_VERSION}"))
-	@if test "$(filtered_branches)" != ""; then echo "-- Test 1: Branch exists!!" & exit 1; else echo "-- Test 1: Branch is fine";fi
-	@if test "$(filtered_tags)" != ""; then echo "-- Test 2: Tag exists!!" & exit 1; else echo "-- Test 2: Tag is fine";fi
+# Read-only. Anchored throughout: `git rev-parse --verify` and `git ls-remote --exit-code` match whole
+# refs, so neither 19.1.0 nor 9.1.0x stands in for 9.1.0. An origin that cannot be read fails closed.
+spc: ## Checks the version is new (no release branch or tag, locally or on origin) and RELEASE.md has notes for it
+	@echo "${ONDEWO_VTSI_API_VERSION}" | grep -qxE '[0-9]+\.[0-9]+\.[0-9]+' || { echo "-- ONDEWO_VTSI_API_VERSION '${ONDEWO_VTSI_API_VERSION}' is not MAJOR.MINOR.PATCH" && exit 1; }
+	@rc=0; git ls-remote --exit-code --heads origin "refs/heads/release/${ONDEWO_VTSI_API_VERSION}" >/dev/null || rc=$$?; \
+	if [ $$rc -eq 0 ] || git rev-parse -q --verify "refs/heads/release/${ONDEWO_VTSI_API_VERSION}" >/dev/null; then echo "-- Test 1: Branch release/${ONDEWO_VTSI_API_VERSION} exists!!" && exit 1; \
+	elif [ $$rc -ne 2 ]; then echo "-- Test 1: cannot read origin (git ls-remote exit $$rc)" && exit 1; \
+	else echo "-- Test 1: Branch is fine"; fi
+	@rc=0; git ls-remote --exit-code --tags origin "refs/tags/${ONDEWO_VTSI_API_VERSION}" >/dev/null || rc=$$?; \
+	if [ $$rc -eq 0 ] || git rev-parse -q --verify "refs/tags/${ONDEWO_VTSI_API_VERSION}" >/dev/null; then echo "-- Test 2: Tag ${ONDEWO_VTSI_API_VERSION} exists!!" && exit 1; \
+	elif [ $$rc -ne 2 ]; then echo "-- Test 2: cannot read origin (git ls-remote exit $$rc)" && exit 1; \
+	else echo "-- Test 2: Tag is fine"; fi
+	@notes="$(CURRENT_RELEASE_NOTES)"; \
+	if printf '%s\n' "$$notes" | grep -vE '^(#+ Release ONDEWO VTSI API |\*+[[:space:]]*$$|[[:space:]]*$$)' | grep -q .; then echo "-- Test 3: RELEASE.md has notes for ${ONDEWO_VTSI_API_VERSION}"; \
+	else echo "-- Test 3: RELEASE.md has no '## Release ONDEWO VTSI API ${ONDEWO_VTSI_API_VERSION}' section with content!!" && exit 1; fi
