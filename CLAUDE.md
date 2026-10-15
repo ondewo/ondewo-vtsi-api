@@ -164,7 +164,8 @@ runs it against fake client repositories. Invariants, each of which a past run v
   under `-j`): one failing preflight stops the run before anything is released.
 - **A client without `release_preflight` / `release_verify` FAILS** with "client <x> lacks …"; never skip it.
 - **One devops-accounts clone per run**, in `mktemp -d`, never in a checkout, removed by an EXIT trap; each
-  client gets a private copy (a client deleting "its" clone cannot break a parallel one). The wrapper lines
+  client gets a private copy as an ABSOLUTE path (clients run as `make -C <client>`, where a relative
+  `./ondewo-devops-accounts` resolves to nothing and the client silently clones its own; a client deleting "its" clone cannot break a parallel one). The wrapper lines
   call `make`, not `$(MAKE)`: make executes `$(MAKE)` lines under `-n`, so a dry run cloned the credentials.
 - **Cleanup on every exit path, no sudo**: the client clone and the private temp dir go in the script's
   EXIT trap; root-owned files go through a digest-pinned busybox container.

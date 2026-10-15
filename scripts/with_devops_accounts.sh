@@ -42,10 +42,12 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 trap 'exit 129' HUP
 
+# Every path handed on is ABSOLUTE: the clients run as `make -C <client>`, where a relative path such as
+# ./ondewo-devops-accounts resolves to nothing and a client silently falls back to a clone of its own.
 if [ -n "${DEVOPS_ACCOUNT_DIR:-}" ] && [ -d "${DEVOPS_ACCOUNT_DIR}" ]; then
-    devops_dir="${DEVOPS_ACCOUNT_DIR}"
+    devops_dir="$(cd "${DEVOPS_ACCOUNT_DIR}" && pwd -P)"
 else
-    owned_dir="$(mktemp -d)"
+    owned_dir="$(cd "$(mktemp -d)" && pwd -P)"
     chmod 700 "${owned_dir}"
     devops_dir="${owned_dir}/ondewo-devops-accounts"
     echo "Cloning ondewo-devops-accounts into a private temporary directory (removed on exit) ..."

@@ -49,6 +49,7 @@ release_preflight:
 ondewo_release:
 \t@echo "release ONDEWO_VTSI_VERSION=$(ONDEWO_VTSI_VERSION)" >> $(LOG)
 \t@env > $(FAKE_CLIENT_CONTROL_DIR)/{name}.env
+\t@test -f "$$DEVOPS_ACCOUNT_DIR/account_github.env"
 \t@cp Makefile $(FAKE_CLIENT_CONTROL_DIR)/{name}.Makefile
 \t@cp {release_md} $(FAKE_CLIENT_CONTROL_DIR)/{name}.RELEASE.md
 \t@git add -A && git commit -q -m "release $(ONDEWO_VTSI_VERSION)"
@@ -379,6 +380,26 @@ class TestReleaseClient(DriverFixture):
         self.assertEqual(result.returncode, 0, result.stdout)
         self.assertIn(f"RELEASED {VERSION}", result.stdout)
 
+    def test_relative_tmpdir_and_devops_dir_reach_the_client_as_absolute_paths(self) -> None:
+        self.make_client("python", "Python")
+        devops: Path = self.driver / "given-devops"
+        self.git("clone", "-q", str(self.origins / "ondewo-devops-accounts.git"), str(devops))
+        for variable, value in (("TMPDIR", os.path.relpath(self.tmpdir, self.driver)), ("DEVOPS_ACCOUNT_DIR", "./given-devops")):
+            with self.subTest(variable=variable):
+                self.env[variable] = value
+                result = self.run_make("release_python_client")
+                del self.env[variable]
+                self.env["TMPDIR"] = str(self.tmpdir)
+                self.assertEqual(result.returncode, 0, result.stdout)
+                given: str = dict(
+                    line.split("=", 1) for line in (self.control / "python.env").read_text(encoding="utf-8").splitlines() if "=" in line
+                )["DEVOPS_ACCOUNT_DIR"]
+                self.assertTrue(os.path.isabs(given), given)
+                for ref in self.origin_refs("python"):
+                    if VERSION in ref:
+                        self.git("update-ref", "-d", ref, cwd=self.origins / "ondewo-vtsi-client-python.git")
+        self.assertTrue((devops / "account_github.env").is_file(), "a DEVOPS_ACCOUNT_DIR the driver did not create was deleted")
+
     def test_an_interrupted_release_still_cleans_up(self) -> None:
         self.make_client("python", "Python")
         self.control_file("python", "hang")
@@ -422,7 +443,8 @@ class TestReleaseClient(DriverFixture):
         env: Dict[str, str] = dict(
             line.split("=", 1) for line in (self.control / "python.env").read_text(encoding="utf-8").splitlines() if "=" in line
         )
-        self.assertTrue(env["DEVOPS_ACCOUNT_DIR"].startswith(str(self.tmpdir)), env["DEVOPS_ACCOUNT_DIR"])
+        self.assertTrue(os.path.isabs(env["DEVOPS_ACCOUNT_DIR"]), env["DEVOPS_ACCOUNT_DIR"])
+        self.assertTrue(env["DEVOPS_ACCOUNT_DIR"].startswith(str(self.tmpdir.resolve())), env["DEVOPS_ACCOUNT_DIR"])
         self.assertNotIn("CLIENT=", env.get("MAKEFLAGS", ""))
         for leaked in (
             "GITHUB_GH_TOKEN", "GENERIC_RELEASE_NOTES", "CURRENT_RELEASE_NOTES", "ONDEWO_VTSI_API_VERSION", "CLIENT",

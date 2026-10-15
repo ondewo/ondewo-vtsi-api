@@ -72,7 +72,8 @@ fi
 rm -f "${skip_marker}"
 remove_clone
 
-private_root="$(mktemp -d)"
+# Absolute (the client runs as `make -C <client>`, where a relative path would not resolve).
+private_root="$(cd "$(mktemp -d)" && pwd -P)"
 notes="${private_root}/release-notes.md"
 printf '%s' "${RELEASE_NOTES_TEMPLATE}" > "${notes}"
 
