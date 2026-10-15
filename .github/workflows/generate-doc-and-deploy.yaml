@@ -28,9 +28,13 @@ jobs:
         run: git config --global init.defaultBranch master
 
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # Check out the commit DETACHED. By default a push checks out the local branch `master`, and git lets a branch be
+      # checked out in one worktree only, so the deploy action's `git checkout -B master` in its own worktree failed
+      # with `fatal: 'master' is already used by worktree` and an `Error:` line before it fell back to a temp branch.
       - name: Checkout 🛎️
         uses: actions/checkout@v5
         with:
+          ref: ${{ github.sha }}
           submodules: true
 
       # - uses: actions/setup-go@v2.1.3
