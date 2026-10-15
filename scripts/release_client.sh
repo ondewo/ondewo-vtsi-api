@@ -27,7 +27,14 @@
 # its copy of the devops clone) (EXIT trap; INT/TERM/HUP become an exit so the trap runs for them too). No sudo: files a client
 # container wrote as root are removed through a throwaway container that mounts only the clone.
 set -euo pipefail
+# 077 is for what THIS script writes (the notes, the private devops copy, the build log). The client clone
+# and the client make run under CLIENT_UMASK instead (clone_client / run_client_target): a client builds
+# docker images from its checkout and runs them with `--user $(id -u)`, and COPY keeps file modes, so a
+# 0600 checkout made e.g. compile-proto-2-php.sh unreadable in the php proto-compiler image
+# (ondewo-sip-client-php 5.5.2: `bash: compile-proto-2-php.sh: Permission denied`). The clone holds only
+# public sources.
 umask 077
+CLIENT_UMASK=022
 
 [ "$#" -eq 7 ] || { echo "usage: $0 <preflight|release> <name> <git-url> <release-md> <display-name> <api-version> <proto-compiler-version>" >&2; exit 2; }
 mode="$1" name="$2" url="$3" release_md="$4" display_name="$5" version="$6" compiler_version="$7"
@@ -109,7 +116,7 @@ run_client_target() {
     local devops_copy="${private_root}/ondewo-devops-accounts"
     rm -rf "${devops_copy}"
     cp -R "${DEVOPS_ACCOUNT_DIR}" "${devops_copy}"
-    env "${unset_driver_variables[@]}" DEVOPS_ACCOUNT_DIR="${devops_copy}" make -C "${repo_dir}" "$1"
+    (umask "${CLIENT_UMASK}" && exec env "${unset_driver_variables[@]}" DEVOPS_ACCOUNT_DIR="${devops_copy}" make -C "${repo_dir}" "$1")
 }
 
 client_has_target() {
@@ -118,7 +125,7 @@ client_has_target() {
 
 # ---------------------------------------------------------------- clone and prepare
 say "${mode} ${display_name} client ${version} (proto compiler ${compiler_version}) from ${url}"
-git clone --quiet "${url}" "${repo_dir}"
+(umask "${CLIENT_UMASK}" && exec git clone --quiet "${url}" "${repo_dir}")
 
 for target in ondewo_release release_preflight release_verify; do
     client_has_target "${target}" || fail "client ${name} lacks ${target} (see RELEASE_CONTRACT: every client provides release_preflight and release_verify)"
