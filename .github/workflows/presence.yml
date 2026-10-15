@@ -22,6 +22,11 @@ jobs:
   presence_check:
     runs-on: ubuntu-24.04
     steps:
+      # Before checkout: actions/checkout runs `git init`, and without a configured default branch git prints a
+      # nine-line `hint:` block into every job log.
+      - name: Configure git
+        run: git config --global init.defaultBranch master
+
       - name: Checkout
         uses: actions/checkout@v5
         with:
