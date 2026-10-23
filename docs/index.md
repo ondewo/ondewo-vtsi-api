@@ -726,7 +726,9 @@
     - [ListTagsResponse](#ondewo.nlu.ListTagsResponse)
     - [ListUserIdsOfAllSessionsRequest](#ondewo.nlu.ListUserIdsOfAllSessionsRequest)
     - [ListUserIdsResponse](#ondewo.nlu.ListUserIdsResponse)
+    - [LlmAgentNodeEvent](#ondewo.nlu.LlmAgentNodeEvent)
     - [LlmAgentUsage](#ondewo.nlu.LlmAgentUsage)
+    - [LlmBaseUrlUsage](#ondewo.nlu.LlmBaseUrlUsage)
     - [LlmCacheStats](#ondewo.nlu.LlmCacheStats)
     - [LlmCallFinishedEvent](#ondewo.nlu.LlmCallFinishedEvent)
     - [LlmCallStartedEvent](#ondewo.nlu.LlmCallStartedEvent)
@@ -783,6 +785,7 @@
     - [FeedbackRating](#ondewo.nlu.FeedbackRating)
     - [FeedbackScope](#ondewo.nlu.FeedbackScope)
     - [FeedbackTimeGranularity](#ondewo.nlu.FeedbackTimeGranularity)
+    - [LlmAgentNodePhase](#ondewo.nlu.LlmAgentNodePhase)
     - [LlmSafetyLocation](#ondewo.nlu.LlmSafetyLocation)
     - [ReasoningEffort](#ondewo.nlu.ReasoningEffort)
     - [ResourceView](#ondewo.nlu.ResourceView)
@@ -2294,6 +2297,7 @@ Request statistics of the agent
 | llm_group_bys | [string](#string) | repeated | Optional. Group LLM aggregations by named dimensions (e.g. <code>["model_name", "provider"]</code>). Empty list = no grouping. |
 | field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which fields will be filled with data on the response (e.g. paths=["llm_telemetry_report"]). |
 | llm_ccai_service_provider_filter | [CcaiServiceProvider](#ondewo.nlu.CcaiServiceProvider) | repeated | Optional. Restrict LLM aggregations to specific CCAI service providers. Empty = all. |
+| llm_base_url_filter | [string](#string) | repeated | Optional. Restrict LLM-typed reports to calls made through specific base URLs (the <code>LlmTelemetry.base_url</code> values, as reported in <code>LlmTelemetryReport.base_urls_used</code>). An empty string selects calls whose model configuration states no base URL. Empty list = all. |
 
 
 
@@ -2405,6 +2409,7 @@ Request of the report of the statistics about sessions
 | llm_agent_name_filter | [string](#string) | repeated | Optional. Restrict LLM-typed reports to specific intent-agent names. Empty = all. |
 | llm_tool_name_filter | [string](#string) | repeated | Optional. Restrict LLM-typed reports to specific tool names. Empty = all. |
 | llm_ccai_service_provider_filter | [CcaiServiceProvider](#ondewo.nlu.CcaiServiceProvider) | repeated | Optional. Restrict LLM-typed reports to specific CCAI service providers. Empty = all. |
+| llm_base_url_filter | [string](#string) | repeated | Optional. Restrict LLM-typed reports to calls made through specific base URLs (the <code>LlmTelemetry.base_url</code> values, as reported in <code>LlmTelemetryReport.base_urls_used</code>). An empty string selects calls whose model configuration states no base URL. Empty list = all. |
 
 
 
@@ -2448,6 +2453,7 @@ Request for time-bucketed LLM telemetry statistics about sessions.
 | llm_tool_name_filter | [string](#string) | repeated | Optional. Restrict to specific tool names. Empty = all. |
 | llm_ccai_service_provider_filter | [CcaiServiceProvider](#ondewo.nlu.CcaiServiceProvider) | repeated | Optional. Restrict to specific CCAI service providers. Empty = all. |
 | field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. The mask to control which data fields will be added to the returned data (e.g. paths=["llm_telemetry_time_series_buckets.llm_telemetry_report.llm_token_usage"]). |
+| llm_base_url_filter | [string](#string) | repeated | Optional. Restrict LLM-typed reports to calls made through specific base URLs (the <code>LlmTelemetry.base_url</code> values, as reported in <code>LlmTelemetryReport.base_urls_used</code>). An empty string selects calls whose model configuration states no base URL. Empty list = all. |
 
 
 
@@ -10532,6 +10538,7 @@ It can be creating, importing, exporting, deleting, restoring, building cache, t
 | ADD_RAG_CRAWLER_RESULT_TO_DATASET | 11 | add a rag crawler result to a dataset |
 | REMOVE_RAG_CRAWLER_RESULT_FROM_DATASET | 12 | remove a rag crawler result from a dataset |
 | CHANGE_DATASET_EMBEDDING_MODEL | 13 | change the embedding model of dataset that already contains parsed documents |
+| REPARSE_DATASET | 14 | re-parse of all documents in a dataset |
 
 
 
@@ -11421,10 +11428,11 @@ diagnostics capture, and deep crawling options for each crawler run.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | concurrency_config | [RagCrawlerConcurrencyConfig](#ondewo.nlu.RagCrawlerConcurrencyConfig) |  | Optional. Concurrency and pacing controls for crawler requests. |
-| deep_crawler_config | [RagCrawlerDeepCrawlerConfig](#ondewo.nlu.RagCrawlerDeepCrawlerConfig) |  | Optional. Deep crawler behavior (enable + depth/pages/scoring/filter chain). |
+| deep_crawler_config | [RagCrawlerDeepCrawlerConfig](#ondewo.nlu.RagCrawlerDeepCrawlerConfig) |  | Optional. Deep crawler behavior (enable + depth/scoring/filter chain). |
 | output_config | [RagCrawlerResultsConfig](#ondewo.nlu.RagCrawlerResultsConfig) |  | Optional. Structured output configuration (format + metadata policy). |
 | status_filter | [RagCrawlerStatusFilter](#ondewo.nlu.RagCrawlerStatusFilter) |  | Optional. HTTP status filtering: which fetched pages become result documents. |
 | incremental_config | [RagCrawlerIncrementalConfig](#ondewo.nlu.RagCrawlerIncrementalConfig) |  | Optional. Incremental crawling: reuse unchanged pages from the previous run instead of re-fetching them. |
+| max_pages | [int32](#int32) | optional | Optional. Hard cap on pages fetched successfully in this run; <code>0</code> means unlimited. |
 
 
 
@@ -11493,7 +11501,7 @@ Deep crawler options grouped under one config node.
 | is_active | [bool](#bool) |  | Optional. Enable deep crawler behavior (link following beyond seeds). Default <code>false</code>. If <code>false</code>, <code>config</code> is ignored. |
 | crawl_strategy | [RagCrawlerCrawlStrategy](#ondewo.nlu.RagCrawlerCrawlStrategy) |  | Optional. Crawl traversal strategy. Default <code>RAG_CRAWLER_CRAWL_STRATEGY_BEST_FIRST</code>. |
 | max_depth | [int32](#int32) | optional | Optional. Maximum link depth from seed URLs, counted from the nearest seed. <code>0</code> means unlimited depth. |
-| max_pages | [int32](#int32) |  | Optional. Hard cap on pages fetched successfully in this run; <code>0</code> means unlimited. |
+| max_pages | [int32](#int32) |  | **Deprecated.** Deprecated. Use <code>RagCrawlerConfig.max_pages</code> instead |
 | deep_crawler_filters | [RagCrawlerFilters](#ondewo.nlu.RagCrawlerFilters) |  | Optional. URL and domain restrictions. |
 | normalize_url_case | [bool](#bool) | optional | Optional. Normalize URL case (lowercase the path) during link discovery/deduplication. |
 
@@ -14626,6 +14634,30 @@ This message is a response of listing session user_ids
 
 
 
+<a name="ondewo.nlu.LlmAgentNodeEvent"></a>
+
+### LlmAgentNodeEvent
+Emitted on a streaming DetectIntent when a node of an AI Team graph starts, completes or fails.
+A node inside a nested graph (a subgraph, or a member agent of a supervisor or swarm) is reported too,
+with its full <code>llm_agent_node_event_node_path</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| llm_agent_node_event_node_run_id | [string](#string) |  | Id of this run of the node. The <code>LLM_AGENT_NODE_PHASE_STARTED</code> event and the <code>LLM_AGENT_NODE_PHASE_COMPLETED</code> or <code>LLM_AGENT_NODE_PHASE_FAILED</code> event of one run share it. |
+| llm_agent_node_event_parent_node_run_id | [string](#string) |  | <code>llm_agent_node_event_node_run_id</code> of the node run this one is nested in; empty for a node of the outermost graph. |
+| llm_agent_node_event_node_display_name | [string](#string) |  | Name of the node, e.g. <code>researcher</code>. |
+| llm_agent_node_event_node_path | [string](#string) | repeated | Names of the nodes from the outermost graph down to this one, e.g. <code>["supervisor", "researcher", "model"]</code>. The last element equals <code>llm_agent_node_event_node_display_name</code>. |
+| llm_agent_node_phase | [LlmAgentNodePhase](#ondewo.nlu.LlmAgentNodePhase) |  | Lifecycle phase this event reports. |
+| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock time of the event. |
+| llm_agent_node_event_duration_in_s | [float](#float) |  | Duration of the node run in seconds; set only on <code>LLM_AGENT_NODE_PHASE_COMPLETED</code> and <code>LLM_AGENT_NODE_PHASE_FAILED</code>. |
+| llm_agent_node_event_error_message | [string](#string) |  | Populated only on <code>LLM_AGENT_NODE_PHASE_FAILED</code>; empty string otherwise. |
+
+
+
+
+
+
 <a name="ondewo.nlu.LlmAgentUsage"></a>
 
 ### LlmAgentUsage
@@ -14640,6 +14672,26 @@ Per-intent-agent usage rollup across the scope.
 | call_count | [int64](#int64) |  | Number of LLM calls attributed to this agent in scope. |
 | llm_token_usage | [LlmTokenUsage](#ondewo.nlu.LlmTokenUsage) |  | Summed token usage for this agent. |
 | tool_call_count | [int64](#int64) |  | Tool-call count attributed to this agent. |
+
+
+
+
+
+
+<a name="ondewo.nlu.LlmBaseUrlUsage"></a>
+
+### LlmBaseUrlUsage
+Per-base-URL usage rollup across the scope. One entry per distinct
+<code>LlmTelemetry.base_url</code>; calls whose model configuration states no base URL are
+grouped under an empty <code>base_url</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| base_url | [string](#string) |  | Base URL the calls went through (proxy / OpenAI-compatible endpoint), with embedded credentials redacted. Empty = the model configuration states no base URL. |
+| call_count | [int64](#int64) |  | Number of LLM calls made through this base URL in scope. |
+| llm_token_usage | [LlmTokenUsage](#ondewo.nlu.LlmTokenUsage) |  | Summed token usage for the calls made through this base URL. |
+| model_names | [string](#string) | repeated | Distinct model names called through this base URL. |
 
 
 
@@ -15090,6 +15142,7 @@ breakdown fields (6+) are populated only for the matching report type; a
 | tool_call_tokens_total | [int64](#int64) |  | Scope-wide summed tool-call tokens. |
 | tool_call_duration_seconds_total | [double](#double) |  | Scope-wide summed tool-call duration in seconds. |
 | safety_stats | [LlmSafetyStats](#ondewo.nlu.LlmSafetyStats) |  | Native safety aggregate (counts / rates / mean score). Populated for *_LLM_SAFETY and *_LLM_TOTAL_STATISTICS reports. |
+| base_urls_used | [LlmBaseUrlUsage](#ondewo.nlu.LlmBaseUrlUsage) | repeated | Per-base-URL usage rollup. Populated for *_LLM_TOTAL_STATISTICS. Unlike <code>LlmModelUsage.base_url</code>, which carries one base URL per model, this lists every distinct base URL in scope. |
 
 
 
@@ -15709,6 +15762,7 @@ Multiple response messages can be returned in order:
 | llm_tool_call_finished | [LlmToolCallFinishedEvent](#ondewo.nlu.LlmToolCallFinishedEvent) |  | Emitted when an LLM tool call has finished. |
 | llm_thinking_delta | [LlmThinkingDeltaEvent](#ondewo.nlu.LlmThinkingDeltaEvent) |  | Emitted for an incremental LLM thinking (reasoning) update. |
 | llm_token_usage_update | [LlmTokenUsageUpdateEvent](#ondewo.nlu.LlmTokenUsageUpdateEvent) |  | Emitted when the running LLM token-usage totals are updated. |
+| llm_agent_node_event | [LlmAgentNodeEvent](#ondewo.nlu.LlmAgentNodeEvent) |  | Emitted when a node of an AI Team graph starts, completes or fails. |
 
 
 
@@ -15959,6 +16013,20 @@ fixed-width bucket_width_seconds on the request.
 | FEEDBACK_TIME_GRANULARITY_WEEK | 3 | Weekly calendar buckets (ISO weeks, Monday start). |
 | FEEDBACK_TIME_GRANULARITY_MONTH | 4 | Monthly calendar buckets. |
 | FEEDBACK_TIME_GRANULARITY_YEAR | 5 | Yearly calendar buckets. |
+
+
+
+<a name="ondewo.nlu.LlmAgentNodePhase"></a>
+
+### LlmAgentNodePhase
+Lifecycle phase of an AI Team graph node, reported by <code>LlmAgentNodeEvent</code>.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| LLM_AGENT_NODE_PHASE_UNSPECIFIED | 0 | Not set. |
+| LLM_AGENT_NODE_PHASE_STARTED | 1 | The node started running. |
+| LLM_AGENT_NODE_PHASE_COMPLETED | 2 | The node finished without an error. |
+| LLM_AGENT_NODE_PHASE_FAILED | 3 | The node raised an error. |
 
 
 
