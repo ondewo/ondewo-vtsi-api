@@ -2,6 +2,25 @@
 
 *****************
 
+## Release ONDEWO VTSI API 9.3.0
+
+### Improvements
+
+* **No `ondewo.vtsi` proto change since 9.2.0**; a 9.2.0 client and a 9.3.0 client speak the same vtsi wire.
+* Tracking [ondewo-nlu-api 7.4.0](https://github.com/ondewo/ondewo-nlu-api/releases/tag/7.4.0) (was 7.1.0). The
+  vendored `ondewo/nlu` tree changes exactly as nlu-api did:
+  * `session.proto` gains `LlmAgentNodeEvent` (streamed as `llm_agent_node_event` on `StreamingDetectIntent`)
+    and the per-base-URL `LlmBaseUrlUsage` breakdown in `LlmTelemetryReport`.
+  * `agent.proto` gains a base-URL filter on the agent and session statistics requests.
+  * `operation_metadata.proto` gains the `REPARSE_DATASET` operation type.
+  * `rag.proto` moves `max_pages` from `RagCrawlerDeepCrawlerConfig` to `RagCrawlerConfig` (nlu-api 7.3.0).
+* `ondewo-s2t-api` 7.5.0, `ondewo-t2s-api` 6.6.0 and `ondewo-sip-api` 5.5.2 are unchanged.
+* MINOR rather than patch because the vendored surface grew. The client SDKs vendor these nlu files, so a
+  consumer that also installs `ondewo-nlu-client` must move both together: vtsi-client 9.3.x pairs with
+  ondewo-nlu-client 7.4.x.
+
+*****************
+
 ## Release ONDEWO VTSI API 9.2.0
 
 ### Improvements

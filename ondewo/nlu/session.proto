@@ -1194,6 +1194,24 @@ message LlmCcaiServiceUsage {
     repeated string model_names = 6;
 }
 
+// Per-base-URL usage rollup across the scope. One entry per distinct
+// <code>LlmTelemetry.base_url</code>; calls whose model configuration states no base URL are
+// grouped under an empty <code>base_url</code>.
+message LlmBaseUrlUsage {
+    // Base URL the calls went through (proxy / OpenAI-compatible endpoint), with embedded
+    // credentials redacted. Empty = the model configuration states no base URL.
+    string base_url = 1;
+
+    // Number of LLM calls made through this base URL in scope.
+    int64 call_count = 2;
+
+    // Summed token usage for the calls made through this base URL.
+    LlmTokenUsage llm_token_usage = 3;
+
+    // Distinct model names called through this base URL.
+    repeated string model_names = 4;
+}
+
 // Per-intent-agent usage rollup across the scope.
 message LlmAgentUsage {
     // intent_agent executor / agent name owning the calls.
@@ -1382,6 +1400,11 @@ message LlmTelemetryReport {
     // Native safety aggregate (counts / rates / mean score). Populated for
     // *_LLM_SAFETY and *_LLM_TOTAL_STATISTICS reports.
     LlmSafetyStats safety_stats = 20;
+
+    // Per-base-URL usage rollup. Populated for *_LLM_TOTAL_STATISTICS. Unlike
+    // <code>LlmModelUsage.base_url</code>, which carries one base URL per model, this lists every
+    // distinct base URL in scope.
+    repeated LlmBaseUrlUsage base_urls_used = 21;
 }
 
 // Per-category native-safety aggregate across the LLM calls in scope.
@@ -1508,6 +1531,53 @@ message LlmTokenUsageUpdateEvent {
 
     // Running totals for that llm_call.
     LlmTokenUsage llm_token_usage = 2;
+}
+
+// Lifecycle phase of an AI Team graph node, reported by <code>LlmAgentNodeEvent</code>.
+enum LlmAgentNodePhase {
+    // Not set.
+    LLM_AGENT_NODE_PHASE_UNSPECIFIED = 0;
+
+    // The node started running.
+    LLM_AGENT_NODE_PHASE_STARTED = 1;
+
+    // The node finished without an error.
+    LLM_AGENT_NODE_PHASE_COMPLETED = 2;
+
+    // The node raised an error.
+    LLM_AGENT_NODE_PHASE_FAILED = 3;
+}
+
+// Emitted on a streaming DetectIntent when a node of an AI Team graph starts, completes or fails.
+// A node inside a nested graph (a subgraph, or a member agent of a supervisor or swarm) is reported too,
+// with its full <code>llm_agent_node_event_node_path</code>.
+message LlmAgentNodeEvent {
+    // Id of this run of the node. The <code>LLM_AGENT_NODE_PHASE_STARTED</code> event and the
+    // <code>LLM_AGENT_NODE_PHASE_COMPLETED</code> or <code>LLM_AGENT_NODE_PHASE_FAILED</code> event of one run share it.
+    string llm_agent_node_event_node_run_id = 1;
+
+    // <code>llm_agent_node_event_node_run_id</code> of the node run this one is nested in; empty for a node of the outermost graph.
+    string llm_agent_node_event_parent_node_run_id = 2;
+
+    // Name of the node, e.g. <code>researcher</code>.
+    string llm_agent_node_event_node_display_name = 3;
+
+    // Names of the nodes from the outermost graph down to this one, e.g.
+    // <code>["supervisor", "researcher", "model"]</code>. The last element equals <code>llm_agent_node_event_node_display_name</code>.
+    repeated string llm_agent_node_event_node_path = 4;
+
+    // Lifecycle phase this event reports.
+    LlmAgentNodePhase llm_agent_node_phase = 5;
+
+    // Wall-clock time of the event.
+    google.protobuf.Timestamp timestamp = 6;
+
+    // Duration of the node run in seconds; set only on <code>LLM_AGENT_NODE_PHASE_COMPLETED</code> and
+    // <code>LLM_AGENT_NODE_PHASE_FAILED</code>.
+    float llm_agent_node_event_duration_in_s = 7;
+
+    // Populated only on <code>LLM_AGENT_NODE_PHASE_FAILED</code>; empty string otherwise.
+    string llm_agent_node_event_error_message = 8;
 }
 
 // Chunk information for a document chunk referenced in a RAG based <code>StreamingDetectIntentResponse</code>
@@ -1711,6 +1781,8 @@ message StreamingDetectIntentResponse {
         LlmThinkingDeltaEvent llm_thinking_delta = 9;
         // Emitted when the running LLM token-usage totals are updated.
         LlmTokenUsageUpdateEvent llm_token_usage_update = 10;
+        // Emitted when a node of an AI Team graph starts, completes or fails.
+        LlmAgentNodeEvent llm_agent_node_event = 11;
     }
 
 }
