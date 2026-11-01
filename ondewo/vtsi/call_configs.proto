@@ -261,6 +261,11 @@ message InterruptionHandlingConfig{
     // Optional: Transcribe caller speech while the bot is speaking even if interruptions are disabled
     // (default: false, i.e. caller speech during bot speech is not transcribed while <code>enabled</code> is false)
     optional bool transcribe_on_disabled_interruptions = 8;
+
+    // Optional: Duration in milliseconds over which the bot&apos;s voice fades out (raised cosine) when the caller
+    // interrupts it, instead of stopping abruptly (default: 100, valid range: 0 - 500; 0 = stop at once).
+    // A value outside the range is refused with <code>INVALID_ARGUMENT</code>
+    optional int32 interruption_fade_out_ms = 9;
 }
 
 // Configuration of the response timing, i.e. when and how the bot responds

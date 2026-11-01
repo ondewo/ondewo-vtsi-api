@@ -64,6 +64,7 @@ ondewo.vtsi.InterruptionHandlingConfig.backoff_seconds
 ondewo.vtsi.InterruptionHandlingConfig.enabled
 ondewo.vtsi.InterruptionHandlingConfig.false_interruption_timeout_seconds
 ondewo.vtsi.InterruptionHandlingConfig.first_message_protected_seconds
+ondewo.vtsi.InterruptionHandlingConfig.interruption_fade_out_ms                    # new field in 9.4.0 (OND236-120)
 ondewo.vtsi.InterruptionHandlingConfig.min_interruption_duration_seconds
 ondewo.vtsi.InterruptionHandlingConfig.min_interruption_words
 ondewo.vtsi.InterruptionHandlingConfig.resume_after_false_interruption

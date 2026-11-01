@@ -2,6 +2,19 @@
 
 *****************
 
+## Release ONDEWO VTSI API 9.4.0
+
+### Improvements
+
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `InterruptionHandlingConfig` gains
+  `optional int32 interruption_fade_out_ms = 9`: the duration in milliseconds over which the bot's voice fades out
+  (raised cosine) when the caller interrupts it, instead of stopping abruptly. Default 100, valid range 0 - 500,
+  `0` = stop at once; a value outside the range is refused with `INVALID_ARGUMENT`. Unset keeps the deployment's
+  default. Wire-compatible with 9.3.0: a 9.3.0 client simply never sends the field.
+* `ondewo-nlu-api` 7.4.0, `ondewo-s2t-api` 7.5.0, `ondewo-t2s-api` 6.6.0 and `ondewo-sip-api` 5.5.2 are unchanged.
+
+*****************
+
 ## Release ONDEWO VTSI API 9.3.0
 
 ### Improvements
