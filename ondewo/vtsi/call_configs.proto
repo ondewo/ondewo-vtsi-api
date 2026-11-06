@@ -333,9 +333,12 @@ message DictationConfig{
 
     // Optional: Seconds an unfinished value of a category is held at most, keyed by the category: <code>digits</code>,
     // <code>phone</code>, <code>card</code>, <code>expiry_cvc</code>, <code>iban</code>, <code>bic</code>,
-    // <code>svnr</code>, <code>address</code>, <code>date</code>, <code>time</code>, <code>email</code>,
-    // <code>confirm_value</code> or <code>generic</code> (valid range: 0 - 4 each). A category not listed keeps its
-    // default cap; an unknown category is refused with <code>INVALID_ARGUMENT</code>
+    // <code>svnr</code>, <code>address</code>, <code>date</code>, <code>time</code>, <code>email</code> or
+    // <code>confirm_value</code> (valid range: 0 - 4 each). The rule without an expected value is not a category: it
+    // is set with <code>hold_generic_max_seconds</code>. An unknown category, <code>generic</code> included, is
+    // refused with <code>INVALID_ARGUMENT</code>. The map is ONE field: a non-empty map replaces the whole
+    // replica-wide table of the deployment, so a category not listed here keeps the speech-to-speech service's
+    // default cap, not a cap the replica-wide table set; an empty map keeps the replica-wide table
     map<string, float> hold_max_seconds_by_category = 5;
 
     // Optional: Seconds a full-length value whose checksum fails is held, so that the bot can ask again
