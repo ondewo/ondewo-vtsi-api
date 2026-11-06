@@ -1063,6 +1063,113 @@ message TurnDetectionOptions {
     // Optional. Configuration options for the OpenAI client used for turn detection.
     optional OpenaiLlmOptions turn_detection_llm_openai_options = 5;
 
+    // Optional. The latest turns of the conversation before the caller's utterance under evaluation, handed to an
+    // end-of-utterance model (the LiveKit-shaped model that scores the probability of the end-of-utterance token)
+    // as preceding chat turns, so that it can judge the utterance against what was said before, e.g. a bare
+    // number answering a question for a number. The server keeps the context per stream, outside the effective
+    // request config: a request whose turn detection carries this field replaces it, an empty wrapper (no turns)
+    // clears it, and a request without it (including one that carries other turn detection options) keeps it. That
+    // is why it is a wrapper: the server merges request configs per whole top-level field, so a field it did not
+    // store itself could not survive a later request that carries turn detection without it. The server caps the
+    // number of turns and the length of each turn it uses. Unset or empty: the utterance is judged alone, exactly
+    // as before this field existed. Used only by an end-of-utterance model; ignored by a chat-LLM turn detector.
+    // Honoured only in a request config (<code>TranscribeRequestConfig.utterance_detection.turn_detection</code>);
+    // ignored in a pipeline config (<code>StreamingSpeechRecognition.turn_detection</code>), where a per-stream
+    // context has no meaning.
+    optional TurnDetectionConversationContext conversation_context = 6;
+
+    // Optional. The end-of-utterance probability at or above which the caller is taken to have finished the turn,
+    // valid range: 0 - 1. Unset = the server's configured value (default: the threshold configured for the
+    // language of the stream). Used only by an end-of-utterance model; ignored by a chat-LLM turn detector.
+    // Precedence: the request config's value, then the pipeline config's value, then the server's configured value.
+    optional float end_of_turn_probability_threshold = 7;
+
+    // Optional. The hold bands of an end-of-utterance model: how long a turn judged finished, but only with a
+    // probability below a band's upper bound, waits for further silence before it is committed. Unset = the
+    // server's configured value (default: the bands configured for the language of the stream). A wrapper only so
+    // that "set with no bands" (a turn at or above the threshold is committed at once) means something different
+    // from "unset". Used only by an end-of-utterance model; ignored by a chat-LLM turn detector. Precedence: the
+    // request config's value, then the pipeline config's value, then the server's configured value.
+    optional TurnDetectionHoldBands hold_bands = 8;
+
+    // Optional. The minimum number of words an utterance needs before a hold band may hold it; a shorter utterance
+    // judged finished is committed at once. Unset = the server's configured value (default: 3). Used only by an
+    // end-of-utterance model; ignored by a chat-LLM turn detector. Precedence: the request config's value, then
+    // the pipeline config's value, then the server's configured value.
+    optional uint32 uncertain_min_words = 9;
+
+    // Optional. Seconds of silence after an utterance judged NOT finished before it is finished anyway, valid
+    // range: 0 - 4. The server raises a value below the voice activity detection's <code>min_duration_off</code>
+    // to it. Unset = the server's configured value (default: the <code>min_duration_off</code> in use). Applies to
+    // every "not finished" verdict, whichever turn detector gave it. Precedence: the request config's value, then
+    // the pipeline config's value, then the server's configured value.
+    optional float incomplete_max_silence_seconds = 10;
+
+    // Optional. Whether an end-of-utterance model computes the exact probability of the end-of-utterance token
+    // instead of reading it from the returned top log probabilities. Unset = the server's configured value
+    // (default: false). Requires a deployment that returns prompt log probabilities (vLLM
+    // <code>prompt_logprobs</code>); on any other deployment the probability reads 0, so every turn is judged not
+    // finished and waits for <code>incomplete_max_silence_seconds</code>. Used only by an end-of-utterance model;
+    // ignored by a chat-LLM turn detector. Precedence: the request config's value, then the pipeline config's
+    // value, then the server's configured value.
+    optional bool exact_probability = 11;
+
+}
+
+// <p>The conversation context handed to an end-of-utterance turn-detection model.</p>
+message TurnDetectionConversationContext {
+
+    // The turns of the conversation, oldest first. They EXCLUDE the caller's utterance under evaluation, which
+    // the server appends itself.
+    repeated TurnDetectionContextTurn turns = 1;
+
+}
+
+// <p>One turn of the conversation context of the turn detection.</p>
+message TurnDetectionContextTurn {
+
+    // <p>Who spoke the turn.</p>
+    enum Role {
+
+        // Unspecified role. The server ignores a turn without a role.
+        ROLE_UNSPECIFIED = 0;
+
+        // The caller, i.e. the speaker whose turns are detected.
+        ROLE_USER = 1;
+
+        // The voice assistant. Its text is what the caller HEARD, i.e. the spoken prefix of an interrupted
+        // utterance.
+        ROLE_ASSISTANT = 2;
+
+    }
+
+    // Who spoke the turn.
+    Role role = 1;
+
+    // The text of the turn.
+    string text = 2;
+
+}
+
+// <p>The hold bands of an end-of-utterance turn-detection model.</p>
+message TurnDetectionHoldBands {
+
+    // The bands; the first band, sorted by <code>upper_probability</code>, whose upper probability exceeds the
+    // end-of-utterance probability decides the hold. A probability above every band is finished at once.
+    repeated TurnDetectionHoldBand bands = 1;
+
+}
+
+// <p>One hold band of an end-of-utterance turn-detection model.</p>
+message TurnDetectionHoldBand {
+
+    // The exclusive upper bound of the end-of-utterance probabilities this band covers, valid range: 0 - 1.
+    float upper_probability = 1;
+
+    // Seconds of silence a turn in this band waits before it is committed, valid range: 0 - 4. The server never
+    // holds longer than <code>incomplete_max_silence_seconds</code>.
+    float max_silence_seconds = 2;
+
 }
 
 // <p>Latency tier to use for processing an OpenAI request. Affects cost and throughput.</p>
