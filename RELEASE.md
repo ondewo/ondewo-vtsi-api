@@ -11,7 +11,15 @@
   (raised cosine) when the caller interrupts it, instead of stopping abruptly. Default 100, valid range 0 - 500,
   `0` = stop at once; a value outside the range is refused with `INVALID_ARGUMENT`. Unset keeps the deployment's
   default. Wire-compatible with 9.3.0: a 9.3.0 client simply never sends the field.
-* `ondewo-nlu-api` 7.4.0, `ondewo-s2t-api` 7.5.0, `ondewo-t2s-api` 6.6.0 and `ondewo-sip-api` 5.5.2 are unchanged.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `TurnDetectionConfig` configures the turn
+  detection decision, its context and dictation per call: `conversation_context_turns`, `semantic_model_name`,
+  `end_of_turn_probability_threshold`, `hold_bands`, `uncertain_min_words`, `incomplete_max_silence_seconds`,
+  `exact_probability` (semantic mode only), `final_merge_window_seconds`, and a `DictationConfig` sub-message that
+  maps 1:1 to ondewo-csi's `CSI_DICTATION_*` settings (a per-call category map; `generic` is not a category and is
+  refused). Ranges and `INVALID_ARGUMENT` rules are documented per field; the model endpoint is deliberately not
+  configurable per call. Every field is `optional`; unset keeps the deployment's behaviour.
+* `ondewo-s2t-api` moves to 7.6.0 (the matching `TurnDetectionOptions` fields). `ondewo-nlu-api` 7.4.0,
+  `ondewo-t2s-api` 6.6.0 and `ondewo-sip-api` 5.5.2 are unchanged.
 
 *****************
 
