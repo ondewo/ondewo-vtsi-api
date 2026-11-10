@@ -370,6 +370,15 @@ message UtteranceDetectionOptions {
         // The turn detection options
         TurnDetectionOptions turn_detection = 3;
     }
+
+    // Optional. The processing chunk of THIS stream, in samples at the pipeline's sampling rate: the server buffers
+    // the incoming audio until it holds this many samples and only then runs the voice-activity search, the sliding
+    // transcription and the turn detector, so it is the cadence at which an utterance can end (8000 samples at
+    // 16 kHz = 0.5 s; 1600 = 0.1 s). Overrides <code>StreamingSpeechRecognition.min_audio_chunk_size</code> of the
+    // pipeline config for this stream only. Allowed: 320 - 32000 (20 ms - 2 s at 16 kHz); a smaller chunk costs
+    // proportionally more voice-activity and transcription requests. Read from the first request of a stream that
+    // carries it; a later request cannot change a running stream's chunk. Unset: the pipeline's value.
+    optional int64 min_audio_chunk_size = 4;
 }
 
 // <p>Configuration of the post-processing options</p>
@@ -1060,7 +1069,14 @@ message TurnDetectionOptions {
     // Optional. User prompt used as input to the turn-detection model.
     optional string turn_detection_user_prompt = 4;
 
-    // Optional. Configuration options for the OpenAI client used for turn detection.
+    // Optional. Configuration options for the OpenAI client used for turn detection. Its <code>model</code> also
+    // selects the turn-detection model: a name starting with <code>pipecat-smart-turn</code> selects pipecat Smart
+    // Turn (audio only, served by Triton, configured by the <code>pipecat_*</code> fields; the other OpenAI options
+    // are ignored); a name starting with <code>ondewo-s2t-model-de-turn-detection</code> selects the ONDEWO German
+    // turn-detection model (the turn's text and timing, served by vLLM: the whole name is the served model name and
+    // <code>base_url</code>, <code>api_key</code>, <code>timeout</code> address the deployment); any other name is
+    // a chat LLM or an end-of-utterance LLM. A name starting with <code>pipecat-</code> or
+    // <code>ondewo-s2t-model-</code> that matches neither prefix is refused with INVALID_ARGUMENT.
     optional OpenaiLlmOptions turn_detection_llm_openai_options = 5;
 
     // Optional. The latest turns of the conversation before the caller's utterance under evaluation, handed to an
@@ -1113,6 +1129,32 @@ message TurnDetectionOptions {
     // ignored by a chat-LLM turn detector. Precedence: the request config's value, then the pipeline config's
     // value, then the server's configured value.
     optional bool exact_probability = 11;
+
+    // Optional. The Triton model name of pipecat Smart Turn. Unset = the server's configured value (default:
+    // <code>ondewo-s2t-model-multi-turn-detection-pipecat-smart-turn-3.2-onnx-triton</code>). Used only when
+    // <code>turn_detection_llm_openai_options.model</code> selects pipecat Smart Turn. Precedence: the request
+    // config's value, then the pipeline config's value, then the server's configured value.
+    optional string pipecat_triton_model_name = 12;
+
+    // Optional. Host name of the Triton inference server that serves pipecat Smart Turn, as
+    // <code>Pyannote.triton_server_host</code>. Unset = the server's configured value. The connection uses the
+    // server's Triton client TLS settings. Used only with pipecat Smart Turn. Precedence as above.
+    optional string pipecat_triton_server_host = 13;
+
+    // Optional. Port of the Triton inference server that serves pipecat Smart Turn, as
+    // <code>Pyannote.triton_server_port</code>. Unset = the server's configured value. Used only with pipecat
+    // Smart Turn. Precedence as above.
+    optional int64 pipecat_triton_server_port = 14;
+
+    // Optional. Seconds of the caller's audio, ending at the decision moment, that pipecat Smart Turn hears; valid
+    // range: 1 - 8 (shorter audio is left-padded with silence to 8 s, as the model was trained). Unset = the
+    // server's configured value (default: 8). Used only with pipecat Smart Turn. Precedence as above.
+    optional float pipecat_max_audio_seconds = 15;
+
+    // Optional. Seconds to wait for Triton's answer; a turn whose verdict does not arrive in time is judged not
+    // finished and waits for <code>incomplete_max_silence_seconds</code>. Valid range: 0 - 5, exclusive of 0. Unset
+    // = the server's configured value (default: 0.2). Used only with pipecat Smart Turn. Precedence as above.
+    optional float pipecat_timeout_seconds = 16;
 
 }
 
