@@ -18,8 +18,9 @@
   maps 1:1 to ondewo-csi's `CSI_DICTATION_*` settings (a per-call category map; `generic` is not a category and is
   refused). Ranges and `INVALID_ARGUMENT` rules are documented per field; the model endpoint is deliberately not
   configurable per call. Every field is `optional`; unset keeps the deployment's behaviour.
-* `ondewo-s2t-api` moves to 7.6.0 (the matching `TurnDetectionOptions` fields). `ondewo-nlu-api` 7.4.0,
-  `ondewo-t2s-api` 6.6.0 and `ondewo-sip-api` 5.5.2 are unchanged.
+* `ondewo-s2t-api` moves to 7.6.0 (the matching `TurnDetectionOptions` fields, and
+  `UtteranceDetectionOptions.transcribe_not_final_period_seconds`, the per-request partial-transcription period).
+  `ondewo-nlu-api` 7.4.0, `ondewo-t2s-api` 6.6.0 and `ondewo-sip-api` 5.5.2 are unchanged.
 
 *****************
 

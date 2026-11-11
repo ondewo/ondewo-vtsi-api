@@ -379,6 +379,15 @@ message UtteranceDetectionOptions {
     // proportionally more voice-activity and transcription requests. Read from the first request of a stream that
     // carries it; a later request cannot change a running stream's chunk. Unset: the pipeline's value.
     optional int64 min_audio_chunk_size = 4;
+
+    // Optional. The minimum new audio, in seconds, between two non-final transcriptions of an utterance (the
+    // partial-transcription cadence; applies only while <code>transcribe_not_final</code> is in force). Overrides
+    // <code>StreamingSpeechRecognition.transcribe_not_final_period_seconds</code> of the pipeline config and the
+    // server setting <code>ONDEWO_S2T_INFERENCE_SLIDING_PERIOD_OF_TRANSCRIPT</code> for this request only. Allowed:
+    // (0, 5]; a shorter period costs proportionally more transcription requests. The server checks the period once
+    // per processing chunk, so the effective cadence is rounded up to whole <code>min_audio_chunk_size</code>
+    // chunks. Unset: the pipeline's value, then the server setting.
+    optional float transcribe_not_final_period_seconds = 5;
 }
 
 // <p>Configuration of the post-processing options</p>
@@ -1048,6 +1057,13 @@ message StreamingSpeechRecognition {
 
     // Configuration of the options to turn-detection in utterances
     TurnDetectionOptions turn_detection = 6;
+
+    // Optional. The minimum new audio, in seconds, between two non-final transcriptions of an utterance (the
+    // partial-transcription cadence) for every stream of this pipeline. Overrides the server setting
+    // <code>ONDEWO_S2T_INFERENCE_SLIDING_PERIOD_OF_TRANSCRIPT</code>; a request's
+    // <code>UtteranceDetectionOptions.transcribe_not_final_period_seconds</code> overrides it. Allowed: (0, 5]; the
+    // effective cadence is rounded up to whole <code>min_audio_chunk_size</code> chunks. Unset: the server setting.
+    optional float transcribe_not_final_period_seconds = 7;
 
 }
 
