@@ -103,6 +103,30 @@ message NluVtsiConfig{
     // Return the message specified in Intent.Message.Platform platform to the user in the DetectIntentResponse
     optional ondewo.nlu.Intent.Message.Platform platform = 9;
 
+    // Optional: Bounds of the preemptive (speculative) NLU requests of the call. Unset keeps the deployment&apos;s
+    // values. Whether preemptive generation runs at all is set with
+    // <code>CsiVtsiConfig.preemptive_generation_config.enabled</code>
+    NluPreemptiveGenerationConfig preemptive_generation_config = 10;
+
+}
+
+// Bounds of the preemptive (speculative) NLU requests: on a stable partial transcription the speech-to-speech
+// service asks the NLU for the answer of a draft BEFORE the final transcription arrives, and keeps it only when the
+// final transcription matches the draft. Every field is optional; an unset field keeps the deployment&apos;s value.
+// A value outside its range is refused with <code>INVALID_ARGUMENT</code>
+message NluPreemptiveGenerationConfig{
+
+    // Optional: Number of drafts one caller turn may start at most (default: 2, valid range: 0 - 5;
+    // 0 = no drafts)
+    optional int32 max_drafts_per_turn = 1;
+
+    // Optional: Seconds a partial transcription must stay unchanged before the first draft of a turn starts
+    // (default: 0.25, valid range: 0 - 2; 0 = no wait)
+    optional float min_stable_dwell_seconds = 2;
+
+    // Optional: Minimum seconds between the starts of two drafts within one turn (default: 0.5,
+    // valid range: 0 - 5; 0 = no limit)
+    optional float min_interval_seconds = 3;
 }
 
 // Text-2-Speech Configuration
@@ -113,6 +137,22 @@ message T2sVtsiConfig{
 
     // Configuration of Text-2-Speech
     ondewo.t2s.RequestConfig t2s_request_config = 2;
+
+    // Optional: Speech synthesis of preemptive (speculative) drafts. Unset keeps the deployment&apos;s values
+    T2sPreemptiveSynthesisConfig preemptive_synthesis_config = 3;
+}
+
+// Speech synthesis of the answer of a preemptive (speculative) draft. Every field is optional; an unset field keeps
+// the deployment&apos;s value
+message T2sPreemptiveSynthesisConfig{
+
+    // Optional: Synthesize the answer of a draft before the final transcription arrives, so that a matching draft
+    // plays at once (default: true). <code>false</code> asks the NLU only and synthesizes at the commit
+    optional bool enabled = 1;
+
+    // Optional: Hand a matching draft&apos;s answer over chunk by chunk while it is still being synthesized, instead
+    // of waiting for the whole synthesis (default: false)
+    optional bool chunked = 2;
 }
 
 // Speech-2-Text Configuration
@@ -414,7 +454,11 @@ message ResponseTimingConfig{
     // Configuration of the soft timeout filler messages
     SoftTimeoutConfig soft_timeout_config = 3;
 
-    // Optional: Enable preemptive response generation on an eagerly detected end of turn (default: false)
+    // Optional, DEPRECATED: use <code>CsiVtsiConfig.preemptive_generation_config.enabled</code>.
+    // Enable preemptive response generation on an eagerly detected end of turn (default: the deployment&apos;s
+    // setting, which is true unless changed). Still honoured when it is set alone; set together with
+    // <code>CsiVtsiConfig.preemptive_generation_config.enabled</code> to a different value, the request is refused
+    // with <code>INVALID_ARGUMENT</code>
     optional bool preemptive_generation_enabled = 4;
 
     // Optional: Enable chunked text-to-speech streaming for a lower time to first audio (default: false)
@@ -654,6 +698,27 @@ message CsiVtsiConfig{
     // mentioned them.
     optional bool activate_control_messages = 6;
 
+    // Optional: Preemptive (speculative) generation of the answer. Unset keeps the deployment&apos;s values
+    CsiPreemptiveGenerationConfig preemptive_generation_config = 7;
+
+}
+
+// Preemptive (speculative) generation of the answer: on a stable partial transcription a draft answer is generated
+// before the final transcription arrives, and played only when the final transcription matches it; a draft that
+// does not match is discarded and the caller hears nothing of it. Every field is optional; an unset field keeps
+// the deployment&apos;s value. A value outside its range is refused with <code>INVALID_ARGUMENT</code>.
+// The NLU bounds are set with <code>NluVtsiConfig.preemptive_generation_config</code>, the speech synthesis of a
+// draft with <code>T2sVtsiConfig.preemptive_synthesis_config</code>
+message CsiPreemptiveGenerationConfig{
+
+    // Optional: Enable preemptive generation (default: the deployment&apos;s setting, which is true unless changed).
+    // Replaces the deprecated <code>ResponseTimingConfig.preemptive_generation_enabled</code>; set together with it
+    // to a different value, the request is refused with <code>INVALID_ARGUMENT</code>
+    optional bool enabled = 1;
+
+    // Optional: Seconds a draft that matches the final transcription may still take before it is discarded and the
+    // turn is answered normally (default: 3.0, valid range: 0 - 3)
+    optional float commit_wait_timeout_seconds = 2;
 }
 
 // Minio Audio Object Store

@@ -18,6 +18,22 @@
   maps 1:1 to ondewo-csi's `CSI_DICTATION_*` settings (a per-call category map; `generic` is not a category and is
   refused). Ranges and `INVALID_ARGUMENT` rules are documented per field; the model endpoint is deliberately not
   configurable per call. Every field is `optional`; unset keeps the deployment's behaviour.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) Preemptive (speculative) generation of the answer
+  is configurable per call, in the config of the service each setting belongs to:
+  * `NluVtsiConfig.preemptive_generation_config = 10` (`NluPreemptiveGenerationConfig`): `max_drafts_per_turn`
+    (default 2, range 0 - 5), `min_stable_dwell_seconds` (default 0.25, range 0 - 2) and `min_interval_seconds`
+    (default 0.5, range 0 - 5).
+  * `T2sVtsiConfig.preemptive_synthesis_config = 3` (`T2sPreemptiveSynthesisConfig`): `enabled` (default true;
+    `false` asks the NLU only and synthesizes at the commit) and `chunked` (default false; hands a matching draft
+    over chunk by chunk while it is still being synthesized).
+  * `CsiVtsiConfig.preemptive_generation_config = 7` (`CsiPreemptiveGenerationConfig`): `enabled` (default: the
+    deployment's setting) and `commit_wait_timeout_seconds` (default 3.0, range 0 - 3).
+
+  Every scalar is `optional`; unset keeps the deployment's value, and a value outside its range is refused with
+  `INVALID_ARGUMENT`. `ResponseTimingConfig.preemptive_generation_enabled = 4` is **deprecated** in favour of
+  `CsiPreemptiveGenerationConfig.enabled`: it is still honoured when set alone, a request that sets both to
+  different values is refused with `INVALID_ARGUMENT`, and its documented default is corrected from `false` to the
+  deployment's setting (true unless changed). Wire-compatible: a client without these fields simply never sends them.
 * `ondewo-s2t-api` moves to 7.6.0 (the matching `TurnDetectionOptions` fields,
   `UtteranceDetectionOptions.transcribe_not_final_period_seconds`, the per-request partial-transcription period, and
   `StreamingSpeechRecognition.transcribe_not_final` as `optional bool`, wire-compatible: unset means the S2T server

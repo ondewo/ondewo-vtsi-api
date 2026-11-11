@@ -9,7 +9,7 @@
     "ondewo/vtsi/projects.proto",
     "ondewo/vtsi/softphones.proto"
   ],
-  "optional_field_count": 133,
+  "optional_field_count": 140,
   "fields": [
     {
       "message": "ondewo.vtsi.AnsweringMachineDetectionConfig",
@@ -538,6 +538,28 @@
       "file": "ondewo/vtsi/logs.proto",
       "unset_hex": "",
       "explicit_default_hex": "d20100"
+    },
+    {
+      "message": "ondewo.vtsi.CsiPreemptiveGenerationConfig",
+      "field": "commit_wait_timeout_seconds",
+      "number": 2,
+      "type": "float",
+      "type_name": null,
+      "json_name": "commitWaitTimeoutSeconds",
+      "file": "ondewo/vtsi/call_configs.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "1500000000"
+    },
+    {
+      "message": "ondewo.vtsi.CsiPreemptiveGenerationConfig",
+      "field": "enabled",
+      "number": 1,
+      "type": "bool",
+      "type_name": null,
+      "json_name": "enabled",
+      "file": "ondewo/vtsi/call_configs.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "0800"
     },
     {
       "message": "ondewo.vtsi.CsiVtsiConfig",
@@ -1123,6 +1145,39 @@
       "explicit_default_hex": "1800"
     },
     {
+      "message": "ondewo.vtsi.NluPreemptiveGenerationConfig",
+      "field": "max_drafts_per_turn",
+      "number": 1,
+      "type": "int32",
+      "type_name": null,
+      "json_name": "maxDraftsPerTurn",
+      "file": "ondewo/vtsi/call_configs.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "0800"
+    },
+    {
+      "message": "ondewo.vtsi.NluPreemptiveGenerationConfig",
+      "field": "min_interval_seconds",
+      "number": 3,
+      "type": "float",
+      "type_name": null,
+      "json_name": "minIntervalSeconds",
+      "file": "ondewo/vtsi/call_configs.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "1d00000000"
+    },
+    {
+      "message": "ondewo.vtsi.NluPreemptiveGenerationConfig",
+      "field": "min_stable_dwell_seconds",
+      "number": 2,
+      "type": "float",
+      "type_name": null,
+      "json_name": "minStableDwellSeconds",
+      "file": "ondewo/vtsi/call_configs.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "1500000000"
+    },
+    {
       "message": "ondewo.vtsi.NluVtsiConfig",
       "field": "platform",
       "number": 9,
@@ -1308,6 +1363,28 @@
       "file": "ondewo/vtsi/events.proto",
       "unset_hex": "",
       "explicit_default_hex": "2200"
+    },
+    {
+      "message": "ondewo.vtsi.T2sPreemptiveSynthesisConfig",
+      "field": "chunked",
+      "number": 2,
+      "type": "bool",
+      "type_name": null,
+      "json_name": "chunked",
+      "file": "ondewo/vtsi/call_configs.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "1000"
+    },
+    {
+      "message": "ondewo.vtsi.T2sPreemptiveSynthesisConfig",
+      "field": "enabled",
+      "number": 1,
+      "type": "bool",
+      "type_name": null,
+      "json_name": "enabled",
+      "file": "ondewo/vtsi/call_configs.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "0800"
     },
     {
       "message": "ondewo.vtsi.TurnDetectionConfig",
