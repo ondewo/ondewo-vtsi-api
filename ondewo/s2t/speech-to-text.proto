@@ -357,7 +357,10 @@ message UtteranceDetectionOptions {
     // Whether or not to transcribe unfinished utterances.
     oneof oneof_transcribe_not_final {
 
-        // Return also immediate transcription results
+        // Return also immediate transcription results (non-final transcriptions of an utterance while it is
+        // still being spoken). Unset: the pipeline's <code>StreamingSpeechRecognition.transcribe_not_final</code>,
+        // then the server default, which is now <code>true</code>; an explicit <code>false</code> opts this
+        // request out of non-final results.
         bool transcribe_not_final = 1;
     }
 
@@ -1040,8 +1043,12 @@ message StreamingServer {
 // <p>StreamingSpeechRecognition contains information about streaming speech recognition settings.</p>
 message StreamingSpeechRecognition {
 
-    // Indicates whether to transcribe non-final results.
-    bool transcribe_not_final = 1;
+    // Indicates whether to transcribe non-final results for every stream of this pipeline. Unset: the server
+    // default, which is now <code>true</code>; an explicit <code>false</code> opts the pipeline out of non-final
+    // results. A request's <code>UtteranceDetectionOptions.transcribe_not_final</code> overrides it. Declared
+    // <code>optional</code> (same field number, wire-compatible) so an explicit <code>false</code> can be told
+    // apart from unset.
+    optional bool transcribe_not_final = 1;
 
     // Decoding method for speech recognition.
     string decoding_method = 2;
