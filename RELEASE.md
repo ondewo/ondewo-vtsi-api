@@ -25,16 +25,20 @@
     (default 0.5, range 0 - 5).
   * `T2sVtsiConfig.preemptive_synthesis_config = 3` (`T2sPreemptiveSynthesisConfig`): `enabled` (default true;
     `false` asks the NLU only and synthesizes at the commit) and `chunked` (default false; hands a matching draft
-    over chunk by chunk while it is still being synthesized).
+    over chunk by chunk while it is still being synthesized; it needs
+    `ResponseTimingConfig.t2s_chunked_streaming_enabled`, is ignored without it and has no effect while `enabled`
+    is false).
   * `CsiVtsiConfig.preemptive_generation_config = 7` (`CsiPreemptiveGenerationConfig`): `enabled` (default: the
-    deployment's setting) and `commit_wait_timeout_seconds` (default 3.0, range 0 - 3).
+    deployment's setting) and `commit_wait_timeout_seconds` (default 3.0, range 0 - 3; the commit waits for the
+    whole draft while `chunked` is off and only for the draft's first chunk while it is on).
 
   Every scalar is `optional`; unset keeps the deployment's value, and a value outside its range is refused with
   `INVALID_ARGUMENT`. `ResponseTimingConfig.preemptive_generation_enabled = 4` is **deprecated** in favour of
   `CsiPreemptiveGenerationConfig.enabled`: it is still honoured when set alone, a request that sets both to
   different values is refused with `INVALID_ARGUMENT`, and its documented default is corrected from `false` to the
   deployment's setting (true unless changed). Wire-compatible: a client without these fields simply never sends them.
-* `ondewo-s2t-api` moves to 7.6.0 (the matching `TurnDetectionOptions` fields,
+* `ondewo-s2t-api` moves to 7.6.0 (the matching `TurnDetectionOptions` fields, the pipecat Smart Turn fields and
+  the turn-detection model selection by model name, `UtteranceDetectionOptions.min_audio_chunk_size`,
   `UtteranceDetectionOptions.transcribe_not_final_period_seconds`, the per-request partial-transcription period, and
   `StreamingSpeechRecognition.transcribe_not_final` as `optional bool`, wire-compatible: unset means the S2T server
   default, now `true`, and an explicit `false` opts out). Until 7.6.0 is tagged the Makefile pins
