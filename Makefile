@@ -17,12 +17,13 @@
 
 # MUST BE THE SAME AS API in Mayor and Minor Version Number
 # example: API 2.9.0 --> Client 2.9.X
-ONDEWO_VTSI_API_VERSION=9.3.0
+ONDEWO_VTSI_API_VERSION=9.4.0
 
 ONDEWO_NLU_API_GIT_BRANCH=tags/7.4.0
-ONDEWO_S2T_API_GIT_BRANCH=tags/7.5.0
+# Development pin (OND236-120): ondewo-s2t-api 7.6.0 is not tagged yet; move back to tags/7.6.0 at release.
+ONDEWO_S2T_API_GIT_BRANCH=c96712335d732c054c33b23eb6c7dbd533e1b253
 ONDEWO_T2S_API_GIT_BRANCH=tags/6.6.0
-ONDEWO_SIP_API_GIT_BRANCH=tags/5.5.2
+ONDEWO_SIP_API_GIT_BRANCH=87b2ddcd5316c997beb235b4e95db7cb4796f792
 ONDEWO_NLU_DIR=ondewo-nlu-api
 ONDEWO_S2T_DIR=ondewo-s2t-api
 ONDEWO_T2S_DIR=ondewo-t2s-api

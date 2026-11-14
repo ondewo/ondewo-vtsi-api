@@ -2,6 +2,65 @@
 
 *****************
 
+## Release ONDEWO VTSI API 9.4.0
+
+### New Features
+
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `Calls.SendCallDtmf` presses DTMF keys on a
+  connected call (`digits`: 1 to 64 of `0-9 * # A-D`), sent as RFC 4733 events one every 250 ms, never interleaved
+  with an earlier request; event `VTSI_EVENT_CALL_DTMF_SENT = 123` carries the NUMBER of keys only. Authorized and
+  audited like `SetCallMediaControl`. Built on ondewo-sip-api 5.6.0 (`SipSendDtmf`).
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `VoiceInteractionConfig.dtmf_config = 5`
+  (`DtmfConfig`) configures the keys a caller presses per call: `enabled`, `barge_in`, `inter_digit_timeout_ms`
+  (300 - 10000) and `undeclared_policy` (`DROP` / `COMMIT_SINGLE`), all `optional`; unset keeps the deployment's
+  value.
+
+### Improvements
+
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `docs/dtmf.md`: a hand-written guide to DTMF
+  on the VTSI API: `Calls.SendCallDtmf` (semantics, authorization, every error), `VTSI_EVENT_CALL_DTMF_SENT`, the
+  per-call `DtmfConfig` and its replica settings, security, Python examples and limits.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `InterruptionHandlingConfig` gains
+  `optional int32 interruption_fade_out_ms = 9`: the duration in milliseconds over which the bot's voice fades out
+  (raised cosine) when the caller interrupts it, instead of stopping abruptly. Default 100, valid range 0 - 500,
+  `0` = stop at once; a value outside the range is refused with `INVALID_ARGUMENT`. Unset keeps the deployment's
+  default. Wire-compatible with 9.3.0: a 9.3.0 client simply never sends the field.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `TurnDetectionConfig` configures the turn
+  detection decision, its context and dictation per call: `conversation_context_turns`, `semantic_model_name`,
+  `end_of_turn_probability_threshold`, `hold_bands`, `uncertain_min_words`, `incomplete_max_silence_seconds`,
+  `exact_probability` (semantic mode only), `final_merge_window_seconds`, and a `DictationConfig` sub-message that
+  maps 1:1 to ondewo-csi's `CSI_DICTATION_*` settings (a per-call category map; `generic` is not a category and is
+  refused). Ranges and `INVALID_ARGUMENT` rules are documented per field; the model endpoint is deliberately not
+  configurable per call. Every field is `optional`; unset keeps the deployment's behaviour.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) Preemptive (speculative) generation of the answer
+  is configurable per call, in the config of the service each setting belongs to:
+  * `NluVtsiConfig.preemptive_generation_config = 10` (`NluPreemptiveGenerationConfig`): `max_drafts_per_turn`
+    (default 2, range 0 - 5), `min_stable_dwell_seconds` (default 0.25, range 0 - 2) and `min_interval_seconds`
+    (default 0.5, range 0 - 5).
+  * `T2sVtsiConfig.preemptive_synthesis_config = 3` (`T2sPreemptiveSynthesisConfig`): `enabled` (default true;
+    `false` asks the NLU only and synthesizes at the commit) and `chunked` (default false; hands a matching draft
+    over chunk by chunk while it is still being synthesized; it needs
+    `ResponseTimingConfig.t2s_chunked_streaming_enabled`, is ignored without it and has no effect while `enabled`
+    is false).
+  * `CsiVtsiConfig.preemptive_generation_config = 7` (`CsiPreemptiveGenerationConfig`): `enabled` (default: the
+    deployment's setting) and `commit_wait_timeout_seconds` (default 3.0, range 0 - 3; the commit waits for the
+    whole draft while `chunked` is off and only for the draft's first chunk while it is on).
+
+  Every scalar is `optional`; unset keeps the deployment's value, and a value outside its range is refused with
+  `INVALID_ARGUMENT`. `ResponseTimingConfig.preemptive_generation_enabled = 4` is **deprecated** in favour of
+  `CsiPreemptiveGenerationConfig.enabled`: it is still honoured when set alone, a request that sets both to
+  different values is refused with `INVALID_ARGUMENT`, and its documented default is corrected from `false` to the
+  deployment's setting (true unless changed). Wire-compatible: a client without these fields simply never sends them.
+* `ondewo-s2t-api` moves to 7.6.0 (the matching `TurnDetectionOptions` fields, the pipecat Smart Turn fields and
+  the turn-detection model selection by model name, `UtteranceDetectionOptions.min_audio_chunk_size`,
+  `UtteranceDetectionOptions.transcribe_not_final_period_seconds`, the per-request partial-transcription period, and
+  `StreamingSpeechRecognition.transcribe_not_final` as `optional bool`, wire-compatible: unset means the S2T server
+  default, now `true`, and an explicit `false` opts out). Until 7.6.0 is tagged the Makefile pins
+  `ONDEWO_S2T_API_GIT_BRANCH` to the full commit SHA.
+  `ondewo-nlu-api` 7.4.0, `ondewo-t2s-api` 6.6.0 and `ondewo-sip-api` 5.5.2 are unchanged.
+
+*****************
+
 ## Release ONDEWO VTSI API 9.3.0
 
 ### Improvements

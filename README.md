@@ -196,6 +196,7 @@ Please use the issue tracker in this repo for discussions about this API, or the
 ├── CONTRIBUTING.md
 ├── Dockerfile.utils
 ├── docs
+│   ├── dtmf.md
 │   ├── index.html
 │   ├── index.md
 │   └── style.css
@@ -406,6 +407,9 @@ workflow).
 ## Proto Documentation
 
 The documentation for this, and all other APIs and their available versions, can be found on [ondewo.github.io](https://ondewo.github.io). For Offline usage, it can also be found in the `docs` folder.
+
+A hand-written guide to the DTMF features (`Calls.SendCallDtmf`, `VTSI_EVENT_CALL_DTMF_SENT` and the per-call
+`DtmfConfig`) is [docs/dtmf.md](docs/dtmf.md).
 
 As part of the `pre-commit` hooks, `update_githubio` is run. It will preemptively stop if:
 

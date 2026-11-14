@@ -565,6 +565,25 @@ service Calls {
     // Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p>
     rpc SetCallMediaControl (SetCallMediaControlRequest) returns (SetCallMediaControlResponse);
 
+    // <p>Press DTMF keys on a connected call, e.g. to navigate the IVR an outbound call reached or to enter a code on
+    // the caller&apos;s behalf. The keys go out as RFC 4733 telephone events from the bot&apos;s leg, one every
+    // 250 ms, in order; a later request for the same call follows the earlier one and never interleaves with it.
+    // No tone is played into the call audio, so the bot does not hear the keys. The response means the keys were
+    // queued: if the call ends meanwhile, the remaining keys are dropped. A peer that did not negotiate
+    // <code>telephone-event</code> receives no key.</p>
+    // <p>Events: <code>VTSI_EVENT_CALL_DTMF_SENT</code>. The keys are never written to a log, an event or an audit
+    // record: only their number is.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> (<code>reason=invalid-digits</code>: <code>digits</code> empty, longer
+    // than 64 or outside <code>0-9 * # A-D</code>), <code>NOT_FOUND</code> (<code>reason=call-not-found</code>),
+    // <code>FAILED_PRECONDITION</code> (<code>call-not-connected</code>, <code>amd-in-progress</code>,
+    // <code>call-not-yet-identified</code>, <code>sip-image-too-old</code>, <code>no-audio-stream</code>),
+    // <code>ABORTED</code> (<code>call-control-busy</code>), <code>UNAVAILABLE</code> (<code>sip-unreachable</code>).</p>
+    // <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s
+    // Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or
+    // <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced.
+    // Every action writes an audit record (who, call, when, number of keys). No announcement is played to the caller.</p>
+    rpc SendCallDtmf (SendCallDtmfRequest) returns (SendCallDtmfResponse);
+
     // <p>Live audio of a connected call, both ways. The first request MUST be <code>config</code> (within 2 seconds).
     // LISTEN receives the caller mixed with the bot. TALK sends the agent&apos;s audio to the caller and REQUIRES
     // <code>take_over</code>: the bot is muted and does not listen while the stream is connected, and resumes when it
@@ -2707,6 +2726,33 @@ message InviteToCallResponse {
     // Always empty: errors are reported as gRPC status codes with <code>reason=&lt;token&gt;</code> in the details.
     // Kept for wire compatibility.
     string error_message = 4;
+}
+
+// <p>Request of <code>SendCallDtmf</code></p>
+message SendCallDtmfRequest {
+
+    // VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Name of the connected call
+    string call_name = 2;
+
+    // The keys to press, in order: 1 to 64 of <code>0-9</code>, <code>*</code>, <code>#</code> and
+    // <code>A-D</code>. Never logged; treat it like a password (it may be a PIN).
+    string digits = 3;
+}
+
+// <p>Response of <code>SendCallDtmf</code></p>
+message SendCallDtmfResponse {
+
+    // VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Name of the call
+    string call_name = 2;
+
+    // Number of keys queued: the length of <code>digits</code>
+    int32 queued_keys = 3;
 }
 
 // <p>Request to hang up a participant of a call</p>

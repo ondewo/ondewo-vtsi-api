@@ -454,6 +454,11 @@ enum VtsiEvent {
     // of a batch that failed, nor when the update changed nothing.
     VTSI_EVENT_CALL_UPDATED = 122;
 
+    // DTMF keys were queued on the call (<code>SendCallDtmf</code>). Attributes: <code>keys</code> (the NUMBER of
+    // keys, never the keys) and <code>actor</code> (the authenticated user, when known). Sets
+    // <code>call_name</code>.
+    VTSI_EVENT_CALL_DTMF_SENT = 123;
+
     // ---- Callers (resource_name: the caller) ----
 
     // A caller started and placed its call. No attributes; sets <code>call_name</code>.

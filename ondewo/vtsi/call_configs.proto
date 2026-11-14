@@ -103,6 +103,30 @@ message NluVtsiConfig{
     // Return the message specified in Intent.Message.Platform platform to the user in the DetectIntentResponse
     optional ondewo.nlu.Intent.Message.Platform platform = 9;
 
+    // Optional: Bounds of the preemptive (speculative) NLU requests of the call. Unset keeps the deployment&apos;s
+    // values. Whether preemptive generation runs at all is set with
+    // <code>CsiVtsiConfig.preemptive_generation_config.enabled</code>
+    NluPreemptiveGenerationConfig preemptive_generation_config = 10;
+
+}
+
+// Bounds of the preemptive (speculative) NLU requests: on a stable partial transcription the speech-to-speech
+// service asks the NLU for the answer of a draft BEFORE the final transcription arrives, and keeps it only when the
+// final transcription matches the draft. Every field is optional; an unset field keeps the deployment&apos;s value.
+// A value outside its range is refused with <code>INVALID_ARGUMENT</code>
+message NluPreemptiveGenerationConfig{
+
+    // Optional: Number of drafts one caller turn may start at most (default: 2, valid range: 0 - 5;
+    // 0 = no drafts)
+    optional int32 max_drafts_per_turn = 1;
+
+    // Optional: Seconds a partial transcription must stay unchanged before the first draft of a turn starts
+    // (default: 0.25, valid range: 0 - 2; 0 = no wait)
+    optional float min_stable_dwell_seconds = 2;
+
+    // Optional: Minimum seconds between the starts of two drafts within one turn (default: 0.5,
+    // valid range: 0 - 5; 0 = no limit)
+    optional float min_interval_seconds = 3;
 }
 
 // Text-2-Speech Configuration
@@ -113,6 +137,24 @@ message T2sVtsiConfig{
 
     // Configuration of Text-2-Speech
     ondewo.t2s.RequestConfig t2s_request_config = 2;
+
+    // Optional: Speech synthesis of preemptive (speculative) drafts. Unset keeps the deployment&apos;s values
+    T2sPreemptiveSynthesisConfig preemptive_synthesis_config = 3;
+}
+
+// Speech synthesis of the answer of a preemptive (speculative) draft. Every field is optional; an unset field keeps
+// the deployment&apos;s value
+message T2sPreemptiveSynthesisConfig{
+
+    // Optional: Synthesize the answer of a draft before the final transcription arrives, so that a matching draft
+    // plays at once (default: true). <code>false</code> asks the NLU only and synthesizes at the commit
+    optional bool enabled = 1;
+
+    // Optional: Hand a matching draft&apos;s answer over chunk by chunk while it is still being synthesized, instead
+    // of waiting for the whole synthesis (default: false). Needs chunked text-to-speech streaming
+    // (<code>ResponseTimingConfig.t2s_chunked_streaming_enabled</code>) and is ignored without it.
+    // <code>chunked</code> has no effect when <code>enabled</code> is false
+    optional bool chunked = 2;
 }
 
 // Speech-2-Text Configuration
@@ -162,6 +204,36 @@ message VoiceInteractionConfig{
     // Only accepted for pooled persistent callers: a listener or a one-shot caller that carries it
     // is rejected with INVALID_ARGUMENT
     AnsweringMachineDetectionConfig answering_machine_detection_config = 4;
+
+    // Configuration of the DTMF keys the CALLER presses (keypad input to the bot). Unset keeps the deployment&apos;s
+    // behaviour (keys on, a key barges in, undeclared keys dropped)
+    DtmfConfig dtmf_config = 5;
+}
+
+// Configuration of the DTMF keys a caller presses. A key reaches the bot only when the bot&apos;s last answer
+// declared a key menu or a key entry (ondewo-cai intent tags <code>ondewo-voice:dtmf-menu:&lt;id&gt;</code> /
+// <code>ondewo-voice:dtmf-digits:&lt;id&gt;</code>); it is then sent to the NLU as the turn text
+// <code>[DTMF:&lt;keys&gt;]</code>. Every field is <code>optional</code>; unset keeps the deployment&apos;s value
+// (the <code>ONDEWO_VTSI_CSI_DTMF_*</code> / <code>ONDEWO_VTSI_SIP_DTMF_FORWARD_ACTIVE</code> settings, else
+// the default).
+message DtmfConfig{
+
+    // Whether a pressed key is forwarded to the bot at all (default true). <code>false</code> ignores every key of
+    // the call
+    optional bool enabled = 1;
+
+    // Whether a key pressed while the bot speaks stops the bot, like a spoken interruption (default true)
+    optional bool barge_in = 2;
+
+    // Milliseconds after the last key of a key entry (e.g. a PIN) without a terminator before the entry is sent
+    // (default 2000, valid range 300 - 10000; a value outside the range is refused with
+    // <code>INVALID_ARGUMENT</code>)
+    optional uint32 inter_digit_timeout_ms = 3;
+
+    // What a key the bot declared nothing for does: <code>DROP</code> (default; the key is ignored and the bot is
+    // not interrupted) or <code>COMMIT_SINGLE</code> (the key is sent to the NLU as a one-key turn). Any other
+    // value is refused with <code>INVALID_ARGUMENT</code>
+    optional string undeclared_policy = 4;
 }
 
 // Configuration of the turn detection, i.e. deciding when the caller has finished speaking
@@ -226,6 +298,138 @@ message TurnDetectionConfig{
     // Optional: User prompt for the semantic (LLM) turn detection model of the speech-to-text service, with the
     // rules of <code>turn_detection_system_prompt</code>
     optional string turn_detection_user_prompt = 6;
+
+    // Optional: Number of the latest conversation turns (the caller&apos;s committed turns and the bot&apos;s
+    // utterances as the caller heard them) handed to the semantic turn detection model of the speech-to-text
+    // service together with the utterance it judges (default: 0 = off, valid range: 0 - 10). Use it only where
+    // the speech-to-text service serves a turn detection model trained with conversation context. Used only by an
+    // end-of-utterance model; a chat model ignores it. Only valid with the mode <code>SEMANTIC_MODEL</code> (or
+    // unspecified): a value above 0 together with <code>VAD</code> or <code>AUDIO_MODEL</code>, or a value outside
+    // the range, is refused with <code>INVALID_ARGUMENT</code>
+    optional uint32 conversation_context_turns = 7;
+
+    // Optional: Name of the semantic turn detection model the speech-to-text service asks for this call. Unset uses
+    // the model configured in the speech-to-text pipeline. The model&apos;s endpoint is deliberately not
+    // configurable per call. Valid: 1 - 256 characters, no whitespace or control characters. Only valid with the
+    // mode <code>SEMANTIC_MODEL</code> (or unspecified): set together with <code>VAD</code> or
+    // <code>AUDIO_MODEL</code>, or invalid, it is refused with <code>INVALID_ARGUMENT</code>
+    optional string semantic_model_name = 8;
+
+    // Optional: End-of-turn probability at or above which the semantic turn detection model takes the caller to
+    // have finished the turn (valid range: 0 - 1). Unset uses the speech-to-text service&apos;s configured threshold
+    // for the language of the call. Used only by an end-of-utterance model; a chat model ignores it. Only valid
+    // with the mode <code>SEMANTIC_MODEL</code> (or unspecified): set together with <code>VAD</code> or
+    // <code>AUDIO_MODEL</code>, or outside the range, it is refused with <code>INVALID_ARGUMENT</code>
+    optional float end_of_turn_probability_threshold = 9;
+
+    // Optional: Hold bands of the semantic turn detection model: how long a turn judged finished, but only with a
+    // probability below a band&apos;s upper bound, waits for further silence before it is committed. Set with no
+    // bands, a turn at or above the threshold is committed at once; unset uses the speech-to-text service&apos;s
+    // configured bands for the language of the call. At most 10 bands, with the ranges of
+    // <code>EndOfTurnHoldBand</code>. Used only by an end-of-utterance model; a chat model ignores it. Only valid
+    // with the mode <code>SEMANTIC_MODEL</code> (or unspecified): set together with <code>VAD</code> or
+    // <code>AUDIO_MODEL</code>, or invalid, it is refused with <code>INVALID_ARGUMENT</code>
+    EndOfTurnHoldBands hold_bands = 10;
+
+    // Optional: Minimum number of words a turn needs before a hold band may hold it; a shorter turn judged finished
+    // is committed at once (default: 3, valid range: 0 - 20). Used only by an end-of-utterance model; a chat model
+    // ignores it. Only valid with the mode <code>SEMANTIC_MODEL</code> (or unspecified): set together with
+    // <code>VAD</code> or <code>AUDIO_MODEL</code>, or outside the range, it is refused with
+    // <code>INVALID_ARGUMENT</code>
+    optional uint32 uncertain_min_words = 11;
+
+    // Optional: Seconds of silence after a turn the semantic turn detection model (of either kind) judged NOT
+    // finished before it is committed anyway (default: the voice activity detection&apos;s minimum silence, valid
+    // range: 0 - 4; the speech-to-text service raises a value below that minimum silence to it). Only valid with
+    // the mode <code>SEMANTIC_MODEL</code> (or unspecified): set together with <code>VAD</code> or
+    // <code>AUDIO_MODEL</code>, or outside the range, it is refused with <code>INVALID_ARGUMENT</code>
+    optional float incomplete_max_silence_seconds = 12;
+
+    // Optional: Compute the exact end-of-turn probability instead of reading it from the model&apos;s returned top
+    // log probabilities (default: false). Requires a deployment that returns prompt log probabilities (vLLM
+    // <code>prompt_logprobs</code>); on any other deployment every turn waits for
+    // <code>incomplete_max_silence_seconds</code>. Used only by an end-of-utterance model; a chat model ignores it.
+    // Only valid with the mode <code>SEMANTIC_MODEL</code> (or unspecified): set together with <code>VAD</code> or
+    // <code>AUDIO_MODEL</code> it is refused with <code>INVALID_ARGUMENT</code>
+    optional bool exact_probability = 13;
+
+    // Optional: Seconds a speech-to-text final that looks like half a sentence is held, to be merged with the
+    // caller&apos;s continuation into ONE turn (default: 0 = off, valid range: 0 - 2). Valid with every mode. A value
+    // outside the range is refused with <code>INVALID_ARGUMENT</code>
+    optional float final_merge_window_seconds = 14;
+
+    // Configuration of the dictation hold, i.e. waiting for the rest of a dictated value (digits, phone or card
+    // number, IBAN, address, date, ...) instead of ending the turn at the caller&apos;s pause between its groups.
+    // Valid with every mode. Unset fields keep the defaults
+    DictationConfig dictation_config = 15;
+
+    // Hold bands of the semantic turn detection model
+    message EndOfTurnHoldBands {
+
+        // The bands (at most 10). The first band, sorted by <code>upper_probability</code>, whose upper probability
+        // exceeds the end-of-turn probability decides the hold; a probability above every band is committed at once
+        repeated EndOfTurnHoldBand bands = 1;
+    }
+
+    // One hold band of the semantic turn detection model
+    message EndOfTurnHoldBand {
+
+        // Exclusive upper bound of the end-of-turn probabilities the band covers (valid range: 0 - 1)
+        float upper_probability = 1;
+
+        // Seconds of silence a turn in the band waits before it is committed (valid range: 0 - 4; never longer than
+        // <code>incomplete_max_silence_seconds</code>)
+        float max_silence_seconds = 2;
+    }
+}
+
+// Configuration of the dictation hold of a call: a final transcription whose dictated value is not complete yet is
+// held until the caller continues, so that the groups of the value reach the NLU as ONE turn. Every unset field
+// keeps its default; a field that is out of range is refused with <code>INVALID_ARGUMENT</code>
+message DictationConfig{
+
+    // Optional: Hold a final transcription whose dictated value is unfinished (default: false)
+    optional bool hold_enabled = 1;
+
+    // Optional: Read the expected value (slot) from the NLU answer, so that the hold applies the rule of the value
+    // the bot asked for (default: false; without it only the generic rule holds)
+    optional bool expected_input_enabled = 2;
+
+    // Optional: With <code>expected_input_enabled</code>, take a bot answer that reads a complete value back and asks
+    // for confirmation as asking for a confirmation of that value (default: false)
+    optional bool read_back_from_bot_text_enabled = 3;
+
+    // Optional: Seconds the generic rule (no expected value) holds at most (default: 1.5, valid range: 0 - 2;
+    // 0 switches the generic rule off)
+    optional float hold_generic_max_seconds = 4;
+
+    // Optional: Seconds an unfinished value of a category is held at most, keyed by the category: <code>digits</code>,
+    // <code>phone</code>, <code>card</code>, <code>expiry_cvc</code>, <code>iban</code>, <code>bic</code>,
+    // <code>svnr</code>, <code>address</code>, <code>date</code>, <code>time</code>, <code>email</code> or
+    // <code>confirm_value</code> (valid range: 0 - 4 each). The rule without an expected value is not a category: it
+    // is set with <code>hold_generic_max_seconds</code>. An unknown category, <code>generic</code> included, is
+    // refused with <code>INVALID_ARGUMENT</code>. The map is ONE field: a non-empty map replaces the whole
+    // replica-wide table of the deployment, so a category not listed here keeps the speech-to-speech service's
+    // default cap, not a cap the replica-wide table set; an empty map keeps the replica-wide table
+    map<string, float> hold_max_seconds_by_category = 5;
+
+    // Optional: Seconds a full-length value whose checksum fails is held, so that the bot can ask again
+    // (default: 1.5, valid range: 0 - 4)
+    optional float hold_invalid_checksum_seconds = 6;
+
+    // Optional: Commit the turn on a partial transcription as soon as the expected value is complete; needs
+    // <code>hold_enabled</code> and <code>expected_input_enabled</code> (default: false)
+    optional bool early_commit_on_complete_value = 7;
+
+    // Optional: Minimum silence in seconds the speech-to-text service waits before it ends an utterance while a value
+    // is expected (default: 0 = off, valid range: 0 or 0.5 - 4). Only takes effect when a value to restore after the
+    // turn is known: <code>s2t_slot_min_duration_off_restore_seconds</code> or the minimum silence of the
+    // speech-to-text configuration
+    optional float s2t_slot_min_duration_off_seconds = 8;
+
+    // Optional: Minimum silence in seconds restored on the speech-to-text service after a turn with an expected value
+    // (default: the minimum silence of the speech-to-text configuration, valid range: 0.05 - 4)
+    optional float s2t_slot_min_duration_off_restore_seconds = 9;
 }
 
 // Configuration of the interruption (barge-in) handling, i.e. the caller speaking while the bot is speaking
@@ -261,6 +465,11 @@ message InterruptionHandlingConfig{
     // Optional: Transcribe caller speech while the bot is speaking even if interruptions are disabled
     // (default: false, i.e. caller speech during bot speech is not transcribed while <code>enabled</code> is false)
     optional bool transcribe_on_disabled_interruptions = 8;
+
+    // Optional: Duration in milliseconds over which the bot&apos;s voice fades out (raised cosine) when the caller
+    // interrupts it, instead of stopping abruptly (default: 100, valid range: 0 - 500; 0 = stop at once).
+    // A value outside the range is refused with <code>INVALID_ARGUMENT</code>
+    optional int32 interruption_fade_out_ms = 9;
 }
 
 // Configuration of the response timing, i.e. when and how the bot responds
@@ -277,7 +486,11 @@ message ResponseTimingConfig{
     // Configuration of the soft timeout filler messages
     SoftTimeoutConfig soft_timeout_config = 3;
 
-    // Optional: Enable preemptive response generation on an eagerly detected end of turn (default: false)
+    // Optional, DEPRECATED: use <code>CsiVtsiConfig.preemptive_generation_config.enabled</code>.
+    // Enable preemptive response generation on an eagerly detected end of turn (default: the deployment&apos;s
+    // setting, which is true unless changed). Still honoured when it is set alone; set together with
+    // <code>CsiVtsiConfig.preemptive_generation_config.enabled</code> to a different value, the request is refused
+    // with <code>INVALID_ARGUMENT</code>
     optional bool preemptive_generation_enabled = 4;
 
     // Optional: Enable chunked text-to-speech streaming for a lower time to first audio (default: false)
@@ -517,6 +730,29 @@ message CsiVtsiConfig{
     // mentioned them.
     optional bool activate_control_messages = 6;
 
+    // Optional: Preemptive (speculative) generation of the answer. Unset keeps the deployment&apos;s values
+    CsiPreemptiveGenerationConfig preemptive_generation_config = 7;
+
+}
+
+// Preemptive (speculative) generation of the answer: on a stable partial transcription a draft answer is generated
+// before the final transcription arrives, and played only when the final transcription matches it; a draft that
+// does not match is discarded and the caller hears nothing of it. Every field is optional; an unset field keeps
+// the deployment&apos;s value. A value outside its range is refused with <code>INVALID_ARGUMENT</code>.
+// The NLU bounds are set with <code>NluVtsiConfig.preemptive_generation_config</code>, the speech synthesis of a
+// draft with <code>T2sVtsiConfig.preemptive_synthesis_config</code>
+message CsiPreemptiveGenerationConfig{
+
+    // Optional: Enable preemptive generation (default: the deployment&apos;s setting, which is true unless changed).
+    // Replaces the deprecated <code>ResponseTimingConfig.preemptive_generation_enabled</code>; set together with it
+    // to a different value, the request is refused with <code>INVALID_ARGUMENT</code>
+    optional bool enabled = 1;
+
+    // Optional: Seconds a draft that matches the final transcription may still take before it is discarded and the
+    // turn is answered normally (default: 3.0, valid range: 0 - 3). While
+    // <code>T2sPreemptiveSynthesisConfig.chunked</code> is off the commit waits for the whole draft; while it is on,
+    // only for the draft&apos;s first chunk
+    optional float commit_wait_timeout_seconds = 2;
 }
 
 // Minio Audio Object Store
