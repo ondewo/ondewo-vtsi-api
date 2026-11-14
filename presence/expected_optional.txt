@@ -66,6 +66,10 @@ ondewo.vtsi.DictationConfig.hold_invalid_checksum_seconds                    # n
 ondewo.vtsi.DictationConfig.read_back_from_bot_text_enabled                  # new field in 9.4.0 (OND236-120)
 ondewo.vtsi.DictationConfig.s2t_slot_min_duration_off_restore_seconds        # new field in 9.4.0 (OND236-120)
 ondewo.vtsi.DictationConfig.s2t_slot_min_duration_off_seconds                # new field in 9.4.0 (OND236-120)
+ondewo.vtsi.DtmfConfig.barge_in                                              # new field in 9.4.0 (OND236-120)
+ondewo.vtsi.DtmfConfig.enabled                                               # new field in 9.4.0 (OND236-120)
+ondewo.vtsi.DtmfConfig.inter_digit_timeout_ms                                # new field in 9.4.0 (OND236-120)
+ondewo.vtsi.DtmfConfig.undeclared_policy                                     # new field in 9.4.0 (OND236-120)
 ondewo.vtsi.GetCallRequest.call_view
 ondewo.vtsi.GetCallerRequest.call_view
 ondewo.vtsi.GetListenerRequest.call_view

@@ -4,6 +4,17 @@
 
 ## Release ONDEWO VTSI API 9.4.0
 
+### New Features
+
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `Calls.SendCallDtmf` presses DTMF keys on a
+  connected call (`digits`: 1 to 64 of `0-9 * # A-D`), sent as RFC 4733 events one every 250 ms, never interleaved
+  with an earlier request; event `VTSI_EVENT_CALL_DTMF_SENT = 123` carries the NUMBER of keys only. Authorized and
+  audited like `SetCallMediaControl`. Built on ondewo-sip-api 5.6.0 (`SipSendDtmf`).
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `VoiceInteractionConfig.dtmf_config = 5`
+  (`DtmfConfig`) configures the keys a caller presses per call: `enabled`, `barge_in`, `inter_digit_timeout_ms`
+  (300 - 10000) and `undeclared_policy` (`DROP` / `COMMIT_SINGLE`), all `optional`; unset keeps the deployment's
+  value.
+
 ### Improvements
 
 * [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `InterruptionHandlingConfig` gains

@@ -204,6 +204,36 @@ message VoiceInteractionConfig{
     // Only accepted for pooled persistent callers: a listener or a one-shot caller that carries it
     // is rejected with INVALID_ARGUMENT
     AnsweringMachineDetectionConfig answering_machine_detection_config = 4;
+
+    // Configuration of the DTMF keys the CALLER presses (keypad input to the bot). Unset keeps the deployment&apos;s
+    // behaviour (keys on, a key barges in, undeclared keys dropped)
+    DtmfConfig dtmf_config = 5;
+}
+
+// Configuration of the DTMF keys a caller presses. A key reaches the bot only when the bot&apos;s last answer
+// declared a key menu or a key entry (ondewo-cai intent tags <code>ondewo-voice:dtmf-menu:&lt;id&gt;</code> /
+// <code>ondewo-voice:dtmf-digits:&lt;id&gt;</code>); it is then sent to the NLU as the turn text
+// <code>[DTMF:&lt;keys&gt;]</code>. Every field is <code>optional</code>; unset keeps the deployment&apos;s value
+// (the <code>ONDEWO_VTSI_CSI_DTMF_*</code> / <code>ONDEWO_VTSI_SIP_DTMF_FORWARD_ACTIVE</code> settings, else
+// the default).
+message DtmfConfig{
+
+    // Whether a pressed key is forwarded to the bot at all (default true). <code>false</code> ignores every key of
+    // the call
+    optional bool enabled = 1;
+
+    // Whether a key pressed while the bot speaks stops the bot, like a spoken interruption (default true)
+    optional bool barge_in = 2;
+
+    // Milliseconds after the last key of a key entry (e.g. a PIN) without a terminator before the entry is sent
+    // (default 2000, valid range 300 - 10000; a value outside the range is refused with
+    // <code>INVALID_ARGUMENT</code>)
+    optional uint32 inter_digit_timeout_ms = 3;
+
+    // What a key the bot declared nothing for does: <code>DROP</code> (default; the key is ignored and the bot is
+    // not interrupted) or <code>COMMIT_SINGLE</code> (the key is sent to the NLU as a one-key turn). Any other
+    // value is refused with <code>INVALID_ARGUMENT</code>
+    optional string undeclared_policy = 4;
 }
 
 // Configuration of the turn detection, i.e. deciding when the caller has finished speaking

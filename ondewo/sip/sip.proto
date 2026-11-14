@@ -136,6 +136,19 @@ service Sip {
     rpc SipStreamCallAudio (stream SipCallAudioRequest) returns (stream SipCallAudioResponse) {
         // Not idempotent (no idempotency_level): a stream takes a slot and, in TALK, takes over the call.
     };
+
+    // <p>Send DTMF keys into the ongoing connected call, as RFC 4733 telephone-events (e.g. to navigate an IVR the bot
+    // called, or for an operator).</p>
+    // <p>Metadata as for <code>SipSetCallMediaControl</code>: <code>x-ondewo-expected-call-id</code> must equal
+    // <code>SipStatus.call_id</code> of the ongoing call; a peer outside the container presents
+    // <code>x-ondewo-sip-call-control-token</code> when the container has one.</p>
+    // <p>Returns the live status. Refusals are RETURNED in <code>exception_name</code> / <code>description</code>
+    // (<code>CallScopeMismatch</code>, <code>CallControlUnauthenticated</code>, <code>NoOngoingCall</code>,
+    // <code>AmdInProgress</code>, <code>InvalidDtmf</code>) and never assigned to the shared status. The keys are never
+    // logged in clear.</p>
+    rpc SipSendDtmf (SipSendDtmfRequest) returns (SipStatus) {
+        // Not idempotent (no idempotency_level): a retried attempt sends the keys again.
+    };
 }
 
 // <p>Ends an ongoing call of the active SIP session of the active SIP account</p>
@@ -566,6 +579,15 @@ message SipSetCallMediaControlRequest{
     // transfer of the call is in flight is refused with <code>exception_name=TransferInProgress</code> and changes
     // nothing. Cleared when the call ends</p>
     bool participants_present = 4;
+}
+
+// <p>Request of <code>SipSendDtmf</code></p>
+message SipSendDtmfRequest{
+
+    // The keys to send, in order: <code>0</code>-<code>9</code>, <code>*</code>, <code>#</code>,
+    // <code>A</code>-<code>D</code>; at most 64. Any other character refuses the request (<code>InvalidDtmf</code>)
+    // and sends nothing
+    string digits = 1;
 }
 
 // <p>Mode of a <code>SipStreamCallAudio</code> stream</p>
