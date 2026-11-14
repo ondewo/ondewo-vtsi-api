@@ -17,6 +17,9 @@
 
 ### Improvements
 
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `docs/dtmf.md`: a hand-written guide to DTMF
+  on the VTSI API: `Calls.SendCallDtmf` (semantics, authorization, every error), `VTSI_EVENT_CALL_DTMF_SENT`, the
+  per-call `DtmfConfig` and its replica settings, security, Python examples and limits.
 * [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `InterruptionHandlingConfig` gains
   `optional int32 interruption_fade_out_ms = 9`: the duration in milliseconds over which the bot's voice fades out
   (raised cosine) when the caller interrupts it, instead of stopping abruptly. Default 100, valid range 0 - 500,
