@@ -16,6 +16,7 @@
 syntax = "proto3";
 
 package ondewo.vtsi;
+import "google/protobuf/duration.proto";
 import "ondewo/nlu/context.proto";
 import "ondewo/nlu/intent.proto";
 import "ondewo/s2t/speech-to-text.proto";
@@ -208,6 +209,11 @@ message VoiceInteractionConfig{
     // Configuration of the DTMF keys the CALLER presses (keypad input to the bot). Unset keeps the deployment&apos;s
     // behaviour (keys on, a key barges in, undeclared keys dropped)
     DtmfConfig dtmf_config = 5;
+
+    // Configuration of the warm intro of a WARM transfer of this call (see <code>WarmTransferConfig</code>). Unset
+    // inherits the project default <code>VtsiProject.warm_transfer_defaults</code>; a
+    // <code>TransferCallRequest.warm_transfer_config</code> wins over it for that one transfer
+    WarmTransferConfig warm_transfer_config = 6;
 }
 
 // Configuration of the DTMF keys a caller presses. A key reaches the bot only when the bot&apos;s last answer
@@ -234,6 +240,265 @@ message DtmfConfig{
     // not interrupted) or <code>COMMIT_SINGLE</code> (the key is sent to the NLU as a one-key turn). Any other
     // value is refused with <code>INVALID_ARGUMENT</code>
     optional string undeclared_policy = 4;
+}
+
+// <p>Warm intro of a WARM transfer: after the human target answered and before the target is joined, an ONDEWO bot
+// (a free listener of the project, in an NLU session of its own) greets the target, confirms that a person is on
+// the line, briefs them (who calls and why), asks whether they accept the call and, on a decline, asks what to tell
+// the caller. Meanwhile the caller stays with the paused bot of the call. On accept the target is joined and the
+// bot leaves as in every WARM transfer; on a decline, no decision or an unreachable target the call stays with the
+// bot, which tells the caller (<code>caller_declined_message</code> / <code>caller_unreachable_message</code>).</p>
+// <p>Levels: unset fields inherit, the most specific level winning per field (protobuf <code>MergeFrom</code>):
+// <code>TransferCallRequest.warm_transfer_config</code> &gt; <code>VoiceInteractionConfig.warm_transfer_config</code>
+// of the call (listener, caller, campaign) &gt; <code>VtsiProject.warm_transfer_defaults</code> &gt; the
+// deployment&apos;s <code>ONDEWO_VTSI_WARM_TRANSFER_*</code> settings &gt; the ONDEWO NLU agent&apos;s warm transfer
+// settings (texts only) &gt; the built-in default. <code>enabled</code> unset at every level is
+// <code>false</code>: a WARM transfer then behaves exactly as before 9.5.0. An NLU agent whose warm transfer
+// settings switch warm intros off makes the intro unavailable, and <code>on_intro_unavailable</code> decides.</p>
+// <p>Requires the deployment switch <code>ONDEWO_VTSI_WARM_TRANSFER_ENABLED=true</code> (default
+// <code>false</code>); otherwise an explicit <code>enabled=true</code> is refused with
+// <code>FAILED_PRECONDITION</code> <code>reason=warm-intro-disabled</code>, at every level (also on
+// <code>UpdateVtsiProject</code>). <code>VtsiProject.feature_availability.warm_intro</code> says up front whether
+// warm intros can run in a project. Fields marked <i>phase B</i> are refused with <code>FAILED_PRECONDITION</code>
+// <code>reason=phase-b-not-enabled</code> while the deployment has not enabled phase B
+// (<code>VtsiProject.feature_availability.warm_intro_phase_b</code>).</p>
+// <p>Texts are spoken by text-to-speech in the language of the intro bot. The placeholders are
+// <code>{project}</code>, <code>{caller_name}</code>, <code>{callee_name}</code>, <code>{topic}</code>,
+// <code>{summary}</code> and <code>{reason}</code>, where a field lists them; an unknown placeholder is refused with
+// <code>INVALID_ARGUMENT</code>. A text must not contain SIP markup (<code>&lt;SIP:</code>): refused with
+// <code>INVALID_ARGUMENT</code>. No text of an intro (the briefing, the decline reason) is ever stored by VTSI,
+// logged, sent in an event or a SIP header: it lives only in the intro bot&apos;s NLU session.</p>
+// <p>Every scalar is <code>optional</code>: unset inherits, a set value (also <code>&quot;&quot;</code> or
+// <code>0</code>) is that level&apos;s value. Values outside a documented range are refused with
+// <code>INVALID_ARGUMENT</code>.</p>
+message WarmTransferConfig {
+
+    // Master switch of the warm intro. Unset at every level means <code>false</code>
+    optional bool enabled = 1;
+
+    // TEMPLATE: the briefing spoken to the target after the readiness answer, with the placeholders
+    // <code>{caller_name}</code>, <code>{callee_name}</code>, <code>{topic}</code> and <code>{summary}</code>
+    // (default e.g. &quot;Ich habe {caller_name} in der Leitung, es geht um {topic}.&quot;). LLM_SUMMARY
+    // (<i>phase B</i>): the instruction to the LLM that writes the briefing from the call so far. At most 4000
+    // characters
+    optional string intro_prompt = 2;
+
+    // How the briefing is produced. <code>WARM_INTRO_TEXT_SOURCE_UNSPECIFIED</code> means
+    // <code>WARM_INTRO_TEXT_SOURCE_LLM_SUMMARY</code> when phase B is enabled and the project has an LLM service,
+    // else <code>WARM_INTRO_TEXT_SOURCE_TEMPLATE</code>. <code>WARM_INTRO_TEXT_SOURCE_LLM_SUMMARY</code> is
+    // <i>phase B</i>; when the LLM fails or is too slow the TEMPLATE is used (<code>WarmIntroRecord.text_fell_back</code>)
+    WarmIntroTextSource intro_text_source = 3;
+
+    // The first sentence the target hears, before anything about the caller (it carries no personal data, so a
+    // mailbox that answers records nothing about the caller). Placeholder <code>{project}</code>. Default (de):
+    // &quot;Hier ist der digitale Assistent von {project}. Ich habe einen Anruf für Sie. Sind Sie am Apparat? Sagen
+    // Sie ja oder drücken Sie 1.&quot; At most 1000 characters
+    optional string ready_question = 4;
+
+    // Whether the briefing is spoken only after the target answered the <code>ready_question</code> (by voice or
+    // <code>accept_dtmf</code>). Default <code>true</code>: the mailbox guard. <code>false</code> briefs the target
+    // right after the <code>ready_question</code>
+    optional bool confirm_human_before_intro = 5;
+
+    // The question after the briefing. Default (de): &quot;Möchten Sie das Gespräch übernehmen? Ja oder 1, nein oder
+    // 2.&quot; At most 1000 characters
+    optional string accept_question = 6;
+
+    // Asked after a decline, to learn what to tell the caller. Default (de): &quot;Was darf ich dem Anrufer
+    // ausrichten?&quot;, (en) &quot;What may I tell the caller?&quot;. <code>&quot;&quot;</code> means: do not ask,
+    // the caller hears the decline without a reason. The answer is relayed to the caller only through the bot&apos;s
+    // NLU (normalised: SIP markup removed, at most 300 characters, digit runs of 12 or more masked); VTSI never
+    // receives it. At most 1000 characters
+    optional string decline_reason_question = 7;
+
+    // What the caller hears after a decline, placeholders <code>{callee_name}</code> and <code>{reason}</code>.
+    // Default (de): &quot;{callee_name} kann das Gespräch gerade nicht übernehmen und lässt ausrichten:
+    // {reason}&quot;; without a reason a variant without the clause is spoken. At most 1000 characters
+    optional string caller_declined_message = 8;
+
+    // What the caller hears when the target was busy, did not answer, gave no decision, hung up during the intro or
+    // the intro could not run (with <code>WARM_INTRO_UNAVAILABLE_POLICY_RETURN_TO_CALLER</code>). Placeholder
+    // <code>{callee_name}</code>. At most 1000 characters
+    optional string caller_unreachable_message = 9;
+
+    // The key that accepts (and answers the <code>ready_question</code>). Default <code>1</code>; exactly one of
+    // <code>0-9 * #</code>
+    optional string accept_dtmf = 10;
+
+    // The key that declines. Default <code>2</code>; exactly one of <code>0-9 * #</code>, different from the
+    // effective <code>accept_dtmf</code>
+    optional string decline_dtmf = 11;
+
+    // Seconds from a question to the target&apos;s decision before the intro ends with
+    // <code>WARM_INTRO_DECISION_NO_DECISION</code>. Default 20, valid range 5 - 60
+    optional uint32 decision_timeout_s = 12;
+
+    // Hard cap in seconds from the target&apos;s answer to the decision. Default 90, valid range 30 - 300. The caller
+    // waits at most the ring time plus this
+    optional uint32 max_intro_duration_s = 13;
+
+    // Who the target is, spoken as <code>{callee_name}</code>, e.g. &quot;Frau Berger, Buchhaltung&quot;. Unset
+    // resolves from the target softphone account&apos;s <code>display_name</code>, then from
+    // <code>VtsiProject.transfer_target_directory</code>. At most 128 characters. Meaningful per transfer only
+    optional string callee_display_name = 14;
+
+    // The target&apos;s role and context for the briefing (LLM_SUMMARY). Unset resolves from the target softphone
+    // account&apos;s <code>description</code>, then from <code>VtsiProject.transfer_target_directory</code>. At most
+    // 512 characters. Meaningful per transfer only
+    optional string callee_description = 15;
+
+    // What happens when the intro cannot run (no free listener, the NLU could not prepare the intro).
+    // <code>WARM_INTRO_UNAVAILABLE_POLICY_UNSPECIFIED</code> means
+    // <code>WARM_INTRO_UNAVAILABLE_POLICY_CONNECT_WITHOUT_INTRO</code>
+    WarmIntroUnavailablePolicy on_intro_unavailable = 16;
+
+    // Whether the bot&apos;s OWN transfers to a human (the NLU answer&apos;s transfer or human handover) get a warm
+    // intro too: the transfer is handed to VTSI instead of being sent by the bot. Default <code>false</code>. Valid
+    // on the call and project levels; set on a <code>TransferCallRequest</code> it is refused with
+    // <code>INVALID_ARGUMENT</code>
+    optional bool apply_to_bot_transfers = 17;
+
+    // Spoken to the caller while the intro runs, after <code>caller_disclosure_message</code>, e.g. &quot;Einen
+    // Moment bitte, ich verbinde Sie.&quot; <code>&quot;&quot;</code> or unset: none (silence). At most 1000
+    // characters
+    optional string caller_hold_message = 18;
+
+    // <i>Phase B</i>: music on hold for the caller between the hold messages. Default <code>false</code> (silence)
+    optional bool caller_hold_music = 19;
+
+    // Repeat <code>caller_hold_message</code> every N seconds while the intro runs. <code>0</code> (default): never.
+    // Valid: 0 or 15 - 120
+    optional uint32 caller_reassure_interval_s = 20;
+
+    // The LLM service of the ONDEWO NLU agent that writes the briefing (LLM_SUMMARY, <i>phase B</i>). Empty: the
+    // agent&apos;s warm transfer setting, else the project&apos;s first LLM service
+    optional string llm_ccai_service_name = 21;
+
+    // Spoken to the caller FIRST when the intro starts, e.g. that the call is being announced to the target.
+    // Default empty: none. At most 1000 characters
+    optional string caller_disclosure_message = 22;
+
+    // Spoken to the caller after the target accepted and before the target is joined, placeholder
+    // <code>{callee_name}</code>, e.g. &quot;Ich verbinde Sie jetzt mit {callee_name}.&quot; The target does not
+    // hear it. Default empty: none. At most 1000 characters
+    optional string caller_accepted_message = 23;
+
+    // Whether the intro bot&apos;s NLU session stores the intro audio (the target&apos;s voice and the bot&apos;s).
+    // Default <code>false</code>: no audio is stored; the session&apos;s text follows the conversation retention
+    optional bool store_intro_audio = 24;
+
+    // Project level only: listeners (<pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>)
+    // reserved as intro bots. Empty (default): any free listener of the project, keeping at least one ready
+    // listener free for customer calls. At most 50 entries; set on another level it is refused with
+    // <code>INVALID_ARGUMENT</code>
+    repeated string intro_listener_names = 25;
+}
+
+// <p>How the briefing of a warm intro is produced</p>
+enum WarmIntroTextSource {
+
+    // See <code>WarmTransferConfig.intro_text_source</code>
+    WARM_INTRO_TEXT_SOURCE_UNSPECIFIED = 0;
+
+    // <code>WarmTransferConfig.intro_prompt</code> as a template
+    WARM_INTRO_TEXT_SOURCE_TEMPLATE = 1;
+
+    // An LLM summary of the call so far, instructed by <code>WarmTransferConfig.intro_prompt</code> (phase B)
+    WARM_INTRO_TEXT_SOURCE_LLM_SUMMARY = 2;
+}
+
+// <p>What a WARM transfer does when its warm intro cannot run</p>
+enum WarmIntroUnavailablePolicy {
+
+    // Same as <code>WARM_INTRO_UNAVAILABLE_POLICY_CONNECT_WITHOUT_INTRO</code>
+    WARM_INTRO_UNAVAILABLE_POLICY_UNSPECIFIED = 0;
+
+    // Join the target directly, as a WARM transfer without an intro
+    WARM_INTRO_UNAVAILABLE_POLICY_CONNECT_WITHOUT_INTRO = 1;
+
+    // Hang up the target and keep the call with the bot, which tells the caller
+    // (<code>TRANSFER_OUTCOME_INTRO_UNAVAILABLE</code>)
+    WARM_INTRO_UNAVAILABLE_POLICY_RETURN_TO_CALLER = 2;
+}
+
+// <p>The target&apos;s decision in a warm intro</p>
+enum WarmIntroDecision {
+
+    // No decision yet (the intro runs, or it never started)
+    WARM_INTRO_DECISION_UNSPECIFIED = 0;
+
+    // The target accepted and was joined
+    WARM_INTRO_DECISION_ACCEPTED = 1;
+
+    // The target declined; the call stays with the bot
+    WARM_INTRO_DECISION_DECLINED = 2;
+
+    // The target answered but gave no decision in time (also a mailbox that answered)
+    WARM_INTRO_DECISION_NO_DECISION = 3;
+}
+
+// <p>How the decision of a warm intro was taken</p>
+enum WarmIntroDecidedBy {
+
+    // Not decided
+    WARM_INTRO_DECIDED_BY_UNSPECIFIED = 0;
+
+    // A key (<code>accept_dtmf</code> / <code>decline_dtmf</code>)
+    WARM_INTRO_DECIDED_BY_DTMF = 1;
+
+    // A spoken answer
+    WARM_INTRO_DECIDED_BY_SPEECH = 2;
+
+    // No answer within <code>decision_timeout_s</code> / <code>max_intro_duration_s</code>
+    WARM_INTRO_DECIDED_BY_TIMEOUT = 3;
+}
+
+// <p>Audit of one warm intro, in <code>CallTransferRecord.warm_intro</code>. Output only. Holds NO intro text and NO
+// decline reason text.</p>
+message WarmIntroRecord {
+
+    // Id of the intro: the participant id of the target&apos;s leg (the <code>participant_id</code> of the events)
+    string intro_id = 1;
+
+    // The target&apos;s decision
+    WarmIntroDecision decision = 2;
+
+    // How it was taken
+    WarmIntroDecidedBy decided_by = 3;
+
+    // Whether the target gave a reason for a decline (the reason itself never leaves the intro bot&apos;s NLU session)
+    bool decline_reason_present = 4;
+
+    // The intro bot&apos;s call, labelled <code>{&quot;purpose&quot;: &quot;warm_intro&quot;}</code>. Empty when no
+    // intro bot answered
+    string intro_call_name = 5;
+
+    // From the start of the ring to the target&apos;s answer
+    google.protobuf.Duration ring_duration = 6;
+
+    // From the target&apos;s answer to the decision or the end of the intro
+    google.protobuf.Duration intro_duration = 7;
+
+    // The text source actually used
+    WarmIntroTextSource text_source = 8;
+
+    // Whether the LLM summary failed or timed out and the TEMPLATE was used
+    bool text_fell_back = 9;
+
+    // Bounded kebab-case token naming why the intro ended or did not run, e.g. <code>declined</code>,
+    // <code>voicemail-suspected</code>, <code>target-hung-up</code>, <code>no-free-listener</code>,
+    // <code>prepare-failed</code>, <code>intro-timeout</code>; empty on accept
+    string cause = 10;
+
+    // Whether the caller&apos;s bot queued the outcome notice (decline / unreachable) for the caller. Only meaningful
+    // when a notice was owed (every decision but <code>WARM_INTRO_DECISION_ACCEPTED</code>); <code>false</code> there
+    // goes with <code>VTSI_EVENT_CALL_WARM_TRANSFER_OUTCOME_NOTICE_UNDELIVERED</code>
+    bool notice_delivered = 11;
+
+    // Whether the intro started (an intro bot answered). <code>false</code> with
+    // <code>WARM_INTRO_UNAVAILABLE_POLICY_CONNECT_WITHOUT_INTRO</code> means the target was joined without an intro;
+    // <code>cause</code> says why
+    bool intro_started = 12;
 }
 
 // Configuration of the turn detection, i.e. deciding when the caller has finished speaking

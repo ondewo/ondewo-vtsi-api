@@ -363,7 +363,10 @@ enum VtsiEvent {
     // <code>warm</code>), <code>outcome</code> (<code>accepted</code>), <code>sip_response_code</code>,
     // <code>source</code> (<code>call_monitor</code>), and the call status attributes
     // (<code>caller_name</code> / <code>listener_name</code> / <code>scheduled_caller_name</code>,
-    // <code>phone_number</code>). Sets the call status fields.</p>
+    // <code>phone_number</code>). Sets the call status fields. A WARM transfer whose warm intro was enabled but
+    // skipped (<code>WARM_INTRO_UNAVAILABLE_POLICY_CONNECT_WITHOUT_INTRO</code>) also carries
+    // <code>intro_skipped_reason</code> (a kebab-case token such as <code>no-free-listener</code> or
+    // <code>prepare-failed</code>).</p>
     VTSI_EVENT_CALL_TRANSFERRED = 106;
 
     // A transfer failed and the call was KEPT with the bot: <code>TRANSFER_CALL_FAILED</code>, a refused or unanswered
@@ -458,6 +461,41 @@ enum VtsiEvent {
     // keys, never the keys) and <code>actor</code> (the authenticated user, when known). Sets
     // <code>call_name</code>.
     VTSI_EVENT_CALL_DTMF_SENT = 123;
+
+    // The warm intro of a WARM transfer started: the target answered and an intro bot greets it.
+    // <p>Attributes (the warm intro attributes, also on 125 to 128): <code>intro_id</code> (the participant id of the
+    // target&apos;s leg), <code>target_kind</code> (<code>phone_number</code> / <code>softphone</code>),
+    // <code>text_source</code> (<code>template</code> / <code>llm_summary</code>), <code>decided_by</code>
+    // (<code>dtmf</code> / <code>speech</code> / <code>timeout</code>, on 125 to 127), <code>reason_present</code>
+    // (<code>true</code> / <code>false</code>, on 126), <code>intro_ms</code> (milliseconds from the target&apos;s
+    // answer, on 125 to 128) and <code>cause</code> (kebab-case token). Never carries an intro text, a decline reason
+    // or a full phone number. Sets <code>call_name</code>.</p>
+    VTSI_EVENT_CALL_WARM_INTRO_STARTED = 124;
+
+    // The target of a warm intro accepted. <code>VTSI_EVENT_CALL_TRANSFERRED</code> follows once the target joined.
+    // The warm intro attributes (see 124).
+    VTSI_EVENT_CALL_WARM_INTRO_ACCEPTED = 125;
+
+    // The target of a warm intro declined; the call stays with the bot, which tells the caller. The warm intro
+    // attributes (see 124).
+    VTSI_EVENT_CALL_WARM_INTRO_DECLINED = 126;
+
+    // The target of a warm intro gave no decision in time; the call stays with the bot. The warm intro attributes
+    // (see 124).
+    VTSI_EVENT_CALL_WARM_INTRO_NO_DECISION = 127;
+
+    // The target of a warm intro answered but is gone, or the intro could not run with
+    // <code>WARM_INTRO_UNAVAILABLE_POLICY_RETURN_TO_CALLER</code>; the call stays with the bot. The warm intro
+    // attributes (see 124), <code>cause</code> being <code>voicemail-suspected</code>, <code>target-hung-up</code>
+    // or <code>intro-unavailable</code>.
+    VTSI_EVENT_CALL_WARM_INTRO_TARGET_UNAVAILABLE = 128;
+
+    // WARNING: the outcome of a warm intro (a decline, no decision, an unreachable target) could not be handed to
+    // the call&apos;s bot, so the caller may not be told; <code>CallTransferRecord.warm_intro.notice_delivered</code>
+    // is <code>false</code>. Attributes: <code>intro_id</code> and <code>reason</code> (kebab-case token: the
+    // bot&apos;s refusal, e.g. <code>disabled</code>, <code>invalid</code>, <code>pending</code>, or
+    // <code>sip-unreachable</code>). Sets <code>call_name</code>.
+    VTSI_EVENT_CALL_WARM_TRANSFER_OUTCOME_NOTICE_UNDELIVERED = 129;
 
     // ---- Callers (resource_name: the caller) ----
 

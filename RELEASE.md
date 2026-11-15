@@ -2,6 +2,52 @@
 
 *****************
 
+## Release ONDEWO VTSI API 9.5.0
+
+### New Features
+
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) Warm intro of a WARM transfer: after the human target answered and before it is
+  joined, an ONDEWO bot confirms a person is on the line, briefs them, asks whether they accept and, on a decline,
+  what to tell the caller; the caller waits with the paused bot. Configured by the new `WarmTransferConfig`
+  (`call_configs.proto`, 22 `optional` scalars plus `intro_text_source`, `on_intro_unavailable` and
+  `intro_listener_names`) on four levels, the most specific winning per field:
+  `TransferCallRequest.warm_transfer_config = 9`, `VoiceInteractionConfig.warm_transfer_config = 6`,
+  `VtsiProject.warm_transfer_defaults = 22` and the deployment. Off unless `enabled` is set and the deployment
+  switch `ONDEWO_VTSI_WARM_TRANSFER_ENABLED` is on; an explicit `enabled=true` otherwise is `FAILED_PRECONDITION`
+  `reason=warm-intro-disabled`. New top-level enums `WarmIntroTextSource`, `WarmIntroUnavailablePolicy`,
+  `WarmIntroDecision` and `WarmIntroDecidedBy`.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) A WARM transfer with a warm intro answers `TRANSFER_OUTCOME_PENDING`; its final
+  outcome arrives in `Call.last_transfer` and the events. New `TransferOutcome` values `TRANSFER_OUTCOME_DECLINED = 9`,
+  `TRANSFER_OUTCOME_NO_DECISION = 10`, `TRANSFER_OUTCOME_TARGET_UNAVAILABLE = 11` and
+  `TRANSFER_OUTCOME_INTRO_UNAVAILABLE = 12`; `CallTransferRecord` gains `warm_intro = 7` (`WarmIntroRecord`, no text)
+  and `effective_warm_transfer_config = 8` (the resolved configuration).
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) Events `VTSI_EVENT_CALL_WARM_INTRO_STARTED = 124`, `_ACCEPTED = 125`,
+  `_DECLINED = 126`, `_NO_DECISION = 127`, `_TARGET_UNAVAILABLE = 128` and the WARNING
+  `VTSI_EVENT_CALL_WARM_TRANSFER_OUTCOME_NOTICE_UNDELIVERED = 129`; `VTSI_EVENT_CALL_TRANSFERRED` carries
+  `intro_skipped_reason` when an enabled intro was skipped. No event carries a text or a full phone number.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `VtsiProject.feature_availability = 23` (output only,
+  `VtsiProjectFeatureAvailability`: `warm_intro` as `WarmIntroAvailability`, `warm_intro_phase_b`, `ivr` as
+  `IvrAvailability`), `VtsiProject.ivr_menus_enabled = 24` (`optional bool`, unset = `true`) and
+  `VtsiProject.transfer_target_directory = 25` (`map<string, TransferTargetDirectoryItem>`, at most 200 targets:
+  display name and description of a human transfer target).
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `SoftphoneAccount.description = 22`: the person or role behind the account, used
+  by a warm intro's briefing; updatable with the mask path `description`.
+
+### Improvements
+
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `docs/warm_transfer.md`: a hand-written guide to warm intros (levels, defaults,
+  preconditions, outcomes, events, security and privacy).
+* Tracking ondewo-nlu-api 7.6.0 (`09169d1b766c4d19c123b9c072e80ff693fec3d9`, not tagged yet; was 7.4.0) and
+  ondewo-sip-api 5.7.0 (`b92a13f63696a0bc013dda19d72166f87346282e`, not tagged yet; was 5.6.0). The vendored
+  `ondewo/nlu` and `ondewo/sip` trees are byte-identical copies at those commits. The nlu tree brings the 7.5.0
+  surface with it (the `Logs` service, turn control on `StreamingDetectIntent`) and 7.6.0's
+  `PrepareWarmTransferIntro` / `GetWarmTransferIntroOutcome` and `Agent.warm_transfer_settings`; the sip tree brings
+  transfer delegation, `SipStatus.capabilities` and the warm-transfer outcome notice. A consumer that also installs
+  `ondewo-nlu-client` or `ondewo-sip-client` must move them together with this API. `ondewo-s2t-api` and
+  `ondewo-t2s-api` are unchanged.
+
+*****************
+
 ## Release ONDEWO VTSI API 9.4.0
 
 ### New Features

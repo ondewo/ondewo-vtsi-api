@@ -17,6 +17,7 @@ syntax = "proto3";
 package ondewo.vtsi;
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
+import "ondewo/vtsi/call_configs.proto";
 
 // <p>ONDEWO VTSI API</p>
 // <p>Manages VTSI (Virtual Telephone System Integration) PROJECTS: the per-project configuration of an
@@ -103,7 +104,9 @@ service Projects {
     // <p>An update of an <code>UNDEPLOYED</code> project only writes it. An update of a
     // <code>DEPLOYED</code> project is applied to the running Asterisk by the cheapest path that applies
     // every change, chosen by the server: <code>display_name</code>, <code>nlu_agent_names</code> and
-    // <code>transfer_phone_number_allowlist</code> touch no Asterisk; a configuration change that Asterisk
+    // <code>transfer_phone_number_allowlist</code>, <code>warm_transfer_defaults</code> and
+    // <code>transfer_target_directory</code> touch no Asterisk; <code>ivr_menus_enabled</code> only rewrites the
+    // inbound routes in the running Asterisk&apos;s database and keeps every call; a configuration change that Asterisk
     // measurably applies on a reload is reloaded in place and keeps every call; every other change is a
     // RESTART of the Asterisk container or a REDEPLOY of the project (a changed <code>max_callers</code>,
     // <code>max_listeners</code>, Asterisk port, <code>asterisk_version</code> or managed account), and
@@ -310,6 +313,101 @@ message VtsiProject{
     // would start, e.g. after the server default changed. Ignored on create and update.
     string asterisk_version_effective = 21;
 
+    // OPTIONAL: The project&apos;s default warm intro of a WARM transfer (see
+    // <a href="index.html#ondewo.vtsi.WarmTransferConfig">WarmTransferConfig</a>): the level below a call&apos;s
+    // <code>VoiceInteractionConfig.warm_transfer_config</code> and a
+    // <code>TransferCallRequest.warm_transfer_config</code>. <code>enabled=true</code> while the deployment switch
+    // <code>ONDEWO_VTSI_WARM_TRANSFER_ENABLED</code> is off, or a phase-B field while phase B is off, is refused
+    // with <code>FAILED_PRECONDITION</code> (<code>reason=warm-intro-disabled</code> /
+    // <code>reason=phase-b-not-enabled</code>); an invalid field with <code>INVALID_ARGUMENT</code> naming it.
+    // Updatable with the update mask path <code>warm_transfer_defaults</code> or its leaf paths, e.g.
+    // <code>warm_transfer_defaults.enabled</code>. Touches no Asterisk.
+    WarmTransferConfig warm_transfer_defaults = 22;
+
+    // Output only. Which features can run in this project with the deployment, the Asterisk and the listeners it
+    // has now, computed on every <code>GetVtsiProject</code> / <code>ListVtsiProjects</code> (it costs no RPC).
+    // Read it instead of learning from a refusal. Ignored on create and update.
+    VtsiProjectFeatureAvailability feature_availability = 23;
+
+    // OPTIONAL: Whether the project&apos;s published IVR menus route its inbound phone numbers. Unset means
+    // <code>true</code>. <code>false</code> switches every route off at once (every inbound number reaches the
+    // listener queue as without a menu) and keeps the menus and their phone number bindings, so <code>true</code>
+    // restores them. Updatable with the update mask path <code>ivr_menus_enabled</code>; it reloads no Asterisk and
+    // ends no call.
+    optional bool ivr_menus_enabled = 24;
+
+    // OPTIONAL: Directory of the project&apos;s human transfer targets, keyed by the target: an E.164 phone number
+    // (<code>^\+[1-9][0-9]{6,14}$</code>, which must pass <code>transfer_phone_number_allowlist</code>) or the
+    // <code>sip_username</code> of a softphone account of the project. It names a target in a warm intro
+    // (<code>{callee_name}</code>) and describes it, below a transfer&apos;s own
+    // <code>WarmTransferConfig.callee_display_name</code> / <code>callee_description</code> and the softphone
+    // account&apos;s <code>display_name</code> / <code>description</code>. That is how the bot&apos;s own handover to
+    // a target names the right person. At most 200 entries; an invalid key or entry is refused with
+    // <code>INVALID_ARGUMENT</code> naming it. Updatable with the update mask path
+    // <code>transfer_target_directory</code> (the whole map is replaced). Touches no Asterisk.
+    map<string, TransferTargetDirectoryItem> transfer_target_directory = 25;
+
+}
+
+// <p>One human transfer target of <code>VtsiProject.transfer_target_directory</code>. Carries no secret</p>
+message TransferTargetDirectoryItem {
+
+    // Who the target is, e.g. <code>Frau Berger, Buchhaltung</code>. 1 to 128 characters
+    string display_name = 1;
+
+    // The target&apos;s role and context, for a warm intro&apos;s briefing. At most 512 characters
+    string description = 2;
+}
+
+// <p>Which features can run in a VTSI project. Output only</p>
+message VtsiProjectFeatureAvailability {
+
+    // Whether a WARM transfer can run a warm intro
+    WarmIntroAvailability warm_intro = 1;
+
+    // Whether the phase-B fields of <code>WarmTransferConfig</code> (LLM summary, hold music) are accepted
+    bool warm_intro_phase_b = 2;
+
+    // Whether the project can publish and route IVR menus
+    IvrAvailability ivr = 3;
+}
+
+// <p>Whether a project can run warm intros, and if not, why</p>
+enum WarmIntroAvailability {
+
+    // Not computed (e.g. an older server)
+    WARM_INTRO_AVAILABILITY_UNSPECIFIED = 0;
+
+    // Warm intros can run
+    WARM_INTRO_AVAILABILITY_AVAILABLE = 1;
+
+    // The deployment switch <code>ONDEWO_VTSI_WARM_TRANSFER_ENABLED</code> is off
+    WARM_INTRO_AVAILABILITY_DISABLED_BY_DEPLOYMENT = 2;
+
+    // The project&apos;s Asterisk is not run by this server (or is older than Asterisk 22)
+    WARM_INTRO_AVAILABILITY_NEEDS_LOCAL_ASTERISK = 3;
+
+    // The project has no listener to run the intro (a project with pooled callers only)
+    WARM_INTRO_AVAILABILITY_NEEDS_LISTENER = 4;
+
+    // The deployment has no call-control key (<code>ONDEWO_VTSI_CALL_CONTROL_KEY</code>)
+    WARM_INTRO_AVAILABILITY_NEEDS_CALL_CONTROL_KEY = 5;
+}
+
+// <p>Whether a project can use IVR menus, and if not, why</p>
+enum IvrAvailability {
+
+    // Not computed (e.g. an older server)
+    IVR_AVAILABILITY_UNSPECIFIED = 0;
+
+    // IVR menus can be published and routed
+    IVR_AVAILABILITY_AVAILABLE = 1;
+
+    // The deployment switch <code>ONDEWO_VTSI_IVR_ACTIVE</code> is off
+    IVR_AVAILABILITY_DISABLED_BY_DEPLOYMENT = 2;
+
+    // The project&apos;s Asterisk is not run by this server
+    IVR_AVAILABILITY_NEEDS_LOCAL_ASTERISK = 3;
 }
 
 // Registration state of a VTSI project&apos;s SIP trunk with the carrier.
