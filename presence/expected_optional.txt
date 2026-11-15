@@ -99,6 +99,8 @@ ondewo.vtsi.ListCallsRequest.call_view
 ondewo.vtsi.ListCallsRequest.page_token
 ondewo.vtsi.ListCampaignCallsRequest.page_token                              # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.ListCampaignsRequest.page_token                                  # new field in 9.0.0 (OND233-367)
+ondewo.vtsi.ListIvrMenuRevisionsRequest.page_token                           # new field in 9.5.0 (OND236-120)
+ondewo.vtsi.ListIvrMenusRequest.page_token                                   # new field in 9.5.0 (OND236-120)
 ondewo.vtsi.ListListenersRequest.call_view
 ondewo.vtsi.ListListenersRequest.page_token
 ondewo.vtsi.ListScheduledCallersRequest.call_view

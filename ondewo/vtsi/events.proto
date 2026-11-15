@@ -348,8 +348,8 @@ enum VtsiEvent {
     // accepted, or when the target of a WARM transfer starts ringing.
     // <p>Attributes: <code>transfer_id</code> (the target, a phone number masked to its last 3 digits, e.g.
     // <code>***678</code>, or an extension), <code>target_type</code> (<code>phone_number</code>,
-    // <code>softphone</code>, <code>listener</code>, <code>listener_queue</code>, <code>legacy</code>,
-    // <code>unknown</code>), <code>mode</code> (<code>blind</code> / <code>warm</code>; <code>WARM</code>, upper
+    // <code>softphone</code>, <code>listener</code>, <code>listener_queue</code>, <code>ivr_menu</code>,
+    // <code>legacy</code>, <code>unknown</code>), <code>mode</code> (<code>blind</code> / <code>warm</code>; <code>WARM</code>, upper
     // case, when reported for the ringing WARM leg), <code>outcome</code> (<code>accepted</code>,
     // <code>pending</code>, ...), <code>sip_response_code</code> (SIP code, <code>0</code> when unknown),
     // <code>error_reason</code> (kebab-case token, may be empty), <code>participant_id</code> (WARM leg),
@@ -820,6 +820,30 @@ enum VtsiEvent {
 
     // An event subscription was deleted. No attributes.
     VTSI_EVENT_EVENT_SUBSCRIPTION_DELETED = 906;
+
+    // ---- IVR menus (resource_name: the IVR menu) ----
+    // <p>Attributes of every IVR menu event: <code>revision</code> (the revision concerned),
+    // <code>node_count</code> and <code>routed_numbers</code> (the NUMBER of bound phone numbers, never a number).</p>
+
+    // An IVR menu was created (<code>CreateIvrMenu</code>, <code>CloneIvrMenu</code>).
+    VTSI_EVENT_IVR_MENU_CREATED = 1001;
+
+    // An IVR menu was updated; attribute <code>updated_fields</code> (the mask paths).
+    VTSI_EVENT_IVR_MENU_UPDATED = 1002;
+
+    // An IVR menu was deleted.
+    VTSI_EVENT_IVR_MENU_DELETED = 1003;
+
+    // A revision of an IVR menu was published and its phone numbers route to it.
+    VTSI_EVENT_IVR_MENU_PUBLISHED = 1004;
+
+    // A publish of an IVR menu failed; the previous published revision stays live. <code>description</code> says
+    // why (no personal data).
+    VTSI_EVENT_IVR_MENU_PUBLISH_FAILED = 1005;
+
+    // A test call of an IVR menu finished; attributes <code>test_id</code>, <code>state</code>
+    // (<code>IvrMenuTestState</code> name without prefix) and <code>steps</code> (the number of nodes entered).
+    VTSI_EVENT_IVR_MENU_TESTED = 1006;
 }
 
 // HTTP method of a webhook request.
@@ -860,7 +884,7 @@ message VtsiEventMessage {
     string vtsi_project_name = 3;
 
     // The resource the event is about (call, caller, listener, scheduled caller, campaign, campaign
-    // call, project, softphone account).
+    // call, project, softphone account, IVR menu).
     string resource_name = 4;
 
     // When the event happened.

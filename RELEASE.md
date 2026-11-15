@@ -32,11 +32,27 @@
   display name and description of a human transfer target).
 * [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `SoftphoneAccount.description = 22`: the person or role behind the account, used
   by a warm intro's briefing; updatable with the mask path `description`.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) New service `IvrMenus` (`ivr_menus.proto`): keypad (DTMF) menus on a project's
+  inbound phone numbers, run by the project's Asterisk as generated dialplan. 12 RPCs: `CreateIvrMenu`,
+  `GetIvrMenu`, `UpdateIvrMenu`, `DeleteIvrMenu`, `ListIvrMenus`, `ValidateIvrMenu`, `PublishIvrMenu`,
+  `CloneIvrMenu`, `ListIvrMenuRevisions`, `TestIvrMenu` (asynchronous: returns an `IvrMenuTest` at once, run
+  inside the Asterisk, never dials a person), `GetIvrMenuTest` and `GetIvrMenuDialplan`. Node types MENU, PLAY,
+  ROUTE, HANGUP, SCHEDULE and GOTO_MENU (into another published menu of the project); per-node traffic counters in
+  `IvrMenu.node_stats` (field mask path `node_stats`). Off unless the deployment sets `ONDEWO_VTSI_IVR_ACTIVE=true`
+  (otherwise `UNIMPLEMENTED reason=ivr-disabled`). `ListIvrMenusRequest.page_token` and
+  `ListIvrMenuRevisionsRequest.page_token` are `optional`, as in Campaigns.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `CallTarget.ivr_menu_name = 5`: `TransferCall(TRANSFER_MODE_BLIND)` into a published
+  IVR menu. `Call.ivr_menu_display_name = 27` and `Call.ivr_path = 28` (output only) record the menu and the option
+  labels a caller took before the bot answered.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) Events `VTSI_EVENT_IVR_MENU_CREATED = 1001`, `_UPDATED = 1002`, `_DELETED = 1003`,
+  `_PUBLISHED = 1004`, `_PUBLISH_FAILED = 1005` and `_TESTED = 1006`; they carry counts, never a phone number.
 
 ### Improvements
 
 * [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `docs/warm_transfer.md`: a hand-written guide to warm intros (levels, defaults,
   preconditions, outcomes, events, security and privacy).
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `docs/ivr_menus.md`: a hand-written guide to IVR menus (the graph, prompts,
+  lifecycle, test calls, the headers a bot receives, every validation issue code, configuration and privacy).
 * Tracking ondewo-nlu-api 7.6.0 (`09169d1b766c4d19c123b9c072e80ff693fec3d9`, not tagged yet; was 7.4.0) and
   ondewo-sip-api 5.7.0 (`b92a13f63696a0bc013dda19d72166f87346282e`, not tagged yet; was 5.6.0). The vendored
   `ondewo/nlu` and `ondewo/sip` trees are byte-identical copies at those commits. The nlu tree brings the 7.5.0

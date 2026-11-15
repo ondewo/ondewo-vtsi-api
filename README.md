@@ -199,6 +199,7 @@ Please use the issue tracker in this repo for discussions about this API, or the
 │   ├── dtmf.md
 │   ├── index.html
 │   ├── index.md
+│   ├── ivr_menus.md
 │   ├── style.css
 │   └── warm_transfer.md
 ├── install_nvm.sh
@@ -414,6 +415,9 @@ A hand-written guide to the DTMF features (`Calls.SendCallDtmf`, `VTSI_EVENT_CAL
 
 A hand-written guide to the warm intro of a WARM transfer (`WarmTransferConfig`, the new transfer outcomes,
 `WarmIntroRecord` and the events `VTSI_EVENT_CALL_WARM_INTRO_*`) is [docs/warm_transfer.md](docs/warm_transfer.md).
+
+A hand-written guide to IVR menus (the `IvrMenus` service, the node types, publishing, test calls and what a bot
+learns from a menu) is [docs/ivr_menus.md](docs/ivr_menus.md).
 
 As part of the `pre-commit` hooks, `update_githubio` is run. It will preemptively stop if:
 

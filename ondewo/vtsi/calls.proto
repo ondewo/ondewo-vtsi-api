@@ -402,7 +402,8 @@ service Calls {
     // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p>
     rpc StopAllCalls (StopAllCallsRequest) returns (StopCallsResponse);
 
-    // <p>Transfer a call to a phone number, a softphone account, another listener or the listener queue.</p>
+    // <p>Transfer a call to a phone number, a softphone account, another listener, the listener queue or a published
+    // IVR menu.</p>
     // <p>The target is either the typed <code>target</code> or the legacy raw <code>transfer_id</code>, never both. It is
     // resolved and validated before anything is sent; an invalid target is answered with
     // <code>TRANSFER_OUTCOME_TARGET_INVALID</code> and an <code>error_reason</code>, and the call is untouched.</p>
@@ -2423,6 +2424,14 @@ message CallTarget {
 
         // The project&apos;s listener queue: any idle listener of the project takes the call
         ListenerQueueTarget listener_queue = 4;
+
+        // A PUBLISHED IVR menu of the same project:
+        // <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>. The caller enters
+        // the menu&apos;s published revision at its entry node. <code>TRANSFER_MODE_BLIND</code> only; with
+        // <code>TRANSFER_MODE_WARM</code> it is refused with <code>INVALID_ARGUMENT</code>. A menu that is not
+        // published is refused with <code>FAILED_PRECONDITION</code> <code>reason=menu-not-published</code>, and a
+        // deployment without IVR menus with <code>UNIMPLEMENTED</code> <code>reason=ivr-disabled</code>
+        string ivr_menu_name = 5;
     }
 }
 
@@ -3273,6 +3282,16 @@ message Call {
     // This is the only mutable field of a <code>Call</code>: it exists so that a call can be annotated without
     // anything about the live call being changed. Set in the SHALLOW and FULL views.
     map<string, string> labels = 26;
+
+    // Output only. The display name of the IVR menu the caller came through before the bot took the call (from
+    // <code>X-ondewo-ivr-menu</code>); empty when the call did not pass an IVR menu. Set in the SHALLOW and FULL
+    // views
+    string ivr_menu_display_name = 27;
+
+    // Output only. The option labels the caller took through the IVR menus, e.g. <code>main:1&gt;billing:2</code>
+    // (from <code>X-ondewo-ivr-path</code>, at most 256 characters); empty when the call did not pass an IVR menu.
+    // Set in the SHALLOW and FULL views
+    string ivr_path = 28;
 
 }
 

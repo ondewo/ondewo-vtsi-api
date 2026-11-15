@@ -5,11 +5,12 @@
     "ondewo/vtsi/calls.proto",
     "ondewo/vtsi/campaigns.proto",
     "ondewo/vtsi/events.proto",
+    "ondewo/vtsi/ivr_menus.proto",
     "ondewo/vtsi/logs.proto",
     "ondewo/vtsi/projects.proto",
     "ondewo/vtsi/softphones.proto"
   ],
-  "optional_field_count": 167,
+  "optional_field_count": 169,
   "fields": [
     {
       "message": "ondewo.vtsi.AnsweringMachineDetectionConfig",
@@ -1020,6 +1021,28 @@
       "type_name": null,
       "json_name": "pageToken",
       "file": "ondewo/vtsi/campaigns.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "2200"
+    },
+    {
+      "message": "ondewo.vtsi.ListIvrMenuRevisionsRequest",
+      "field": "page_token",
+      "number": 3,
+      "type": "string",
+      "type_name": null,
+      "json_name": "pageToken",
+      "file": "ondewo/vtsi/ivr_menus.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "1a00"
+    },
+    {
+      "message": "ondewo.vtsi.ListIvrMenusRequest",
+      "field": "page_token",
+      "number": 4,
+      "type": "string",
+      "type_name": null,
+      "json_name": "pageToken",
+      "file": "ondewo/vtsi/ivr_menus.proto",
       "unset_hex": "",
       "explicit_default_hex": "2200"
     },
