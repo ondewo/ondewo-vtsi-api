@@ -3293,6 +3293,12 @@ message Call {
     // Set in the SHALLOW and FULL views
     string ivr_path = 28;
 
+    // Output only. Resource name of the IVR menu that handled the call&apos;s IVR leg, i.e. the menu
+    // <code>ivr_menu_display_name</code> names, so a client can find the menu by id instead of by its label.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>
+    // Empty when the call did not pass an IVR menu. Set in the SHALLOW and FULL views
+    string ivr_menu_name = 29;
+
 }
 
 // Narrows a set of calls of one project: the calls <code>ListCalls</code> lists, <code>GetCallStatistics</code>

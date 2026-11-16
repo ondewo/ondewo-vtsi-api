@@ -44,6 +44,9 @@
 * [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `CallTarget.ivr_menu_name = 5`: `TransferCall(TRANSFER_MODE_BLIND)` into a published
   IVR menu. `Call.ivr_menu_display_name = 27` and `Call.ivr_path = 28` (output only) record the menu and the option
   labels a caller took before the bot answered.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `Call.ivr_menu_name = 29` (output only): the resource name
+  (`projects/<project_uuid>/ivr_menus/<ivr_menu_uuid>`) of the IVR menu `Call.ivr_menu_display_name` names, so a client
+  finds the menu by id instead of by its label; empty when the call did not pass an IVR menu.
 * [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) Events `VTSI_EVENT_IVR_MENU_CREATED = 1001`, `_UPDATED = 1002`, `_DELETED = 1003`,
   `_PUBLISHED = 1004`, `_PUBLISH_FAILED = 1005` and `_TESTED = 1006`; they carry counts, never a phone number.
 

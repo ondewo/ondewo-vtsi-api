@@ -39,7 +39,8 @@ import "ondewo/vtsi/campaigns.proto";
 // <p>A bot reached through a menu learns the path: the headers <code>X-ondewo-ivr-menu</code> (the menu&apos;s
 // display name, sanitized), <code>X-ondewo-ivr-path</code> (the option labels taken, e.g.
 // <code>main:1&gt;billing:2</code>) and <code>X-ondewo-dialed-number</code> become parameters of the bot&apos;s
-// SIP context, and the call records them in <code>Call.ivr_menu_display_name</code> / <code>Call.ivr_path</code>.
+// SIP context, and the call records them in <code>Call.ivr_menu_display_name</code> / <code>Call.ivr_path</code>,
+// and the menu&apos;s resource name in <code>Call.ivr_menu_name</code>.
 // Labels therefore must never carry a secret.</p>
 // <p>Deployment switch: with <code>ONDEWO_VTSI_IVR_ACTIVE=false</code> (the default) every RPC of this service
 // answers <code>UNIMPLEMENTED</code> with <code>reason=ivr-disabled</code>. <code>VtsiProject.ivr_menus_enabled</code>
