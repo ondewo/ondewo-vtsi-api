@@ -349,6 +349,15 @@ message TranscriptionReturnOptions {
     // Optional. Whether or not to return timestamps of start and end of the words. Only used in TranscribeFile.
     bool return_word_timing = 8;
 
+    // Optional. Whether the server should send an end-of-speech candidate on a stream (see
+    // <code>TranscribeStreamResponse.end_of_speech_candidate</code> for what is sent and when). Only used in
+    // TranscribeStream, and only acted on under server-side turn detection. Fixed per stream, like
+    // <code>return_start_of_speech</code>: the server completes each request config from the one in effect, so a
+    // later request without <code>return_options</code> keeps it, but a later <code>return_options</code> block
+    // replaces every return option at once and must repeat this field, or the candidate stops for the rest of the
+    // stream. Defaults to false: no candidate is sent, exactly as before this field existed.
+    bool return_end_of_speech_candidate = 9;
+
 }
 
 // <p>Configuration of the options to detect utterances</p>
@@ -526,6 +535,20 @@ message TranscribeStreamResponse {
 
     // id of the transcribed audio file
     string audio_uuid = 7;
+
+    // Whether this response is an end-of-speech candidate. Sent only when the request set
+    // <code>TranscriptionReturnOptions.return_end_of_speech_candidate</code>, only under server-side turn
+    // detection, and only on the chunk where the server found the end of the caller's speech and its turn detector
+    // held the utterance open (not finished, an uncertain hold band, or the minimum endpointing delay), so the final
+    // may follow seconds later. Not sent without turn detection, when the detector judges the turn finished (the
+    // final is then sent on that same chunk), or while the utterance has no text yet. Never set on a final.
+    // At most once per pause: if the caller resumes speaking and pauses again, the next pause may send another one.
+    // With non-final results on, it is a FLAG on the non-final response the server sends for that chunk anyway, so
+    // it is an ordinary partial plus the hint, not an extra response; with non-final results off, the server sends
+    // one non-final response carrying the current text in <code>transcriptions</code>. It is a hint, not a commit:
+    // the utterance's final still follows, or the utterance continues if the caller resumes, and the final text may
+    // differ. Always false otherwise.
+    bool end_of_speech_candidate = 9;
 
     // The configuration to override the default configuration
     oneof oneof_config {
@@ -1075,122 +1098,206 @@ message StreamingSpeechRecognition {
 }
 
 
-// <p>Configuration of the options to turn-detection in utterances</p>
+// <p>TurnDetectionOptions configures turn detection: deciding, at a pause of the caller, whether the caller has
+// finished the turn. Exactly one turn detector is chosen by <code>oneof_turn_detector</code>; the fields outside it
+// apply to every detector.</p>
+// <p>Precedence for every field: the request config's value
+// (<code>TranscribeRequestConfig.utterance_detection.turn_detection</code>), then the pipeline config's value
+// (<code>StreamingSpeechRecognition.turn_detection</code>), then the server's configured value. When the request
+// config chooses a different detector than the pipeline config, the request config's detector is used with only
+// its own fields: none of the pipeline config's detector fields carry over.</p>
 message TurnDetectionOptions {
 
     // Optional. Indicates if the turn-detection feature is active.
     optional bool active = 1;
 
-    // Optional. Whether to transcribe the whole utterance when turn moment is detected. It is helpful to increase
-    // accuracy of transcriptions in cost of drop in speed. If deactivated, it just transcribe from last short silence
-    // period and concatenates the transcriptions of small audio chunks between tiny silences.
+    // Optional. Whether to transcribe the whole utterance when the end of a turn is detected. It increases the
+    // accuracy of the transcription at the cost of speed. If deactivated, only the audio after the last short
+    // silence is transcribed and the transcriptions of the short audio chunks between silences are concatenated.
     optional bool full_utterance_deployment = 2;
 
-    // Optional. System prompt used to guide the turn-detection model.
-    optional string turn_detection_system_prompt = 3;
+    // Optional. Deprecated in favour of <code>turn_detection_chat_llm_options.system_prompt</code>, but still
+    // honoured so that configurations written for ondewo-s2t-api 7.5.0 and earlier keep working unchanged. Read
+    // only when <code>oneof_turn_detector</code> is not set.
+    optional string turn_detection_system_prompt = 3 [deprecated = true];
 
-    // Optional. User prompt used as input to the turn-detection model.
-    optional string turn_detection_user_prompt = 4;
+    // Optional. Deprecated in favour of <code>turn_detection_chat_llm_options.user_prompt</code>, but still
+    // honoured. Read only when <code>oneof_turn_detector</code> is not set.
+    optional string turn_detection_user_prompt = 4 [deprecated = true];
 
-    // Optional. Configuration options for the OpenAI client used for turn detection. Its <code>model</code> also
-    // selects the turn-detection model: a name starting with <code>pipecat-smart-turn</code> selects pipecat Smart
-    // Turn (audio only, served by Triton, configured by the <code>pipecat_*</code> fields; the other OpenAI options
-    // are ignored); a name starting with <code>ondewo-s2t-model-de-turn-detection</code> selects the ONDEWO German
-    // turn-detection model (the turn's text and timing, served by vLLM: the whole name is the served model name and
-    // <code>base_url</code>, <code>api_key</code>, <code>timeout</code> address the deployment); any other name is
-    // a chat LLM or an end-of-utterance LLM. A name starting with <code>pipecat-</code> or
-    // <code>ondewo-s2t-model-</code> that matches neither prefix is refused with INVALID_ARGUMENT.
-    optional OpenaiLlmOptions turn_detection_llm_openai_options = 5;
-
-    // Optional. The latest turns of the conversation before the caller's utterance under evaluation, handed to an
-    // end-of-utterance model (the LiveKit-shaped model that scores the probability of the end-of-utterance token)
-    // as preceding chat turns, so that it can judge the utterance against what was said before, e.g. a bare
-    // number answering a question for a number. The server keeps the context per stream, outside the effective
-    // request config: a request whose turn detection carries this field replaces it, an empty wrapper (no turns)
-    // clears it, and a request without it (including one that carries other turn detection options) keeps it. That
-    // is why it is a wrapper: the server merges request configs per whole top-level field, so a field it did not
-    // store itself could not survive a later request that carries turn detection without it. The server caps the
-    // number of turns and the length of each turn it uses. Unset or empty: the utterance is judged alone, exactly
-    // as before this field existed. Used only by an end-of-utterance model; ignored by a chat-LLM turn detector.
-    // Honoured only in a request config (<code>TranscribeRequestConfig.utterance_detection.turn_detection</code>);
-    // ignored in a pipeline config (<code>StreamingSpeechRecognition.turn_detection</code>), where a per-stream
-    // context has no meaning.
-    optional TurnDetectionConversationContext conversation_context = 6;
-
-    // Optional. The end-of-utterance probability at or above which the caller is taken to have finished the turn,
-    // valid range: 0 - 1. Unset = the server's configured value (default: the threshold configured for the
-    // language of the stream). Used only by an end-of-utterance model; ignored by a chat-LLM turn detector.
-    // Precedence: the request config's value, then the pipeline config's value, then the server's configured value.
-    optional float end_of_turn_probability_threshold = 7;
-
-    // Optional. The hold bands of an end-of-utterance model: how long a turn judged finished, but only with a
-    // probability below a band's upper bound, waits for further silence before it is committed. Unset = the
-    // server's configured value (default: the bands configured for the language of the stream). A wrapper only so
-    // that "set with no bands" (a turn at or above the threshold is committed at once) means something different
-    // from "unset". Used only by an end-of-utterance model; ignored by a chat-LLM turn detector. Precedence: the
-    // request config's value, then the pipeline config's value, then the server's configured value.
-    optional TurnDetectionHoldBands hold_bands = 8;
-
-    // Optional. The minimum number of words an utterance needs before a hold band may hold it; a shorter utterance
-    // judged finished is committed at once. Unset = the server's configured value (default: 3). Used only by an
-    // end-of-utterance model; ignored by a chat-LLM turn detector. Precedence: the request config's value, then
-    // the pipeline config's value, then the server's configured value.
-    optional uint32 uncertain_min_words = 9;
+    // Optional. Deprecated in favour of <code>oneof_turn_detector</code>, but still honoured. Read only when
+    // <code>oneof_turn_detector</code> is not set; its <code>model</code> then selects the detector by its name, as
+    // before <code>oneof_turn_detector</code> existed: a name starting with <code>pipecat-smart-turn</code> selects
+    // pipecat Smart Turn, one starting with <code>ondewo-s2t-model-de-vad-tsd-ondewo-qwen3</code> the ONDEWO German
+    // turn-detection model, one starting with <code>ondewo-s2t-model-de-fusion-turn-detection</code> the ONDEWO
+    // German fusion turn detector, and any other name a chat LLM or an end-of-utterance LLM. A name starting with
+    // <code>pipecat-</code> or <code>ondewo-s2t-model-</code> that matches none of these is refused with
+    // INVALID_ARGUMENT. On this path every detector-specific value is the server's configured value.
+    optional OpenaiLlmOptions turn_detection_llm_openai_options = 5 [deprecated = true];
 
     // Optional. Seconds of silence after an utterance judged NOT finished before it is finished anyway, valid
     // range: 0 - 4. The server raises a value below the voice activity detection's <code>min_duration_off</code>
     // to it. Unset = the server's configured value (default: the <code>min_duration_off</code> in use). Applies to
-    // every "not finished" verdict, whichever turn detector gave it. Precedence: the request config's value, then
-    // the pipeline config's value, then the server's configured value.
-    optional float incomplete_max_silence_seconds = 10;
+    // every "not finished" verdict, whichever detector gave it, including a verdict that did not arrive in time.
+    optional float incomplete_max_silence_seconds = 6;
 
-    // Optional. Whether an end-of-utterance model computes the exact probability of the end-of-utterance token
-    // instead of reading it from the returned top log probabilities. Unset = the server's configured value
-    // (default: false). Requires a deployment that returns prompt log probabilities (vLLM
-    // <code>prompt_logprobs</code>); on any other deployment the probability reads 0, so every turn is judged not
-    // finished and waits for <code>incomplete_max_silence_seconds</code>. Used only by an end-of-utterance model;
-    // ignored by a chat-LLM turn detector. Precedence: the request config's value, then the pipeline config's
-    // value, then the server's configured value.
-    optional bool exact_probability = 11;
+    // Optional. The latest turns of the conversation before the caller's utterance under evaluation, handed to the
+    // end-of-utterance LLM as preceding chat turns so that it can judge the utterance against what was said
+    // before, e.g. a bare number answering a question for a number. Kept outside <code>oneof_turn_detector</code>
+    // because it is conversation data, not detector configuration: the server keeps it per stream, a request
+    // whose turn detection carries this field replaces it, an empty wrapper (no turns) clears it, and a request
+    // without it keeps it. That is why it is a wrapper: the server merges request configs per whole top-level
+    // field, so a field it did not store itself could not survive a later request that carries turn detection
+    // without it. The server caps the number of turns and the length of each turn. Unset or empty: the utterance
+    // is judged alone. Read only by <code>turn_detection_end_of_utterance_llm_options</code>; ignored by every
+    // other detector. Honoured only in a request config; ignored in a pipeline config, where a per-stream context
+    // has no meaning.
+    optional TurnDetectionConversationContext turn_detection_conversation_context = 7;
 
-    // Optional. The Triton model name of pipecat Smart Turn. Unset = the server's configured value (default:
-    // <code>ondewo-s2t-model-multi-turn-detection-pipecat-smart-turn-3.2-onnx-triton</code>). Used only when
-    // <code>turn_detection_llm_openai_options.model</code> selects pipecat Smart Turn. Precedence: the request
-    // config's value, then the pipeline config's value, then the server's configured value.
-    optional string pipecat_triton_model_name = 12;
+    // The turn detector. Not set: the deprecated fields 3 - 5 decide, as before this oneof existed.
+    oneof oneof_turn_detector {
 
-    // Optional. Host name of the Triton inference server that serves pipecat Smart Turn, as
-    // <code>Pyannote.triton_server_host</code>. Unset = the server's configured value. The connection uses the
-    // server's Triton client TLS settings. Used only with pipecat Smart Turn. Precedence as above.
-    optional string pipecat_triton_server_host = 13;
+        // A chat LLM asked, with a prompt, whether the caller has finished the turn.
+        TurnDetectionChatLlmOptions turn_detection_chat_llm_options = 8;
 
-    // Optional. Port of the Triton inference server that serves pipecat Smart Turn, as
-    // <code>Pyannote.triton_server_port</code>. Unset = the server's configured value. Used only with pipecat
-    // Smart Turn. Precedence as above.
-    optional int64 pipecat_triton_server_port = 14;
+        // An end-of-utterance LLM (LiveKit-shaped) that scores the probability of the end-of-utterance token.
+        TurnDetectionEndOfUtteranceLlmOptions turn_detection_end_of_utterance_llm_options = 9;
 
-    // Optional. Seconds of the caller's audio, ending at the decision moment, that pipecat Smart Turn hears; valid
-    // range: 1 - 8 (shorter audio is left-padded with silence to 8 s, as the model was trained). Unset = the
-    // server's configured value (default: 8). Used only with pipecat Smart Turn. Precedence as above.
-    optional float pipecat_max_audio_seconds = 15;
+        // The ONDEWO German turn-detection model: the turn's text and timing, served by vLLM.
+        TurnDetectionOndewoDeOptions turn_detection_ondewo_de_options = 10;
 
-    // Optional. Seconds to wait for Triton's answer; a turn whose verdict does not arrive in time is judged not
-    // finished and waits for <code>incomplete_max_silence_seconds</code>. Valid range: 0 - 5, exclusive of 0. Unset
-    // = the server's configured value (default: 0.2). Used only with pipecat Smart Turn. Precedence as above.
-    optional float pipecat_timeout_seconds = 16;
+        // The ONDEWO German fusion turn detector: the ONDEWO German text model on vLLM plus acoustic heads on
+        // Triton, combined into one end-of-turn probability.
+        TurnDetectionOndewoDeFusionOptions turn_detection_ondewo_de_fusion_options = 11;
+
+        // pipecat Smart Turn v3.2: audio only, served by Triton.
+        TurnDetectionPipecatSmartTurnOptions turn_detection_pipecat_smart_turn_options = 12;
+    }
 
 }
 
-// <p>The conversation context handed to an end-of-utterance turn-detection model.</p>
+// <p>TurnDetectionChatLlmOptions configures a chat LLM as the turn detector: the LLM is asked, with the prompts
+// below and the transcription of the turn, whether the caller has finished.</p>
+message TurnDetectionChatLlmOptions {
+
+    // Optional. The OpenAI-compatible endpoint and model of the chat LLM. Unset fields take the server's
+    // configured values. A <code>model</code> starting with <code>pipecat-</code> or
+    // <code>ondewo-s2t-model-</code> is refused with INVALID_ARGUMENT: those detectors have their own options.
+    optional OpenaiLlmOptions openai_llm_options = 1;
+
+    // Optional. System prompt that guides the LLM. Unset = the server's configured prompt.
+    optional string system_prompt = 2;
+
+    // Optional. User prompt that carries the turn under evaluation. Unset = the server's configured prompt.
+    optional string user_prompt = 3;
+
+}
+
+// <p>TurnDetectionEndOfUtteranceLlmOptions configures an end-of-utterance LLM (LiveKit-shaped, e.g.
+// <code>livekit/turn-detector</code>) as the turn detector: the model scores the probability of the
+// end-of-utterance token after the turn's transcription and, when
+// <code>TurnDetectionOptions.turn_detection_conversation_context</code> is set, the turns before it.</p>
+message TurnDetectionEndOfUtteranceLlmOptions {
+
+    // Optional. The OpenAI-compatible endpoint and served model name. Unset fields take the server's configured
+    // values.
+    optional OpenaiLlmOptions openai_llm_options = 1;
+
+    // Optional. The end-of-utterance probability at or above which the caller is taken to have finished the turn,
+    // valid range: 0 - 1. Unset = the server's configured value (default: the threshold configured for the
+    // language of the stream).
+    optional float end_of_turn_probability_threshold = 2;
+
+    // Optional. How long a turn judged finished, but only with a probability below a band's upper bound, waits
+    // for further silence before it is committed. Unset = the server's configured value (default: the bands
+    // configured for the language of the stream). A wrapper only so that "set with no bands" (a turn at or above
+    // the threshold is committed at once) means something different from "unset".
+    optional TurnDetectionHoldBands turn_detection_hold_bands = 3;
+
+    // Optional. The minimum number of words an utterance needs before a hold band may hold it; a shorter
+    // utterance judged finished is committed at once. Unset = the server's configured value (default: 3).
+    optional uint32 uncertain_min_words = 4;
+
+    // Optional. Whether the exact probability of the end-of-utterance token is computed instead of being read
+    // from the returned top log probabilities. Unset = the server's configured value (default: false). Requires a
+    // deployment that returns prompt log probabilities (vLLM <code>prompt_logprobs</code>); on any other
+    // deployment the probability reads 0, so every turn is judged not finished and waits for
+    // <code>TurnDetectionOptions.incomplete_max_silence_seconds</code>.
+    optional bool exact_probability = 5;
+
+}
+
+// <p>TurnDetectionOndewoDeOptions configures the ONDEWO German turn-detection model as the turn detector. It judges
+// the turn from its text and word timing and is served by vLLM.</p>
+message TurnDetectionOndewoDeOptions {
+
+    // Optional. The vLLM deployment: <code>base_url</code>, <code>api_key</code> and <code>timeout</code> address
+    // it, <code>model</code> is the served model name, e.g.
+    // <code>ondewo-s2t-model-de-vad-tsd-ondewo-qwen3-0.6b</code>. Unset fields take the server's configured values.
+    optional OpenaiLlmOptions openai_llm_options = 1;
+
+}
+
+// <p>TurnDetectionOndewoDeFusionOptions configures the ONDEWO German fusion turn detector. It combines the ONDEWO
+// German text model on vLLM, acoustic heads on Triton and signals computed from the stream into one end-of-turn
+// probability. The Triton heads, the text model's served name and the weights file are server settings.</p>
+message TurnDetectionOndewoDeFusionOptions {
+
+    // Optional. Addresses the vLLM deployment of the text model (<code>base_url</code>, <code>api_key</code>,
+    // <code>timeout</code>); <code>model</code> names the fusion variant, e.g.
+    // <code>ondewo-s2t-model-de-fusion-turn-detection</code>. Unset fields take the server's configured values.
+    optional OpenaiLlmOptions openai_llm_options = 1;
+
+    // Optional. The end-of-turn probability at or above which the caller is taken to have finished the turn,
+    // valid range: 0 - 1. Unset = the server's configured value, else the weights file's threshold.
+    optional float end_of_turn_probability_threshold = 2;
+
+}
+
+// <p>TurnDetectionPipecatSmartTurnOptions configures pipecat Smart Turn v3.2 as the turn detector. It judges the
+// turn from the caller's audio alone and is served by Triton.</p>
+// <p>Model: <a href="https://github.com/pipecat-ai/smart-turn">pipecat Smart Turn</a></p>
+message TurnDetectionPipecatSmartTurnOptions {
+
+    // Optional. Full name of the Triton model. Unset = the server's configured value (default:
+    // <code>ondewo-s2t-model-multi-turn-detection-pipecat-smart-turn-3.2-onnx-triton</code>).
+    optional string model_name = 1;
+
+    // Optional. Host name of the Triton inference server that serves the model, as
+    // <code>Pyannote.triton_server_host</code>. Unset = the server's configured value. The connection uses the
+    // server's Triton client TLS settings.
+    optional string triton_server_host = 2;
+
+    // Optional. Port of the Triton inference server that serves the model, as
+    // <code>Pyannote.triton_server_port</code>. Unset = the server's configured value.
+    optional int64 triton_server_port = 3;
+
+    // Optional. Seconds of the caller's audio, ending at the decision moment, that the model hears; valid range:
+    // 1 - 8. Shorter audio is left-padded with silence to 8 s, as the model was trained. Unset = the server's
+    // configured value (default: 8).
+    optional float max_audio_seconds = 4;
+
+    // Optional. Seconds to wait for Triton's answer, valid range: greater than 0, at most 5. A turn whose verdict
+    // does not arrive in time is judged not finished and waits for
+    // <code>TurnDetectionOptions.incomplete_max_silence_seconds</code>. Unset = the server's configured value
+    // (default: 0.2).
+    optional float timeout_seconds = 5;
+
+}
+
+// <p>TurnDetectionConversationContext carries the latest turns of the conversation for
+// <code>TurnDetectionEndOfUtteranceLlmOptions</code> (see
+// <code>TurnDetectionOptions.turn_detection_conversation_context</code>). No other detector reads it.</p>
 message TurnDetectionConversationContext {
 
     // The turns of the conversation, oldest first. They EXCLUDE the caller's utterance under evaluation, which
     // the server appends itself.
-    repeated TurnDetectionContextTurn turns = 1;
+    repeated TurnDetectionContextTurn turn_detection_context_turns = 1;
 
 }
 
-// <p>One turn of the conversation context of the turn detection.</p>
+// <p>One turn of the conversation context of the turn detection, read only by
+// <code>TurnDetectionEndOfUtteranceLlmOptions</code>.</p>
 message TurnDetectionContextTurn {
 
     // <p>Who spoke the turn.</p>
@@ -1216,23 +1323,25 @@ message TurnDetectionContextTurn {
 
 }
 
-// <p>The hold bands of an end-of-utterance turn-detection model.</p>
+// <p>TurnDetectionHoldBands carries the hold bands of <code>TurnDetectionEndOfUtteranceLlmOptions</code>. No other
+// detector reads them.</p>
 message TurnDetectionHoldBands {
 
-    // The bands; the first band, sorted by <code>upper_probability</code>, whose upper probability exceeds the
-    // end-of-utterance probability decides the hold. A probability above every band is finished at once.
-    repeated TurnDetectionHoldBand bands = 1;
+    // The bands, each holding a turn judged finished with a probability below its upper bound: the first band,
+    // sorted by <code>upper_probability</code>, whose upper probability exceeds the end-of-utterance probability
+    // decides the hold. A probability above every band is finished at once.
+    repeated TurnDetectionHoldBand turn_detection_hold_bands = 1;
 
 }
 
-// <p>One hold band of an end-of-utterance turn-detection model.</p>
+// <p>One hold band of <code>TurnDetectionEndOfUtteranceLlmOptions</code>.</p>
 message TurnDetectionHoldBand {
 
     // The exclusive upper bound of the end-of-utterance probabilities this band covers, valid range: 0 - 1.
     float upper_probability = 1;
 
     // Seconds of silence a turn in this band waits before it is committed, valid range: 0 - 4. The server never
-    // holds longer than <code>incomplete_max_silence_seconds</code>.
+    // holds longer than <code>TurnDetectionOptions.incomplete_max_silence_seconds</code>.
     float max_silence_seconds = 2;
 
 }

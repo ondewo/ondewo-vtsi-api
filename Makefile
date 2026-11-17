@@ -23,7 +23,7 @@ ONDEWO_VTSI_API_VERSION=9.5.0
 # at release. It brings the unreleased 7.5.0 surface (the Logs service, turn control) with it.
 ONDEWO_NLU_API_GIT_BRANCH=09169d1b766c4d19c123b9c072e80ff693fec3d9
 # Development pin (OND236-120): ondewo-s2t-api 7.6.0 is not tagged yet; move back to tags/7.6.0 at release.
-ONDEWO_S2T_API_GIT_BRANCH=c96712335d732c054c33b23eb6c7dbd533e1b253
+ONDEWO_S2T_API_GIT_BRANCH=163661c824d85978e7c638b5cd53bc3d5b046ec3
 ONDEWO_T2S_API_GIT_BRANCH=tags/6.6.0
 # Development pin (OND236-120): ondewo-sip-api 5.7.0 (transfer delegation, warm-transfer outcome notice) is not
 # tagged yet; move back to tags/5.7.0 at release.
