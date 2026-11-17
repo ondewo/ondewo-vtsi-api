@@ -64,13 +64,14 @@
   transfer delegation, `SipStatus.capabilities` and the warm-transfer outcome notice. A consumer that also installs
   `ondewo-nlu-client` or `ondewo-sip-client` must move them together with this API. `ondewo-t2s-api` is
   unchanged.
-* Tracking ondewo-s2t-api 7.6.0 at `163661c824d85978e7c638b5cd53bc3d5b046ec3` (not tagged yet; was
+* Tracking ondewo-s2t-api 7.6.0 at `9b1c059c4f8993f9ed2f3ac6f61bc5c4c9060bec` (not tagged yet; was
   `c96712335d732c054c33b23eb6c7dbd533e1b253`). The vendored `ondewo/s2t` tree is a byte-identical copy at that
   commit: `TurnDetectionOptions` chooses its turn detector with `oneof oneof_turn_detector`
   (`turn_detection_chat_llm_options`, `turn_detection_end_of_utterance_llm_options`,
   `turn_detection_ondewo_de_options`, `turn_detection_ondewo_de_fusion_options`,
   `turn_detection_pipecat_smart_turn_options`), fields 3 - 5 are deprecated but still honoured, and the 7.6.0
-  pre-release field numbers 6 - 16 are reused. A consumer that also installs `ondewo-s2t-client` must move it
+  pre-release field numbers 6 - 16 are reused; `turn_detection_ondewo_de_options` and
+  `turn_detection_pipecat_smart_turn_options` also carry `end_of_turn_probability_threshold`. A consumer that also installs `ondewo-s2t-client` must move it
   together with this API. This API's own `TurnDetectionConfig` is unchanged.
 
 *****************

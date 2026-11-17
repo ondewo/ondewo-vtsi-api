@@ -1236,6 +1236,13 @@ message TurnDetectionOndewoDeOptions {
     // <code>ondewo-s2t-model-de-vad-tsd-ondewo-qwen3-0.6b</code>. Unset fields take the server's configured values.
     optional OpenaiLlmOptions openai_llm_options = 1;
 
+    // Optional. The end-of-turn probability the model must reach for the caller to be taken to have finished the
+    // turn, valid range: 0 - 1. A turn below it is judged not finished and waits for
+    // <code>TurnDetectionOptions.incomplete_max_silence_seconds</code>. Unset = the server's configured value
+    // (default: 0.5). Precedence: the request config's value, then the pipeline config's value, then the server's
+    // configured value.
+    optional float end_of_turn_probability_threshold = 2;
+
 }
 
 // <p>TurnDetectionOndewoDeFusionOptions configures the ONDEWO German fusion turn detector. It combines the ONDEWO
@@ -1282,6 +1289,13 @@ message TurnDetectionPipecatSmartTurnOptions {
     // <code>TurnDetectionOptions.incomplete_max_silence_seconds</code>. Unset = the server's configured value
     // (default: 0.2).
     optional float timeout_seconds = 5;
+
+    // Optional. The end-of-turn probability Smart Turn must report for the caller to be taken to have finished the
+    // turn, valid range: 0 - 1. A turn below it is judged not finished and waits for
+    // <code>TurnDetectionOptions.incomplete_max_silence_seconds</code>. Unset = the server's configured value
+    // (default: 0.5). Precedence: the request config's value, then the pipeline config's value, then the server's
+    // configured value.
+    optional float end_of_turn_probability_threshold = 6;
 
 }
 
