@@ -84,6 +84,11 @@
     - [TrainAgentRequest](#ondewo.nlu.TrainAgentRequest)
     - [UpdateAgentRequest](#ondewo.nlu.UpdateAgentRequest)
     - [UserInProject](#ondewo.nlu.UserInProject)
+    - [WarmTransferAgentLexicon](#ondewo.nlu.WarmTransferAgentLexicon)
+    - [WarmTransferAgentSettings](#ondewo.nlu.WarmTransferAgentSettings)
+    - [WarmTransferAgentSettings.DefaultTextsEntry](#ondewo.nlu.WarmTransferAgentSettings.DefaultTextsEntry)
+    - [WarmTransferAgentSettings.ExtraLexiconEntry](#ondewo.nlu.WarmTransferAgentSettings.ExtraLexiconEntry)
+    - [WarmTransferAgentTexts](#ondewo.nlu.WarmTransferAgentTexts)
   
     - [AgentSorting.AgentSortingField](#ondewo.nlu.AgentSorting.AgentSortingField)
     - [AgentStatus](#ondewo.nlu.AgentStatus)
@@ -494,6 +499,32 @@
   
     - [LlmEvaluations](#ondewo.nlu.LlmEvaluations)
   
+- [ondewo/nlu/logs.proto](#ondewo/nlu/logs.proto)
+    - [CaiLogEntry](#ondewo.nlu.CaiLogEntry)
+    - [CaiLogFilter](#ondewo.nlu.CaiLogFilter)
+    - [CaiLogStream](#ondewo.nlu.CaiLogStream)
+    - [DeleteLogsRequest](#ondewo.nlu.DeleteLogsRequest)
+    - [DeleteLogsResponse](#ondewo.nlu.DeleteLogsResponse)
+    - [ExportLogsRequest](#ondewo.nlu.ExportLogsRequest)
+    - [ExportLogsResponse](#ondewo.nlu.ExportLogsResponse)
+    - [GetLogStreamRequest](#ondewo.nlu.GetLogStreamRequest)
+    - [ListLogStreamsRequest](#ondewo.nlu.ListLogStreamsRequest)
+    - [ListLogStreamsResponse](#ondewo.nlu.ListLogStreamsResponse)
+    - [ListLogsRequest](#ondewo.nlu.ListLogsRequest)
+    - [ListLogsResponse](#ondewo.nlu.ListLogsResponse)
+    - [ListLogsResponse.CountByLevelEntry](#ondewo.nlu.ListLogsResponse.CountByLevelEntry)
+    - [StreamLogsRequest](#ondewo.nlu.StreamLogsRequest)
+    - [StreamLogsResponse](#ondewo.nlu.StreamLogsResponse)
+  
+    - [CaiLogCaptureState](#ondewo.nlu.CaiLogCaptureState)
+    - [CaiLogExportFormat](#ondewo.nlu.CaiLogExportFormat)
+    - [CaiLogFilterField](#ondewo.nlu.CaiLogFilterField)
+    - [CaiLogSource](#ondewo.nlu.CaiLogSource)
+    - [CaiLogStreamChannel](#ondewo.nlu.CaiLogStreamChannel)
+    - [CaiLogStreamEndReason](#ondewo.nlu.CaiLogStreamEndReason)
+  
+    - [Logs](#ondewo.nlu.Logs)
+  
 - [ondewo/nlu/operation_metadata.proto](#ondewo/nlu/operation_metadata.proto)
     - [OperationMetadata](#ondewo.nlu.OperationMetadata)
   
@@ -650,6 +681,7 @@
     - [AddSessionLabelsRequest](#ondewo.nlu.AddSessionLabelsRequest)
     - [AddSessionStepFeedbackRequest](#ondewo.nlu.AddSessionStepFeedbackRequest)
     - [AudioFileResource](#ondewo.nlu.AudioFileResource)
+    - [CancelTurn](#ondewo.nlu.CancelTurn)
     - [ContextFilter](#ondewo.nlu.ContextFilter)
     - [CreateSessionRequest](#ondewo.nlu.CreateSessionRequest)
     - [CreateSessionReviewRequest](#ondewo.nlu.CreateSessionReviewRequest)
@@ -664,6 +696,7 @@
     - [DetectIntentRequest](#ondewo.nlu.DetectIntentRequest)
     - [DetectIntentResponse](#ondewo.nlu.DetectIntentResponse)
     - [DetectedIntent](#ondewo.nlu.DetectedIntent)
+    - [DiscardDraft](#ondewo.nlu.DiscardDraft)
     - [DocumentFileResource](#ondewo.nlu.DocumentFileResource)
     - [EventInput](#ondewo.nlu.EventInput)
     - [FeedbackBreakdownBucket](#ondewo.nlu.FeedbackBreakdownBucket)
@@ -683,8 +716,13 @@
     - [GetSessionRequest](#ondewo.nlu.GetSessionRequest)
     - [GetSessionReviewRequest](#ondewo.nlu.GetSessionReviewRequest)
     - [GetSessionStepRequest](#ondewo.nlu.GetSessionStepRequest)
+    - [GetWarmTransferIntroOutcomeRequest](#ondewo.nlu.GetWarmTransferIntroOutcomeRequest)
+    - [HeardMessage](#ondewo.nlu.HeardMessage)
+    - [HeardReport](#ondewo.nlu.HeardReport)
     - [ImageFileResource](#ondewo.nlu.ImageFileResource)
     - [InputAudioConfig](#ondewo.nlu.InputAudioConfig)
+    - [InterruptTurnRequest](#ondewo.nlu.InterruptTurnRequest)
+    - [InterruptTurnResponse](#ondewo.nlu.InterruptTurnResponse)
     - [ListAccountIdsOfAllSessionsRequest](#ondewo.nlu.ListAccountIdsOfAllSessionsRequest)
     - [ListAccountIdsResponse](#ondewo.nlu.ListAccountIdsResponse)
     - [ListAudioFilesRequest](#ondewo.nlu.ListAudioFilesRequest)
@@ -756,6 +794,8 @@
     - [LlmToolCallMetadata](#ondewo.nlu.LlmToolCallMetadata)
     - [LlmToolCallStartedEvent](#ondewo.nlu.LlmToolCallStartedEvent)
     - [LlmToolUsage](#ondewo.nlu.LlmToolUsage)
+    - [PrepareWarmTransferIntroRequest](#ondewo.nlu.PrepareWarmTransferIntroRequest)
+    - [PrepareWarmTransferIntroResponse](#ondewo.nlu.PrepareWarmTransferIntroResponse)
     - [QueryInput](#ondewo.nlu.QueryInput)
     - [QueryParameters](#ondewo.nlu.QueryParameters)
     - [QueryResult](#ondewo.nlu.QueryResult)
@@ -773,18 +813,24 @@
     - [StreamingDetectIntentResponse](#ondewo.nlu.StreamingDetectIntentResponse)
     - [StreamingRecognitionResult](#ondewo.nlu.StreamingRecognitionResult)
     - [TextInput](#ondewo.nlu.TextInput)
+    - [TurnControl](#ondewo.nlu.TurnControl)
+    - [TurnControlAck](#ondewo.nlu.TurnControlAck)
     - [UpdateSessionCommentsRequest](#ondewo.nlu.UpdateSessionCommentsRequest)
     - [UpdateSessionFeedbackRequest](#ondewo.nlu.UpdateSessionFeedbackRequest)
     - [UpdateSessionStepRequest](#ondewo.nlu.UpdateSessionStepRequest)
     - [VideoFileResource](#ondewo.nlu.VideoFileResource)
+    - [WarmTransferIntroConfig](#ondewo.nlu.WarmTransferIntroConfig)
+    - [WarmTransferIntroOutcome](#ondewo.nlu.WarmTransferIntroOutcome)
   
     - [AudioEncoding](#ondewo.nlu.AudioEncoding)
     - [AudioFileResourceType](#ondewo.nlu.AudioFileResourceType)
+    - [BackgroundWorkPolicy](#ondewo.nlu.BackgroundWorkPolicy)
     - [ComparisonOperator](#ondewo.nlu.ComparisonOperator)
     - [FeedbackAuthorType](#ondewo.nlu.FeedbackAuthorType)
     - [FeedbackRating](#ondewo.nlu.FeedbackRating)
     - [FeedbackScope](#ondewo.nlu.FeedbackScope)
     - [FeedbackTimeGranularity](#ondewo.nlu.FeedbackTimeGranularity)
+    - [HeardTextPrecision](#ondewo.nlu.HeardTextPrecision)
     - [LlmAgentNodePhase](#ondewo.nlu.LlmAgentNodePhase)
     - [LlmSafetyLocation](#ondewo.nlu.LlmSafetyLocation)
     - [ReasoningEffort](#ondewo.nlu.ReasoningEffort)
@@ -793,6 +839,12 @@
     - [SessionReview.View](#ondewo.nlu.SessionReview.View)
     - [StreamingRecognitionResult.MessageType](#ondewo.nlu.StreamingRecognitionResult.MessageType)
     - [TranscriptionType](#ondewo.nlu.TranscriptionType)
+    - [TurnControlAckStatus](#ondewo.nlu.TurnControlAckStatus)
+    - [TurnInterruptionReason](#ondewo.nlu.TurnInterruptionReason)
+    - [WarmTransferIntroDecidedBy](#ondewo.nlu.WarmTransferIntroDecidedBy)
+    - [WarmTransferIntroDecision](#ondewo.nlu.WarmTransferIntroDecision)
+    - [WarmTransferIntroStage](#ondewo.nlu.WarmTransferIntroStage)
+    - [WarmTransferIntroTextSource](#ondewo.nlu.WarmTransferIntroTextSource)
   
     - [Sessions](#ondewo.nlu.Sessions)
   
@@ -955,7 +1007,16 @@
     - [Transcription](#ondewo.s2t.Transcription)
     - [TranscriptionAlternative](#ondewo.s2t.TranscriptionAlternative)
     - [TranscriptionReturnOptions](#ondewo.s2t.TranscriptionReturnOptions)
+    - [TurnDetectionChatLlmOptions](#ondewo.s2t.TurnDetectionChatLlmOptions)
+    - [TurnDetectionContextTurn](#ondewo.s2t.TurnDetectionContextTurn)
+    - [TurnDetectionConversationContext](#ondewo.s2t.TurnDetectionConversationContext)
+    - [TurnDetectionEndOfUtteranceLlmOptions](#ondewo.s2t.TurnDetectionEndOfUtteranceLlmOptions)
+    - [TurnDetectionHoldBand](#ondewo.s2t.TurnDetectionHoldBand)
+    - [TurnDetectionHoldBands](#ondewo.s2t.TurnDetectionHoldBands)
+    - [TurnDetectionOndewoDeFusionOptions](#ondewo.s2t.TurnDetectionOndewoDeFusionOptions)
+    - [TurnDetectionOndewoDeOptions](#ondewo.s2t.TurnDetectionOndewoDeOptions)
     - [TurnDetectionOptions](#ondewo.s2t.TurnDetectionOptions)
+    - [TurnDetectionPipecatSmartTurnOptions](#ondewo.s2t.TurnDetectionPipecatSmartTurnOptions)
     - [UtteranceDetectionOptions](#ondewo.s2t.UtteranceDetectionOptions)
     - [VoiceActivityDetection](#ondewo.s2t.VoiceActivityDetection)
     - [Wav2Vec](#ondewo.s2t.Wav2Vec)
@@ -971,6 +1032,7 @@
     - [ReasoningEffort](#ondewo.s2t.ReasoningEffort)
     - [ServiceTier](#ondewo.s2t.ServiceTier)
     - [TsdMethod](#ondewo.s2t.TsdMethod)
+    - [TurnDetectionContextTurn.Role](#ondewo.s2t.TurnDetectionContextTurn.Role)
     - [VadMethod](#ondewo.s2t.VadMethod)
     - [Verbosity](#ondewo.s2t.Verbosity)
   
@@ -985,10 +1047,13 @@
     - [SipCallAudioResponse](#ondewo.sip.SipCallAudioResponse)
     - [SipCallAudioStarted](#ondewo.sip.SipCallAudioStarted)
     - [SipCallAudioStats](#ondewo.sip.SipCallAudioStats)
+    - [SipDelegatedTransfer](#ondewo.sip.SipDelegatedTransfer)
+    - [SipDelegatedTransfer.HeadersEntry](#ondewo.sip.SipDelegatedTransfer.HeadersEntry)
     - [SipEndCallRequest](#ondewo.sip.SipEndCallRequest)
     - [SipPlayWavFilesRequest](#ondewo.sip.SipPlayWavFilesRequest)
     - [SipRegisterAccountRequest](#ondewo.sip.SipRegisterAccountRequest)
     - [SipReportAnsweringMachineDetectedRequest](#ondewo.sip.SipReportAnsweringMachineDetectedRequest)
+    - [SipSendDtmfRequest](#ondewo.sip.SipSendDtmfRequest)
     - [SipSetCallMediaControlRequest](#ondewo.sip.SipSetCallMediaControlRequest)
     - [SipStartCallRequest](#ondewo.sip.SipStartCallRequest)
     - [SipStartCallRequest.HeadersEntry](#ondewo.sip.SipStartCallRequest.HeadersEntry)
@@ -998,6 +1063,7 @@
     - [SipStatusHistoryResponse](#ondewo.sip.SipStatusHistoryResponse)
     - [SipTransferCallRequest](#ondewo.sip.SipTransferCallRequest)
     - [SipTransferCallRequest.HeadersEntry](#ondewo.sip.SipTransferCallRequest.HeadersEntry)
+    - [SipWarmTransferOutcomeNotice](#ondewo.sip.SipWarmTransferOutcomeNotice)
   
     - [AnsweringMachineDetectionResult.ActionTaken](#ondewo.sip.AnsweringMachineDetectionResult.ActionTaken)
     - [AnsweringMachineDetectionResult.Cause](#ondewo.sip.AnsweringMachineDetectionResult.Cause)
@@ -1008,6 +1074,9 @@
     - [SipCallAudioMode](#ondewo.sip.SipCallAudioMode)
     - [SipEndCallRequest.EndCallReason](#ondewo.sip.SipEndCallRequest.EndCallReason)
     - [SipStatus.StatusType](#ondewo.sip.SipStatus.StatusType)
+    - [SipTransferDelegation](#ondewo.sip.SipTransferDelegation)
+    - [SipWarmTransferOutcome](#ondewo.sip.SipWarmTransferOutcome)
+    - [SipWarmTransferOutcomeNoticeStatus](#ondewo.sip.SipWarmTransferOutcomeNoticeStatus)
   
     - [Sip](#ondewo.sip.Sip)
   
@@ -1086,10 +1155,15 @@
     - [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig)
     - [CommonServicesConfig](#ondewo.vtsi.CommonServicesConfig)
     - [Credentials](#ondewo.vtsi.Credentials)
+    - [CsiPreemptiveGenerationConfig](#ondewo.vtsi.CsiPreemptiveGenerationConfig)
     - [CsiVtsiConfig](#ondewo.vtsi.CsiVtsiConfig)
+    - [DictationConfig](#ondewo.vtsi.DictationConfig)
+    - [DictationConfig.HoldMaxSecondsByCategoryEntry](#ondewo.vtsi.DictationConfig.HoldMaxSecondsByCategoryEntry)
+    - [DtmfConfig](#ondewo.vtsi.DtmfConfig)
     - [InterruptionHandlingConfig](#ondewo.vtsi.InterruptionHandlingConfig)
     - [MessageBrokerConfig](#ondewo.vtsi.MessageBrokerConfig)
     - [MessageBrokerServicesActivationConfig](#ondewo.vtsi.MessageBrokerServicesActivationConfig)
+    - [NluPreemptiveGenerationConfig](#ondewo.vtsi.NluPreemptiveGenerationConfig)
     - [NluVtsiCallbacks](#ondewo.vtsi.NluVtsiCallbacks)
     - [NluVtsiConfig](#ondewo.vtsi.NluVtsiConfig)
     - [RabbitMqConfig](#ondewo.vtsi.RabbitMqConfig)
@@ -1100,15 +1174,24 @@
     - [SipCallerConfig](#ondewo.vtsi.SipCallerConfig)
     - [SipCallerConfig.SipHeadersEntry](#ondewo.vtsi.SipCallerConfig.SipHeadersEntry)
     - [SoftTimeoutConfig](#ondewo.vtsi.SoftTimeoutConfig)
+    - [T2sPreemptiveSynthesisConfig](#ondewo.vtsi.T2sPreemptiveSynthesisConfig)
     - [T2sVtsiCallbacks](#ondewo.vtsi.T2sVtsiCallbacks)
     - [T2sVtsiConfig](#ondewo.vtsi.T2sVtsiConfig)
     - [TurnDetectionConfig](#ondewo.vtsi.TurnDetectionConfig)
+    - [TurnDetectionConfig.EndOfTurnHoldBand](#ondewo.vtsi.TurnDetectionConfig.EndOfTurnHoldBand)
+    - [TurnDetectionConfig.EndOfTurnHoldBands](#ondewo.vtsi.TurnDetectionConfig.EndOfTurnHoldBands)
     - [VoiceInteractionConfig](#ondewo.vtsi.VoiceInteractionConfig)
+    - [WarmIntroRecord](#ondewo.vtsi.WarmIntroRecord)
+    - [WarmTransferConfig](#ondewo.vtsi.WarmTransferConfig)
   
     - [AnsweringMachineDetectionConfig.AmdAction](#ondewo.vtsi.AnsweringMachineDetectionConfig.AmdAction)
     - [AnsweringMachineDetectionConfig.AmdSensitivity](#ondewo.vtsi.AnsweringMachineDetectionConfig.AmdSensitivity)
     - [TurnDetectionConfig.TurnDetectionMode](#ondewo.vtsi.TurnDetectionConfig.TurnDetectionMode)
     - [TurnDetectionConfig.TurnEagerness](#ondewo.vtsi.TurnDetectionConfig.TurnEagerness)
+    - [WarmIntroDecidedBy](#ondewo.vtsi.WarmIntroDecidedBy)
+    - [WarmIntroDecision](#ondewo.vtsi.WarmIntroDecision)
+    - [WarmIntroTextSource](#ondewo.vtsi.WarmIntroTextSource)
+    - [WarmIntroUnavailablePolicy](#ondewo.vtsi.WarmIntroUnavailablePolicy)
   
 - [ondewo/vtsi/calls.proto](#ondewo/vtsi/calls.proto)
     - [AddCallersToCampaignRequest](#ondewo.vtsi.AddCallersToCampaignRequest)
@@ -1169,6 +1252,8 @@
     - [RemoveCallParticipantResponse](#ondewo.vtsi.RemoveCallParticipantResponse)
     - [RetryScheduledCallerRequest](#ondewo.vtsi.RetryScheduledCallerRequest)
     - [ScheduledCaller](#ondewo.vtsi.ScheduledCaller)
+    - [SendCallDtmfRequest](#ondewo.vtsi.SendCallDtmfRequest)
+    - [SendCallDtmfResponse](#ondewo.vtsi.SendCallDtmfResponse)
     - [ServiceStatus](#ondewo.vtsi.ServiceStatus)
     - [SetCallMediaControlRequest](#ondewo.vtsi.SetCallMediaControlRequest)
     - [SetCallMediaControlResponse](#ondewo.vtsi.SetCallMediaControlResponse)
@@ -1320,6 +1405,47 @@
   
     - [Events](#ondewo.vtsi.Events)
   
+- [ondewo/vtsi/ivr_menus.proto](#ondewo/vtsi/ivr_menus.proto)
+    - [CloneIvrMenuRequest](#ondewo.vtsi.CloneIvrMenuRequest)
+    - [CreateIvrMenuRequest](#ondewo.vtsi.CreateIvrMenuRequest)
+    - [DeleteIvrMenuRequest](#ondewo.vtsi.DeleteIvrMenuRequest)
+    - [DeleteIvrMenuResponse](#ondewo.vtsi.DeleteIvrMenuResponse)
+    - [GetIvrMenuDialplanRequest](#ondewo.vtsi.GetIvrMenuDialplanRequest)
+    - [GetIvrMenuDialplanResponse](#ondewo.vtsi.GetIvrMenuDialplanResponse)
+    - [GetIvrMenuRequest](#ondewo.vtsi.GetIvrMenuRequest)
+    - [GetIvrMenuTestRequest](#ondewo.vtsi.GetIvrMenuTestRequest)
+    - [IvrMenu](#ondewo.vtsi.IvrMenu)
+    - [IvrMenu.LayoutEntry](#ondewo.vtsi.IvrMenu.LayoutEntry)
+    - [IvrMenu.NodeStatsEntry](#ondewo.vtsi.IvrMenu.NodeStatsEntry)
+    - [IvrMenuFilter](#ondewo.vtsi.IvrMenuFilter)
+    - [IvrMenuIssue](#ondewo.vtsi.IvrMenuIssue)
+    - [IvrMenuRevision](#ondewo.vtsi.IvrMenuRevision)
+    - [IvrMenuTest](#ondewo.vtsi.IvrMenuTest)
+    - [IvrNode](#ondewo.vtsi.IvrNode)
+    - [IvrNodePosition](#ondewo.vtsi.IvrNodePosition)
+    - [IvrNodeStats](#ondewo.vtsi.IvrNodeStats)
+    - [IvrOption](#ondewo.vtsi.IvrOption)
+    - [IvrPrompt](#ondewo.vtsi.IvrPrompt)
+    - [IvrTestStep](#ondewo.vtsi.IvrTestStep)
+    - [IvrTraversalStep](#ondewo.vtsi.IvrTraversalStep)
+    - [ListIvrMenuRevisionsRequest](#ondewo.vtsi.ListIvrMenuRevisionsRequest)
+    - [ListIvrMenuRevisionsResponse](#ondewo.vtsi.ListIvrMenuRevisionsResponse)
+    - [ListIvrMenusRequest](#ondewo.vtsi.ListIvrMenusRequest)
+    - [ListIvrMenusResponse](#ondewo.vtsi.ListIvrMenusResponse)
+    - [PublishIvrMenuRequest](#ondewo.vtsi.PublishIvrMenuRequest)
+    - [TestIvrMenuRequest](#ondewo.vtsi.TestIvrMenuRequest)
+    - [UpdateIvrMenuRequest](#ondewo.vtsi.UpdateIvrMenuRequest)
+    - [ValidateIvrMenuRequest](#ondewo.vtsi.ValidateIvrMenuRequest)
+    - [ValidateIvrMenuResponse](#ondewo.vtsi.ValidateIvrMenuResponse)
+  
+    - [IvrMenuIssueSeverity](#ondewo.vtsi.IvrMenuIssueSeverity)
+    - [IvrMenuOrderBy](#ondewo.vtsi.IvrMenuOrderBy)
+    - [IvrMenuState](#ondewo.vtsi.IvrMenuState)
+    - [IvrMenuTestState](#ondewo.vtsi.IvrMenuTestState)
+    - [IvrNodeType](#ondewo.vtsi.IvrNodeType)
+  
+    - [IvrMenus](#ondewo.vtsi.IvrMenus)
+  
 - [ondewo/vtsi/logs.proto](#ondewo/vtsi/logs.proto)
     - [CallLogEntry](#ondewo.vtsi.CallLogEntry)
     - [CallLogFilter](#ondewo.vtsi.CallLogFilter)
@@ -1360,19 +1486,24 @@
     - [GetVtsiProjectRequest](#ondewo.vtsi.GetVtsiProjectRequest)
     - [ListVtsiProjectsRequest](#ondewo.vtsi.ListVtsiProjectsRequest)
     - [ListVtsiProjectsResponse](#ondewo.vtsi.ListVtsiProjectsResponse)
+    - [TransferTargetDirectoryItem](#ondewo.vtsi.TransferTargetDirectoryItem)
     - [UndeployVtsiProjectRequest](#ondewo.vtsi.UndeployVtsiProjectRequest)
     - [UndeployVtsiProjectResponse](#ondewo.vtsi.UndeployVtsiProjectResponse)
     - [UpdateVtsiProjectRequest](#ondewo.vtsi.UpdateVtsiProjectRequest)
     - [UpdateVtsiProjectResponse](#ondewo.vtsi.UpdateVtsiProjectResponse)
     - [VtsiProject](#ondewo.vtsi.VtsiProject)
+    - [VtsiProject.TransferTargetDirectoryEntry](#ondewo.vtsi.VtsiProject.TransferTargetDirectoryEntry)
+    - [VtsiProjectFeatureAvailability](#ondewo.vtsi.VtsiProjectFeatureAvailability)
     - [VtsiProjectSorting](#ondewo.vtsi.VtsiProjectSorting)
   
+    - [IvrAvailability](#ondewo.vtsi.IvrAvailability)
     - [SipTrunkTransport](#ondewo.vtsi.SipTrunkTransport)
     - [TrunkRegistrationState](#ondewo.vtsi.TrunkRegistrationState)
     - [VtsiProjectSorting.VtsiProjectSortingField](#ondewo.vtsi.VtsiProjectSorting.VtsiProjectSortingField)
     - [VtsiProjectSortingMode](#ondewo.vtsi.VtsiProjectSortingMode)
     - [VtsiProjectStatus](#ondewo.vtsi.VtsiProjectStatus)
     - [VtsiProjectView](#ondewo.vtsi.VtsiProjectView)
+    - [WarmIntroAvailability](#ondewo.vtsi.WarmIntroAvailability)
   
     - [Projects](#ondewo.vtsi.Projects)
   
@@ -1467,6 +1598,7 @@ Project/Agent messages
 | modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Modification date and time. Read-only field. |
 | created_by | [string](#string) |  | User id in form of a valid UUID. |
 | modified_by | [string](#string) |  | User id in form of a valid UUID. |
+| warm_transfer_settings | [WarmTransferAgentSettings](#ondewo.nlu.WarmTransferAgentSettings) |  | Optional. The agent's settings of warm transfer intros (<code>Sessions.PrepareWarmTransferIntro</code>). Unset = intros are enabled while the server's warm transfer feature is switched on, with the built-in texts. |
 
 
 
@@ -2964,6 +3096,95 @@ Request to get user in project
 
 
 
+
+<a name="ondewo.nlu.WarmTransferAgentLexicon"></a>
+
+### WarmTransferAgentLexicon
+Additional entries of the closed decision lexicon of warm transfer intros in one language, matched before an LLM
+classifies an answer. At most 50 entries in <code>accept_phrases</code> and <code>decline_phrases</code>
+together.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| accept_phrases | [string](#string) | repeated | Words and phrases that accept the call (and confirm the ready question), e.g. "übernehme". |
+| decline_phrases | [string](#string) | repeated | Words and phrases that decline the call, e.g. "bin im Termin". |
+
+
+
+
+
+
+<a name="ondewo.nlu.WarmTransferAgentSettings"></a>
+
+### WarmTransferAgentSettings
+The agent's settings of warm transfer intros. A text a <code>WarmTransferIntroConfig</code> leaves empty falls back
+to the agent's text for the intro's language, then to the built-in default.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| enabled | [bool](#bool) | optional | Whether warm transfer intros are enabled for the agent. Unset = enabled while the server's warm transfer feature is switched on. False = <code>PrepareWarmTransferIntro</code> answers <code>FAILED_PRECONDITION</code> with <code>reason=warm-intro-disabled-for-agent</code>. |
+| llm_ccai_service_name | [string](#string) |  | The <code>ONDEWO_NLU_LLM</code> CCAI service of the LLM intro when the request names none. Empty = the project's first <code>ONDEWO_NLU_LLM</code> service. |
+| default_texts | [WarmTransferAgentSettings.DefaultTextsEntry](#ondewo.nlu.WarmTransferAgentSettings.DefaultTextsEntry) | repeated | The default texts, keyed by language code (e.g. <code>de</code>). |
+| extra_lexicon | [WarmTransferAgentSettings.ExtraLexiconEntry](#ondewo.nlu.WarmTransferAgentSettings.ExtraLexiconEntry) | repeated | Additional words and phrases of the decision lexicon, keyed by language code (e.g. <code>de</code>). |
+
+
+
+
+
+
+<a name="ondewo.nlu.WarmTransferAgentSettings.DefaultTextsEntry"></a>
+
+### WarmTransferAgentSettings.DefaultTextsEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [WarmTransferAgentTexts](#ondewo.nlu.WarmTransferAgentTexts) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.WarmTransferAgentSettings.ExtraLexiconEntry"></a>
+
+### WarmTransferAgentSettings.ExtraLexiconEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [WarmTransferAgentLexicon](#ondewo.nlu.WarmTransferAgentLexicon) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.WarmTransferAgentTexts"></a>
+
+### WarmTransferAgentTexts
+The default texts of warm transfer intros in one language. An empty text = the built-in default. The fields and
+placeholders are those of the same-named fields of <code>WarmTransferIntroConfig</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ready_question | [string](#string) |  | The first question to the target (placeholder <code>{project}</code>). |
+| accept_question | [string](#string) |  | The question after the intro. |
+| decline_reason_question | [string](#string) | optional | The question after a decline. Unset = the built-in default; set to "" = the reason is not asked for. |
+| caller_declined_message | [string](#string) |  | The message the caller hears after a decline (placeholders <code>{callee_name}</code>, <code>{reason}</code>). |
+| caller_unreachable_message | [string](#string) |  | The message the caller hears when the target could not be reached or gave no decision (placeholder <code>{callee_name}</code>). |
+
+
+
+
+
  <!-- end messages -->
 
 
@@ -4390,7 +4611,7 @@ CcaiProjectView defines what the CcaiProject message contains
 | CCAI_SERVICE_PROVIDER_ONDEWO | 1 | ONDEWO provider for CCAI service services <a href="https://www.ondewo.com/">ONDEWO</a> |
 | CCAI_SERVICE_PROVIDER_GOOGLE_GEMINI | 2 | Google as the CCAI service provider, utilizing Google&apos;s conversational AI capabilities <a href="https://deepmind.google/technologies/gemini/">Google Gemini</a> |
 | CCAI_SERVICE_PROVIDER_MICROSOFT_AZURE_OPENAI | 3 | Microsoft Azure as the CCAI service provider, using Microsoft&apos;s Azure cognitive services <a href="https://azure.microsoft.com/en-us/products/cognitive-services/openai-service/">Azure OpenAI</a> |
-| CCAI_SERVICE_PROVIDER_MICROSOFT_AUTOGEN | 4 | Microsoft AutoGen as the CCAI service provider <a href="https://github.com/microsoft/autogen">AutoGen</a> |
+| CCAI_SERVICE_PROVIDER_MICROSOFT_AUTOGEN | 4 | Deprecated: Microsoft AutoGen as the CCAI service provider <a href="https://github.com/microsoft/autogen">AutoGen</a>. The server no longer runs AutoGen and refuses to create services with this provider; stored AutoGen services are migrated to AI Teams v2 (LangChain / LangGraph). The value is kept for wire compatibility and may still appear on data written before the migration. |
 | CCAI_SERVICE_PROVIDER_OLLAMA | 5 | Ollama as the CCAI service provider, typically associated with specific OLLAMA AI tools <a href="https://github.com/ollama/ollama">Ollama</a> |
 | CCAI_SERVICE_PROVIDER_OPENAI | 6 | OpenAI as the CCAI service provider, commonly used for models such as GPT <a href="https://openai.com/">OpenAI</a> |
 | CCAI_SERVICE_PROVIDER_ANTHROPIC | 7 | Anthropic as the CCAI service provider, used with AI models from Anthropic <a href="https://www.anthropic.com/">Anthropic</a> |
@@ -10470,6 +10691,499 @@ golden-transcript recording from sessions, conversation simulation
 
 
 
+<a name="ondewo/nlu/logs.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## ondewo/nlu/logs.proto
+
+
+
+<a name="ondewo.nlu.CaiLogEntry"></a>
+
+### CaiLogEntry
+A single captured log record. One record may span several physical lines: a Python traceback, a protobuf
+<code>str()</code> dump and a multi-line banner are all one record and are stored and returned as one entry.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| seq | [int64](#int64) |  | Ordering cursor. Assigned by the database, monotonically increasing WITHIN ONE LOG STREAM. It is NOT contiguous: values are drawn from a sequence shared by every stream, are consumed by rolled-back writes, and are removed by retention. Never compute the next cursor as <code>seq + 1</code>; use <code>resume_token</code>, or <code>before_seq</code> / <code>after_seq</code> when the filter resolves to exactly one log stream. |
+| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the record was produced, in UTC: the instant the server process logged it, or the instant the docker daemon observed the first physical line of a container record. |
+| timestamp_is_exact | [bool](#bool) |  | False when <code>timestamp</code> is the instant CAI captured the record rather than the instant it was produced, which happens when a container line carried no parsable docker timestamp. |
+| level | [LogSeverity](#ondewo.nlu.LogSeverity) |  | The severity of the record. <code>LOG_SEVERITY_UNSPECIFIED</code> means the emitter does not log in a recognised format. |
+| message | [string](#string) |  | The log text, with ANSI escape sequences removed, continuation lines re-joined, and secrets redacted server-side. |
+| log_source | [CaiLogSource](#ondewo.nlu.CaiLogSource) |  | What produced the log stream this entry belongs to. |
+| channel | [CaiLogStreamChannel](#ondewo.nlu.CaiLogStreamChannel) |  | Which output channel the record arrived on. |
+| emitter | [string](#string) |  | <code>&lt;module&gt;:&lt;function&gt;:&lt;line&gt;</code> of the emitting log statement. Empty for output that is not in the ONDEWO logging format. |
+| thread_name | [string](#string) |  | Name of the thread that emitted the record. Empty when not available. |
+| process_name | [string](#string) |  | Name of the process that emitted the record, e.g. <code>GrpcServer_3</code> for a CAI worker. Empty when not available. |
+| log_stream | [string](#string) |  | Resource name of the log stream this entry belongs to. The format is <pre><code>logStreams/&lt;log_stream_uuid&gt;</code></pre> for a stream that belongs to no project (a server process) and <pre><code>projects/&lt;project_uuid&gt;/logStreams/&lt;log_stream_uuid&gt;</code></pre> for one that does (an operation&apos;s container). |
+| operation_name | [string](#string) |  | Name of the long-running operation the record belongs to. Empty for a server record emitted outside any operation. The format is <pre><code>projects/&lt;project_uuid&gt;/operations/&lt;operation_uuid&gt;</code></pre> for a project operation. |
+| project_parent | [string](#string) |  | The project the record belongs to. Empty for a server record emitted outside any project RPC or operation. The format is <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
+| container_id | [string](#string) |  | Docker container id of the container the record came from. Empty for a server record. |
+| container_name | [string](#string) |  | Docker container name of the container the record came from. Empty for a server record. |
+| replica_id | [string](#string) |  | Identity of the CAI server process that captured the record (<code>&lt;hostname&gt;:&lt;pid&gt;</code> or the configured <code>ONDEWO_NLU_CAI_REPLICA_ID</code>). |
+| trace_id | [string](#string) |  | OpenTelemetry trace id (32 lowercase hex characters) active when a server record was emitted. Empty when no trace was active and for container records. |
+| physical_line_count | [int32](#int32) |  | How many physical lines were folded into <code>message</code>. <code>1</code> for an ordinary single-line record. |
+| operation_type | [OperationMetadata.OperationType](#ondewo.nlu.OperationMetadata.OperationType) |  | Type of the operation named by <code>operation_name</code>; <code>UNSPECIFIED</code> when none. |
+| phase | [string](#string) |  | Lifecycle phase of the container the record came from, e.g. <code>hw_check</code>, <code>gpu_prealloc</code>, <code>build_cache</code>, <code>train</code>, <code>rag_crawl</code>. Empty for a server record. |
+
+
+
+
+
+
+<a name="ondewo.nlu.CaiLogFilter"></a>
+
+### CaiLogFilter
+Narrows a log query. Every field is optional; an empty repeated field means &quot;do not filter on
+this&quot;. Fields are combined with AND; the values within one repeated field are combined with OR.
+
+<p>Filters fall into two groups. IDENTITY filters (fields 1 to 19) select which log streams, operations and
+projects are of interest. CONTENT filters (fields 20 to 30) select which entries of those to return. The time
+window (fields 31, 32) is neither.</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| log_stream_names | [string](#string) | repeated | Log stream resource names, in either form of <a href="index.html#ondewo.nlu.CaiLogEntry">CaiLogEntry.log_stream</a>. |
+| operation_names | [string](#string) | repeated | Operation names, e.g. <pre><code>projects/&lt;project_uuid&gt;/operations/&lt;operation_uuid&gt;</code></pre> |
+| include_sub_operations | [bool](#bool) |  | Also match the sub-operations of every operation in <code>operation_names</code> (a training operation runs one sub-operation per algorithm). Defaults to <code>false</code>. |
+| project_parents | [string](#string) | repeated | Project parents of the form <pre><code>projects/&lt;project_uuid&gt;/agent</code></pre> |
+| container_ids | [string](#string) | repeated | Docker container ids. |
+| container_names | [string](#string) | repeated | Docker container names. |
+| replica_ids | [string](#string) | repeated | Identities of the CAI server processes that captured the entries (see <a href="index.html#ondewo.nlu.CaiLogEntry">CaiLogEntry.replica_id</a>). |
+| operation_types | [OperationMetadata.OperationType](#ondewo.nlu.OperationMetadata.OperationType) | repeated | Operation types. |
+| phases | [string](#string) | repeated | Container lifecycle phases, e.g. <code>train</code> or <code>hw_check</code>. |
+| log_sources | [CaiLogSource](#ondewo.nlu.CaiLogSource) | repeated | Restrict to entries of log streams produced by these sources. |
+| channels | [CaiLogStreamChannel](#ondewo.nlu.CaiLogStreamChannel) | repeated | Restrict to entries that arrived on these channels. |
+| min_log_level | [LogSeverity](#ondewo.nlu.LogSeverity) |  | Only return entries at or above this severity. <code>LOG_SEVERITY_UNSPECIFIED</code> (the default) applies no lower bound. Ignored when <code>log_levels</code> is non-empty. |
+| log_levels | [LogSeverity](#ondewo.nlu.LogSeverity) | repeated | Exact severities to include. When non-empty this OVERRIDES <code>min_log_level</code>. |
+| include_unleveled_lines | [bool](#bool) | optional | Keep entries whose severity could not be determined even when a severity bound is set. Defaults to <code>false</code>. |
+| text | [string](#string) | optional | Case-insensitive substring match against the message, as the caller receives it (after the server&apos;s secret redaction). <code>ListLogsResponse.total_matching_count</code>, <code>count_by_level</code>, <code>has_more_older</code> and <code>has_more_newer</code> are computed WITHOUT it and <code>CAI_LOG_FILTER_FIELD_TEXT</code> is reported in <code>scope_limited_filters</code>: they would otherwise reveal whether a redacted secret contains the searched text. |
+| regex | [string](#string) | optional | Regular expression (Python <code>re</code> syntax) matched against the message. At most 512 characters; an invalid, oversized or catastrophically backtracking pattern is rejected with <code>INVALID_ARGUMENT</code>. |
+| emitter_prefixes | [string](#string) | repeated | Prefix match against <code>&lt;module&gt;:&lt;function&gt;:&lt;line&gt;</code>, for example <code>ondewo_cai.ondewo_cdls.services.server.servicers.agents_servicer</code>. |
+| thread_names | [string](#string) | repeated | Restrict to entries emitted by these threads. |
+| process_names | [string](#string) | repeated | Restrict to entries emitted by these processes, e.g. <code>GrpcServer_0</code>. |
+| trace_ids | [string](#string) | repeated | Restrict to entries carrying one of these OpenTelemetry trace ids (32 lowercase hex characters). |
+| start_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) | optional | Only return entries at or after this instant. A zero timestamp counts as unset. |
+| end_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) | optional | Only return entries at or before this instant. A zero timestamp counts as unset. A <code>start_time</code> after <code>end_time</code> is rejected with <code>INVALID_ARGUMENT</code>. |
+
+
+
+
+
+
+<a name="ondewo.nlu.CaiLogStream"></a>
+
+### CaiLogStream
+One capture of one server process or of one container. A server process that restarts, and a container
+recreated under a new id, yield a NEW log stream.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the log stream, in the form of <a href="index.html#ondewo.nlu.CaiLogEntry">CaiLogEntry.log_stream</a>. |
+| log_source | [CaiLogSource](#ondewo.nlu.CaiLogSource) |  | What produced the log stream. |
+| channel | [CaiLogStreamChannel](#ondewo.nlu.CaiLogStreamChannel) |  | The channel this stream captures. |
+| project_parent | [string](#string) |  | The project the stream belongs to (<code>projects/&lt;project_uuid&gt;/agent</code>). Empty for a server process. |
+| operation_name | [string](#string) |  | The operation the container serves. Empty for a server process. |
+| container_id | [string](#string) |  | Docker container id. Empty for a server process. |
+| container_name | [string](#string) |  | Docker container name. Empty for a server process. |
+| host | [string](#string) |  | The host the container runs on, or the host name of the server process. |
+| replica_id | [string](#string) |  | Identity of the CAI server process that captures (or captured) this stream. |
+| process_name | [string](#string) |  | Name of the captured server process, e.g. <code>GrpcServer_3</code>. Empty for a container. |
+| phase | [string](#string) |  | Lifecycle phase of the container. Empty for a server process. |
+| capture_state | [CaiLogCaptureState](#ondewo.nlu.CaiLogCaptureState) |  | State of CAI&apos;s capture of this stream. |
+| capture_error | [string](#string) |  | Why capture failed, when <code>capture_state</code> is <code>CAI_LOG_CAPTURE_STATE_FAILED</code>. |
+| capture_started_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When CAI started capturing this stream. |
+| capture_finished_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When CAI stopped capturing this stream. Unset while capturing. |
+| partial_capture | [bool](#bool) |  | True when entries the source emitted were not captured and are not recoverable, e.g. a container whose owning CAI process died and whose output was recovered from a bounded snapshot. |
+| min_available_seq | [int64](#int64) |  | The smallest <code>seq</code> currently stored for this stream (<code>0</code> when it holds none). |
+| max_available_seq | [int64](#int64) |  | The largest <code>seq</code> assigned to this stream (<code>0</code> when it holds no entry). Entries up to it may since have been removed by retention or <code>DeleteLogs</code>; it never decreases while the stream holds an entry. |
+| line_count | [int64](#int64) |  | How many entries are currently stored for this stream. |
+| dropped_line_count | [int64](#int64) |  | How many records were deliberately not stored, summed over every reason: the ingest severity floor, the capture queue being full, storage back-pressure, a failed write and retention. |
+| operation_type | [OperationMetadata.OperationType](#ondewo.nlu.OperationMetadata.OperationType) |  | Type of the operation the container serves; <code>UNSPECIFIED</code> for a server process. |
+
+
+
+
+
+
+<a name="ondewo.nlu.DeleteLogsRequest"></a>
+
+### DeleteLogsRequest
+The request message for <a href="index.html#ondewo.nlu.Logs.DeleteLogs">Logs.DeleteLogs</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filter | [CaiLogFilter](#ondewo.nlu.CaiLogFilter) |  | The entries to delete. Only the identity fields and the time window apply; content filters are rejected. At least one field must be set: an empty filter is rejected rather than treated as &quot;delete everything&quot;. |
+| validate_only | [bool](#bool) |  | Optional. Validate only: run every check of a real deletion and report how many entries and log streams WOULD be deleted now, but delete nothing. Default <code>false</code>. |
+
+
+
+
+
+
+<a name="ondewo.nlu.DeleteLogsResponse"></a>
+
+### DeleteLogsResponse
+The response message for <a href="index.html#ondewo.nlu.Logs.DeleteLogs">Logs.DeleteLogs</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| deleted_log_entry_count | [int64](#int64) |  | How many log entries were deleted (with <code>validate_only</code>: would be deleted). |
+| deleted_log_stream_count | [int64](#int64) |  | How many log streams were deleted because no entries remained (with <code>validate_only</code>: would be deleted). |
+
+
+
+
+
+
+<a name="ondewo.nlu.ExportLogsRequest"></a>
+
+### ExportLogsRequest
+The request message for <a href="index.html#ondewo.nlu.Logs.ExportLogs">Logs.ExportLogs</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filter | [CaiLogFilter](#ondewo.nlu.CaiLogFilter) |  | The entries to export. Every field of <a href="index.html#ondewo.nlu.CaiLogFilter">CaiLogFilter</a> applies, with the semantics of <code>ListLogs</code>. REQUIRED, with both <code>start_time</code> and <code>end_time</code> set and <code>start_time</code> before <code>end_time</code>; otherwise <code>INVALID_ARGUMENT</code>. |
+| format | [CaiLogExportFormat](#ondewo.nlu.CaiLogExportFormat) |  | The file format. Unset means <code>CAI_LOG_EXPORT_FORMAT_TEXT</code>. |
+| include_metadata | [bool](#bool) |  | Include every field of each entry rather than only the timestamp, the severity and the message (see <a href="index.html#ondewo.nlu.CaiLogExportFormat">CaiLogExportFormat</a>). Default <code>false</code>. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ExportLogsResponse"></a>
+
+### ExportLogsResponse
+One message of an <a href="index.html#ondewo.nlu.Logs.ExportLogs">ExportLogs</a> stream.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| chunk | [bytes](#bytes) |  | The next bytes of the exported file, at most 1 MiB. Chunk boundaries carry no meaning: an entry, a line or a multi-byte UTF-8 character may span two chunks. The last message may carry an empty chunk. |
+| entry_count | [int64](#int64) |  | The number of entries exported so far, including those of this chunk. |
+| last | [bool](#bool) |  | True on the last message of a complete export. A stream that ends without a message carrying <code>last = true</code> was cut off and its file is incomplete. |
+| truncated | [bool](#bool) |  | True on the last message when the export stopped early because it reached <code>ONDEWO_NLU_CAI_LOG_EXPORT_MAX_ENTRIES</code>, <code>ONDEWO_NLU_CAI_LOG_EXPORT_MAX_BYTES</code> or the maximum stream duration. |
+
+
+
+
+
+
+<a name="ondewo.nlu.GetLogStreamRequest"></a>
+
+### GetLogStreamRequest
+The request message for <a href="index.html#ondewo.nlu.Logs.GetLogStream">Logs.GetLogStream</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the log stream, in either form of <a href="index.html#ondewo.nlu.CaiLogEntry">CaiLogEntry.log_stream</a>. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the <code>CaiLogStream</code> field paths to populate. <code>name</code> is always populated, unset or empty returns every field, an unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLogStreamsRequest"></a>
+
+### ListLogStreamsRequest
+The request message for <a href="index.html#ondewo.nlu.Logs.ListLogStreams">Logs.ListLogStreams</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filter | [CaiLogFilter](#ondewo.nlu.CaiLogFilter) | optional | Optional. A filter to narrow the response down to the log streams of interest. Only the identity fields and <code>log_sources</code> / <code>channels</code> / <code>process_names</code> apply; the other content fields and the time window are ignored. |
+| page_token | [string](#string) |  | Optional: The page token to support pagination. Pagination allows you to retrieve a large result set in smaller, more manageable portions. The page token is a string representing the current index and page size.
+
+Valid page token strings: <ul> <li>&quot;&quot; (empty string) - Retrieves the first page.</li> <li>&quot;current_index-0--page_size-20&quot; - Retrieves the first page with a page size of 20.</li> <li>&quot;current_index-1--page_size-20&quot; - Retrieves the second page with a page size of 20.</li> </ul>
+
+Index starts at 0. A page size above 1000 is clamped to 1000.
+
+Examples of valid page token strings: <ul> <li>&quot;&quot;</li> <li>&quot;current_index-0--page_size-20&quot;</li> <li>&quot;current_index-1--page_size-20&quot;</li> <li>&quot;current_index-10--page_size-20&quot;</li> </ul>
+
+Examples of invalid page token strings: <ul> <li>&quot;1&quot;</li> <li>&quot;current_index--1--page_size-20&quot;</li> <li>&quot;current_index1--page_size-20&quot;</li> <li>&quot;current_index-1--page_size--20&quot;</li> </ul> |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in every returned <code>CaiLogStream</code>, relative to <code>CaiLogStream</code> (no <code>log_streams.</code> prefix). <code>name</code> is always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. |
+| capture_states | [CaiLogCaptureState](#ondewo.nlu.CaiLogCaptureState) | repeated | Optional. Only log streams in one of these capture states. Empty matches every state. <code>CAI_LOG_CAPTURE_STATE_UNSPECIFIED</code> is rejected with <code>INVALID_ARGUMENT</code>. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLogStreamsResponse"></a>
+
+### ListLogStreamsResponse
+The response message for <a href="index.html#ondewo.nlu.Logs.ListLogStreams">Logs.ListLogStreams</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| log_streams | [CaiLogStream](#ondewo.nlu.CaiLogStream) | repeated | The log streams of this page, newest <code>capture_started_at</code> first. |
+| next_page_token | [string](#string) |  | The next_page_token is used to retrieve the next page of a returned result, e.g. <code>current_index-2--page_size-20</code>. Empty when there are no more results. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLogsRequest"></a>
+
+### ListLogsRequest
+The request message for <a href="index.html#ondewo.nlu.Logs.ListLogs">Logs.ListLogs</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filter | [CaiLogFilter](#ondewo.nlu.CaiLogFilter) | optional | Optional. A filter to narrow the response down to the entries of interest. |
+| max_lines | [int32](#int32) | optional | Return at most this many entries. <code>0</code> (the default) and negative values apply the server default (<code>ONDEWO_NLU_CAI_LOG_DEFAULT_MAX_LINES</code>, default 5000); values above the server hard cap (<code>ONDEWO_NLU_CAI_LOG_HARD_MAX_LINES</code>, default 50000) are clamped to it. |
+| before_seq | [int64](#int64) | optional | Optional cursor for infinite-scroll UP: return the newest entries with <code>seq</code> less than this value. Valid only when the filter resolves to exactly one log stream. |
+| after_seq | [int64](#int64) | optional | Optional cursor for infinite-scroll DOWN: return entries with <code>seq</code> greater than this value. Valid only when the filter resolves to exactly one log stream. |
+| resume_token | [string](#string) | optional | Optional. An opaque, server-encoded per-log-stream cursor from a previous response. Use this instead of <code>after_seq</code> whenever the filter can match more than one log stream. Combined with <code>oldest_first</code> it walks forward (newer entries); without it, backward (older entries). |
+| oldest_first | [bool](#bool) | optional | Walk forward from the cursor oldest-first instead of returning the most recent window. A client paging through a whole backlog must set this: the default window silently skips everything between the cursor and the newest entries. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in every returned <code>CaiLogEntry</code>, relative to <code>CaiLogEntry</code> (no <code>log_entries.</code> prefix), e.g. <code>timestamp</code>, <code>level</code>, <code>message</code>. <code>log_stream</code> and <code>seq</code> are always populated. Unset or empty returns every field. An unknown path, or a path below a repeated field, is rejected with <code>INVALID_ARGUMENT</code> naming it. Applied after the server&apos;s secret redaction. It shapes only the entries: the window and cursor fields of the response are computed exactly as without a mask. |
+| include_counts | [bool](#bool) |  | Optional. Also count the matching entries: fills <code>ListLogsResponse.total_matching_count</code> and <code>count_by_level</code> over the WHOLE filtered history (ignoring the cursors). Off by default; set it on the first page only. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLogsResponse"></a>
+
+### ListLogsResponse
+The response message for <a href="index.html#ondewo.nlu.Logs.ListLogs">Logs.ListLogs</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| log_entries | [CaiLogEntry](#ondewo.nlu.CaiLogEntry) | repeated | The matching entries, oldest first. |
+| truncated | [bool](#bool) |  | True when matching entries were dropped because <code>max_lines</code> was reached. |
+| min_available_seq | [int64](#int64) |  | The smallest <code>seq</code> available under the request&apos;s IDENTITY filters and the caller&apos;s access. Deliberately not narrowed by the content filters. |
+| max_available_seq | [int64](#int64) |  | The largest <code>seq</code> assigned under the request&apos;s identity filters and the caller&apos;s access, over the log streams that still hold an entry (<code>0</code> when none does). Entries up to it may since have been removed by retention or <code>DeleteLogs</code>. |
+| has_more_older | [bool](#bool) |  | True when entries older than this window exist. |
+| has_more_newer | [bool](#bool) |  | True when entries newer than this window exist. |
+| next_resume_token | [string](#string) |  | Cursor to fetch the next window (pass it back with <code>oldest_first</code> to page forward, without it to page backward), or to start a <code>StreamLogs</code> that continues exactly here. |
+| scope_limited_filters | [CaiLogFilterField](#ondewo.nlu.CaiLogFilterField) | repeated | Filters that could only be applied WITHIN the returned window rather than across the whole history. A client displaying a match count must qualify it when this is non-empty. |
+| total_matching_count | [int64](#int64) | optional | The number of entries matching the filter over the whole stored history, regardless of the window and the cursors. Set only when <code>include_counts</code> was requested and the count finished within <code>ONDEWO_NLU_CAI_LOG_COUNT_TIMEOUT_S</code>. An UPPER BOUND when <code>scope_limited_filters</code> is non-empty. |
+| count_by_level | [ListLogsResponse.CountByLevelEntry](#ondewo.nlu.ListLogsResponse.CountByLevelEntry) | repeated | The matching entries counted per severity, keyed by the <code>ondewo.nlu.LogSeverity</code> value NAME (e.g. <code>LOG_SEVERITY_ERROR</code>; entries without a recognised severity under <code>LOG_SEVERITY_UNSPECIFIED</code>). Severities with no entry are omitted; the values sum to <code>total_matching_count</code>. Filled under the same conditions as <code>total_matching_count</code>. |
+
+
+
+
+
+
+<a name="ondewo.nlu.ListLogsResponse.CountByLevelEntry"></a>
+
+### ListLogsResponse.CountByLevelEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [int64](#int64) |  |  |
+
+
+
+
+
+
+<a name="ondewo.nlu.StreamLogsRequest"></a>
+
+### StreamLogsRequest
+The request message for <a href="index.html#ondewo.nlu.Logs.StreamLogs">Logs.StreamLogs</a>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filter | [CaiLogFilter](#ondewo.nlu.CaiLogFilter) | optional | Optional. A filter to narrow the stream down to the entries of interest. The time window of the filter is meaningless for a live stream and is rejected with <code>INVALID_ARGUMENT</code> rather than ignored. |
+| tail_lines | [int32](#int32) | optional | Replay at most this many of the most recent stored entries before switching to live follow. <code>0</code> (the default) starts the follow with no historical replay; a negative value is treated as <code>0</code>; values above the server hard cap (<code>ONDEWO_NLU_CAI_LOG_HARD_MAX_LINES</code>, default 50000) are clamped to it. Applied to the FILTERED result. Ignored when <code>resume_token</code> or <code>after_seq</code> is set. |
+| resume_token | [string](#string) | optional | Optional. Resume exactly where a previous stream or page stopped. An opaque, server-encoded per-log-stream cursor that must be echoed back verbatim. Prefer it over <code>after_seq</code>. |
+| after_seq | [int64](#int64) | optional | Optional. Resume after this <code>seq</code>. Valid ONLY when the filter resolves to exactly one log stream; otherwise the request is rejected with <code>INVALID_ARGUMENT</code>. Ignored when <code>resume_token</code> is set. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in every streamed <code>CaiLogEntry</code>, relative to <code>CaiLogEntry</code> (no <code>log_entries.</code> prefix). <code>log_stream</code> and <code>seq</code> are always populated. Unset or empty streams every field. An unknown path, or a path below a repeated field, is rejected with <code>INVALID_ARGUMENT</code> naming it. Applied after the server&apos;s secret redaction; never affects the envelope fields. |
+
+
+
+
+
+
+<a name="ondewo.nlu.StreamLogsResponse"></a>
+
+### StreamLogsResponse
+The response message for <a href="index.html#ondewo.nlu.Logs.StreamLogs">Logs.StreamLogs</a>. The stream
+carries an envelope rather than a bare entry so that a viewer can tell a healthy quiet source from a capture
+that has died.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| log_entries | [CaiLogEntry](#ondewo.nlu.CaiLogEntry) | repeated | The entries in this batch, oldest first. May be empty, e.g. on the final message. |
+| capture_state | [CaiLogCaptureState](#ondewo.nlu.CaiLogCaptureState) |  | The capture state of the log streams being followed, aggregated: <code>FAILED</code> if any has failed, else <code>DETACHED</code> if any is detached, else <code>CAPTURING</code> if any is capturing, else <code>STOPPED</code>. |
+| capture_error | [string](#string) |  | Why capture failed, when <code>capture_state</code> is <code>CAI_LOG_CAPTURE_STATE_FAILED</code>. |
+| dropped_line_count | [int64](#int64) |  | Total records deliberately not stored across the followed streams. See <a href="index.html#ondewo.nlu.CaiLogStream">CaiLogStream.dropped_line_count</a>. |
+| resume_token | [string](#string) |  | Cursor to resume this stream. Echo it into <code>StreamLogsRequest.resume_token</code> after a disconnect. |
+| end_reason | [string](#string) |  | Set on the final message when the stream was ended by the server. Human-readable text, not a contract: match on <code>end_reason_code</code>. |
+| end_reason_code | [CaiLogStreamEndReason](#ondewo.nlu.CaiLogStreamEndReason) |  | Set on the final message when the stream was ended by the server, together with <code>end_reason</code>; <code>CAI_LOG_STREAM_END_REASON_UNSPECIFIED</code> on every other message. |
+
+
+
+
+
+ <!-- end messages -->
+
+
+<a name="ondewo.nlu.CaiLogCaptureState"></a>
+
+### CaiLogCaptureState
+The state of CAI&apos;s capture of one log stream. This describes the CAPTURE, not the process or the
+container.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| CAI_LOG_CAPTURE_STATE_UNSPECIFIED | 0 | Unspecified. |
+| CAI_LOG_CAPTURE_STATE_CAPTURING | 1 | Capture is running. |
+| CAI_LOG_CAPTURE_STATE_STOPPED | 2 | Capture ended cleanly; the stream is complete up to the end of the process or the removal of the container. |
+| CAI_LOG_CAPTURE_STATE_FAILED | 3 | Capture failed or its owner stopped renewing it. The stored history may be incomplete and <code>capture_error</code> says why. |
+| CAI_LOG_CAPTURE_STATE_DETACHED | 4 | Another CAI server process holds the capture of this stream. |
+
+
+
+<a name="ondewo.nlu.CaiLogExportFormat"></a>
+
+### CaiLogExportFormat
+File format of an <a href="index.html#ondewo.nlu.Logs.ExportLogs">ExportLogs</a> export. Every format is UTF-8
+with <code>\n</code> line endings and one entry per record; a multi-line entry stays one record.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| CAI_LOG_EXPORT_FORMAT_UNSPECIFIED | 0 | Unspecified: identical to <code>CAI_LOG_EXPORT_FORMAT_TEXT</code>. |
+| CAI_LOG_EXPORT_FORMAT_TEXT | 1 | Plain text in the manner of <code>docker logs --timestamps</code>: one line per entry, <code>&lt;RFC 3339 UTC timestamp&gt; &lt;message&gt;</code>; continuation lines of a multi-line entry are indented by one tab. With <code>include_metadata</code> the timestamp is followed by the severity, the process or container name and the operation name (<code>-</code> when none), separated by single spaces. |
+| CAI_LOG_EXPORT_FORMAT_NDJSON | 2 | Newline-delimited JSON: one JSON object per line, the proto3 JSON form of a <a href="index.html#ondewo.nlu.CaiLogEntry">CaiLogEntry</a> (lowerCamelCase keys). Without <code>include_metadata</code> only <code>seq</code>, <code>logStream</code>, <code>timestamp</code>, <code>level</code> and <code>message</code> are written; with it every field. |
+| CAI_LOG_EXPORT_FORMAT_CSV | 3 | Comma-separated values (RFC 4180, every field quoted, embedded quotes doubled, embedded line breaks kept inside the quotes), with a header row. Columns without <code>include_metadata</code>: <code>timestamp,level,message</code>; with it: <code>seq,timestamp,timestamp_is_exact,level,log_source, channel,emitter,thread_name,process_name,log_stream,operation_name,operation_type,project_parent, container_id,container_name,replica_id,trace_id,physical_line_count,message</code>. |
+
+
+
+<a name="ondewo.nlu.CaiLogFilterField"></a>
+
+### CaiLogFilterField
+Identifies a field of <a href="index.html#ondewo.nlu.CaiLogFilter">CaiLogFilter</a>. Used by
+<a href="index.html#ondewo.nlu.ListLogsResponse">ListLogsResponse.scope_limited_filters</a> to declare which
+filters could only be applied inside the returned window.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| CAI_LOG_FILTER_FIELD_UNSPECIFIED | 0 | Unspecified. |
+| CAI_LOG_FILTER_FIELD_TEXT | 1 | <code>CaiLogFilter.text</code>. |
+| CAI_LOG_FILTER_FIELD_REGEX | 2 | <code>CaiLogFilter.regex</code>. |
+| CAI_LOG_FILTER_FIELD_LOG_SOURCES | 3 | <code>CaiLogFilter.log_sources</code>. |
+| CAI_LOG_FILTER_FIELD_EMITTER_PREFIXES | 4 | <code>CaiLogFilter.emitter_prefixes</code>. |
+| CAI_LOG_FILTER_FIELD_THREAD_NAMES | 5 | <code>CaiLogFilter.thread_names</code>. |
+| CAI_LOG_FILTER_FIELD_PROCESS_NAMES | 6 | <code>CaiLogFilter.process_names</code>. |
+
+
+
+<a name="ondewo.nlu.CaiLogSource"></a>
+
+### CaiLogSource
+What produced a log stream.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| CAI_LOG_SOURCE_UNSPECIFIED | 0 | Unspecified or unrecognised source. |
+| CAI_LOG_SOURCE_SERVER | 1 | A CAI gRPC server process (one worker of one replica) logging through its own logger. |
+| CAI_LOG_SOURCE_REMOTE_OPERATION_CONTAINER | 2 | The docker container a remote operation runs (build cache, training, RAG crawl, LLM evaluation or simulation, RAGFlow upload / removal / re-parse). |
+| CAI_LOG_SOURCE_HELPER_CONTAINER | 3 | A short-lived helper container a remote operation starts before its main container: the hardware check (phase <code>hw_check</code>) and the GPU pre-allocation (phase <code>gpu_prealloc</code>). |
+
+
+
+<a name="ondewo.nlu.CaiLogStreamChannel"></a>
+
+### CaiLogStreamChannel
+The output channel a log stream captures.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| CAI_LOG_STREAM_CHANNEL_UNSPECIFIED | 0 | The channel is not known. This is the honest value for a container started with a TTY (every remote operation container is), where the pseudo-terminal merges both channels into one stream. |
+| CAI_LOG_STREAM_CHANNEL_STDOUT | 1 | Standard output. |
+| CAI_LOG_STREAM_CHANNEL_STDERR | 2 | Standard error. The CAI server process logs here. |
+
+
+
+<a name="ondewo.nlu.CaiLogStreamEndReason"></a>
+
+### CaiLogStreamEndReason
+Why the SERVER ended a <code>StreamLogs</code> stream. Carried by the final
+<a href="index.html#ondewo.nlu.StreamLogsResponse">StreamLogsResponse</a> beside the human-readable
+<code>end_reason</code>. A stream ended by the client has no final message.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| CAI_LOG_STREAM_END_REASON_UNSPECIFIED | 0 | Not ended by the server: every message except the final one. |
+| CAI_LOG_STREAM_END_REASON_ALL_CAPTURES_TERMINATED | 1 | The capture of every followed log stream has terminated (<code>STOPPED</code> or <code>FAILED</code>) and every stored entry was sent. Nothing more will arrive for this filter. |
+| CAI_LOG_STREAM_END_REASON_MAX_DURATION | 2 | The server-side maximum stream duration (<code>ONDEWO_NLU_CAI_LOG_STREAM_MAX_DURATION_S</code>) was reached. Reconnect with the <code>resume_token</code> of the final message to continue seamlessly. |
+| CAI_LOG_STREAM_END_REASON_SERVER_SHUTDOWN | 3 | The CAI server process is shutting down. Reconnect, to another replica if there is one, with the <code>resume_token</code>. |
+| CAI_LOG_STREAM_END_REASON_PERMISSION_REVOKED | 4 | The caller lost the access the stream requires. The stream then ends with <code>PERMISSION_DENIED</code>. |
+| CAI_LOG_STREAM_END_REASON_CREDENTIALS_EXPIRED | 5 | The caller&apos;s credential expired. The stream then ends with <code>UNAUTHENTICATED</code>; reconnect with a fresh credential and the <code>resume_token</code>. |
+
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="ondewo.nlu.Logs"></a>
+
+### Logs
+<p>Reads, follows, exports and erases the logs ONDEWO CAI captures: the log records of the CAI gRPC server
+processes themselves (every worker of every replica), the output of the docker containers that remote
+operations run (build cache, training, RAG crawl, LLM evaluation and simulation, RAGFlow upload / removal /
+re-parse) and of the short-lived helper containers that prepare them (hardware check, GPU pre-allocation).
+Long-running operations that run inside a CAI worker (agent export, import, restore, re-index, ranking
+optimization) are covered too: the server records they emit carry the operation&apos;s name.</p>
+<p>Entries are served from the CAI database, not from the docker daemon, so the logs of a container that was
+already removed, and of a server process that already exited, stay readable until retention or
+<code>DeleteLogs</code> removes them.</p>
+<p><b>Secrets are redacted server-side</b> when an entry is captured and again when it is read, so a
+redaction rule added later also applies to entries captured before it.</p>
+<p>Errors are reported as gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed name, filter,
+cursor, <code>resume_token</code>, <code>page_token</code> or <code>field_mask</code> (each naming the field);
+<code>NOT_FOUND</code> for an unknown log stream or operation, and for one the caller may not read;
+<code>RESOURCE_EXHAUSTED</code> when the server process already serves its maximum of concurrent streams or
+exports; <code>UNAVAILABLE</code> when the logs API is disabled (<code>ONDEWO_NLU_CAI_LOG_API_ENABLED</code>)
+or the database cannot be reached; <code>UNAUTHENTICATED</code> without a valid credential;
+<code>PERMISSION_DENIED</code> when the caller may read no logs at all.</p>
+<p>Authorization: entries that belong to no project (the server&apos;s own records outside any project RPC
+or operation) require the server permission <code>ServerPermission.Logs.ReadServerLogs</code>, granted to
+<code>SERVER_ADMIN</code> by default; a caller holding it reads every entry. Without it a caller reads only
+the entries tagged with a project in which it holds <code>ProjectPermission.Logs.ReadProjectLogs</code>,
+granted to <code>PROJECT_DEVELOPER</code> and above by default; entries of other projects are filtered out
+and are never reported as existing. <code>DeleteLogs</code> requires
+<code>ServerPermission.Logs.DeleteLogs</code>, granted to <code>SERVER_ADMIN</code> only. A long-running
+<code>StreamLogs</code> or <code>ExportLogs</code> re-checks the caller periodically and ends when the access
+was revoked or the credential expired.</p>
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| StreamLogs | [StreamLogsRequest](#ondewo.nlu.StreamLogsRequest) | [StreamLogsResponse](#ondewo.nlu.StreamLogsResponse) stream | <p>Streams captured log entries as they are written, in the manner of <code>docker logs --follow</code>. The stream replays <code>tail_lines</code> historical entries and then follows. It stays open until the capture of every matching log stream has terminated (only possible when the filter selects container streams alone: the server&apos;s own log streams never terminate while the server runs), until the client disconnects, or until the server-side maximum stream duration is reached.</p> <p>Limits: at most <code>ONDEWO_NLU_CAI_LOG_STREAM_MAX_DURATION_S</code> (default 3600) seconds per stream, after which the server sends a final message with <code>end_reason_code = CAI_LOG_STREAM_END_REASON_MAX_DURATION</code> and a <code>resume_token</code> to reconnect with; at most <code>ONDEWO_NLU_CAI_LOG_MAX_CONCURRENT_STREAMS</code> (default 8) concurrent streams per server process, beyond which a new stream is <code>RESOURCE_EXHAUSTED</code>. The server sends NO keep-alive message: a quiet filter sends nothing, so a client must not treat silence as a dead stream (use HTTP/2 keep-alive pings to detect a dead connection).</p> <p>Errors: <code>INVALID_ARGUMENT</code> for a filter carrying <code>start_time</code> or <code>end_time</code>, an <code>after_seq</code> with a filter that does not resolve to exactly one log stream, a malformed <code>resume_token</code>, an invalid <code>regex</code> or an unknown <code>field_mask</code> path; <code>NOT_FOUND</code> for a named log stream or operation the caller may not read; <code>RESOURCE_EXHAUSTED</code> as above, and when one read of the stored entries exceeds <code>ONDEWO_NLU_CAI_LOG_QUERY_TIMEOUT_S</code> (narrow the filter); <code>UNAVAILABLE</code> when the database cannot be reached (reconnect with the last <code>resume_token</code>). When the caller&apos;s access is revoked or its credential expires during the stream, the server sends a final message (<code>CAI_LOG_STREAM_END_REASON_PERMISSION_REVOKED</code> / <code>CAI_LOG_STREAM_END_REASON_CREDENTIALS_EXPIRED</code>, with a <code>resume_token</code>) and ends the stream with <code>PERMISSION_DENIED</code> / <code>UNAUTHENTICATED</code>.</p> |
+| ListLogs | [ListLogsRequest](#ondewo.nlu.ListLogsRequest) | [ListLogsResponse](#ondewo.nlu.ListLogsResponse) | <p>Returns a bounded, filtered page of captured log entries. Supports a time window, severity filtering, a regular expression, a plain-text search and cursor paging in both directions for infinite scrolling.</p> <p>No time window is required: without <code>start_time</code> / <code>end_time</code> the window is the newest <code>max_lines</code> matching entries (or, with <code>oldest_first</code>, the oldest after the cursor). With <code>include_counts</code> the response also carries the number of matching entries per severity. The <code>next_resume_token</code> of a response can be handed to <code>StreamLogs</code> to continue live exactly where the page ended, without a gap or a duplicate.</p> <p>Errors: <code>INVALID_ARGUMENT</code> for an invalid or over-long <code>regex</code>, a <code>start_time</code> after <code>end_time</code>, <code>before_seq</code> / <code>after_seq</code> combined with <code>resume_token</code> or with a filter that does not resolve to exactly one log stream, a negative <code>before_seq</code> / <code>after_seq</code>, a malformed <code>resume_token</code> or an unknown <code>field_mask</code> path; <code>NOT_FOUND</code> for a named log stream or operation the caller may not read; <code>RESOURCE_EXHAUSTED</code> when the query exceeds <code>ONDEWO_NLU_CAI_LOG_QUERY_TIMEOUT_S</code> (narrow the filter: log streams, time window or severity); <code>UNAVAILABLE</code> when the database cannot be reached.</p> <p>A page is bounded by size as well as by <code>max_lines</code>: when its messages would exceed the server&apos;s size budget it is cut (a forward page keeps its oldest entries, a backward page its newest) and reported with <code>truncated = true</code>; the cursors continue exactly where it was cut.</p> |
+| GetLogStream | [GetLogStreamRequest](#ondewo.nlu.GetLogStreamRequest) | [CaiLogStream](#ondewo.nlu.CaiLogStream) | <p>Returns one log stream, i.e. the capture of one server process or of one container.</p> <p>Errors: <code>INVALID_ARGUMENT</code> for a malformed <code>name</code> or an unknown <code>field_mask</code> path; <code>NOT_FOUND</code> for an unknown log stream or one the caller may not read.</p> |
+| ListLogStreams | [ListLogStreamsRequest](#ondewo.nlu.ListLogStreamsRequest) | [ListLogStreamsResponse](#ondewo.nlu.ListLogStreamsResponse) | <p>Lists the log streams CAI has captured. A server process yields a new log stream every time it starts, and a container every time it is (re)started under a new container id. Ordered by <code>capture_started_at</code>, newest first.</p> <p>A caller without <code>ServerPermission.Logs.ReadServerLogs</code> sees only the log streams of the projects in which it holds <code>ProjectPermission.Logs.ReadProjectLogs</code>; the server&apos;s own log streams are not listed to it, although <code>ListLogs</code> and <code>StreamLogs</code> return their entries that are tagged with such a project.</p> <p>Errors: <code>INVALID_ARGUMENT</code> for a malformed <code>page_token</code>, <code>CAI_LOG_CAPTURE_STATE_UNSPECIFIED</code> in <code>capture_states</code> or an unknown <code>field_mask</code> path.</p> |
+| ExportLogs | [ExportLogsRequest](#ondewo.nlu.ExportLogsRequest) | [ExportLogsResponse](#ondewo.nlu.ExportLogsResponse) stream | <p>Exports the captured log entries matching a filter as a file: plain text, NDJSON or CSV, streamed in chunks. Entries are exported oldest first with the same filter semantics and the same server-side secret redaction as <code>ListLogs</code>; unlike <code>ListLogs</code> the content filters are applied to EVERY entry of the window. Concatenating the <code>chunk</code>s of all messages in order yields the file.</p> <p>A bounded time window is REQUIRED: <code>filter.start_time</code> AND <code>filter.end_time</code> must both be set, with <code>start_time</code> before <code>end_time</code>.</p> <p>Limits: each <code>chunk</code> is at most 1 MiB; an export holds at most <code>ONDEWO_NLU_CAI_LOG_EXPORT_MAX_ENTRIES</code> (default 1000000) entries and at most <code>ONDEWO_NLU_CAI_LOG_EXPORT_MAX_BYTES</code> (default 1 GiB) of output. When a limit is reached the export ends early with <code>truncated = true</code> on the last message; so does an export one of whose reads exceeds <code>ONDEWO_NLU_CAI_LOG_QUERY_TIMEOUT_S</code>. At most <code>ONDEWO_NLU_CAI_LOG_MAX_CONCURRENT_EXPORTS</code> (default 1) exports run per server process, beyond which a new one is <code>RESOURCE_EXHAUSTED</code>.</p> <p>Errors: <code>INVALID_ARGUMENT</code> for a missing, empty or inverted time window, an invalid <code>regex</code> or an unknown <code>format</code> value; <code>NOT_FOUND</code> for a named log stream or operation the caller may not read; <code>RESOURCE_EXHAUSTED</code> as above. A revoked access or an expired credential ends the export with <code>PERMISSION_DENIED</code> / <code>UNAUTHENTICATED</code> and no last message.</p> |
+| DeleteLogs | [DeleteLogsRequest](#ondewo.nlu.DeleteLogsRequest) | [DeleteLogsResponse](#ondewo.nlu.DeleteLogsResponse) | <p>Permanently deletes captured log entries matching a filter. Only the identity filters and the time window apply; content filters are rejected. A time window alone is a valid filter. A log stream whose last entry was deleted is removed too, unless it is still <code>CAI_LOG_CAPTURE_STATE_CAPTURING</code>. A capture that is still running keeps writing, so entries emitted after the deletion are stored again.</p> <p>Idempotent: repeating a deletion succeeds and reports <code>0</code> deleted entries. With <code>validate_only</code> nothing is deleted and the counts are what would be deleted.</p> <p>Errors: <code>INVALID_ARGUMENT</code> for an empty filter, a content filter (<code>text</code>, <code>regex</code>, <code>log_levels</code>, <code>min_log_level</code>, <code>include_unleveled_lines</code>, <code>emitter_prefixes</code>, <code>thread_names</code>, <code>trace_ids</code>; presence alone counts) or a <code>start_time</code> after <code>end_time</code>; <code>PERMISSION_DENIED</code> without <code>ServerPermission.Logs.DeleteLogs</code>; <code>RESOURCE_EXHAUSTED</code> when one deletion step exceeds <code>ONDEWO_NLU_CAI_LOG_QUERY_TIMEOUT_S</code> (what was deleted until then stays deleted; repeat the request); <code>UNAVAILABLE</code> when the database cannot be reached.</p> |
+
+ <!-- end services -->
+
+
+
 <a name="ondewo/nlu/operation_metadata.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
@@ -10636,6 +11350,8 @@ The request message for <a href="index.html#ondewo.nlu.Operations.GetRemoteOpera
 | container_id | [string](#string) |  | Optional. Scope the query to a single container of the operation, identified by its docker container id. Empty (the default) queries the operation&apos;s currently-registered container, preserving the legacy single-container behavior. When the container has finished and been removed, its persisted logs are served from the server-side log archive. |
 | before_seq | [int64](#int64) |  | Optional cursor for infinite-scroll-UP paging: return the newest lines with <a href="index.html#ondewo.nlu.RemoteOperationContainerLogLine">seq</a> &lt; <code>before_seq</code> (older window). <code>0</code> (the default) disables backward paging. |
 | after_seq | [int64](#int64) |  | Optional cursor for infinite-scroll-DOWN paging: return lines with <code>seq</code> &gt; <code>after_seq</code> (newer window). <code>0</code> (the default) disables forward paging. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the field paths to populate in every returned <code>RemoteOperationContainerLogLine</code>, relative to that message (no <code>log_lines.</code> prefix). <code>seq</code> and <code>log_stream</code> are always populated. Unset or empty returns every field. An unknown path is rejected with <code>INVALID_ARGUMENT</code> naming it. |
+| resume_token | [string](#string) |  | Optional. An opaque cursor from a previous response&apos;s <code>next_resume_token</code>. Use it instead of <code>after_seq</code> / <code>before_seq</code> when the operation ran several containers. Cannot be combined with <code>before_seq</code> or <code>after_seq</code>. |
 
 
 
@@ -10655,6 +11371,8 @@ The response message for <a href="index.html#ondewo.nlu.Operations.GetRemoteOper
 | min_available_seq | [int64](#int64) |  | The smallest <code>seq</code> currently available for this container (its oldest captured line). A client paging up has reached the beginning when the returned lines start at this value. |
 | max_available_seq | [int64](#int64) |  | The largest <code>seq</code> currently available for this container (its newest captured line). |
 | has_more_older | [bool](#bool) |  | True when older lines than the returned window still exist (i.e. the window&apos;s first <code>seq</code> &gt; <code>min_available_seq</code>) — the client may keep scrolling up. |
+| next_resume_token | [string](#string) |  | Cursor to fetch the next window, or to start a <code>StreamRemoteOperationContainerLogs</code> (or a <code>Logs.StreamLogs</code>) that continues exactly where this window ended. |
+| has_more_newer | [bool](#bool) |  | True when entries newer than this window exist. |
 
 
 
@@ -10858,7 +11576,8 @@ A single parsed container log line, emitted by both the streaming and the query 
 | message | [string](#string) |  | The log message text, with ANSI colour codes stripped and secrets redacted. |
 | container_id | [string](#string) |  | The docker container id this line was produced by. Lets a client attribute or group lines when an operation ran several containers. Empty when the id was not captured. |
 | container_name | [string](#string) |  | The docker container name this line was produced by. Empty when unavailable. |
-| seq | [int64](#int64) |  | The monotonically-increasing sequence number of this line within its container&apos;s captured log (assigned by the server-side capture). Used as the cursor for infinite-scroll paging. <code>0</code> when the line was produced by a legacy path that did not assign a sequence. |
+| seq | [int64](#int64) |  | Ordering cursor of this line, assigned by the database. Monotonically increasing WITHIN ONE CONTAINER but NOT contiguous: values come from a sequence shared by every log stream and are removed by retention. Never compute the next cursor as <code>seq + 1</code>; pass it back as <code>after_seq</code> / <code>before_seq</code> (strictly greater / smaller) or use <code>resume_token</code>. <code>0</code> when the line was produced by a legacy path that did not assign a sequence. |
+| log_stream | [string](#string) |  | Resource name of the log stream this line belongs to (see <a href="index.html#ondewo.nlu.CaiLogEntry">CaiLogEntry.log_stream</a>). |
 
 
 
@@ -10926,6 +11645,8 @@ The request message for <a href="index.html#ondewo.nlu.Operations.StreamRemoteOp
 | min_log_level | [LogSeverity](#ondewo.nlu.LogSeverity) |  | Only stream lines at or above this loguru severity. <code>LOG_SEVERITY_UNSPECIFIED</code> (the default) streams every line regardless of level. |
 | tail_lines | [int32](#int32) |  | Replay at most this many of the most recent existing log lines before switching to live follow. <code>0</code> (the default) starts the follow with no historical replay. |
 | container_id | [string](#string) |  | Optional. Scope the stream to a single container of the operation, identified by its docker container id (as returned by <a href="index.html#ondewo.nlu.RemoteOperationContainer">RemoteOperationContainer</a>). Empty (the default) streams the operation&apos;s currently-registered container, preserving the legacy single-container behavior. |
+| regex | [string](#string) |  | Optional. Only stream lines whose message matches this regular expression (Python <code>re</code> syntax, at most 512 characters). Empty (the default) disables regex filtering. An invalid, oversized or catastrophically backtracking pattern is rejected with <code>INVALID_ARGUMENT</code>. |
+| resume_token | [string](#string) |  | Optional. Resume exactly where a previous stream or <code>GetRemoteOperationContainerLogs</code> page stopped: the <code>next_resume_token</code> of that response, echoed back verbatim. When set, no historical replay is applied and <code>tail_lines</code> is ignored. The token is interchangeable with <code>Logs.StreamLogs</code> / <code>Logs.ListLogs</code> tokens. |
 
 
 
@@ -13272,6 +13993,26 @@ Represents an audio file resource attached to a session (input recording or gene
 
 
 
+<a name="ondewo.nlu.CancelTurn"></a>
+
+### CancelTurn
+Cancels a turn. At least one of <code>response_id</code> and <code>client_turn_id</code> must be set; when both
+are, <code>client_turn_id</code> is authoritative.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| response_id | [string](#string) |  | The server's <code>response_id</code> of the turn, when the client has already received it; empty otherwise. |
+| client_turn_id | [string](#string) |  | <code>StreamingDetectIntentRequest.client_turn_id</code> of the turn. |
+| turn_interruption_reason | [TurnInterruptionReason](#ondewo.nlu.TurnInterruptionReason) |  | Why the turn is cancelled. |
+| decided_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock time at which the client decided to cancel. Telemetry only. |
+| background_work_policy | [BackgroundWorkPolicy](#ondewo.nlu.BackgroundWorkPolicy) |  | What happens to background work the turn started. |
+
+
+
+
+
+
 <a name="ondewo.nlu.ContextFilter"></a>
 
 ### ContextFilter
@@ -13504,6 +14245,25 @@ This message contains a detected intent
 | algorithm | [string](#string) |  | intent detection algorithm |
 | fulfillment_messages | [Intent.Message](#ondewo.nlu.Intent.Message) | repeated | collection of rich messages to present to the user This field is set only for the first detected intent. For the rest of the intents the messages are not resolved and the raw messages for the current language code are available in self.intent.messages |
 | required_param_missing | [bool](#bool) |  | This field is set to: <ul> <li><code>true</code> if the matched intent has required parameters and not all of the required parameter values have been collected.</li> <li><code>false</code> if all required parameter values have been collected, or if the matched intent doesn&apos;t contain any required parameters.</li> </ul> |
+
+
+
+
+
+
+<a name="ondewo.nlu.DiscardDraft"></a>
+
+### DiscardDraft
+Discards the session step of a preemptive draft: a turn the client started speculatively on a partial
+transcript and then did not use. The server deletes the session step only when it belongs to this session and its
+request carried <code>QueryParameters.preemptive_draft</code> = true; it answers
+<code>TURN_CONTROL_ACK_STATUS_DRAFT_DISCARDED</code>. Any other step is kept and the server answers
+<code>TURN_CONTROL_ACK_STATUS_UNKNOWN_TURN</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| response_id | [string](#string) |  | The server's <code>response_id</code> of the draft turn. |
 
 
 
@@ -13882,6 +14642,69 @@ This message is a request to get a session step
 
 
 
+<a name="ondewo.nlu.GetWarmTransferIntroOutcomeRequest"></a>
+
+### GetWarmTransferIntroOutcomeRequest
+The request for the outcome of a warm transfer intro.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| intro_session | [string](#string) |  | Required. The intro session. Format: <code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code>. A session that was not prepared by <code>PrepareWarmTransferIntro</code> is answered with <code>NOT_FOUND</code>. |
+
+
+
+
+
+
+<a name="ondewo.nlu.HeardMessage"></a>
+
+### HeardMessage
+What the user heard of one spoken message of a turn.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| fulfillment_message_index | [int32](#int32) |  | Index into the turn's <code>QueryResult.fulfillment_messages</code>; <code>-1</code> for a filler, which is not one of them. |
+| platform | [Intent.Message.Platform](#ondewo.nlu.Intent.Message.Platform) |  | Platform of that fulfillment message. |
+| full_text | [string](#string) |  | The text that was synthesized for the message, SIP and SSML markup stripped. |
+| heard_text | [string](#string) |  | The prefix of <code>full_text</code> the user heard, cut back to a word boundary. |
+| heard_char_count | [int32](#int32) |  | Length of <code>heard_text</code> in Unicode code points. |
+| heard_audio_duration_in_s | [float](#float) |  | Duration of the message's audio that was played to the user, in seconds. |
+| total_audio_duration_in_s | [float](#float) |  | Duration of the message's whole audio, in seconds; 0 when it was never synthesized. |
+| completed | [bool](#bool) |  | The message was played to its end. |
+| never_started | [bool](#bool) |  | Nothing of the message was played (e.g. it was still queued when the turn was interrupted). |
+| skipped_sip_trigger | [bool](#bool) |  | The message carried a SIP trigger (e.g. a transfer or a hangup) that was NOT executed because the turn was interrupted first. |
+| filler_id | [string](#string) |  | For a filler, the filler id the server sent in <code>diagnostic_info.ondewo_filler.filler_id</code>; empty otherwise. |
+
+
+
+
+
+
+<a name="ondewo.nlu.HeardReport"></a>
+
+### HeardReport
+Reports what the user heard of a turn's answer. At least one of <code>response_id</code> and
+<code>client_turn_id</code> must be set. The server keeps the report with the highest <code>revision</code> per
+turn and ignores a lower or equal one.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| response_id | [string](#string) |  | The server's <code>response_id</code> of the turn, when the client has already received it; empty otherwise. |
+| client_turn_id | [string](#string) |  | <code>StreamingDetectIntentRequest.client_turn_id</code> of the turn. |
+| revision | [int32](#int32) |  | Revision of this report, starting at 1. A later, more precise measurement of the same turn carries a higher revision. |
+| turn_interruption_reason | [TurnInterruptionReason](#ondewo.nlu.TurnInterruptionReason) |  | Why the turn was interrupted. |
+| heard_messages | [HeardMessage](#ondewo.nlu.HeardMessage) | repeated | One entry per message of the turn that was spoken, queued or skipped, in playback order. |
+| heard_text_precision | [HeardTextPrecision](#ondewo.nlu.HeardTextPrecision) |  | How the heard text was determined. |
+| caller_overlap_duration_in_s | [float](#float) |  | Duration of heard audio that was played after the user had started speaking (the overlap of bot and user), in seconds. |
+
+
+
+
+
+
 <a name="ondewo.nlu.ImageFileResource"></a>
 
 ### ImageFileResource
@@ -13915,6 +14738,37 @@ Instructs the speech recognizer how to process the audio content.
 | sample_rate_hertz | [int32](#int32) |  | Required. Sample rate (in Hertz) of the audio content sent in the query. Refer to <a href="/speech/docs/basics">Cloud Speech API documentation</a> for more details. |
 | language_code | [string](#string) |  | Required. The language of the supplied audio. Dialogflow does not do translations. See <a href="https://dialogflow.com/docs/languages">Language Support</a> for a list of the currently supported language codes. Note that queries in the same session do not necessarily need to specify the same language. |
 | phrase_hints | [string](#string) | repeated | Optional. The collection of phrase hints which are used to boost accuracy of speech recognition. Refer to <a href="/speech/docs/basics#phrase-hints">Cloud Speech API documentation</a> for more details. |
+
+
+
+
+
+
+<a name="ondewo.nlu.InterruptTurnRequest"></a>
+
+### InterruptTurnRequest
+The request to interrupt a turn of a session outside a <code>StreamingDetectIntent</code> stream.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| session | [string](#string) |  | Required. The session of the turn. Format: <code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code>. |
+| turn_control | [TurnControl](#ondewo.nlu.TurnControl) |  | Required. The control to apply. |
+
+
+
+
+
+
+<a name="ondewo.nlu.InterruptTurnResponse"></a>
+
+### InterruptTurnResponse
+The response to an <code>InterruptTurnRequest</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| turn_control_ack | [TurnControlAck](#ondewo.nlu.TurnControlAck) |  | Outcome of the control. |
 
 
 
@@ -14744,7 +15598,7 @@ Emitted on a streaming DetectIntent when an LLM invocation starts.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | llm_call_id | [string](#string) |  | Collector-assigned id grouping all events emitted for this LLM call. |
-| provider | [string](#string) |  | Provider tag: "autogen" | "langchain" | "openai" | "anthropic" | ... |
+| provider | [string](#string) |  | Provider tag: "langchain" | "openai" | "anthropic" | ... ("autogen" only on telemetry recorded before AutoGen was removed). |
 | model_name | [string](#string) |  | Concrete model identifier (e.g. "claude-3-5-sonnet-20241022"). |
 | agent_name | [string](#string) |  | intent_agent executor / agent name owning the call. |
 | start_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock start of the LLM call. |
@@ -15042,7 +15896,7 @@ Telemetry for a single LLM invocation inside one DetectIntent turn.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| provider | [string](#string) |  | Provider tag: "autogen" | "langchain" | "openai" | "anthropic" | ... |
+| provider | [string](#string) |  | Provider tag: "langchain" | "openai" | "anthropic" | ... ("autogen" only on telemetry recorded before AutoGen was removed). |
 | model_name | [string](#string) |  | Concrete model identifier (e.g. "Qwen/Qwen3.6-27b-fp8"). |
 | agent_name | [string](#string) |  | intent_agent executor / agent name. |
 | llm_token_usage | [LlmTokenUsage](#ondewo.nlu.LlmTokenUsage) |  | Totals for this call. |
@@ -15077,14 +15931,14 @@ Telemetry for a single LLM invocation inside one DetectIntent turn.
 | cached_input_tokens | [int32](#int32) |  | Number of input tokens served from the provider-side prompt cache (Anthropic <code>cache_read_input_tokens</code>). |
 | cache_creation_input_tokens | [int32](#int32) |  | Number of input tokens written to the provider-side prompt cache (Anthropic <code>cache_creation_input_tokens</code>). |
 | langsmith_run_url | [string](#string) |  | LangSmith run URL for direct click-through when LangSmith tracing is active. |
-| team_name | [string](#string) |  | Autogen team display name owning the call. |
-| team_id | [string](#string) |  | Autogen team identifier (UUID). |
-| agent_role | [string](#string) |  | Autogen agent role tag (user_proxy | assistant | tool_executor | reflection). |
-| sender_agent | [string](#string) |  | Name of the autogen agent that produced the message. |
-| recipient_agent | [string](#string) |  | Name of the autogen agent that received the message. |
-| turn_index | [int32](#int32) |  | Zero-based position of this LLM call inside the autogen <code>run_stream()</code> sequence. |
-| reflection_iterations | [int32](#int32) |  | Number of reflection loops executed in <code>robust_assistant_agent</code> for this call. |
-| termination_reason | [string](#string) |  | Autogen <code>TaskResult.stop_reason</code> string when surfaced. |
+| team_name | [string](#string) |  | Display name of the agent team owning the call; empty for a single agent. |
+| team_id | [string](#string) |  | Identifier (UUID) of the agent team owning the call. |
+| agent_role | [string](#string) |  | Role tag of the agent that made the call inside its team. |
+| sender_agent | [string](#string) |  | Name of the agent that produced the message. |
+| recipient_agent | [string](#string) |  | Name of the agent that received the message. |
+| turn_index | [int32](#int32) |  | Zero-based position of this LLM call inside the agent run&apos;s sequence of LLM calls. |
+| reflection_iterations | [int32](#int32) |  | Deprecated: number of reflection loops of the removed AutoGen <code>robust_assistant_agent</code> for this call. No current agent runs reflection loops, so it is 0. |
+| termination_reason | [string](#string) |  | Stop reason of the agent team run when surfaced (formerly AutoGen <code>TaskResult.stop_reason</code>). |
 | evaluator_runs_join_key | [string](#string) |  | Join key linking this LLM call to an evaluator run (see llm_evaluation.proto). |
 | llm_evaluation_feedbacks | [LlmEvaluationFeedback](#ondewo.nlu.LlmEvaluationFeedback) | repeated | Immediate inline feedback recorded inside the turn (e.g. self-grading by a reflection agent). Each entry is a single LlmEvaluationFeedback record. |
 | ccai_service_name | [string](#string) |  | Resource name of the CCAI service that issued this LLM call. |
@@ -15104,7 +15958,7 @@ Telemetry for a single LLM invocation inside one DetectIntent turn.
 | ccai_service_provider | [CcaiServiceProvider](#ondewo.nlu.CcaiServiceProvider) |  | Provider of the ccai service |
 | llm_safety_assessment | [LlmSafetyAssessment](#ondewo.nlu.LlmSafetyAssessment) |  | Native (regex / substring, no-LLM) safety assessment computed at telemetry build time over the call's input / output text. Distinct from the offline LLM-judge safety evaluators in <code>llm_evaluation.proto</code>: this is the live MONITORING signal on real DetectIntent traffic. Unset when safety scoring is disabled. |
 | llm_retrieval_metadata | [LlmRetrievalMetadata](#ondewo.nlu.LlmRetrievalMetadata) |  | Typed view of the retrieved RAG chunks for this LLM call. Populated alongside the unstructured <code>outputs.retrieved_chunks</code> Struct (field 18, kept for back-compat); both carry the same chunk list. Unset for non-retrieval calls. |
-| llm_call_id | [string](#string) |  | Id of THIS LLM call. Same identifier the streaming telemetry events carry as <code>llm_call_id</code> (<code>LlmLlmCallStartedEvent</code>, <code>LlmToolCallStartedEvent</code>, ...), so an aggregate or a persisted row can be correlated back to the live event stream. Distinct from <code>run_id</code> (field 11), which is the UPSTREAM framework's id (autogen / langchain). |
+| llm_call_id | [string](#string) |  | Id of THIS LLM call. Same identifier the streaming telemetry events carry as <code>llm_call_id</code> (<code>LlmLlmCallStartedEvent</code>, <code>LlmToolCallStartedEvent</code>, ...), so an aggregate or a persisted row can be correlated back to the live event stream. Distinct from <code>run_id</code> (field 11), which is the UPSTREAM framework's id (e.g. langchain). |
 
 
 
@@ -15248,7 +16102,7 @@ Metadata for one tool call executed by the LLM.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| tool_call_id | [string](#string) |  | Stable id assigned by the upstream framework (autogen / langchain). |
+| tool_call_id | [string](#string) |  | Stable id assigned by the upstream framework (e.g. langchain). |
 | tool_name | [string](#string) |  | Name of the tool / function invoked. |
 | start_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock start time of the tool call. |
 | end_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock end time of the tool call. |
@@ -15271,7 +16125,7 @@ Emitted on a streaming DetectIntent when a tool call starts.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| tool_call_id | [string](#string) |  | Stable id assigned by the upstream framework (autogen / langchain). |
+| tool_call_id | [string](#string) |  | Stable id assigned by the upstream framework (e.g. langchain). |
 | tool_name | [string](#string) |  | Name of the tool / function invoked. |
 | arguments | [google.protobuf.Struct](#google.protobuf.Struct) |  | Tool arguments as a structured payload (Struct kept as-is; not a custom Message). |
 | start_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Wall-clock start time of the tool call. |
@@ -15299,7 +16153,44 @@ One tool's invocation aggregate across the scope.
 | llm_token_usage | [LlmTokenUsage](#ondewo.nlu.LlmTokenUsage) |  | Summed tool-call token usage (input / output / total). |
 | arguments | [google.protobuf.Struct](#google.protobuf.Struct) |  | Arguments the representative invocation was called with, as a structured payload (Struct kept as-is; not a custom Message). Unset when the source metadata carried none. |
 | llm_call_id | [string](#string) |  | Groups the representative invocation under its <code>LlmTelemetry</code> entry. |
-| tool_call_id | [string](#string) |  | Stable id of the representative invocation, assigned by the upstream framework (autogen / langchain). |
+| tool_call_id | [string](#string) |  | Stable id of the representative invocation, assigned by the upstream framework (e.g. langchain). |
+
+
+
+
+
+
+<a name="ondewo.nlu.PrepareWarmTransferIntroRequest"></a>
+
+### PrepareWarmTransferIntroRequest
+The request to prepare the intro session of a warm transfer.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| intro_session | [string](#string) |  | Required. The intro session, which must not exist yet. Format: <code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code>. An existing session that was not prepared with the same <code>transfer_request_id</code> is refused with <code>ALREADY_EXISTS</code>. |
+| source_session | [string](#string) |  | Required. The caller's session the intro summarises. Format: <code>projects/&lt;project_uuid&gt;/agent/sessions/&lt;session_uuid&gt;</code>. A session of another project than <code>intro_session</code> is refused with <code>INVALID_ARGUMENT</code>. |
+| config | [WarmTransferIntroConfig](#ondewo.nlu.WarmTransferIntroConfig) |  | The configuration of the intro. |
+| language_code | [string](#string) |  | The language of the intro session. |
+| transfer_request_id | [string](#string) |  | Required. The idempotency key of the transfer. |
+
+
+
+
+
+
+<a name="ondewo.nlu.PrepareWarmTransferIntroResponse"></a>
+
+### PrepareWarmTransferIntroResponse
+The response to a <code>PrepareWarmTransferIntroRequest</code>. Never carries the intro text.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| text_source_used | [WarmTransferIntroTextSource](#ondewo.nlu.WarmTransferIntroTextSource) |  | The source the intro text was rendered from. |
+| text_fell_back | [bool](#bool) |  | True when the LLM failed or exceeded its budget and the TEMPLATE was used instead. |
+| intro_text_chars | [int32](#int32) |  | The length of the intro text in characters. |
+| prompt_digest | [string](#string) |  | The SHA-256 (hex) of the resolved prompt, for audit. |
 
 
 
@@ -15359,6 +16250,7 @@ For a phone bot, this is the phone number +123456789 the user called (Note: This
 https://aim-develop.ondewo.com/ |
 | identified_user_id | [string](#string) |  | Id of the &quot;identified user&quot; e.g. for a chatbot the email address or for a phone bot the phone number of the user This field can also be used for a customized tracking id or tag id |
 | transcriptions | [S2tTranscription](#ondewo.nlu.S2tTranscription) | repeated | transcriptions of the user input sorted by score |
+| preemptive_draft | [bool](#bool) |  | Optional. Marks the request as a preemptive draft: a turn the client (e.g. ondewo-csi) starts speculatively, e.g. on a partial transcript, and may later discard with <code>TurnControl.discard_draft</code>. The server records the mark on the session step of this request. A <code>DiscardDraft</code> deletes only a session step of the same session whose request carried this mark. A server that does not know this field ignores it and keeps the step. |
 
 
 
@@ -15416,6 +16308,7 @@ Chunk information for a document chunk referenced in a RAG based <code>Streaming
 | similarity | [float](#float) |  | Similarity score of this chunk for response it is retruned with. |
 | document_url | [string](#string) |  | For crawled documents the URL of the source document. For any other document it is left empty. |
 | deep_link_url | [string](#string) |  | For crawled documents link to the source document that directly jumps to the chunk's location on the page using a text fragment anchor (a bit fragile and might not always work). For any other document it is left empty. |
+| document_title | [string](#string) |  | Title of the document (optional). |
 
 
 
@@ -15735,6 +16628,8 @@ Multiple request messages should be sent in order:
 | query_input | [QueryInput](#ondewo.nlu.QueryInput) |  | Required. The input specification. It can be set to: <ol> <li>an audio config which instructs the speech recognizer how to process the speech audio,</li> <li>a conversational query in the form of text, or</li> <li>an event that specifies which intent to trigger.</li> </ol> |
 | single_utterance | [bool](#bool) |  | Optional. If <code>false</code> (default), recognition does not cease until the client closes the stream. If <code>true</code>, the recognizer will detect a single spoken utterance in input audio. Recognition ceases when it detects the audio&apos;s voice has stopped or paused. In this case, once a detected intent is received, the client should close the stream and start a new request with a new stream as needed. This setting is ignored when <code>query_input</code> is a piece of text or an event. |
 | input_audio | [bytes](#bytes) |  | Optional. The input audio content to be recognized. Must be sent if <code>query_input</code> was set to a streaming input audio config. The complete audio over all streaming messages must not exceed 1 minute. |
+| turn_control | [TurnControl](#ondewo.nlu.TurnControl) |  | Optional. Controls a turn of this stream: cancels it, reports what the user heard of its answer, or discards the session step of a preemptive draft. Sent ALONE (no <code>query_input</code>) on a call-length stream; the server applies it in stream order and starts no turn for it. Send it only to a server that advertised the initial metadata <code>x-ondewo-cai-turn-control: 1</code> on this stream: an older server treats a request without <code>query_input</code> as a malformed turn and ends the stream. |
+| client_turn_id | [string](#string) |  | Optional. Client-minted id (e.g. a uuid4 hex) of the turn this request STARTS; set together with <code>query_input</code>. The server echoes it on every response of that turn (<code>StreamingDetectIntentResponse.client_turn_id</code>), and a <code>CancelTurn</code> or <code>HeardReport</code> can name the turn by it before the server's <code>response_id</code> is known. |
 
 
 
@@ -15763,6 +16658,8 @@ Multiple response messages can be returned in order:
 | llm_thinking_delta | [LlmThinkingDeltaEvent](#ondewo.nlu.LlmThinkingDeltaEvent) |  | Emitted for an incremental LLM thinking (reasoning) update. |
 | llm_token_usage_update | [LlmTokenUsageUpdateEvent](#ondewo.nlu.LlmTokenUsageUpdateEvent) |  | Emitted when the running LLM token-usage totals are updated. |
 | llm_agent_node_event | [LlmAgentNodeEvent](#ondewo.nlu.LlmAgentNodeEvent) |  | Emitted when a node of an AI Team graph starts, completes or fails. |
+| turn_control_ack | [TurnControlAck](#ondewo.nlu.TurnControlAck) |  | Set on the response that acknowledges a <code>CancelTurn</code> or a <code>DiscardDraft</code> sent as <code>StreamingDetectIntentRequest.turn_control</code>; a <code>HeardReport</code> is not acknowledged on the stream. A response that carries it carries no query result and is never an answer. The acknowledgement of a <code>CancelTurn</code> is sent after every other response of the cancelled turn, so no response of that turn follows it. The acknowledgement of a <code>DiscardDraft</code> is sent once the discard is decided, between turns, with the draft's <code>response_id</code> and no <code>client_turn_id</code>: <code>TURN_CONTROL_ACK_STATUS_DRAFT_DISCARDED</code> when the draft's session step was deleted, <code>TURN_CONTROL_ACK_STATUS_UNKNOWN_TURN</code> when no step was deleted. Not part of <code>telemetry_event</code>. |
+| client_turn_id | [string](#string) |  | Echo of <code>StreamingDetectIntentRequest.client_turn_id</code> of the turn this response belongs to; empty when the client sent none. |
 
 
 
@@ -15828,6 +16725,42 @@ Represents the natural language text to be processed.
 | ----- | ---- | ----- | ----------- |
 | text | [string](#string) |  | Required. The UTF-8 encoded natural language text to be processed. Text length must not exceed 256 bytes. |
 | language_code | [string](#string) |  | Required. The language of this conversational query. See <a href="https://dialogflow.com/docs/languages">Language Support</a> for a list of the currently supported language codes. Note that queries in the same session do not necessarily need to specify the same language. |
+
+
+
+
+
+
+<a name="ondewo.nlu.TurnControl"></a>
+
+### TurnControl
+Controls one turn of a session. Sent as <code>StreamingDetectIntentRequest.turn_control</code> on a call-length
+stream, or in an <code>InterruptTurnRequest</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| cancel_turn | [CancelTurn](#ondewo.nlu.CancelTurn) |  | Cancel the turn: stop generating its answer. Acknowledged with a <code>TurnControlAck</code>. |
+| heard_report | [HeardReport](#ondewo.nlu.HeardReport) |  | Report what the user heard of the turn's answer, so the server rewrites the session step and the LLM memory to it. |
+| discard_draft | [DiscardDraft](#ondewo.nlu.DiscardDraft) |  | Discard the session step of a preemptive draft the client did not use. Acknowledged with a <code>TurnControlAck</code>. |
+
+
+
+
+
+
+<a name="ondewo.nlu.TurnControlAck"></a>
+
+### TurnControlAck
+Acknowledges a turn control.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| response_id | [string](#string) |  | The server's <code>response_id</code> of the turn; empty when it is not known (e.g. a turn cancelled before it started). |
+| client_turn_id | [string](#string) |  | <code>client_turn_id</code> of the turn, as sent by the client. |
+| turn_control_ack_status | [TurnControlAckStatus](#ondewo.nlu.TurnControlAckStatus) |  | Outcome of the turn control. |
+| server_cancel_duration_in_s | [float](#float) |  | Time the server took from receiving a <code>CancelTurn</code> until the turn's generation had stopped, in seconds; 0 for any other control. |
 
 
 
@@ -15906,6 +16839,59 @@ Represents a video file resource (e.g., MP4, AVI).
 
 
 
+
+<a name="ondewo.nlu.WarmTransferIntroConfig"></a>
+
+### WarmTransferIntroConfig
+The configuration of one warm transfer intro, as resolved by the caller of
+<code>PrepareWarmTransferIntro</code>. A text left empty (or unset, for an <code>optional</code> field) falls back
+to the agent's default text for the language (<code>Agent.warm_transfer_settings</code>), then to the built-in
+default. Texts are spoken to the target, never to the caller, except <code>caller_declined_message</code> and
+<code>caller_unreachable_message</code>.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| intro_prompt | [string](#string) |  | The LLM instruction (<code>WARM_TRANSFER_INTRO_TEXT_SOURCE_LLM_SUMMARY</code>) or the template text (<code>WARM_TRANSFER_INTRO_TEXT_SOURCE_TEMPLATE</code>, placeholders <code>{caller_name}</code>, <code>{callee_name}</code>, <code>{topic}</code>, <code>{summary}</code>) of the intro. At most 4000 characters. |
+| text_source | [WarmTransferIntroTextSource](#ondewo.nlu.WarmTransferIntroTextSource) |  | Where the intro text comes from. |
+| ready_question | [string](#string) |  | The first question to the target, which must not reveal anything about the caller, e.g. "Hier ist der digitale Assistent von {project}. Ich habe einen Anruf für Sie. Sind Sie am Apparat? Sagen Sie ja oder drücken Sie 1." Placeholder <code>{project}</code>: <code>project_display_name</code>. |
+| confirm_human_before_intro | [bool](#bool) | optional | Whether the intro is spoken only after the target answered <code>ready_question</code> (a guard against a mailbox). Unset = true. |
+| accept_question | [string](#string) |  | The question after the intro, e.g. "Möchten Sie das Gespräch übernehmen? Ja oder 1, nein oder 2." |
+| decline_reason_question | [string](#string) | optional | The question after a decline, e.g. "Was darf ich dem Anrufer ausrichten?". Unset = the agent's or the built-in default; set to "" = the reason is not asked for. |
+| caller_declined_message | [string](#string) |  | The template of the message the caller hears after a decline. Placeholders <code>{callee_name}</code> and <code>{reason}</code>; without a reason, the variant without the reason clause is used. |
+| caller_unreachable_message | [string](#string) |  | The template of the message the caller hears when the target was busy, did not answer, gave no decision or the intro could not run. Placeholder <code>{callee_name}</code>. |
+| accept_dtmf | [string](#string) |  | The DTMF key that accepts: one of <code>0-9</code>, <code>*</code>, <code>#</code>. Empty = "1". |
+| decline_dtmf | [string](#string) |  | The DTMF key that declines: one of <code>0-9</code>, <code>*</code>, <code>#</code>, different from <code>accept_dtmf</code>. Empty = "2". |
+| callee_display_name | [string](#string) |  | Who the target is, e.g. "Frau Berger, Buchhaltung": <code>{callee_name}</code>. At most 128 characters. |
+| callee_description | [string](#string) |  | The role and context of the target, given to the LLM intro. At most 512 characters. |
+| llm_ccai_service_name | [string](#string) |  | The <code>ONDEWO_NLU_LLM</code> CCAI service of the LLM intro. Empty = the agent's <code>warm_transfer_settings.llm_ccai_service_name</code>, then the project's first <code>ONDEWO_NLU_LLM</code> service. |
+| max_history_steps | [int32](#int32) |  | How many of the latest steps of the source session the intro reads. 0 = 30. |
+| decision_timeout_s | [int32](#int32) |  | Seconds from a question to the decision, declared to the client as the expected input's timeout. |
+| project_display_name | [string](#string) |  | The project's display name: <code>{project}</code> in <code>ready_question</code>. |
+
+
+
+
+
+
+<a name="ondewo.nlu.WarmTransferIntroOutcome"></a>
+
+### WarmTransferIntroOutcome
+The outcome of a warm transfer intro. Holds no intro text and no reason text.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| decision | [WarmTransferIntroDecision](#ondewo.nlu.WarmTransferIntroDecision) |  | The decision of the target. |
+| decided_by | [WarmTransferIntroDecidedBy](#ondewo.nlu.WarmTransferIntroDecidedBy) |  | How the decision was given. |
+| decline_reason_present | [bool](#bool) |  | True when the target gave a reason after declining. |
+| stage | [WarmTransferIntroStage](#ondewo.nlu.WarmTransferIntroStage) |  | The stage of the intro session. |
+| cause | [string](#string) |  | A bounded token naming why there is no decision, e.g. <code>voicemail-suspected</code> (no ready answer) or <code>unclear-twice</code>; empty otherwise. |
+
+
+
+
+
  <!-- end messages -->
 
 
@@ -15939,6 +16925,18 @@ File type of an audio resource
 | AUDIO_FILE_RESOURCE_TYPE_T2S | 1 | Audio file from text to speech |
 | AUDIO_FILE_RESOURCE_TYPE_S2T | 2 | Audio file from speech to text |
 | AUDIO_FILE_RESOURCE_TYPE_S2T_AND_T2S | 3 | Audio file from speech to text and text to speech |
+
+
+
+<a name="ondewo.nlu.BackgroundWorkPolicy"></a>
+
+### BackgroundWorkPolicy
+What happens to background work (e.g. an asynchronous tool) the cancelled turn started.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| BACKGROUND_WORK_POLICY_KEEP | 0 | Keep it running; its result is delivered later as usual. |
+| BACKGROUND_WORK_POLICY_CANCEL_PENDING | 1 | Cancel work that is still pending, unless the user already heard it acknowledged. |
 
 
 
@@ -16013,6 +17011,21 @@ fixed-width bucket_width_seconds on the request.
 | FEEDBACK_TIME_GRANULARITY_WEEK | 3 | Weekly calendar buckets (ISO weeks, Monday start). |
 | FEEDBACK_TIME_GRANULARITY_MONTH | 4 | Monthly calendar buckets. |
 | FEEDBACK_TIME_GRANULARITY_YEAR | 5 | Yearly calendar buckets. |
+
+
+
+<a name="ondewo.nlu.HeardTextPrecision"></a>
+
+### HeardTextPrecision
+How the heard text of a <code>HeardReport</code> was determined.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| HEARD_TEXT_PRECISION_UNSPECIFIED | 0 | Not set. |
+| HEARD_TEXT_PRECISION_NONE_HEARD | 1 | Nothing of the answer was heard. |
+| HEARD_TEXT_PRECISION_FULL | 2 | The whole answer was heard. |
+| HEARD_TEXT_PRECISION_ESTIMATED_SERVER | 3 | The played share of the audio was estimated by the client from when it handed the audio to the player, not measured by the player, and mapped proportionally onto the text. |
+| HEARD_TEXT_PRECISION_PROPORTIONAL | 4 | The played share of the audio was measured by the audio player and mapped proportionally onto the text. |
 
 
 
@@ -16127,6 +17140,100 @@ speech-to-text system or by a human annotator.
 | TRANSCRIPTION_TYPE_HUMAN | 2 | Manual transcription produced by a human annotator. |
 
 
+
+<a name="ondewo.nlu.TurnControlAckStatus"></a>
+
+### TurnControlAckStatus
+Outcome of a turn control.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| TURN_CONTROL_ACK_STATUS_UNSPECIFIED | 0 | Not set. |
+| TURN_CONTROL_ACK_STATUS_CANCELLED | 1 | The turn was being generated and is now cancelled. |
+| TURN_CONTROL_ACK_STATUS_CANCELLED_QUEUED | 2 | The turn had not started yet; it is cancelled and will not run. |
+| TURN_CONTROL_ACK_STATUS_ALREADY_FINISHED | 3 | The turn had already finished generating; nothing was cancelled. |
+| TURN_CONTROL_ACK_STATUS_UNKNOWN_TURN | 4 | No turn of this session matches the given ids. For a <code>DiscardDraft</code>: no session step of this session with the given <code>response_id</code> carries <code>QueryParameters.preemptive_draft</code>; the discard is refused and the step, if one exists, is kept. |
+| TURN_CONTROL_ACK_STATUS_HEARD_APPLIED | 5 | The heard report was applied to the turn's session step. |
+| TURN_CONTROL_ACK_STATUS_HEARD_STALE | 6 | The heard report was ignored because a report with the same or a higher revision was already applied. |
+| TURN_CONTROL_ACK_STATUS_DRAFT_DISCARDED | 7 | The draft's session step, whose request carried <code>QueryParameters.preemptive_draft</code>, was deleted. |
+
+
+
+<a name="ondewo.nlu.TurnInterruptionReason"></a>
+
+### TurnInterruptionReason
+Why a turn was interrupted.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| TURN_INTERRUPTION_REASON_UNSPECIFIED | 0 | Not set. |
+| TURN_INTERRUPTION_REASON_BARGE_IN | 1 | The user spoke over the answer and the interruption was confirmed as real. |
+| TURN_INTERRUPTION_REASON_CALLER_SPOKE_WHILE_THINKING | 2 | The user spoke again while the turn was still being generated, before any of its answer was played. |
+| TURN_INTERRUPTION_REASON_CALL_ENDED | 3 | The call ended while the turn was being generated or played. |
+| TURN_INTERRUPTION_REASON_FILLER_CUT | 4 | A filler of the turn was cut. |
+| TURN_INTERRUPTION_REASON_NO_FINAL_TIMEOUT | 5 | The user started speaking but no final transcript arrived in time, and the held answer was discarded. |
+| TURN_INTERRUPTION_REASON_OPERATOR_TAKEOVER | 6 | A human operator took the call over. |
+| TURN_INTERRUPTION_REASON_BOT_MUTED | 7 | A human operator muted the bot. |
+
+
+
+<a name="ondewo.nlu.WarmTransferIntroDecidedBy"></a>
+
+### WarmTransferIntroDecidedBy
+How the target of a warm transfer intro gave the decision.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| WARM_TRANSFER_INTRO_DECIDED_BY_UNSPECIFIED | 0 | Not set, or not decided yet. |
+| WARM_TRANSFER_INTRO_DECIDED_BY_DTMF | 1 | By a DTMF key. |
+| WARM_TRANSFER_INTRO_DECIDED_BY_SPEECH | 2 | By speech. |
+| WARM_TRANSFER_INTRO_DECIDED_BY_TIMEOUT | 3 | By the decision timeout. |
+
+
+
+<a name="ondewo.nlu.WarmTransferIntroDecision"></a>
+
+### WarmTransferIntroDecision
+The decision of the target of a warm transfer intro.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| WARM_TRANSFER_INTRO_DECISION_UNSPECIFIED | 0 | Not set. |
+| WARM_TRANSFER_INTRO_DECISION_PENDING | 1 | The intro is still running. |
+| WARM_TRANSFER_INTRO_DECISION_ACCEPTED | 2 | The target accepted the call. |
+| WARM_TRANSFER_INTRO_DECISION_DECLINED | 3 | The target declined the call. |
+| WARM_TRANSFER_INTRO_DECISION_NO_DECISION | 4 | The target gave no decision: no ready answer, an unclear answer twice, or a timeout. |
+
+
+
+<a name="ondewo.nlu.WarmTransferIntroStage"></a>
+
+### WarmTransferIntroStage
+The stage of a warm transfer intro session.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| WARM_TRANSFER_INTRO_STAGE_UNSPECIFIED | 0 | Not set. |
+| WARM_TRANSFER_INTRO_STAGE_PREPARED | 1 | Prepared; nothing spoken yet. |
+| WARM_TRANSFER_INTRO_STAGE_READY_ASKED | 2 | <code>ready_question</code> spoken, waiting for a person to answer. |
+| WARM_TRANSFER_INTRO_STAGE_INTRO_SPOKEN | 3 | The intro and <code>accept_question</code> spoken, waiting for the decision. |
+| WARM_TRANSFER_INTRO_STAGE_REASON_ASKED | 4 | <code>decline_reason_question</code> spoken, waiting for the reason. |
+| WARM_TRANSFER_INTRO_STAGE_CLOSED | 5 | The final answer, which ends the target's call, was generated. |
+
+
+
+<a name="ondewo.nlu.WarmTransferIntroTextSource"></a>
+
+### WarmTransferIntroTextSource
+Where the intro text of a warm transfer comes from.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| WARM_TRANSFER_INTRO_TEXT_SOURCE_UNSPECIFIED | 0 | Not set: <code>WARM_TRANSFER_INTRO_TEXT_SOURCE_LLM_SUMMARY</code> when the project has an LLM service, else <code>WARM_TRANSFER_INTRO_TEXT_SOURCE_TEMPLATE</code>. |
+| WARM_TRANSFER_INTRO_TEXT_SOURCE_TEMPLATE | 1 | <code>WarmTransferIntroConfig.intro_prompt</code> is a text with the placeholders <code>{caller_name}</code>, <code>{callee_name}</code>, <code>{topic}</code> and <code>{summary}</code>. |
+| WARM_TRANSFER_INTRO_TEXT_SOURCE_LLM_SUMMARY | 2 | An LLM summarises the source session for the target; <code>WarmTransferIntroConfig.intro_prompt</code> is its instruction. |
+
+
  <!-- end enums -->
 
  <!-- end HasExtensions -->
@@ -16141,6 +17248,9 @@ A session represents an interaction with a user. You retrieve user input and pas
 | ----------- | ------------ | ------------- | ------------|
 | DetectIntent | [DetectIntentRequest](#ondewo.nlu.DetectIntentRequest) | [DetectIntentResponse](#ondewo.nlu.DetectIntentResponse) | Processes a natural language query and returns structured, actionable data as a result. This method is not idempotent, because it may cause contexts and session entity types to be updated, which in turn might affect results of future queries. |
 | StreamingDetectIntent | [StreamingDetectIntentRequest](#ondewo.nlu.StreamingDetectIntentRequest) stream | [StreamingDetectIntentResponse](#ondewo.nlu.StreamingDetectIntentResponse) stream | Processes a natural language query in audio format in a streaming fashion and returns structured, actionable data as a result. This method is only available via the gRPC API (not REST). |
+| InterruptTurn | [InterruptTurnRequest](#ondewo.nlu.InterruptTurnRequest) | [InterruptTurnResponse](#ondewo.nlu.InterruptTurnResponse) | Interrupts a turn of the session outside a <code>StreamingDetectIntent</code> stream: cancels it, reports what the user actually heard of its answer, or discards the session step of a preemptive draft. Meant for clients without a call-length stream (e.g. a stop button) and for a heard report that arrives after the stream closed. A voice client with an open stream sends the same <code>TurnControl</code> on that stream instead (<code>StreamingDetectIntentRequest.turn_control</code>). Requires the permission to interrupt a turn of the session's project. |
+| PrepareWarmTransferIntro | [PrepareWarmTransferIntroRequest](#ondewo.nlu.PrepareWarmTransferIntroRequest) | [PrepareWarmTransferIntroResponse](#ondewo.nlu.PrepareWarmTransferIntroResponse) | Prepares the intro session of a warm transfer: reads the history, the contexts and the slots of the source (caller) session, renders the intro text (with an LLM within a time budget, or from the TEMPLATE when the LLM fails or is not configured), strips every <code>&lt;SIP:…&gt;</code> markup from it, and stores the text, the configuration and the stage in the intro session, which must not exist yet. Writes no step into the source session. Idempotent per (<code>intro_session</code>, <code>transfer_request_id</code>): a repeated request answers the response of the first one. Answers <code>UNIMPLEMENTED</code> when the server's warm transfer feature is switched off, and <code>FAILED_PRECONDITION</code> with <code>reason=warm-intro-disabled-for-agent</code> when <code>Agent.warm_transfer_settings.enabled</code> is false. Requires the permission to run a warm transfer intro of the session's project. See <code>docs/warm_transfer.md</code>. |
+| GetWarmTransferIntroOutcome | [GetWarmTransferIntroOutcomeRequest](#ondewo.nlu.GetWarmTransferIntroOutcomeRequest) | [WarmTransferIntroOutcome](#ondewo.nlu.WarmTransferIntroOutcome) | Returns the decision the target gave in the intro session of a warm transfer. Never returns the reason text or the intro text. Answers <code>UNIMPLEMENTED</code> when the server's warm transfer feature is switched off. Requires the permission to run a warm transfer intro of the session's project. |
 | ListSessions | [ListSessionsRequest](#ondewo.nlu.ListSessionsRequest) | [ListSessionsResponse](#ondewo.nlu.ListSessionsResponse) | ListSessions: returns list of sessions from ondewo-kb; by default returns only session IDs |
 | GetSession | [GetSessionRequest](#ondewo.nlu.GetSessionRequest) | [Session](#ondewo.nlu.Session) | GetSession: returns a session(=conversation) from ondewo-kb |
 | CreateSession | [CreateSessionRequest](#ondewo.nlu.CreateSessionRequest) | [Session](#ondewo.nlu.Session) | CreateSession: creates and returns a session(=conversation) from ondewo-kb |
@@ -18625,12 +19735,13 @@ upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.</p>
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| transcribe_not_final | [bool](#bool) |  | Indicates whether to transcribe non-final results. |
+| transcribe_not_final | [bool](#bool) | optional | Indicates whether to transcribe non-final results for every stream of this pipeline. Unset: the server default, which is now <code>true</code>; an explicit <code>false</code> opts the pipeline out of non-final results. A request's <code>UtteranceDetectionOptions.transcribe_not_final</code> overrides it. Declared <code>optional</code> (same field number, wire-compatible) so an explicit <code>false</code> can be told apart from unset. |
 | decoding_method | [string](#string) |  | Decoding method for speech recognition. |
 | sampling_rate | [int64](#int64) |  | Sampling rate for audio input. |
 | min_audio_chunk_size | [int64](#int64) |  | Minimum audio chunk size for processing. |
 | next_chunk_timeout | [float](#float) |  | Timeout between audio chunks; if exceeded, the stream will be stopped. |
 | turn_detection | [TurnDetectionOptions](#ondewo.s2t.TurnDetectionOptions) |  | Configuration of the options to turn-detection in utterances |
+| transcribe_not_final_period_seconds | [float](#float) | optional | Optional. The minimum new audio, in seconds, between two non-final transcriptions of an utterance (the partial-transcription cadence) for every stream of this pipeline. Overrides the server setting <code>ONDEWO_S2T_INFERENCE_SLIDING_PERIOD_OF_TRANSCRIPT</code>; a request's <code>UtteranceDetectionOptions.transcribe_not_final_period_seconds</code> overrides it. Allowed: (0, 5]; the effective cadence is rounded up to whole <code>min_audio_chunk_size</code> chunks. Unset: the server setting. |
 
 
 
@@ -18761,6 +19872,7 @@ upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.</p>
 | audio | [bytes](#bytes) |  | audio bytes of the transcribed utterance |
 | utterance_start | [bool](#bool) |  | is it a start of the utterance |
 | audio_uuid | [string](#string) |  | id of the transcribed audio file |
+| end_of_speech_candidate | [bool](#bool) |  | Whether this response is an end-of-speech candidate. Sent only when the request set <code>TranscriptionReturnOptions.return_end_of_speech_candidate</code>, only under server-side turn detection, and only on the chunk where the server found the end of the caller's speech and its turn detector held the utterance open (not finished, an uncertain hold band, or the minimum endpointing delay), so the final may follow seconds later. Not sent without turn detection, when the detector judges the turn finished (the final is then sent on that same chunk), or while the utterance has no text yet. Never set on a final. At most once per pause: if the caller resumes speaking and pauses again, the next pause may send another one. With non-final results on, it is a FLAG on the non-final response the server sends for that chunk anyway, so it is an ordinary partial plus the hint, not an extra response; with non-final results off, the server sends one non-final response carrying the current text in <code>transcriptions</code>. It is a hint, not a commit: the utterance's final still follows, or the utterance continues if the caller resumes, and the final text may differ. Always false otherwise. |
 | config | [TranscribeRequestConfig](#ondewo.s2t.TranscribeRequestConfig) |  | The configuration for the transcription |
 
 
@@ -18819,6 +19931,148 @@ upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.</p>
 | return_alternative_words | [bool](#bool) |  | Whether or not to return alternative results from beam-search |
 | return_alternative_words_nr | [int32](#int32) |  | Optional. Number of alternative words to results |
 | return_word_timing | [bool](#bool) |  | Optional. Whether or not to return timestamps of start and end of the words. Only used in TranscribeFile. |
+| return_end_of_speech_candidate | [bool](#bool) |  | Optional. Whether the server should send an end-of-speech candidate on a stream (see <code>TranscribeStreamResponse.end_of_speech_candidate</code> for what is sent and when). Only used in TranscribeStream, and only acted on under server-side turn detection. Fixed per stream, like <code>return_start_of_speech</code>: the server completes each request config from the one in effect, so a later request without <code>return_options</code> keeps it, but a later <code>return_options</code> block replaces every return option at once and must repeat this field, or the candidate stops for the rest of the stream. Defaults to false: no candidate is sent, exactly as before this field existed. |
+
+
+
+
+
+
+<a name="ondewo.s2t.TurnDetectionChatLlmOptions"></a>
+
+### TurnDetectionChatLlmOptions
+<p>TurnDetectionChatLlmOptions configures a chat LLM as the turn detector: the LLM is asked, with the prompts
+below and the transcription of the turn, whether the caller has finished.</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| openai_llm_options | [OpenaiLlmOptions](#ondewo.s2t.OpenaiLlmOptions) | optional | Optional. The OpenAI-compatible endpoint and model of the chat LLM. Unset fields take the server's configured values. A <code>model</code> starting with <code>pipecat-</code> or <code>ondewo-s2t-model-</code> is refused with INVALID_ARGUMENT: those detectors have their own options. |
+| system_prompt | [string](#string) | optional | Optional. System prompt that guides the LLM. Unset = the server's configured prompt. |
+| user_prompt | [string](#string) | optional | Optional. User prompt that carries the turn under evaluation. Unset = the server's configured prompt. |
+
+
+
+
+
+
+<a name="ondewo.s2t.TurnDetectionContextTurn"></a>
+
+### TurnDetectionContextTurn
+<p>One turn of the conversation context of the turn detection, read only by
+<code>TurnDetectionEndOfUtteranceLlmOptions</code>.</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| role | [TurnDetectionContextTurn.Role](#ondewo.s2t.TurnDetectionContextTurn.Role) |  | Who spoke the turn. |
+| text | [string](#string) |  | The text of the turn. |
+
+
+
+
+
+
+<a name="ondewo.s2t.TurnDetectionConversationContext"></a>
+
+### TurnDetectionConversationContext
+<p>TurnDetectionConversationContext carries the latest turns of the conversation for
+<code>TurnDetectionEndOfUtteranceLlmOptions</code> (see
+<code>TurnDetectionOptions.turn_detection_conversation_context</code>). No other detector reads it.</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| turn_detection_context_turns | [TurnDetectionContextTurn](#ondewo.s2t.TurnDetectionContextTurn) | repeated | The turns of the conversation, oldest first. They EXCLUDE the caller's utterance under evaluation, which the server appends itself. |
+
+
+
+
+
+
+<a name="ondewo.s2t.TurnDetectionEndOfUtteranceLlmOptions"></a>
+
+### TurnDetectionEndOfUtteranceLlmOptions
+<p>TurnDetectionEndOfUtteranceLlmOptions configures an end-of-utterance LLM (LiveKit-shaped, e.g.
+<code>livekit/turn-detector</code>) as the turn detector: the model scores the probability of the
+end-of-utterance token after the turn's transcription and, when
+<code>TurnDetectionOptions.turn_detection_conversation_context</code> is set, the turns before it.</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| openai_llm_options | [OpenaiLlmOptions](#ondewo.s2t.OpenaiLlmOptions) | optional | Optional. The OpenAI-compatible endpoint and served model name. Unset fields take the server's configured values. |
+| end_of_turn_probability_threshold | [float](#float) | optional | Optional. The end-of-utterance probability at or above which the caller is taken to have finished the turn, valid range: 0 - 1. Unset = the server's configured value (default: the threshold configured for the language of the stream). |
+| turn_detection_hold_bands | [TurnDetectionHoldBands](#ondewo.s2t.TurnDetectionHoldBands) | optional | Optional. How long a turn judged finished, but only with a probability below a band's upper bound, waits for further silence before it is committed. Unset = the server's configured value (default: the bands configured for the language of the stream). A wrapper only so that "set with no bands" (a turn at or above the threshold is committed at once) means something different from "unset". |
+| uncertain_min_words | [uint32](#uint32) | optional | Optional. The minimum number of words an utterance needs before a hold band may hold it; a shorter utterance judged finished is committed at once. Unset = the server's configured value (default: 3). |
+| exact_probability | [bool](#bool) | optional | Optional. Whether the exact probability of the end-of-utterance token is computed instead of being read from the returned top log probabilities. Unset = the server's configured value (default: false). Requires a deployment that returns prompt log probabilities (vLLM <code>prompt_logprobs</code>); on any other deployment the probability reads 0, so every turn is judged not finished and waits for <code>TurnDetectionOptions.incomplete_max_silence_seconds</code>. |
+
+
+
+
+
+
+<a name="ondewo.s2t.TurnDetectionHoldBand"></a>
+
+### TurnDetectionHoldBand
+<p>One hold band of <code>TurnDetectionEndOfUtteranceLlmOptions</code>.</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| upper_probability | [float](#float) |  | The exclusive upper bound of the end-of-utterance probabilities this band covers, valid range: 0 - 1. |
+| max_silence_seconds | [float](#float) |  | Seconds of silence a turn in this band waits before it is committed, valid range: 0 - 4. The server never holds longer than <code>TurnDetectionOptions.incomplete_max_silence_seconds</code>. |
+
+
+
+
+
+
+<a name="ondewo.s2t.TurnDetectionHoldBands"></a>
+
+### TurnDetectionHoldBands
+<p>TurnDetectionHoldBands carries the hold bands of <code>TurnDetectionEndOfUtteranceLlmOptions</code>. No other
+detector reads them.</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| turn_detection_hold_bands | [TurnDetectionHoldBand](#ondewo.s2t.TurnDetectionHoldBand) | repeated | The bands, each holding a turn judged finished with a probability below its upper bound: the first band, sorted by <code>upper_probability</code>, whose upper probability exceeds the end-of-utterance probability decides the hold. A probability above every band is finished at once. |
+
+
+
+
+
+
+<a name="ondewo.s2t.TurnDetectionOndewoDeFusionOptions"></a>
+
+### TurnDetectionOndewoDeFusionOptions
+<p>TurnDetectionOndewoDeFusionOptions configures the ONDEWO German fusion turn detector. It combines the ONDEWO
+German text model on vLLM, acoustic heads on Triton and signals computed from the stream into one end-of-turn
+probability. The Triton heads, the text model's served name and the weights file are server settings.</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| openai_llm_options | [OpenaiLlmOptions](#ondewo.s2t.OpenaiLlmOptions) | optional | Optional. Addresses the vLLM deployment of the text model (<code>base_url</code>, <code>api_key</code>, <code>timeout</code>); <code>model</code> names the fusion variant, e.g. <code>ondewo-s2t-model-de-fusion-turn-detection</code>. Unset fields take the server's configured values. |
+| end_of_turn_probability_threshold | [float](#float) | optional | Optional. The end-of-turn probability at or above which the caller is taken to have finished the turn, valid range: 0 - 1. Unset = the server's configured value, else the weights file's threshold. |
+
+
+
+
+
+
+<a name="ondewo.s2t.TurnDetectionOndewoDeOptions"></a>
+
+### TurnDetectionOndewoDeOptions
+<p>TurnDetectionOndewoDeOptions configures the ONDEWO German turn-detection model as the turn detector. It judges
+the turn from its text and word timing and is served by vLLM.</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| openai_llm_options | [OpenaiLlmOptions](#ondewo.s2t.OpenaiLlmOptions) | optional | Optional. The vLLM deployment: <code>base_url</code>, <code>api_key</code> and <code>timeout</code> address it, <code>model</code> is the served model name, e.g. <code>ondewo-s2t-model-de-vad-tsd-ondewo-qwen3-0.6b</code>. Unset fields take the server's configured values. |
+| end_of_turn_probability_threshold | [float](#float) | optional | Optional. The end-of-turn probability the model must reach for the caller to be taken to have finished the turn, valid range: 0 - 1. A turn below it is judged not finished and waits for <code>TurnDetectionOptions.incomplete_max_silence_seconds</code>. Unset = the server's configured value (default: 0.5). Precedence: the request config's value, then the pipeline config's value, then the server's configured value. |
 
 
 
@@ -18828,16 +20082,52 @@ upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.</p>
 <a name="ondewo.s2t.TurnDetectionOptions"></a>
 
 ### TurnDetectionOptions
-<p>Configuration of the options to turn-detection in utterances</p>
+<p>TurnDetectionOptions configures turn detection: deciding, at a pause of the caller, whether the caller has
+finished the turn. Exactly one turn detector is chosen by <code>oneof_turn_detector</code>; the fields outside it
+apply to every detector.</p>
+<p>Precedence for every field: the request config's value
+(<code>TranscribeRequestConfig.utterance_detection.turn_detection</code>), then the pipeline config's value
+(<code>StreamingSpeechRecognition.turn_detection</code>), then the server's configured value. When the request
+config chooses a different detector than the pipeline config, the request config's detector is used with only
+its own fields: none of the pipeline config's detector fields carry over.</p>
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | active | [bool](#bool) | optional | Optional. Indicates if the turn-detection feature is active. |
-| full_utterance_deployment | [bool](#bool) | optional | Optional. Whether to transcribe the whole utterance when turn moment is detected. It is helpful to increase accuracy of transcriptions in cost of drop in speed. If deactivated, it just transcribe from last short silence period and concatenates the transcriptions of small audio chunks between tiny silences. |
-| turn_detection_system_prompt | [string](#string) | optional | Optional. System prompt used to guide the turn-detection model. |
-| turn_detection_user_prompt | [string](#string) | optional | Optional. User prompt used as input to the turn-detection model. |
-| turn_detection_llm_openai_options | [OpenaiLlmOptions](#ondewo.s2t.OpenaiLlmOptions) | optional | Optional. Configuration options for the OpenAI client used for turn detection. |
+| full_utterance_deployment | [bool](#bool) | optional | Optional. Whether to transcribe the whole utterance when the end of a turn is detected. It increases the accuracy of the transcription at the cost of speed. If deactivated, only the audio after the last short silence is transcribed and the transcriptions of the short audio chunks between silences are concatenated. |
+| turn_detection_system_prompt | [string](#string) | optional | **Deprecated.** Optional. Deprecated in favour of <code>turn_detection_chat_llm_options.system_prompt</code>, but still honoured so that configurations written for ondewo-s2t-api 7.5.0 and earlier keep working unchanged. Read only when <code>oneof_turn_detector</code> is not set. |
+| turn_detection_user_prompt | [string](#string) | optional | **Deprecated.** Optional. Deprecated in favour of <code>turn_detection_chat_llm_options.user_prompt</code>, but still honoured. Read only when <code>oneof_turn_detector</code> is not set. |
+| turn_detection_llm_openai_options | [OpenaiLlmOptions](#ondewo.s2t.OpenaiLlmOptions) | optional | **Deprecated.** Optional. Deprecated in favour of <code>oneof_turn_detector</code>, but still honoured. Read only when <code>oneof_turn_detector</code> is not set; its <code>model</code> then selects the detector by its name, as before <code>oneof_turn_detector</code> existed: a name starting with <code>pipecat-smart-turn</code> selects pipecat Smart Turn, one starting with <code>ondewo-s2t-model-de-vad-tsd-ondewo-qwen3</code> the ONDEWO German turn-detection model, one starting with <code>ondewo-s2t-model-de-fusion-turn-detection</code> the ONDEWO German fusion turn detector, and any other name a chat LLM or an end-of-utterance LLM. A name starting with <code>pipecat-</code> or <code>ondewo-s2t-model-</code> that matches none of these is refused with INVALID_ARGUMENT. On this path every detector-specific value is the server's configured value. |
+| incomplete_max_silence_seconds | [float](#float) | optional | Optional. Seconds of silence after an utterance judged NOT finished before it is finished anyway, valid range: 0 - 4. The server raises a value below the voice activity detection's <code>min_duration_off</code> to it. Unset = the server's configured value (default: the <code>min_duration_off</code> in use). Applies to every "not finished" verdict, whichever detector gave it, including a verdict that did not arrive in time. |
+| turn_detection_conversation_context | [TurnDetectionConversationContext](#ondewo.s2t.TurnDetectionConversationContext) | optional | Optional. The latest turns of the conversation before the caller's utterance under evaluation, handed to the end-of-utterance LLM as preceding chat turns so that it can judge the utterance against what was said before, e.g. a bare number answering a question for a number. Kept outside <code>oneof_turn_detector</code> because it is conversation data, not detector configuration: the server keeps it per stream, a request whose turn detection carries this field replaces it, an empty wrapper (no turns) clears it, and a request without it keeps it. That is why it is a wrapper: the server merges request configs per whole top-level field, so a field it did not store itself could not survive a later request that carries turn detection without it. The server caps the number of turns and the length of each turn. Unset or empty: the utterance is judged alone. Read only by <code>turn_detection_end_of_utterance_llm_options</code>; ignored by every other detector. Honoured only in a request config; ignored in a pipeline config, where a per-stream context has no meaning. |
+| turn_detection_chat_llm_options | [TurnDetectionChatLlmOptions](#ondewo.s2t.TurnDetectionChatLlmOptions) |  | A chat LLM asked, with a prompt, whether the caller has finished the turn. |
+| turn_detection_end_of_utterance_llm_options | [TurnDetectionEndOfUtteranceLlmOptions](#ondewo.s2t.TurnDetectionEndOfUtteranceLlmOptions) |  | An end-of-utterance LLM (LiveKit-shaped) that scores the probability of the end-of-utterance token. |
+| turn_detection_ondewo_de_options | [TurnDetectionOndewoDeOptions](#ondewo.s2t.TurnDetectionOndewoDeOptions) |  | The ONDEWO German turn-detection model: the turn's text and timing, served by vLLM. |
+| turn_detection_ondewo_de_fusion_options | [TurnDetectionOndewoDeFusionOptions](#ondewo.s2t.TurnDetectionOndewoDeFusionOptions) |  | The ONDEWO German fusion turn detector: the ONDEWO German text model on vLLM plus acoustic heads on Triton, combined into one end-of-turn probability. |
+| turn_detection_pipecat_smart_turn_options | [TurnDetectionPipecatSmartTurnOptions](#ondewo.s2t.TurnDetectionPipecatSmartTurnOptions) |  | pipecat Smart Turn v3.2: audio only, served by Triton. |
+
+
+
+
+
+
+<a name="ondewo.s2t.TurnDetectionPipecatSmartTurnOptions"></a>
+
+### TurnDetectionPipecatSmartTurnOptions
+<p>TurnDetectionPipecatSmartTurnOptions configures pipecat Smart Turn v3.2 as the turn detector. It judges the
+turn from the caller's audio alone and is served by Triton.</p>
+<p>Model: <a href="https://github.com/pipecat-ai/smart-turn">pipecat Smart Turn</a></p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| model_name | [string](#string) | optional | Optional. Full name of the Triton model. Unset = the server's configured value (default: <code>ondewo-s2t-model-multi-turn-detection-pipecat-smart-turn-3.2-onnx-triton</code>). |
+| triton_server_host | [string](#string) | optional | Optional. Host name of the Triton inference server that serves the model, as <code>Pyannote.triton_server_host</code>. Unset = the server's configured value. The connection uses the server's Triton client TLS settings. |
+| triton_server_port | [int64](#int64) | optional | Optional. Port of the Triton inference server that serves the model, as <code>Pyannote.triton_server_port</code>. Unset = the server's configured value. |
+| max_audio_seconds | [float](#float) | optional | Optional. Seconds of the caller's audio, ending at the decision moment, that the model hears; valid range: 1 - 8. Shorter audio is left-padded with silence to 8 s, as the model was trained. Unset = the server's configured value (default: 8). |
+| timeout_seconds | [float](#float) | optional | Optional. Seconds to wait for Triton's answer, valid range: greater than 0, at most 5. A turn whose verdict does not arrive in time is judged not finished and waits for <code>TurnDetectionOptions.incomplete_max_silence_seconds</code>. Unset = the server's configured value (default: 0.2). |
+| end_of_turn_probability_threshold | [float](#float) | optional | Optional. The end-of-turn probability Smart Turn must report for the caller to be taken to have finished the turn, valid range: 0 - 1. A turn below it is judged not finished and waits for <code>TurnDetectionOptions.incomplete_max_silence_seconds</code>. Unset = the server's configured value (default: 0.5). Precedence: the request config's value, then the pipeline config's value, then the server's configured value. |
 
 
 
@@ -18852,9 +20142,11 @@ upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.</p>
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| transcribe_not_final | [bool](#bool) |  | Return also immediate transcription results |
+| transcribe_not_final | [bool](#bool) |  | Return also immediate transcription results (non-final transcriptions of an utterance while it is still being spoken). Unset: the pipeline's <code>StreamingSpeechRecognition.transcribe_not_final</code>, then the server default, which is now <code>true</code>; an explicit <code>false</code> opts this request out of non-final results. |
 | next_chunk_timeout | [float](#float) |  | if time between audio chunks exceeds next_chunk_timeout, stream will be stopped |
 | turn_detection | [TurnDetectionOptions](#ondewo.s2t.TurnDetectionOptions) |  | The turn detection options |
+| min_audio_chunk_size | [int64](#int64) | optional | Optional. The processing chunk of THIS stream, in samples at the pipeline's sampling rate: the server buffers the incoming audio until it holds this many samples and only then runs the voice-activity search, the sliding transcription and the turn detector, so it is the cadence at which an utterance can end (8000 samples at 16 kHz = 0.5 s; 1600 = 0.1 s). Overrides <code>StreamingSpeechRecognition.min_audio_chunk_size</code> of the pipeline config for this stream only. Allowed: 320 - 32000 (20 ms - 2 s at 16 kHz); a smaller chunk costs proportionally more voice-activity and transcription requests. Read from the first request of a stream that carries it; a later request cannot change a running stream's chunk. Unset: the pipeline's value. |
+| transcribe_not_final_period_seconds | [float](#float) | optional | Optional. The minimum new audio, in seconds, between two non-final transcriptions of an utterance (the partial-transcription cadence; applies only while <code>transcribe_not_final</code> is in force). Overrides <code>StreamingSpeechRecognition.transcribe_not_final_period_seconds</code> of the pipeline config and the server setting <code>ONDEWO_S2T_INFERENCE_SLIDING_PERIOD_OF_TRANSCRIPT</code> for this request only. Allowed: (0, 5]; a shorter period costs proportionally more transcription requests. The server checks the period once per processing chunk, so the effective cadence is rounded up to whole <code>min_audio_chunk_size</code> chunks. Unset: the pipeline's value, then the server setting. |
 
 
 
@@ -19098,6 +20390,19 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 
 
 
+<a name="ondewo.s2t.TurnDetectionContextTurn.Role"></a>
+
+### TurnDetectionContextTurn.Role
+<p>Who spoke the turn.</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| ROLE_UNSPECIFIED | 0 | Unspecified role. The server ignores a turn without a role. |
+| ROLE_USER | 1 | The caller, i.e. the speaker whose turns are detected. |
+| ROLE_ASSISTANT | 2 | The voice assistant. Its text is what the caller HEARD, i.e. the spoken prefix of an interrupted utterance. |
+
+
+
 <a name="ondewo.s2t.VadMethod"></a>
 
 ### VadMethod
@@ -19311,6 +20616,46 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 
 
 
+<a name="ondewo.sip.SipDelegatedTransfer"></a>
+
+### SipDelegatedTransfer
+<p>A transfer that the in-container speech-to-speech pipeline asked for and the container handed to a client instead
+of sending it (see <code>SipTransferDelegation</code>). Call-scoped: empty when no transfer is parked, when no call
+is ongoing, and after the call ended.</p>
+<p><code>SipGetSipStatus</code>, <code>SipGetSipStatusHistory</code> and every other response report only
+<code>request_id</code>, <code>requested_at</code> and <code>target_is_phone_number</code>. The target and the headers
+are filled ONLY in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>.</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| request_id | [string](#string) |  | Identifier of the parked transfer, a UUID minted by ONDEWO SIP. Sent back as <code>SipTransferCallRequest.delegated_request_id</code>. Empty when no transfer is parked |
+| requested_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the pipeline asked for the transfer |
+| target_is_phone_number | [bool](#bool) |  | <code>true</code> when the target is a phone number by the transfer target policy of ONDEWO SIP (a leading <code>+</code> followed by digits, or a trunk-routed number), <code>false</code> for an account name such as a softphone |
+| transfer_id | [string](#string) |  | The target the pipeline asked for, already checked by the transfer target policy. Only in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>, empty everywhere else |
+| headers | [SipDelegatedTransfer.HeadersEntry](#ondewo.sip.SipDelegatedTransfer.HeadersEntry) | repeated | The headers the pipeline sent with the transfer. Only in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>, empty everywhere else |
+
+
+
+
+
+
+<a name="ondewo.sip.SipDelegatedTransfer.HeadersEntry"></a>
+
+### SipDelegatedTransfer.HeadersEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [string](#string) |  |  |
+
+
+
+
+
+
 <a name="ondewo.sip.SipEndCallRequest"></a>
 
 ### SipEndCallRequest
@@ -19376,6 +20721,21 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 
 
 
+<a name="ondewo.sip.SipSendDtmfRequest"></a>
+
+### SipSendDtmfRequest
+<p>Request of <code>SipSendDtmf</code></p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| digits | [string](#string) |  | The keys to send, in order: <code>0</code>-<code>9</code>, <code>*</code>, <code>#</code>, <code>A</code>-<code>D</code>; at most 64. Any other character refuses the request (<code>InvalidDtmf</code>) and sends nothing |
+
+
+
+
+
+
 <a name="ondewo.sip.SipSetCallMediaControlRequest"></a>
 
 ### SipSetCallMediaControlRequest
@@ -19388,6 +20748,7 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 | bot_listening | [MediaControlSetting](#ondewo.sip.MediaControlSetting) |  | <code>MEDIA_CONTROL_SETTING_ON</code>: caller audio reaches speech-to-text. <code>MEDIA_CONTROL_SETTING_OFF</code>: listening is paused |
 | owner | [MediaControlOwner](#ondewo.sip.MediaControlOwner) |  | Owner whose hold is set |
 | participants_present | [bool](#bool) |  | <p>Only for <code>MEDIA_CONTROL_OWNER_PARTICIPANT</code>, ignored for every other owner: whether at least one invited participant is ringing or joined. Every participant request carries the full value, so the request that reports the last participant gone sends <code>false</code>.</p> <p>While participants are present (this flag, or a mute or pause held by the participant owner) <code>SipTransferCall</code> is refused with <code>exception_name=ParticipantsPresent</code>, because a REFER into a conference bridge transfers every party in it. A request that would mark participants present while a transfer of the call is in flight is refused with <code>exception_name=TransferInProgress</code> and changes nothing. Cleared when the call ends</p> |
+| warm_transfer_outcome | [SipWarmTransferOutcomeNotice](#ondewo.sip.SipWarmTransferOutcomeNotice) |  | <p>Optional, only with <code>MEDIA_CONTROL_OWNER_PARTICIPANT</code> (any other owner, an outcome other than <code>SIP_WARM_TRANSFER_OUTCOME_DECLINED</code> / <code>SIP_WARM_TRANSFER_OUTCOME_UNREACHABLE</code>, or an empty <code>request_id</code> is refused with <code>exception_name=InvalidWarmTransferOutcomeNotice</code> and changes nothing). The outcome of a warm transfer that the bot must tell the caller, sent with the request that releases the participant hold, so the bot speaks only once it can.</p> <p>Handed to the speech-to-speech pipeline after the level, also when the level did not change; the answer is returned in <code>SipStatus.warm_transfer_outcome_notice_status</code>. A notice the pipeline did not answer is kept and handed over again until it answers, and dropped when the call ends. Unset (default): no notice, exactly as before this field existed.</p> |
 
 
 
@@ -19466,6 +20827,9 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 | listening_paused | [bool](#bool) |  | <code>true</code> while the bot does not listen to the caller (see <code>bot_muted</code> for who sets it). Cleared when the call ends |
 | call_audio_streams | [int32](#int32) |  | Number of connected <code>SipStreamCallAudio</code> streams of the ongoing call |
 | sip_response_code | [int32](#int32) |  | SIP response code of the last transfer attempt of the ongoing call (<code>202</code> when accepted, the refusal code otherwise, <code>0</code> when unknown). Call-scoped |
+| delegated_transfer | [SipDelegatedTransfer](#ondewo.sip.SipDelegatedTransfer) |  | The transfer parked for a client to claim (see <code>SipTransferDelegation</code>). Unset (empty) when no transfer is parked, which is always the case in a container started without <code>SIP_TRANSFER_DELEGATION_ACTIVE=True</code>. Call-scoped |
+| capabilities | [string](#string) | repeated | <p>Optional features this container supports, as stable tokens. Fixed for the life of the container, so it is the same on every status. Empty (default): none of them, as for a container built before this field existed. Clients ignore tokens they do not know.</p> <ul> <li><code>warm-transfer-outcome-notice</code>: <code>SipSetCallMediaControlRequest.warm_transfer_outcome</code> is handed to the speech-to-speech pipeline, and the pipeline tells the caller.</li> </ul> |
+| warm_transfer_outcome_notice_status | [SipWarmTransferOutcomeNoticeStatus](#ondewo.sip.SipWarmTransferOutcomeNoticeStatus) |  | Answer of the speech-to-speech pipeline to the <code>warm_transfer_outcome</code> notice of a <code>SipSetCallMediaControl</code> request. Only in the response of that request; <code>SIP_WARM_TRANSFER_OUTCOME_NOTICE_STATUS_UNSPECIFIED</code> everywhere else and when the request carried no notice |
 
 
 
@@ -19514,6 +20878,8 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 | transfer_id | [string](#string) |  | The account name or phone number to transfer the call to |
 | headers | [SipTransferCallRequest.HeadersEntry](#ondewo.sip.SipTransferCallRequest.HeadersEntry) | repeated | The headers to include when transferring the call. They are sent on the REFER. Note that Asterisk (res_pjsip, measured on 18.6 and 22) does NOT forward headers of a REFER to the transfer target: the target receives the headers of the transferred caller's original INVITE. Hand headers to the target through the dialplan instead |
 | outcome_timeout_ms | [uint32](#uint32) |  | <p>Optional. How long to wait, in milliseconds, for the SIP server's answer to the REFER before reporting the outcome. Clamped to 10000.</p> <p><code>0</code> (default): legacy behaviour, unchanged: REFER, then an immediate hangup.</p> <p><code>&gt; 0</code>: the call is kept until the outcome is known:</p> <ul> <li>REFER accepted (<code>202</code>): the hangup is held for a short grace in which a terminal NOTIFY with a <code>404</code> sipfrag (unknown target) still counts as a refusal; any other sipfrag, or none, means accepted. The bot then hangs up and <code>TRANSFER_CALL_INITIATED</code> is returned with <code>sip_response_code = 202</code>. The call ends as <code>*_CALL_FINISHED</code> with the description <code>Call transferred</code>.</li> <li>REFER refused (a final response <code>&gt;= 400</code>, or the <code>404</code> sipfrag above): the call is KEPT with the bot, nothing is assigned to the shared status, and <code>TRANSFER_CALL_FAILED</code> is returned with <code>description = reason=refer-rejected</code> and <code>sip_response_code</code> (<code>0</code> when the SIP stack did not report the code, e.g. a declined REFER).</li> <li>No answer within the timeout: the call is KEPT and <code>TRANSFER_CALL_FAILED</code> is returned with <code>description = reason=refer-timeout</code>. A late acceptance still ends the bot's leg.</li> <li>The call ended while waiting: <code>NO_ONGOING_CALL</code> is returned.</li> </ul> <p>A <code>202</code> does not mean the target answered: when the dialplan's dial to the target then fails (busy, no answer, unreachable) the caller is lost. Validate targets up front, or use a WARM transfer.</p> |
+| delegation | [SipTransferDelegation](#ondewo.sip.SipTransferDelegation) |  | <p>Optional. Claims the transfer parked in <code>SipStatus.delegated_transfer</code> (see <code>SipTransferDelegation</code>). <code>SIP_TRANSFER_DELEGATION_UNSPECIFIED</code> (default): an ordinary transfer, exactly as before this field existed.</p> |
+| delegated_request_id | [string](#string) |  | <p>Required with every <code>delegation</code> other than <code>SIP_TRANSFER_DELEGATION_UNSPECIFIED</code>, ignored otherwise: must equal <code>SipStatus.delegated_transfer.request_id</code> of the parked transfer, otherwise the request is refused with <code>exception_name=DelegatedRequestMismatch</code> and nothing is sent. Empty (default): no delegated transfer is claimed.</p> |
 
 
 
@@ -19530,6 +20896,27 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 | ----- | ---- | ----- | ----------- |
 | key | [string](#string) |  |  |
 | value | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="ondewo.sip.SipWarmTransferOutcomeNotice"></a>
+
+### SipWarmTransferOutcomeNotice
+<p>One-shot notice of a warm-transfer outcome for the bot. The pipeline tells the caller at most once per
+<code>request_id</code> and call. Carries no reason text the target gave</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| request_id | [string](#string) |  | Identifier of the transfer request of the client (ONDEWO VTSI). Required; the notice is delivered at most once per call for one identifier |
+| outcome | [SipWarmTransferOutcome](#ondewo.sip.SipWarmTransferOutcome) |  | The outcome |
+| intro_session | [string](#string) |  | Optional: NLU session name of the session in which the transfer target was introduced, so the pipeline can relay what the target said. Empty when there was no intro |
+| callee_display_name | [string](#string) |  | Optional: display name of the transfer target, at most 128 characters |
+| cause | [string](#string) |  | Optional: a stable token naming why the transfer did not complete, e.g. <code>target-hung-up</code>, <code>target-refused</code>, <code>voicemail-suspected</code>. Never free text |
+| fallback_text | [string](#string) |  | Optional: the sentence the pipeline speaks itself when it cannot have the NLU phrase the outcome, rendered by the client. Never contains a reason the target gave. Empty: the pipeline has no sentence of its own to fall back on |
 
 
 
@@ -19694,6 +21081,60 @@ Types of status
 | OUTGOING_CALL_ANSWERING_MACHINE_DETECTED | 22 | Answering machine detection decided the callee of the ongoing outgoing call is not a person to talk to. NOT terminal: the call is still up when this status is set. <code>amd_result.verdict</code> tells an answering machine, a fax, a network announcement, ... apart. The call then ends as <code>OUTGOING_CALL_FINISHED</code> carrying <code>amd_result</code> and exactly one of the descriptions <code>Answering machine detected with hang up</code>, <code>Answering machine detected with left voice message and hang up</code>, <code>Answering machine detected, call ended by the answering machine</code> or <code>Answering machine detected, call ended by the answering machine after leaving a voice message</code> |
 
 
+
+<a name="ondewo.sip.SipTransferDelegation"></a>
+
+### SipTransferDelegation
+<p>How a <code>SipTransferCall</code> handles a transfer that the container parked in
+<code>SipStatus.delegated_transfer</code> instead of sending it.</p>
+<p>Every value other than <code>SIP_TRANSFER_DELEGATION_UNSPECIFIED</code> requires the
+<code>x-ondewo-sip-call-control-token</code> metadatum (otherwise <code>CallControlUnauthenticated</code>) and the
+<code>x-ondewo-expected-call-id</code> metadatum naming the ongoing call (missing or different:
+<code>CallScopeMismatch</code>), plus <code>delegated_request_id</code> (otherwise
+<code>DelegatedRequestMismatch</code>). Refusals are RETURNED in <code>exception_name</code> /
+<code>description</code> and never assigned to the shared status.</p>
+<p>A parked transfer that is neither claimed nor ended within <code>SIP_TRANSFER_DELEGATION_CLAIM_TIMEOUT_S</code> is
+dropped WITHOUT a REFER, and the pipeline is told with <code>SIP_WARM_TRANSFER_OUTCOME_DELEGATION_EXPIRED</code>. A
+claimed transfer never expires.</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| SIP_TRANSFER_DELEGATION_UNSPECIFIED | 0 | No delegated transfer is claimed: the request is an ordinary transfer, exactly as before this field existed |
+| SIP_TRANSFER_DELEGATION_CLAIM | 1 | Claim the parked transfer and send nothing. The response carries the full target and headers in <code>SipStatus.delegated_transfer.transfer_id</code> / <code>headers</code>, and the parked transfer no longer expires. It stays parked until <code>SIP_TRANSFER_DELEGATION_EXECUTE</code>, <code>SIP_TRANSFER_DELEGATION_DISCARD</code> or the end of the call. A repeated claim answers the same |
+| SIP_TRANSFER_DELEGATION_EXECUTE | 2 | End the delegation and send the transfer of THIS request (<code>transfer_id</code>, <code>headers</code>, <code>outcome_timeout_ms</code>) as an ordinary <code>SipTransferCall</code>, with the same outcomes and refusals |
+| SIP_TRANSFER_DELEGATION_DISCARD | 3 | End the delegation and send nothing; the call stays with the bot, e.g. because the client handles the transfer itself (a warm transfer with an intro) |
+
+
+
+<a name="ondewo.sip.SipWarmTransferOutcome"></a>
+
+### SipWarmTransferOutcome
+<p>Outcome of a warm transfer that the bot tells the caller</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| SIP_WARM_TRANSFER_OUTCOME_UNSPECIFIED | 0 | No outcome |
+| SIP_WARM_TRANSFER_OUTCOME_DECLINED | 1 | The transfer target declined the call; the caller stays with the bot |
+| SIP_WARM_TRANSFER_OUTCOME_UNREACHABLE | 2 | The transfer target could not be reached: busy, no answer, no decision, or no intro possible; the caller stays with the bot |
+| SIP_WARM_TRANSFER_OUTCOME_DELEGATION_EXPIRED | 3 | A transfer parked in <code>SipStatus.delegated_transfer</code> was not claimed in time and was dropped without a REFER. Set by ONDEWO SIP itself towards the pipeline, never accepted from a client |
+
+
+
+<a name="ondewo.sip.SipWarmTransferOutcomeNoticeStatus"></a>
+
+### SipWarmTransferOutcomeNoticeStatus
+<p>Answer of the speech-to-speech pipeline to a <code>SipWarmTransferOutcomeNotice</code></p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| SIP_WARM_TRANSFER_OUTCOME_NOTICE_STATUS_UNSPECIFIED | 0 | No notice was carried |
+| SIP_WARM_TRANSFER_OUTCOME_NOTICE_STATUS_QUEUED | 1 | The pipeline accepted the notice and will tell the caller, unless the call ends first |
+| SIP_WARM_TRANSFER_OUTCOME_NOTICE_STATUS_DUPLICATE | 2 | The pipeline already has a notice with this <code>request_id</code> on this call; nothing new is told |
+| SIP_WARM_TRANSFER_OUTCOME_NOTICE_STATUS_DISABLED | 3 | The pipeline does not tell the caller about warm-transfer outcomes (switched off); the notice is dropped |
+| SIP_WARM_TRANSFER_OUTCOME_NOTICE_STATUS_INVALID | 4 | The pipeline refused the notice as malformed; the notice is dropped |
+| SIP_WARM_TRANSFER_OUTCOME_NOTICE_STATUS_PENDING | 5 | The pipeline did not answer (unreachable, or an older pipeline without the notice). The notice is kept and handed over again until it answers or the call ends |
+
+
  <!-- end enums -->
 
  <!-- end HasExtensions -->
@@ -19720,7 +21161,7 @@ Not idempotent (no idempotency_level): a repeat dials a second call. |
 | SipEndCall | [SipEndCallRequest](#ondewo.sip.SipEndCallRequest) | [SipStatus](#ondewo.sip.SipStatus) | <p>Ends a call in an active SIP session for an account registered at a SIP server</p>
 
 Not idempotent (no idempotency_level): a repeat without a call appends its refusal to the history and ends a one-shot caller container; unscoped it can end the next call. |
-| SipTransferCall | [SipTransferCallRequest](#ondewo.sip.SipTransferCallRequest) | [SipStatus](#ondewo.sip.SipStatus) | <p>Transfers a call in an active SIP session for an account registered at a SIP server to another SIP account or phone number specified by <code>transfer_id</code></p> <p>Call scoping: when the gRPC metadatum <code>x-ondewo-expected-call-id</code> is present it must equal <code>SipStatus.call_id</code> of the ongoing call, otherwise the request is refused with <code>exception_name=CallScopeMismatch</code> and nothing is assigned to the status. When it is absent the request is accepted for backward compatibility (unless the server requires call scoping).</p> <p>With <code>outcome_timeout_ms = 0</code> the call is transferred as before (REFER, then an immediate hangup). With <code>outcome_timeout_ms &gt; 0</code> see <code>SipTransferCallRequest.outcome_timeout_ms</code>.</p> <p>Refused while invited participants are present (see <code>SipSetCallMediaControlRequest.participants_present</code>): a REFER into a conference bridge transfers every party in it, the invited participant included. The refusal is RETURNED as <code>TRANSFER_CALL_FAILED</code> with <code>exception_name=ParticipantsPresent</code> and <code>description = reason=participants-present</code>; nothing is sent and the call is kept.</p>
+| SipTransferCall | [SipTransferCallRequest](#ondewo.sip.SipTransferCallRequest) | [SipStatus](#ondewo.sip.SipStatus) | <p>Transfers a call in an active SIP session for an account registered at a SIP server to another SIP account or phone number specified by <code>transfer_id</code></p> <p>Call scoping: when the gRPC metadatum <code>x-ondewo-expected-call-id</code> is present it must equal <code>SipStatus.call_id</code> of the ongoing call, otherwise the request is refused with <code>exception_name=CallScopeMismatch</code> and nothing is assigned to the status. When it is absent the request is accepted for backward compatibility (unless the server requires call scoping).</p> <p>With <code>outcome_timeout_ms = 0</code> the call is transferred as before (REFER, then an immediate hangup). With <code>outcome_timeout_ms &gt; 0</code> see <code>SipTransferCallRequest.outcome_timeout_ms</code>.</p> <p>Refused while invited participants are present (see <code>SipSetCallMediaControlRequest.participants_present</code>): a REFER into a conference bridge transfers every party in it, the invited participant included. The refusal is RETURNED as <code>TRANSFER_CALL_FAILED</code> with <code>exception_name=ParticipantsPresent</code> and <code>description = reason=participants-present</code>; nothing is sent and the call is kept.</p> <p>Transfer delegation (see <code>SipTransferDelegation</code>): in a container started with <code>SIP_TRANSFER_DELEGATION_ACTIVE=True</code> a transfer that the in-container speech-to-speech pipeline asks for on a connected call is not sent. It is parked in <code>SipStatus.delegated_transfer</code> and RETURNED as <code>TRANSFER_CALL_FAILED</code> with <code>exception_name=TransferDelegated</code> and <code>description = reason=delegated-to-vtsi</code>; the call is kept. A client (ONDEWO VTSI) then claims it with <code>delegation</code> and <code>delegated_request_id</code>. A second transfer of the pipeline while one is parked is refused with <code>exception_name=TransferInProgress</code>. Without that environment variable, and for every request with <code>delegation = SIP_TRANSFER_DELEGATION_UNSPECIFIED</code> from any other peer, the transfer is sent as before.</p>
 
 Not idempotent (no idempotency_level): a repeat sends another REFER. |
 | SipRegisterAccount | [SipRegisterAccountRequest](#ondewo.sip.SipRegisterAccountRequest) | [SipStatus](#ondewo.sip.SipStatus) | <p>Registers s SIP account at a SIP server</p>
@@ -19740,12 +21181,15 @@ Not idempotent (no idempotency_level): without a call it assigns NO_ONGOING_CALL
 | SipReportAnsweringMachineDetected | [SipReportAnsweringMachineDetectedRequest](#ondewo.sip.SipReportAnsweringMachineDetectedRequest) | [SipStatus](#ondewo.sip.SipStatus) | <p>Reports that answering machine detection reached a verdict on the ongoing outgoing call. Sets the status <code>OUTGOING_CALL_ANSWERING_MACHINE_DETECTED</code> carrying <code>amd_result</code>; the call stays up.</p> <p>Called by the speech-to-speech pipeline (ONDEWO-CSI) inside the same container, i.e. over loopback only. Refused, and the current status left untouched, when no outgoing call is connected: the returned <code>SipStatus</code> then carries the refusal in <code>exception_name</code> and <code>description</code></p>
 
 Not idempotent (no idempotency_level): assigns a status and records answering machine detection telemetry. |
-| SipSetCallMediaControl | [SipSetCallMediaControlRequest](#ondewo.sip.SipSetCallMediaControlRequest) | [SipStatus](#ondewo.sip.SipStatus) | <p>Call-scoped operator media control of the ongoing call: mute the bot and/or pause its listening.</p> <p>Metadata REQUIRED: <code>x-ondewo-expected-call-id</code> (must equal <code>SipStatus.call_id</code> of the ongoing call) and <code>x-ondewo-sip-call-control-token</code> (the per-container call-control token).</p> <p>Every request sets a desired level per owner and never toggles; a repeat leaves the level unchanged. The bot is muted while ANY owner holds a mute, and its listening is paused while ANY owner holds a pause.</p> <p>Returns the live status with <code>call_id</code>, <code>bot_muted</code>, <code>listening_paused</code> and <code>call_audio_streams</code> filled. Refusals are RETURNED in <code>exception_name</code> / <code>description</code> (<code>CallScopeMismatch</code>, <code>CallControlUnauthenticated</code>, <code>NoOngoingCall</code>, <code>AmdInProgress</code>, <code>CsiMediaControlFailed</code>) and never assigned to the shared status. When the pipeline refuses or fails, a requested pause is rolled back and a requested mute is kept (the safe direction); the returned fields carry the actual level.</p>
+| SipSetCallMediaControl | [SipSetCallMediaControlRequest](#ondewo.sip.SipSetCallMediaControlRequest) | [SipStatus](#ondewo.sip.SipStatus) | <p>Call-scoped operator media control of the ongoing call: mute the bot and/or pause its listening.</p> <p>Metadata REQUIRED: <code>x-ondewo-expected-call-id</code> (must equal <code>SipStatus.call_id</code> of the ongoing call) and <code>x-ondewo-sip-call-control-token</code> (the per-container call-control token).</p> <p>Every request sets a desired level per owner and never toggles; a repeat leaves the level unchanged. The bot is muted while ANY owner holds a mute, and its listening is paused while ANY owner holds a pause.</p> <p>Returns the live status with <code>call_id</code>, <code>bot_muted</code>, <code>listening_paused</code> and <code>call_audio_streams</code> filled. Refusals are RETURNED in <code>exception_name</code> / <code>description</code> (<code>CallScopeMismatch</code>, <code>CallControlUnauthenticated</code>, <code>NoOngoingCall</code>, <code>AmdInProgress</code>, <code>CsiMediaControlFailed</code>) and never assigned to the shared status. When the pipeline refuses or fails, a requested pause is rolled back and a requested mute is kept (the safe direction); the returned fields carry the actual level.</p> <p>A request may carry a <code>warm_transfer_outcome</code> notice (participant owner only, refused otherwise with <code>exception_name=InvalidWarmTransferOutcomeNotice</code>). The notice is handed to the speech-to-speech pipeline whether or not the level changed, and the answer of the pipeline is returned in <code>SipStatus.warm_transfer_outcome_notice_status</code>.</p>
 
 Deliberately unmarked although a repeat leaves the level unchanged: a retried attempt can land after a newer request of the same owner and restore a stale mute or pause. |
 | SipStreamCallAudio | [SipCallAudioRequest](#ondewo.sip.SipCallAudioRequest) stream | [SipCallAudioResponse](#ondewo.sip.SipCallAudioResponse) stream | <p>Bidirectional live audio of the ongoing call.</p> <p>The first request MUST be <code>config</code> and must arrive within 2 seconds. Metadata as for <code>SipSetCallMediaControl</code>.</p> <p>LISTEN receives the caller (plus any conference participants) mixed with the bot. TALK sends the agent's audio to the caller; it REQUIRES <code>take_over</code>, i.e. the bot is muted and does not listen while the stream is connected, and in TALK the agent hears the caller only. Audio is LINEAR16 little-endian mono in 20 ms frames.</p> <p>gRPC status codes: <code>UNAUTHENTICATED</code> (token), <code>FAILED_PRECONDITION</code> (call id mismatch, no connected call, answering machine detection in progress, bot still speaking at TALK start), <code>INVALID_ARGUMENT</code> (missing or invalid <code>config</code>, wrong frame size), <code>RESOURCE_EXHAUSTED</code> (stream cap reached, a second TALK). A normal end sends one <code>ended</code> message and then OK.</p>
 
 Not idempotent (no idempotency_level): a stream takes a slot and, in TALK, takes over the call. |
+| SipSendDtmf | [SipSendDtmfRequest](#ondewo.sip.SipSendDtmfRequest) | [SipStatus](#ondewo.sip.SipStatus) | <p>Send DTMF keys into the ongoing connected call, as RFC 4733 telephone-events (e.g. to navigate an IVR the bot called, or for an operator).</p> <p>Metadata as for <code>SipSetCallMediaControl</code>: <code>x-ondewo-expected-call-id</code> must equal <code>SipStatus.call_id</code> of the ongoing call; a peer outside the container presents <code>x-ondewo-sip-call-control-token</code> when the container has one.</p> <p>Returns the live status. Refusals are RETURNED in <code>exception_name</code> / <code>description</code> (<code>CallScopeMismatch</code>, <code>CallControlUnauthenticated</code>, <code>NoOngoingCall</code>, <code>AmdInProgress</code>, <code>InvalidDtmf</code>) and never assigned to the shared status. The keys are never logged in clear.</p>
+
+Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 
  <!-- end services -->
 
@@ -20407,13 +21851,19 @@ all other properties of this generated audio.</p>
 
 <p><b>2. SSML <code>&lt;say-as&gt;</code> tags (local vits / qwen3-tts and cloud providers)</b></p> <p>Rewrites the enclosed text into its spoken form (spelled out letters, digits, symbols, ...). Supported by the local normalization pipeline and forwarded to the cloud providers.</p> <ul> <li>Phone: <pre><code>&lt;say-as interpret-as=&quot;phone&quot;&gt;+12354321&lt;/say-as&gt;</code></pre></li> <li>Email: <pre><code>&lt;say-as interpret-as=&quot;email&quot;&gt;voices@ondewo.com&lt;/say-as&gt;</code></pre></li> <li>URL: <pre><code>&lt;say-as interpret-as=&quot;url&quot;&gt;ondewo.com/en/&lt;/say-as&gt;</code></pre></li> <li>Spell (spell out each character): <pre><code>&lt;say-as interpret-as=&quot;spell&quot;&gt;AP732&lt;/say-as&gt;</code></pre></li> <li>Spell with names (e.g. &quot;A like Anton&quot;): <pre><code>&lt;say-as interpret-as=&quot;spell-with-names&quot;&gt;AHO32&lt;/say-as&gt;</code></pre></li> <li>Callsigns short: <pre><code>&lt;say-as interpret-as=&quot;callsign-short&quot;&gt;AUA439&lt;/say-as&gt;</code></pre></li> <li>Callsigns long: <pre><code>&lt;say-as interpret-as=&quot;callsign-long&quot;&gt;AAL439&lt;/say-as&gt;</code></pre></li> </ul>
 
-<p><b>3. Pauses / breaks</b></p> <ul> <li>Break tag (seconds): <pre><code>I am going to take a 2 seconds break &lt;break time=&quot;2.0&quot;/&gt; done</code></pre></li> <li>Break tag (milliseconds, cloud providers): <pre><code>please wait &lt;break time=&quot;500ms&quot;/&gt; done</code></pre></li> </ul>
+<p><b>3. Pauses / breaks</b></p> <p>Inserts a pause of the given duration into the spoken text. Supported by the local pipelines and forwarded to the cloud providers. The duration is written either with a unit - <code>ms</code> for milliseconds, <code>s</code> for seconds - or as a bare number, which is read as <b>seconds</b>: <code>&lt;break time=&quot;0.5&quot;/&gt;</code> is half a second. A bare number is therefore never milliseconds; <code>&lt;break time=&quot;2000&quot;/&gt;</code> asks for 2000 seconds and is rejected with an error - write <code>&lt;break time=&quot;2000ms&quot;/&gt;</code> instead. A single break may not be longer than 60 seconds.</p> <ul> <li>Milliseconds: <pre><code>Welcome to our service. &lt;break time=&quot;500ms&quot;/&gt; How can I help you today?</code></pre></li> <li>Seconds: <pre><code>Please hold the line. &lt;break time=&quot;2s&quot;/&gt; Thank you for waiting.</code></pre></li> <li>Seconds without a unit: <pre><code>Let me check that for you. &lt;break time=&quot;1.5&quot;/&gt; I found your booking.</code></pre></li> </ul>
 
 <p><b>4. Phonemes / pronunciation control</b></p> <p>The phoneme alphabet depends exclusively on the model type:</p> <p><b>4a. IPA phonemes (vits and cloud providers only)</b> - the vits models and the cloud providers (Amazon Polly, Microsoft Azure and Google Cloud TTS) control pronunciation with the SSML <code>&lt;phoneme&gt;</code> element using the IPA alphabet (<code>alphabet=&quot;ipa&quot;</code>). The IPA string goes in the <code>ph</code> attribute and the written word between the tags:</p> <ul> <li>English: <pre><code>I would like a &lt;phoneme alphabet=&quot;ipa&quot; ph=&quot;t&#601;&#712;me&#618;to&#650;&quot;&gt;tomato&lt;/phoneme&gt; please</code></pre></li> <li>German: <pre><code>Ich h&auml;tte gerne ein &lt;phoneme alphabet=&quot;ipa&quot; ph=&quot;&#712;ba&#618;&#643;pi&#720;l&quot;&gt;Beispiel&lt;/phoneme&gt; bitte</code></pre></li> </ul> <p><b>4b. Arpabet phonemes (glow model only)</b> - the glow model controls pronunciation with Arpabet phonemes, supplied through the same SSML <code>&lt;phoneme&gt;</code> element but with <code>alphabet=&quot;arpabet&quot;</code>. The ARPAbet transcription goes in the <code>ph</code> attribute and the written word between the tags (the phonemes are <b>not</b> written in curly braces <code>{}</code> in the request text):</p> <ul> <li>English: <pre><code>Please say &lt;phoneme alphabet=&quot;arpabet&quot; ph=&quot;T EH1 S T&quot;&gt;test&lt;/phoneme&gt; out loud</code></pre></li> <li>German: <pre><code>Ich sage &lt;phoneme alphabet=&quot;arpabet&quot; ph=&quot;T EH1 S T&quot;&gt;test&lt;/phoneme&gt; laut</code></pre></li> </ul> <p><b>4c. qwen3-tts has no phonemes - use the verbalized form instead</b> - the qwen3-tts models do <b>not</b> support Arpabet or IPA phonemes; the <code>&lt;phoneme&gt;</code> element and its <code>ph</code> string are ignored. Instead, to have a special text (symbols, codes, abbreviations, ...) spoken correctly, pass its <b>verbalization</b>: the plain, written-out spoken form of the text in the target language. For example, to have <code>A-7+8*</code> pronounced correctly:</p> <ul> <li>English: <pre><code>ai dash seven plus eight asterisk</code></pre></li> <li>German: <pre><code>ah bindestrich sieben plus acht sternchen</code></pre></li> </ul>
 
-<p><b>5. Voice control for qwen3-tts (emotion / style / prosody)</b></p> <p>These ONDEWO-namespaced tags are compiled into the model instruction and stripped from the spoken text, so the transcription stays the plain sentence while the delivery changes. They only take effect on the qwen3-tts <b>CustomVoice</b> model; on the base and voicedesign models they are stripped and a warning is logged.</p> <ul> <li>Style - one of the five primary styles <code>apologetic</code>, <code>calm</code>, <code>empathetic</code>, <code>firm</code>, <code>lively</code>, or one of the accepted synonyms <code>cheerful</code> / <code>happy</code> / <code>joyful</code>, <code>sad</code> / <code>sorrowful</code>, <code>angry</code> / <code>furious</code>, <code>excited</code>, <code>serious</code>, <code>tender</code> / <code>gentle</code>. An unknown name falls back to <code>neutral</code> and a warning is logged: <pre><code>&lt;ondewo:style name=&quot;calm&quot;&gt;please stay calm everything will be fine&lt;/ondewo:style&gt;</code></pre></li> <li>Emphasis - selects the intensity tier of the chosen style: <code>strong</code> (intense), <code>moderate</code> (the default when no emphasis is given) or <code>reduced</code> / <code>none</code> (mild): <pre><code>&lt;ondewo:style name=&quot;firm&quot;&gt;&lt;emphasis level=&quot;strong&quot;&gt;listen carefully&lt;/emphasis&gt;&lt;/ondewo:style&gt;</code></pre></li> <li>Prosody - <code>rate</code> (<code>x-slow</code>/<code>slow</code>/<code>medium</code>/<code>fast</code>/<code>x-fast</code> or a percentage such as <code>+20%</code>/<code>-20%</code>/<code>120%</code>), <code>pitch</code> (<code>x-low</code>/<code>low</code>/<code>medium</code>/<code>high</code>/<code>x-high</code>, a semitone offset such as <code>+4st</code>/<code>-4st</code> or a percentage such as <code>+10%</code>/<code>-10%</code>) and <code>volume</code> (<code>silent</code>/<code>x-soft</code>/<code>soft</code>/<code>medium</code>/<code>loud</code>/<code>x-loud</code> or a decibel offset such as <code>+6dB</code>/<code>-6dB</code>): <pre><code>&lt;prosody rate=&quot;slow&quot; pitch=&quot;+4st&quot; volume=&quot;loud&quot;&gt;hello there&lt;/prosody&gt;</code></pre></li> <li>Nested combination (style + emphasis + prosody): <pre><code>&lt;ondewo:style name=&quot;calm&quot;&gt;&lt;emphasis level=&quot;moderate&quot;&gt;&lt;prosody rate=&quot;slow&quot; pitch=&quot;low&quot; volume=&quot;soft&quot;&gt;hello there&lt;/prosody&gt;&lt;/emphasis&gt;&lt;/ondewo:style&gt;</code></pre></li> <li>Free-form instruction (CustomVoice only) - describe the delivery in natural language in the <code>instruction</code> attribute. The attribute value is used verbatim as the model instruction and takes precedence over the style / emphasis / prosody tags; the wrapped inner text is kept as the spoken text and it should be always in English: <pre><code>&lt;ondewo:instruct instruction=&quot;speak slowly in a warm and reassuring tone&quot;&gt;hello there&lt;/ondewo:instruct&gt;</code></pre></li> <li>Inline audio tags (CustomVoice only) - emotional expressions / sound effects in square brackets. They are compiled into the instruction and stripped from the spoken text. The supported tags are: <ul> <li>Voice-related: <code>[laughs]</code>, <code>[laughs harder]</code>, <code>[starts laughing]</code>, <code>[wheezing]</code>, <code>[whispers]</code>, <code>[sighs]</code>, <code>[exhales]</code>, <code>[sarcastic]</code>, <code>[curious]</code>, <code>[excited]</code>, <code>[crying]</code>, <code>[snorts]</code>, <code>[mischievously]</code></li> <li>Sound effects: <code>[gunshot]</code>, <code>[applause]</code>, <code>[clapping]</code>, <code>[explosion]</code>, <code>[swallows]</code>, <code>[gulps]</code></li> <li>Unique and special: <code>[sings]</code>, <code>[woo]</code>, <code>[fart]</code></li> <li>Accent (variable form): <code>[strong &lt;accent&gt; accent]</code>, e.g. <code>[strong French accent]</code></li> </ul> <pre><code>[whispers] hello there</code></pre></li> </ul> <p>See also <code>RequestConfig.instruction</code> for supplying the instruction / voice description directly instead of embedding it in the text.</p>
+<p><b>5. Voice control for qwen3-tts (style / prosody)</b></p> <p>These ONDEWO-namespaced tags are compiled into the model instruction and stripped from the spoken text, so the transcription stays the plain sentence while the delivery changes. They only take effect on the qwen3-tts <b>CustomVoice</b> model; on the base and voicedesign models they are stripped from the text without changing the delivery.</p> <p>qwen3-tts is steered by a natural-language instruction rather than by numeric parameters, so every dimension has exactly <b>one step per direction</b> and the values listed below are the whole vocabulary. Any other value is reported in the server log and then ignored.</p> <ul> <li>Style - one of the four primary styles <code>apologetic</code>, <code>calm</code>, <code>empathetic</code>, <code>firm</code>, or one of the accepted synonyms <code>cheerful</code> / <code>happy</code> / <code>joyful</code>, <code>sad</code> / <code>sorrowful</code>, <code>angry</code> / <code>furious</code>, <code>excited</code>. An unknown name falls back to <code>neutral</code>, which adds no style at all, and a warning is logged: <pre><code>&lt;ondewo:style name=&quot;calm&quot;&gt;please stay calm everything will be fine&lt;/ondewo:style&gt;</code></pre></li> <li>Prosody - <code>rate</code> (<code>slow</code> / <code>medium</code> / <code>fast</code>) and <code>volume</code> (<code>soft</code> / <code>medium</code> / <code>loud</code>), where <code>medium</code> means &quot;leave it alone&quot; and adds nothing. <pre><code>&lt;prosody rate=&quot;slow&quot; volume=&quot;loud&quot;&gt;hello there&lt;/prosody&gt;</code></pre></li> <li>Nested combination (style + prosody): <pre><code>&lt;ondewo:style name=&quot;calm&quot;&gt;&lt;prosody rate=&quot;slow&quot; volume=&quot;soft&quot;&gt;hello there&lt;/prosody&gt;&lt;/ondewo:style&gt;</code></pre></li> <li>Free-form instruction (CustomVoice only) - describe the delivery in natural language in the <code>instruction</code> attribute. The attribute value is used verbatim as the model instruction and takes precedence over the style / prosody tags; the wrapped inner text is kept as the spoken text and the instruction should always be written in English: <pre><code>&lt;ondewo:instruct instruction=&quot;speak slowly in a warm and reassuring tone&quot;&gt;hello there&lt;/ondewo:instruct&gt;</code></pre></li> <li>Inline style tags (CustomVoice only) - the same style vocabulary written positionally in square brackets, so <code>[calm] hello there</code> and the <code>&lt;ondewo:style name=&quot;calm&quot;&gt;</code> element compile to the identical instruction. Such a tag applies to everything that follows it until another tag or the <code>[Neutral]</code> reset replaces it. <pre><code>[excited] we shipped it. it works. [calm] now let us review.</code></pre></li> </ul>
 
-<p><b>6. Provider-specific SSML (cloud pipelines only)</b></p> <p>Each cloud provider documents its own SSML vocabulary; use the elements matching the provider behind the selected pipeline. Standard <code>&lt;prosody&gt;</code>, <code>&lt;emphasis&gt;</code> and <code>&lt;break&gt;</code> are common to all three.</p> <ul> <li>Google Cloud TTS: <pre><code>&lt;google:style name=&quot;calm&quot;&gt;please stay calm everything will be fine&lt;/google:style&gt;</code></pre></li> <li>Microsoft Azure: <pre><code>&lt;mstts:express-as style=&quot;cheerful&quot;&gt;please stay calm everything will be fine&lt;/mstts:express-as&gt;</code></pre></li> <li>Amazon Polly (whispered): <pre><code>&lt;amazon:effect name=&quot;whispered&quot;&gt;please stay calm everything will be fine&lt;/amazon:effect&gt;</code></pre></li> <li>Amazon Polly (soft phonation): <pre><code>&lt;amazon:effect phonation=&quot;soft&quot;&gt;please stay calm everything will be fine&lt;/amazon:effect&gt;</code></pre></li> </ul> |
+<p><b>Styles supported per voice</b></p> <p>A style is rendered by the voice, not by the markup, and no voice renders all of them. The table below lists what each qwen3-tts speaker supports; the speaker is fixed by the pipeline selected through <code>RequestConfig.t2s_pipeline_id</code>.</p> <p>The table applies to <b>both</b> ways of asking for a style. The <code>&lt;ondewo:style name=&quot;calm&quot;&gt;</code> element and the inline <code>[calm]</code> tag compile to the very same instruction, so they are limited by the voice in exactly the same way - switching from one spelling to the other never makes a style work that the voice cannot render.</p> <p><b>The server does not check your request against this table.</b> If you ask a voice for a style it cannot render, the request still succeeds: audio is returned, no error is raised and nothing is written to the log. The only symptom is that the voice sounds exactly as it would have without the style. Use the table to choose a suitable voice <i>before</i> sending the request.</p> <p>This is not the same as writing a style name that does not exist, which <b>is</b> reported: <code>&lt;ondewo:style name=&quot;bored&quot;&gt;</code> logs a warning and falls back to no style, because <code>bored</code> is outside the vocabulary listed further above. The silent case is a name that is in the vocabulary but beyond what the selected voice can do, for example <code>excited</code> on <code>dylan</code>.</p> <table> <tr><th>Voice</th><th>apologetic</th><th>calm</th><th>empathetic</th><th>firm</th><th>cheerful</th><th>sad</th><th>excited</th><th>angry</th></tr> <tr><td>aiden</td><td>-</td><td>-</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>-</td><td>-</td></tr> <tr><td>dylan</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr> <tr><td>eric</td><td>-</td><td>-</td><td>-</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>-</td><td>-</td></tr> <tr><td>ono_anna</td><td>-</td><td>-</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>-</td></tr> <tr><td>ryan</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>-</td></tr> <tr><td>serena</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr> <tr><td>sohee</td><td>-</td><td>-</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>-</td><td>-</td></tr> <tr><td>uncle_fu</td><td>-</td><td>-</td><td>-</td><td>&#10003;</td><td>&#10003;</td><td>-</td><td>-</td><td>&#10003;</td></tr> <tr><td>vivian</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>-</td></tr> </table> <p>Notes on the table:</p> <ul> <li><code>dylan</code> and <code>serena</code> render no style at all - use them for neutral delivery only, and see the prosody table below for what little can still be varied on them.</li> <li><code>ryan</code> and <code>vivian</code> cover the widest range, so they are the safest choice when the style is chosen at runtime rather than fixed in advance.</li> <li>A synonym behaves exactly like its primary name, so <code>happy</code> / <code>joyful</code> work wherever <code>cheerful</code> does, as do <code>sorrowful</code> for <code>sad</code> and <code>furious</code> for <code>angry</code>.</li> </ul>
+
+<p><b>Prosody supported per voice</b></p> <p>Rate and volume are limited per voice in the same way, and the same caveat applies: the server does not check this table either, so asking for a step a voice cannot render succeeds silently and leaves the delivery unchanged. Only the two steps of each dimension are listed - <code>medium</code> (equally <code>default</code>) is available on every voice, because it means &quot;leave this dimension alone&quot; and sends no instruction at all.</p> <table> <tr><th>Voice</th><th>rate slow</th><th>rate fast</th><th>volume soft</th><th>volume loud</th></tr> <tr><td>aiden</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td></tr> <tr><td>dylan</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>-</td></tr> <tr><td>eric</td><td>&#10003;</td><td>-</td><td>&#10003;</td><td>-</td></tr> <tr><td>ono_anna</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td></tr> <tr><td>ryan</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td></tr> <tr><td>serena</td><td>&#10003;</td><td>-</td><td>-</td><td>-</td></tr> <tr><td>sohee</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td></tr> <tr><td>uncle_fu</td><td>-</td><td>-</td><td>&#10003;</td><td>&#10003;</td></tr> <tr><td>vivian</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>-</td></tr> </table> <p>Notes on the table:</p> <ul> <li><code>uncle_fu</code> does not respond to <code>rate</code> at all - change its pace by rewriting the text, or pick another voice.</li> <li><code>dylan</code> renders no style but does respond to <code>rate</code> and to <code>volume=&quot;soft&quot;</code>, so <code>&lt;prosody&gt;</code> is the only delivery control that works on it.</li> <li><code>serena</code> is the most constrained voice: <code>rate=&quot;slow&quot;</code> is the one control it responds to, and no style, no <code>rate=&quot;fast&quot;</code> and no volume step has any effect. Treat it as a fixed delivery that can only be slowed down.</li> <li><code>ono_anna</code>, <code>ryan</code>, <code>sohee</code> and <code>aiden</code> render every step of both dimensions.</li> </ul>
+
+<p>Every control is positional - it colours exactly the text it wraps - and a delivery change may only land on a <b>sentence boundary</b>. Markup wrapping part of a sentence is widened to the whole sentence, because a sentence fragment sent as a complete utterance makes the model hallucinate. Each delivery change also costs one additional inference call, so marking up whole sentences, or leaving the text unmarked, synthesises fastest.</p> <p>See also <code>RequestConfig.instruction</code> for supplying the instruction / voice description directly instead of embedding it in the text.</p>
+
+<p><b>6. Provider-specific SSML (cloud pipelines only)</b></p> <p>Each cloud provider documents its own SSML vocabulary; use the elements matching the provider behind the selected pipeline. Standard <code>&lt;prosody&gt;</code>, <code>&lt;emphasis&gt;</code> and <code>&lt;break&gt;</code> are common to all three.</p> <ul> <li>Google Cloud TTS: <pre><code>&lt;google:style name=&quot;calm&quot;&gt;please stay calm everything will be fine&lt;/google:style&gt;</code></pre> More information: <a href="https://docs.cloud.google.com/text-to-speech/docs/ssml#styles">Google Cloud TTS - SSML styles</a></li> <li>Microsoft Azure: <pre><code>&lt;mstts:express-as style=&quot;cheerful&quot;&gt;please stay calm everything will be fine&lt;/mstts:express-as&gt;</code></pre> More information: <a href="https://learn.microsoft.com/en-us/azure/ai-services/speech-service/speech-synthesis-markup-voice">Microsoft Azure - speech synthesis markup, voice and speaking styles</a></li> <li>Amazon Polly (whispered): <pre><code>&lt;amazon:effect name=&quot;whispered&quot;&gt;please stay calm everything will be fine&lt;/amazon:effect&gt;</code></pre> More information: <a href="https://docs.aws.amazon.com/polly/latest/dg/whispered-tag.html">Amazon Polly - whispered speech with amazon:effect</a></li> <li>Amazon Polly (soft phonation): <pre><code>&lt;amazon:effect phonation=&quot;soft&quot;&gt;please stay calm everything will be fine&lt;/amazon:effect&gt;</code></pre></li> </ul> |
 | config | [RequestConfig](#ondewo.t2s.RequestConfig) |  | Required. Represents the specifications needed to do the text to speech transformation. |
 
 
@@ -21107,6 +22557,27 @@ Credentials
 
 
 
+<a name="ondewo.vtsi.CsiPreemptiveGenerationConfig"></a>
+
+### CsiPreemptiveGenerationConfig
+Preemptive (speculative) generation of the answer: on a stable partial transcription a draft answer is generated
+before the final transcription arrives, and played only when the final transcription matches it; a draft that
+does not match is discarded and the caller hears nothing of it. Every field is optional; an unset field keeps
+the deployment&apos;s value. A value outside its range is refused with <code>INVALID_ARGUMENT</code>.
+The NLU bounds are set with <code>NluVtsiConfig.preemptive_generation_config</code>, the speech synthesis of a
+draft with <code>T2sVtsiConfig.preemptive_synthesis_config</code>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| enabled | [bool](#bool) | optional | Optional: Enable preemptive generation (default: the deployment&apos;s setting, which is true unless changed). Replaces the deprecated <code>ResponseTimingConfig.preemptive_generation_enabled</code>; set together with it to a different value, the request is refused with <code>INVALID_ARGUMENT</code> |
+| commit_wait_timeout_seconds | [float](#float) | optional | Optional: Seconds a draft that matches the final transcription may still take before it is discarded and the turn is answered normally (default: 3.0, valid range: 0 - 3). While <code>T2sPreemptiveSynthesisConfig.chunked</code> is off the commit waits for the whole draft; while it is on, only for the draft&apos;s first chunk |
+
+
+
+
+
+
 <a name="ondewo.vtsi.CsiVtsiConfig"></a>
 
 ### CsiVtsiConfig
@@ -21121,6 +22592,71 @@ CSI configuration
 | audio_object_store_config | [AudioObjectStorageConfig](#ondewo.vtsi.AudioObjectStorageConfig) |  | Configuration of the Minio Audio Object Store |
 | message_broker_config | [MessageBrokerConfig](#ondewo.vtsi.MessageBrokerConfig) |  | Configuration of the RabbitMQ Message Broker |
 | activate_control_messages | [bool](#bool) | optional | Setting to activate if it is possible to send control messages <ul> <li>via RabbitMQ to remote control the system</li> <li>via embeddings in NLU text responses</li> </ul> Explicitly optional: leaving the field unset means the caller expresses no preference and the server keeps its own configured default. That is NOT the same as sending <pre><code>false</code></pre>, which is a request to switch control messages off. A presence-less bool cannot tell the two apart, so an unset field arrived as <pre><code>false</code></pre> and silently disabled control messages for callers that never mentioned them. |
+| preemptive_generation_config | [CsiPreemptiveGenerationConfig](#ondewo.vtsi.CsiPreemptiveGenerationConfig) |  | Optional: Preemptive (speculative) generation of the answer. Unset keeps the deployment&apos;s values |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DictationConfig"></a>
+
+### DictationConfig
+Configuration of the dictation hold of a call: a final transcription whose dictated value is not complete yet is
+held until the caller continues, so that the groups of the value reach the NLU as ONE turn. Every unset field
+keeps its default; a field that is out of range is refused with <code>INVALID_ARGUMENT</code>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| hold_enabled | [bool](#bool) | optional | Optional: Hold a final transcription whose dictated value is unfinished (default: false) |
+| expected_input_enabled | [bool](#bool) | optional | Optional: Read the expected value (slot) from the NLU answer, so that the hold applies the rule of the value the bot asked for (default: false; without it only the generic rule holds) |
+| read_back_from_bot_text_enabled | [bool](#bool) | optional | Optional: With <code>expected_input_enabled</code>, take a bot answer that reads a complete value back and asks for confirmation as asking for a confirmation of that value (default: false) |
+| hold_generic_max_seconds | [float](#float) | optional | Optional: Seconds the generic rule (no expected value) holds at most (default: 1.5, valid range: 0 - 2; 0 switches the generic rule off) |
+| hold_max_seconds_by_category | [DictationConfig.HoldMaxSecondsByCategoryEntry](#ondewo.vtsi.DictationConfig.HoldMaxSecondsByCategoryEntry) | repeated | Optional: Seconds an unfinished value of a category is held at most, keyed by the category: <code>digits</code>, <code>phone</code>, <code>card</code>, <code>expiry_cvc</code>, <code>iban</code>, <code>bic</code>, <code>svnr</code>, <code>address</code>, <code>date</code>, <code>time</code>, <code>email</code> or <code>confirm_value</code> (valid range: 0 - 4 each). The rule without an expected value is not a category: it is set with <code>hold_generic_max_seconds</code>. An unknown category, <code>generic</code> included, is refused with <code>INVALID_ARGUMENT</code>. The map is ONE field: a non-empty map replaces the whole replica-wide table of the deployment, so a category not listed here keeps the speech-to-speech service's default cap, not a cap the replica-wide table set; an empty map keeps the replica-wide table |
+| hold_invalid_checksum_seconds | [float](#float) | optional | Optional: Seconds a full-length value whose checksum fails is held, so that the bot can ask again (default: 1.5, valid range: 0 - 4) |
+| early_commit_on_complete_value | [bool](#bool) | optional | Optional: Commit the turn on a partial transcription as soon as the expected value is complete; needs <code>hold_enabled</code> and <code>expected_input_enabled</code> (default: false) |
+| s2t_slot_min_duration_off_seconds | [float](#float) | optional | Optional: Minimum silence in seconds the speech-to-text service waits before it ends an utterance while a value is expected (default: 0 = off, valid range: 0 or 0.5 - 4). Only takes effect when a value to restore after the turn is known: <code>s2t_slot_min_duration_off_restore_seconds</code> or the minimum silence of the speech-to-text configuration |
+| s2t_slot_min_duration_off_restore_seconds | [float](#float) | optional | Optional: Minimum silence in seconds restored on the speech-to-text service after a turn with an expected value (default: the minimum silence of the speech-to-text configuration, valid range: 0.05 - 4) |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DictationConfig.HoldMaxSecondsByCategoryEntry"></a>
+
+### DictationConfig.HoldMaxSecondsByCategoryEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [float](#float) |  |  |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DtmfConfig"></a>
+
+### DtmfConfig
+Configuration of the DTMF keys a caller presses. A key reaches the bot only when the bot&apos;s last answer
+declared a key menu or a key entry (ondewo-cai intent tags <code>ondewo-voice:dtmf-menu:&lt;id&gt;</code> /
+<code>ondewo-voice:dtmf-digits:&lt;id&gt;</code>); it is then sent to the NLU as the turn text
+<code>[DTMF:&lt;keys&gt;]</code>. Every field is <code>optional</code>; unset keeps the deployment&apos;s value
+(the <code>ONDEWO_VTSI_CSI_DTMF_*</code> / <code>ONDEWO_VTSI_SIP_DTMF_FORWARD_ACTIVE</code> settings, else
+the default).
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| enabled | [bool](#bool) | optional | Whether a pressed key is forwarded to the bot at all (default true). <code>false</code> ignores every key of the call |
+| barge_in | [bool](#bool) | optional | Whether a key pressed while the bot speaks stops the bot, like a spoken interruption (default true) |
+| inter_digit_timeout_ms | [uint32](#uint32) | optional | Milliseconds after the last key of a key entry (e.g. a PIN) without a terminator before the entry is sent (default 2000, valid range 300 - 10000; a value outside the range is refused with <code>INVALID_ARGUMENT</code>) |
+| undeclared_policy | [string](#string) | optional | What a key the bot declared nothing for does: <code>DROP</code> (default; the key is ignored and the bot is not interrupted) or <code>COMMIT_SINGLE</code> (the key is sent to the NLU as a one-key turn). Any other value is refused with <code>INVALID_ARGUMENT</code> |
 
 
 
@@ -21143,6 +22679,7 @@ Configuration of the interruption (barge-in) handling, i.e. the caller speaking 
 | backoff_seconds | [float](#float) | optional | Optional: Silence in seconds after a real interruption before the next bot response is played (default: 1.0) |
 | first_message_protected_seconds | [float](#float) | optional | Optional: Protect the first bot message from interruptions for the given number of seconds (default: 0 = no protection) |
 | transcribe_on_disabled_interruptions | [bool](#bool) | optional | Optional: Transcribe caller speech while the bot is speaking even if interruptions are disabled (default: false, i.e. caller speech during bot speech is not transcribed while <code>enabled</code> is false) |
+| interruption_fade_out_ms | [int32](#int32) | optional | Optional: Duration in milliseconds over which the bot&apos;s voice fades out (raised cosine) when the caller interrupts it, instead of stopping abruptly (default: 100, valid range: 0 - 500; 0 = stop at once). A value outside the range is refused with <code>INVALID_ARGUMENT</code> |
 
 
 
@@ -21178,6 +22715,26 @@ Configuration of the RabbitMQ Message Broker
 | activate_nlu | [bool](#bool) | optional | should RabbitMQ Message Broker be activated for NLU platform |
 | activate_t2s | [bool](#bool) | optional | should RabbitMQ Message Broker be activated for Text-2-Speech platform |
 | activate_sip | [bool](#bool) | optional | should RabbitMQ Message Broker be activated for SIP platform |
+
+
+
+
+
+
+<a name="ondewo.vtsi.NluPreemptiveGenerationConfig"></a>
+
+### NluPreemptiveGenerationConfig
+Bounds of the preemptive (speculative) NLU requests: on a stable partial transcription the speech-to-speech
+service asks the NLU for the answer of a draft BEFORE the final transcription arrives, and keeps it only when the
+final transcription matches the draft. Every field is optional; an unset field keeps the deployment&apos;s value.
+A value outside its range is refused with <code>INVALID_ARGUMENT</code>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| max_drafts_per_turn | [int32](#int32) | optional | Optional: Number of drafts one caller turn may start at most (default: 2, valid range: 0 - 5; 0 = no drafts) |
+| min_stable_dwell_seconds | [float](#float) | optional | Optional: Seconds a partial transcription must stay unchanged before the first draft of a turn starts (default: 0.25, valid range: 0 - 2; 0 = no wait) |
+| min_interval_seconds | [float](#float) | optional | Optional: Minimum seconds between the starts of two drafts within one turn (default: 0.5, valid range: 0 - 5; 0 = no limit) |
 
 
 
@@ -21221,6 +22778,7 @@ NLU Configuration
 | contexts | [ondewo.nlu.Context](#ondewo.nlu.Context) | repeated | ondewo-nlu list of contexts |
 | http_basic_auth_token | [string](#string) |  | http basic auth token |
 | platform | [ondewo.nlu.Intent.Message.Platform](#ondewo.nlu.Intent.Message.Platform) | optional | Return the message specified in Intent.Message.Platform platform to the user in the DetectIntentResponse |
+| preemptive_generation_config | [NluPreemptiveGenerationConfig](#ondewo.vtsi.NluPreemptiveGenerationConfig) |  | Optional: Bounds of the preemptive (speculative) NLU requests of the call. Unset keeps the deployment&apos;s values. Whether preemptive generation runs at all is set with <code>CsiVtsiConfig.preemptive_generation_config.enabled</code> |
 
 
 
@@ -21257,7 +22815,7 @@ Configuration of the response timing, i.e. when and how the bot responds
 | turn_timeout_seconds | [float](#float) | optional | Optional: Seconds of caller silence after a bot response until a follow-up event is triggered (default: 20.0, valid range: 1.0 - 30.0) |
 | silence_end_call_timeout_seconds | [float](#float) | optional | Optional: Seconds of caller silence until the call is ended. Unset = off (-1 is also accepted as explicit off) |
 | soft_timeout_config | [SoftTimeoutConfig](#ondewo.vtsi.SoftTimeoutConfig) |  | Configuration of the soft timeout filler messages |
-| preemptive_generation_enabled | [bool](#bool) | optional | Optional: Enable preemptive response generation on an eagerly detected end of turn (default: false) |
+| preemptive_generation_enabled | [bool](#bool) | optional | Optional, DEPRECATED: use <code>CsiVtsiConfig.preemptive_generation_config.enabled</code>. Enable preemptive response generation on an eagerly detected end of turn (default: the deployment&apos;s setting, which is true unless changed). Still honoured when it is set alone; set together with <code>CsiVtsiConfig.preemptive_generation_config.enabled</code> to a different value, the request is refused with <code>INVALID_ARGUMENT</code> |
 | t2s_chunked_streaming_enabled | [bool](#bool) | optional | Optional: Enable chunked text-to-speech streaming for a lower time to first audio (default: false) |
 
 
@@ -21368,6 +22926,23 @@ when the response generation takes longer than the timeout
 
 
 
+<a name="ondewo.vtsi.T2sPreemptiveSynthesisConfig"></a>
+
+### T2sPreemptiveSynthesisConfig
+Speech synthesis of the answer of a preemptive (speculative) draft. Every field is optional; an unset field keeps
+the deployment&apos;s value
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| enabled | [bool](#bool) | optional | Optional: Synthesize the answer of a draft before the final transcription arrives, so that a matching draft plays at once (default: true). <code>false</code> asks the NLU only and synthesizes at the commit |
+| chunked | [bool](#bool) | optional | Optional: Hand a matching draft&apos;s answer over chunk by chunk while it is still being synthesized, instead of waiting for the whole synthesis (default: false). Needs chunked text-to-speech streaming (<code>ResponseTimingConfig.t2s_chunked_streaming_enabled</code>) and is ignored without it. <code>chunked</code> has no effect when <code>enabled</code> is false |
+
+
+
+
+
+
 <a name="ondewo.vtsi.T2sVtsiCallbacks"></a>
 
 ### T2sVtsiCallbacks
@@ -21398,6 +22973,7 @@ Text-2-Speech Configuration
 | ----- | ---- | ----- | ----------- |
 | t2s_base_config | [BaseServiceConfig](#ondewo.vtsi.BaseServiceConfig) |  | Host, Port, and [Optional] GRPC cert |
 | t2s_request_config | [ondewo.t2s.RequestConfig](#ondewo.t2s.RequestConfig) |  | Configuration of Text-2-Speech |
+| preemptive_synthesis_config | [T2sPreemptiveSynthesisConfig](#ondewo.vtsi.T2sPreemptiveSynthesisConfig) |  | Optional: Speech synthesis of preemptive (speculative) drafts. Unset keeps the deployment&apos;s values |
 
 
 
@@ -21418,6 +22994,46 @@ Configuration of the turn detection, i.e. deciding when the caller has finished 
 | turn_eagerness | [TurnDetectionConfig.TurnEagerness](#ondewo.vtsi.TurnDetectionConfig.TurnEagerness) |  | Eagerness of the turn detection: scales both endpointing delays. Defaults to NORMAL if unspecified |
 | turn_detection_system_prompt | [string](#string) | optional | Optional: System prompt for the semantic (LLM) turn detection model of the speech-to-text service. Unset uses the model&apos;s built-in prompt. Only valid with the mode <code>SEMANTIC_MODEL</code> (or unspecified): set together with <code>VAD</code> or <code>AUDIO_MODEL</code> it is refused with <code>INVALID_ARGUMENT</code>. VTSI enforces no length limit; the speech-to-text service may refuse a prompt that exceeds its model&apos;s context |
 | turn_detection_user_prompt | [string](#string) | optional | Optional: User prompt for the semantic (LLM) turn detection model of the speech-to-text service, with the rules of <code>turn_detection_system_prompt</code> |
+| conversation_context_turns | [uint32](#uint32) | optional | Optional: Number of the latest conversation turns (the caller&apos;s committed turns and the bot&apos;s utterances as the caller heard them) handed to the semantic turn detection model of the speech-to-text service together with the utterance it judges (default: 0 = off, valid range: 0 - 10). Use it only where the speech-to-text service serves a turn detection model trained with conversation context. Used only by an end-of-utterance model; a chat model ignores it. Only valid with the mode <code>SEMANTIC_MODEL</code> (or unspecified): a value above 0 together with <code>VAD</code> or <code>AUDIO_MODEL</code>, or a value outside the range, is refused with <code>INVALID_ARGUMENT</code> |
+| semantic_model_name | [string](#string) | optional | Optional: Name of the semantic turn detection model the speech-to-text service asks for this call. Unset uses the model configured in the speech-to-text pipeline. The model&apos;s endpoint is deliberately not configurable per call. Valid: 1 - 256 characters, no whitespace or control characters. Only valid with the mode <code>SEMANTIC_MODEL</code> (or unspecified): set together with <code>VAD</code> or <code>AUDIO_MODEL</code>, or invalid, it is refused with <code>INVALID_ARGUMENT</code> |
+| end_of_turn_probability_threshold | [float](#float) | optional | Optional: End-of-turn probability at or above which the semantic turn detection model takes the caller to have finished the turn (valid range: 0 - 1). Unset uses the speech-to-text service&apos;s configured threshold for the language of the call. Used only by an end-of-utterance model; a chat model ignores it. Only valid with the mode <code>SEMANTIC_MODEL</code> (or unspecified): set together with <code>VAD</code> or <code>AUDIO_MODEL</code>, or outside the range, it is refused with <code>INVALID_ARGUMENT</code> |
+| hold_bands | [TurnDetectionConfig.EndOfTurnHoldBands](#ondewo.vtsi.TurnDetectionConfig.EndOfTurnHoldBands) |  | Optional: Hold bands of the semantic turn detection model: how long a turn judged finished, but only with a probability below a band&apos;s upper bound, waits for further silence before it is committed. Set with no bands, a turn at or above the threshold is committed at once; unset uses the speech-to-text service&apos;s configured bands for the language of the call. At most 10 bands, with the ranges of <code>EndOfTurnHoldBand</code>. Used only by an end-of-utterance model; a chat model ignores it. Only valid with the mode <code>SEMANTIC_MODEL</code> (or unspecified): set together with <code>VAD</code> or <code>AUDIO_MODEL</code>, or invalid, it is refused with <code>INVALID_ARGUMENT</code> |
+| uncertain_min_words | [uint32](#uint32) | optional | Optional: Minimum number of words a turn needs before a hold band may hold it; a shorter turn judged finished is committed at once (default: 3, valid range: 0 - 20). Used only by an end-of-utterance model; a chat model ignores it. Only valid with the mode <code>SEMANTIC_MODEL</code> (or unspecified): set together with <code>VAD</code> or <code>AUDIO_MODEL</code>, or outside the range, it is refused with <code>INVALID_ARGUMENT</code> |
+| incomplete_max_silence_seconds | [float](#float) | optional | Optional: Seconds of silence after a turn the semantic turn detection model (of either kind) judged NOT finished before it is committed anyway (default: the voice activity detection&apos;s minimum silence, valid range: 0 - 4; the speech-to-text service raises a value below that minimum silence to it). Only valid with the mode <code>SEMANTIC_MODEL</code> (or unspecified): set together with <code>VAD</code> or <code>AUDIO_MODEL</code>, or outside the range, it is refused with <code>INVALID_ARGUMENT</code> |
+| exact_probability | [bool](#bool) | optional | Optional: Compute the exact end-of-turn probability instead of reading it from the model&apos;s returned top log probabilities (default: false). Requires a deployment that returns prompt log probabilities (vLLM <code>prompt_logprobs</code>); on any other deployment every turn waits for <code>incomplete_max_silence_seconds</code>. Used only by an end-of-utterance model; a chat model ignores it. Only valid with the mode <code>SEMANTIC_MODEL</code> (or unspecified): set together with <code>VAD</code> or <code>AUDIO_MODEL</code> it is refused with <code>INVALID_ARGUMENT</code> |
+| final_merge_window_seconds | [float](#float) | optional | Optional: Seconds a speech-to-text final that looks like half a sentence is held, to be merged with the caller&apos;s continuation into ONE turn (default: 0 = off, valid range: 0 - 2). Valid with every mode. A value outside the range is refused with <code>INVALID_ARGUMENT</code> |
+| dictation_config | [DictationConfig](#ondewo.vtsi.DictationConfig) |  | Configuration of the dictation hold, i.e. waiting for the rest of a dictated value (digits, phone or card number, IBAN, address, date, ...) instead of ending the turn at the caller&apos;s pause between its groups. Valid with every mode. Unset fields keep the defaults |
+
+
+
+
+
+
+<a name="ondewo.vtsi.TurnDetectionConfig.EndOfTurnHoldBand"></a>
+
+### TurnDetectionConfig.EndOfTurnHoldBand
+One hold band of the semantic turn detection model
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| upper_probability | [float](#float) |  | Exclusive upper bound of the end-of-turn probabilities the band covers (valid range: 0 - 1) |
+| max_silence_seconds | [float](#float) |  | Seconds of silence a turn in the band waits before it is committed (valid range: 0 - 4; never longer than <code>incomplete_max_silence_seconds</code>) |
+
+
+
+
+
+
+<a name="ondewo.vtsi.TurnDetectionConfig.EndOfTurnHoldBands"></a>
+
+### TurnDetectionConfig.EndOfTurnHoldBands
+Hold bands of the semantic turn detection model
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| bands | [TurnDetectionConfig.EndOfTurnHoldBand](#ondewo.vtsi.TurnDetectionConfig.EndOfTurnHoldBand) | repeated | The bands (at most 10). The first band, sorted by <code>upper_probability</code>, whose upper probability exceeds the end-of-turn probability decides the hold; a probability above every band is committed at once |
 
 
 
@@ -21437,6 +23053,102 @@ turn detection, interruption (barge-in) handling and response timing
 | interruption_handling_config | [InterruptionHandlingConfig](#ondewo.vtsi.InterruptionHandlingConfig) |  | Configuration of the interruption (barge-in) handling |
 | response_timing_config | [ResponseTimingConfig](#ondewo.vtsi.ResponseTimingConfig) |  | Configuration of the response timing |
 | answering_machine_detection_config | [AnsweringMachineDetectionConfig](#ondewo.vtsi.AnsweringMachineDetectionConfig) |  | Configuration of the answering machine detection (AMD) of an outbound call. Only accepted for pooled persistent callers: a listener or a one-shot caller that carries it is rejected with INVALID_ARGUMENT |
+| dtmf_config | [DtmfConfig](#ondewo.vtsi.DtmfConfig) |  | Configuration of the DTMF keys the CALLER presses (keypad input to the bot). Unset keeps the deployment&apos;s behaviour (keys on, a key barges in, undeclared keys dropped) |
+| warm_transfer_config | [WarmTransferConfig](#ondewo.vtsi.WarmTransferConfig) |  | Configuration of the warm intro of a WARM transfer of this call (see <code>WarmTransferConfig</code>). Unset inherits the project default <code>VtsiProject.warm_transfer_defaults</code>; a <code>TransferCallRequest.warm_transfer_config</code> wins over it for that one transfer |
+
+
+
+
+
+
+<a name="ondewo.vtsi.WarmIntroRecord"></a>
+
+### WarmIntroRecord
+<p>Audit of one warm intro, in <code>CallTransferRecord.warm_intro</code>. Output only. Holds NO intro text and NO
+decline reason text.</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| intro_id | [string](#string) |  | Id of the intro: the participant id of the target&apos;s leg (the <code>participant_id</code> of the events) |
+| decision | [WarmIntroDecision](#ondewo.vtsi.WarmIntroDecision) |  | The target&apos;s decision |
+| decided_by | [WarmIntroDecidedBy](#ondewo.vtsi.WarmIntroDecidedBy) |  | How it was taken |
+| decline_reason_present | [bool](#bool) |  | Whether the target gave a reason for a decline (the reason itself never leaves the intro bot&apos;s NLU session) |
+| intro_call_name | [string](#string) |  | The intro bot&apos;s call, labelled <code>{&quot;purpose&quot;: &quot;warm_intro&quot;}</code>. Empty when no intro bot answered |
+| ring_duration | [google.protobuf.Duration](#google.protobuf.Duration) |  | From the start of the ring to the target&apos;s answer |
+| intro_duration | [google.protobuf.Duration](#google.protobuf.Duration) |  | From the target&apos;s answer to the decision or the end of the intro |
+| text_source | [WarmIntroTextSource](#ondewo.vtsi.WarmIntroTextSource) |  | The text source actually used |
+| text_fell_back | [bool](#bool) |  | Whether the LLM summary failed or timed out and the TEMPLATE was used |
+| cause | [string](#string) |  | Bounded kebab-case token naming why the intro ended or did not run, e.g. <code>declined</code>, <code>voicemail-suspected</code>, <code>target-hung-up</code>, <code>no-free-listener</code>, <code>prepare-failed</code>, <code>intro-timeout</code>; empty on accept |
+| notice_delivered | [bool](#bool) |  | Whether the caller&apos;s bot queued the outcome notice (decline / unreachable) for the caller. Only meaningful when a notice was owed (every decision but <code>WARM_INTRO_DECISION_ACCEPTED</code>); <code>false</code> there goes with <code>VTSI_EVENT_CALL_WARM_TRANSFER_OUTCOME_NOTICE_UNDELIVERED</code> |
+| intro_started | [bool](#bool) |  | Whether the intro started (an intro bot answered). <code>false</code> with <code>WARM_INTRO_UNAVAILABLE_POLICY_CONNECT_WITHOUT_INTRO</code> means the target was joined without an intro; <code>cause</code> says why |
+
+
+
+
+
+
+<a name="ondewo.vtsi.WarmTransferConfig"></a>
+
+### WarmTransferConfig
+<p>Warm intro of a WARM transfer: after the human target answered and before the target is joined, an ONDEWO bot
+(a free listener of the project, in an NLU session of its own) greets the target, confirms that a person is on
+the line, briefs them (who calls and why), asks whether they accept the call and, on a decline, asks what to tell
+the caller. Meanwhile the caller stays with the paused bot of the call. On accept the target is joined and the
+bot leaves as in every WARM transfer; on a decline, no decision or an unreachable target the call stays with the
+bot, which tells the caller (<code>caller_declined_message</code> / <code>caller_unreachable_message</code>).</p>
+<p>Levels: unset fields inherit, the most specific level winning per field (protobuf <code>MergeFrom</code>):
+<code>TransferCallRequest.warm_transfer_config</code> &gt; <code>VoiceInteractionConfig.warm_transfer_config</code>
+of the call (listener, caller, campaign) &gt; <code>VtsiProject.warm_transfer_defaults</code> &gt; the
+deployment&apos;s <code>ONDEWO_VTSI_WARM_TRANSFER_*</code> settings &gt; the ONDEWO NLU agent&apos;s warm transfer
+settings (texts only) &gt; the built-in default. <code>enabled</code> unset at every level is
+<code>false</code>: a WARM transfer then behaves exactly as before 9.5.0. An NLU agent whose warm transfer
+settings switch warm intros off makes the intro unavailable, and <code>on_intro_unavailable</code> decides.</p>
+<p>Requires the deployment switch <code>ONDEWO_VTSI_WARM_TRANSFER_ENABLED=true</code> (default
+<code>false</code>); otherwise an explicit <code>enabled=true</code> is refused with
+<code>FAILED_PRECONDITION</code> <code>reason=warm-intro-disabled</code>, at every level (also on
+<code>UpdateVtsiProject</code>). <code>VtsiProject.feature_availability.warm_intro</code> says up front whether
+warm intros can run in a project. Fields marked <i>phase B</i> are refused with <code>FAILED_PRECONDITION</code>
+<code>reason=phase-b-not-enabled</code> while the deployment has not enabled phase B
+(<code>VtsiProject.feature_availability.warm_intro_phase_b</code>).</p>
+<p>Texts are spoken by text-to-speech in the language of the intro bot. The placeholders are
+<code>{project}</code>, <code>{caller_name}</code>, <code>{callee_name}</code>, <code>{topic}</code>,
+<code>{summary}</code> and <code>{reason}</code>, where a field lists them; an unknown placeholder is refused with
+<code>INVALID_ARGUMENT</code>. A text must not contain SIP markup (<code>&lt;SIP:</code>): refused with
+<code>INVALID_ARGUMENT</code>. No text of an intro (the briefing, the decline reason) is ever stored by VTSI,
+logged, sent in an event or a SIP header: it lives only in the intro bot&apos;s NLU session.</p>
+<p>Every scalar is <code>optional</code>: unset inherits, a set value (also <code>&quot;&quot;</code> or
+<code>0</code>) is that level&apos;s value. Values outside a documented range are refused with
+<code>INVALID_ARGUMENT</code>.</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| enabled | [bool](#bool) | optional | Master switch of the warm intro. Unset at every level means <code>false</code> |
+| intro_prompt | [string](#string) | optional | TEMPLATE: the briefing spoken to the target after the readiness answer, with the placeholders <code>{caller_name}</code>, <code>{callee_name}</code>, <code>{topic}</code> and <code>{summary}</code> (default e.g. &quot;Ich habe {caller_name} in der Leitung, es geht um {topic}.&quot;). LLM_SUMMARY (<i>phase B</i>): the instruction to the LLM that writes the briefing from the call so far. At most 4000 characters |
+| intro_text_source | [WarmIntroTextSource](#ondewo.vtsi.WarmIntroTextSource) |  | How the briefing is produced. <code>WARM_INTRO_TEXT_SOURCE_UNSPECIFIED</code> means <code>WARM_INTRO_TEXT_SOURCE_LLM_SUMMARY</code> when phase B is enabled and the project has an LLM service, else <code>WARM_INTRO_TEXT_SOURCE_TEMPLATE</code>. <code>WARM_INTRO_TEXT_SOURCE_LLM_SUMMARY</code> is <i>phase B</i>; when the LLM fails or is too slow the TEMPLATE is used (<code>WarmIntroRecord.text_fell_back</code>) |
+| ready_question | [string](#string) | optional | The first sentence the target hears, before anything about the caller (it carries no personal data, so a mailbox that answers records nothing about the caller). Placeholder <code>{project}</code>. Default (de): &quot;Hier ist der digitale Assistent von {project}. Ich habe einen Anruf für Sie. Sind Sie am Apparat? Sagen Sie ja oder drücken Sie 1.&quot; At most 1000 characters |
+| confirm_human_before_intro | [bool](#bool) | optional | Whether the briefing is spoken only after the target answered the <code>ready_question</code> (by voice or <code>accept_dtmf</code>). Default <code>true</code>: the mailbox guard. <code>false</code> briefs the target right after the <code>ready_question</code> |
+| accept_question | [string](#string) | optional | The question after the briefing. Default (de): &quot;Möchten Sie das Gespräch übernehmen? Ja oder 1, nein oder 2.&quot; At most 1000 characters |
+| decline_reason_question | [string](#string) | optional | Asked after a decline, to learn what to tell the caller. Default (de): &quot;Was darf ich dem Anrufer ausrichten?&quot;, (en) &quot;What may I tell the caller?&quot;. <code>&quot;&quot;</code> means: do not ask, the caller hears the decline without a reason. The answer is relayed to the caller only through the bot&apos;s NLU (normalised: SIP markup removed, at most 300 characters, digit runs of 12 or more masked); VTSI never receives it. At most 1000 characters |
+| caller_declined_message | [string](#string) | optional | What the caller hears after a decline, placeholders <code>{callee_name}</code> and <code>{reason}</code>. Default (de): &quot;{callee_name} kann das Gespräch gerade nicht übernehmen und lässt ausrichten: {reason}&quot;; without a reason a variant without the clause is spoken. At most 1000 characters |
+| caller_unreachable_message | [string](#string) | optional | What the caller hears when the target was busy, did not answer, gave no decision, hung up during the intro or the intro could not run (with <code>WARM_INTRO_UNAVAILABLE_POLICY_RETURN_TO_CALLER</code>). Placeholder <code>{callee_name}</code>. At most 1000 characters |
+| accept_dtmf | [string](#string) | optional | The key that accepts (and answers the <code>ready_question</code>). Default <code>1</code>; exactly one of <code>0-9 * #</code> |
+| decline_dtmf | [string](#string) | optional | The key that declines. Default <code>2</code>; exactly one of <code>0-9 * #</code>, different from the effective <code>accept_dtmf</code> |
+| decision_timeout_s | [uint32](#uint32) | optional | Seconds from a question to the target&apos;s decision before the intro ends with <code>WARM_INTRO_DECISION_NO_DECISION</code>. Default 20, valid range 5 - 60 |
+| max_intro_duration_s | [uint32](#uint32) | optional | Hard cap in seconds from the target&apos;s answer to the decision. Default 90, valid range 30 - 300. The caller waits at most the ring time plus this |
+| callee_display_name | [string](#string) | optional | Who the target is, spoken as <code>{callee_name}</code>, e.g. &quot;Frau Berger, Buchhaltung&quot;. Unset resolves from the target softphone account&apos;s <code>display_name</code>, then from <code>VtsiProject.transfer_target_directory</code>. At most 128 characters. Meaningful per transfer only |
+| callee_description | [string](#string) | optional | The target&apos;s role and context for the briefing (LLM_SUMMARY). Unset resolves from the target softphone account&apos;s <code>description</code>, then from <code>VtsiProject.transfer_target_directory</code>. At most 512 characters. Meaningful per transfer only |
+| on_intro_unavailable | [WarmIntroUnavailablePolicy](#ondewo.vtsi.WarmIntroUnavailablePolicy) |  | What happens when the intro cannot run (no free listener, the NLU could not prepare the intro). <code>WARM_INTRO_UNAVAILABLE_POLICY_UNSPECIFIED</code> means <code>WARM_INTRO_UNAVAILABLE_POLICY_CONNECT_WITHOUT_INTRO</code> |
+| apply_to_bot_transfers | [bool](#bool) | optional | Whether the bot&apos;s OWN transfers to a human (the NLU answer&apos;s transfer or human handover) get a warm intro too: the transfer is handed to VTSI instead of being sent by the bot. Default <code>false</code>. Valid on the call and project levels; set on a <code>TransferCallRequest</code> it is refused with <code>INVALID_ARGUMENT</code> |
+| caller_hold_message | [string](#string) | optional | Spoken to the caller while the intro runs, after <code>caller_disclosure_message</code>, e.g. &quot;Einen Moment bitte, ich verbinde Sie.&quot; <code>&quot;&quot;</code> or unset: none (silence). At most 1000 characters |
+| caller_hold_music | [bool](#bool) | optional | <i>Phase B</i>: music on hold for the caller between the hold messages. Default <code>false</code> (silence) |
+| caller_reassure_interval_s | [uint32](#uint32) | optional | Repeat <code>caller_hold_message</code> every N seconds while the intro runs. <code>0</code> (default): never. Valid: 0 or 15 - 120 |
+| llm_ccai_service_name | [string](#string) | optional | The LLM service of the ONDEWO NLU agent that writes the briefing (LLM_SUMMARY, <i>phase B</i>). Empty: the agent&apos;s warm transfer setting, else the project&apos;s first LLM service |
+| caller_disclosure_message | [string](#string) | optional | Spoken to the caller FIRST when the intro starts, e.g. that the call is being announced to the target. Default empty: none. At most 1000 characters |
+| caller_accepted_message | [string](#string) | optional | Spoken to the caller after the target accepted and before the target is joined, placeholder <code>{callee_name}</code>, e.g. &quot;Ich verbinde Sie jetzt mit {callee_name}.&quot; The target does not hear it. Default empty: none. At most 1000 characters |
+| store_intro_audio | [bool](#bool) | optional | Whether the intro bot&apos;s NLU session stores the intro audio (the target&apos;s voice and the bot&apos;s). Default <code>false</code>: no audio is stored; the session&apos;s text follows the conversation retention |
+| intro_listener_names | [string](#string) | repeated | Project level only: listeners (<pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>) reserved as intro bots. Empty (default): any free listener of the project, keeping at least one ready listener free for customer calls. At most 50 entries; set on another level it is refused with <code>INVALID_ARGUMENT</code> |
 
 
 
@@ -21498,6 +23210,60 @@ Eagerness of the turn detection
 | PATIENT | 1 | Patient turn taking: scales the endpointing delays by a factor of 1.7 |
 | NORMAL | 2 | Normal turn taking: keeps the endpointing delays unchanged (factor 1.0) |
 | EAGER | 3 | Eager turn taking: scales the endpointing delays by a factor of 0.6 |
+
+
+
+<a name="ondewo.vtsi.WarmIntroDecidedBy"></a>
+
+### WarmIntroDecidedBy
+<p>How the decision of a warm intro was taken</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| WARM_INTRO_DECIDED_BY_UNSPECIFIED | 0 | Not decided |
+| WARM_INTRO_DECIDED_BY_DTMF | 1 | A key (<code>accept_dtmf</code> / <code>decline_dtmf</code>) |
+| WARM_INTRO_DECIDED_BY_SPEECH | 2 | A spoken answer |
+| WARM_INTRO_DECIDED_BY_TIMEOUT | 3 | No answer within <code>decision_timeout_s</code> / <code>max_intro_duration_s</code> |
+
+
+
+<a name="ondewo.vtsi.WarmIntroDecision"></a>
+
+### WarmIntroDecision
+<p>The target&apos;s decision in a warm intro</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| WARM_INTRO_DECISION_UNSPECIFIED | 0 | No decision yet (the intro runs, or it never started) |
+| WARM_INTRO_DECISION_ACCEPTED | 1 | The target accepted and was joined |
+| WARM_INTRO_DECISION_DECLINED | 2 | The target declined; the call stays with the bot |
+| WARM_INTRO_DECISION_NO_DECISION | 3 | The target answered but gave no decision in time (also a mailbox that answered) |
+
+
+
+<a name="ondewo.vtsi.WarmIntroTextSource"></a>
+
+### WarmIntroTextSource
+<p>How the briefing of a warm intro is produced</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| WARM_INTRO_TEXT_SOURCE_UNSPECIFIED | 0 | See <code>WarmTransferConfig.intro_text_source</code> |
+| WARM_INTRO_TEXT_SOURCE_TEMPLATE | 1 | <code>WarmTransferConfig.intro_prompt</code> as a template |
+| WARM_INTRO_TEXT_SOURCE_LLM_SUMMARY | 2 | An LLM summary of the call so far, instructed by <code>WarmTransferConfig.intro_prompt</code> (phase B) |
+
+
+
+<a name="ondewo.vtsi.WarmIntroUnavailablePolicy"></a>
+
+### WarmIntroUnavailablePolicy
+<p>What a WARM transfer does when its warm intro cannot run</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| WARM_INTRO_UNAVAILABLE_POLICY_UNSPECIFIED | 0 | Same as <code>WARM_INTRO_UNAVAILABLE_POLICY_CONNECT_WITHOUT_INTRO</code> |
+| WARM_INTRO_UNAVAILABLE_POLICY_CONNECT_WITHOUT_INTRO | 1 | Join the target directly, as a WARM transfer without an intro |
+| WARM_INTRO_UNAVAILABLE_POLICY_RETURN_TO_CALLER | 2 | Hang up the target and keep the call with the bot, which tells the caller (<code>TRANSFER_OUTCOME_INTRO_UNAVAILABLE</code>) |
 
 
  <!-- end enums -->
@@ -21675,6 +23441,9 @@ caller (status <code>NO_ONGOING_CALL</code>, not active, no start time) is a <co
 | last_transfer | [CallTransferRecord](#ondewo.vtsi.CallTransferRecord) |  | The last transfer attempt of the call; unset if there was none. Set in the SHALLOW and FULL views |
 | sip_call_id | [string](#string) |  | Identifier the call&apos;s SIP container minted for the call (<code>ondewo.sip.SipStatus.call_id</code>). Empty until the call was identified; call control requests are refused (<code>call-not-yet-identified</code>) until then. Set in the SHALLOW and FULL views |
 | labels | [Call.LabelsEntry](#ondewo.vtsi.Call.LabelsEntry) | repeated | Client-defined descriptive labels of the call, e.g. <code>{"ticket": "4711", "outcome": "callback"}</code>. Empty until a client sets them; the server never sets or interprets them. Written ONLY by <code>UpdateCall</code> / <code>UpdateCalls</code> with the <code>update_mask</code> path <code>labels</code>, which REPLACES the whole map (an empty map clears it); a path below it (e.g. <code>labels.ticket</code>) is rejected. Bounds, each refused with <code>INVALID_ARGUMENT</code> naming the label: at most 64 entries; a key of 1 to 63 characters of <pre><code>[a-z0-9_.-]</code></pre>, starting with a letter; a value of at most 256 characters. These are exactly the bounds of <code>SoftphoneAccount.labels</code>. Stored with the call record, so they survive the end of the call and are kept as long as the record. The waiting call of a persistent listener or pooled caller (status <code>NO_ONGOING_CALL</code>, not active) cannot be labelled: <code>FAILED_PRECONDITION</code> with <code>reason=call-not-started</code>. This is the only mutable field of a <code>Call</code>: it exists so that a call can be annotated without anything about the live call being changed. Set in the SHALLOW and FULL views. |
+| ivr_menu_display_name | [string](#string) |  | Output only. The display name of the IVR menu the caller came through before the bot took the call (from <code>X-ondewo-ivr-menu</code>); empty when the call did not pass an IVR menu. Set in the SHALLOW and FULL views |
+| ivr_path | [string](#string) |  | Output only. The option labels the caller took through the IVR menus, e.g. <code>main:1&gt;billing:2</code> (from <code>X-ondewo-ivr-path</code>, at most 256 characters); empty when the call did not pass an IVR menu. Set in the SHALLOW and FULL views |
+| ivr_menu_name | [string](#string) |  | Output only. Resource name of the IVR menu that handled the call&apos;s IVR leg, i.e. the menu <code>ivr_menu_display_name</code> names, so a client can find the menu by id instead of by its label. The format is: <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre> Empty when the call did not pass an IVR menu. Set in the SHALLOW and FULL views |
 
 
 
@@ -21954,6 +23723,7 @@ left out), ordered by the enum number, ascending.</p>
 | softphone_account_name | [string](#string) |  | A softphone account of the same project: <pre><code>projects/&lt;project_uuid&gt;/softphoneAccounts/&lt;account_uuid&gt;</code></pre>. It must be enabled, routed and registered |
 | listener_name | [string](#string) |  | A listener of the same project: <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;</code></pre>. The call goes to that listener&apos;s idle container; a busy listener is refused (<code>listener-busy</code>) |
 | listener_queue | [ListenerQueueTarget](#ondewo.vtsi.ListenerQueueTarget) |  | The project&apos;s listener queue: any idle listener of the project takes the call |
+| ivr_menu_name | [string](#string) |  | A PUBLISHED IVR menu of the same project: <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>. The caller enters the menu&apos;s published revision at its entry node. <code>TRANSFER_MODE_BLIND</code> only; with <code>TRANSFER_MODE_WARM</code> it is refused with <code>INVALID_ARGUMENT</code>. A menu that is not published is refused with <code>FAILED_PRECONDITION</code> <code>reason=menu-not-published</code>, and a deployment without IVR menus with <code>UNIMPLEMENTED</code> <code>reason=ivr-disabled</code> |
 
 
 
@@ -21974,6 +23744,8 @@ left out), ordered by the enum number, ascending.</p>
 | outcome | [TransferOutcome](#ondewo.vtsi.TransferOutcome) |  | Outcome of the transfer |
 | sip_response_code | [int32](#int32) |  | SIP response code of the REFER where known, else <code>0</code> |
 | time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the outcome was recorded |
+| warm_intro | [WarmIntroRecord](#ondewo.vtsi.WarmIntroRecord) |  | The warm intro of the transfer; unset when the transfer ran no intro and tried none. A busy, unanswered or unreachable target keeps the outcome it had before 9.5.0 (<code>TRANSFER_OUTCOME_TIMEOUT</code>, ...) |
+| effective_warm_transfer_config | [WarmTransferConfig](#ondewo.vtsi.WarmTransferConfig) |  | The RESOLVED warm intro configuration the transfer ran with (every level merged, defaults filled in), for support. Holds configuration texts only, never a briefing or a decline reason. Unset when no intro was enabled |
 
 
 
@@ -22644,6 +24416,40 @@ ScheduledCaller message - a Caller with a schedule when to start calling
 
 
 
+<a name="ondewo.vtsi.SendCallDtmfRequest"></a>
+
+### SendCallDtmfRequest
+<p>Request of <code>SendCallDtmf</code></p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| call_name | [string](#string) |  | Name of the connected call |
+| digits | [string](#string) |  | The keys to press, in order: 1 to 64 of <code>0-9</code>, <code>*</code>, <code>#</code> and <code>A-D</code>. Never logged; treat it like a password (it may be a PIN). |
+
+
+
+
+
+
+<a name="ondewo.vtsi.SendCallDtmfResponse"></a>
+
+### SendCallDtmfResponse
+<p>Response of <code>SendCallDtmf</code></p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| call_name | [string](#string) |  | Name of the call |
+| queued_keys | [int32](#int32) |  | Number of keys queued: the length of <code>digits</code> |
+
+
+
+
+
+
 <a name="ondewo.vtsi.ServiceStatus"></a>
 
 ### ServiceStatus
@@ -23282,7 +25088,8 @@ Request to transfer calls
 | mode | [TransferMode](#ondewo.vtsi.TransferMode) |  | How to transfer. Unspecified means <code>TRANSFER_MODE_BLIND</code> |
 | headers | [TransferCallRequest.HeadersEntry](#ondewo.vtsi.TransferCallRequest.HeadersEntry) | repeated | Optional headers handed to the transfer target. Keys must match <code>X-ondewo-[A-Za-z0-9-]{1,64}</code>, at most 16 entries, values at most 256 bytes. Merged over the call&apos;s own headers. They are delivered through the dialplan, not on the SIP REFER (Asterisk does not forward REFER headers to the target). Not delivered to a phone number target |
 | ring_timeout_s | [int32](#int32) |  | WARM only: how long the target may ring, in seconds, <code>5</code> to <code>120</code>. <code>0</code> means <code>30</code> |
-| request_id | [string](#string) |  | Optional idempotency key, with the semantics of <code>InviteToCallRequest.request_id</code>: 1 to 255 visible ASCII characters, scoped to <code>call_name</code>. A repeated request with the same <code>call_name</code> and <code>request_id</code> returns the <code>TransferCallResponse</code> of the first request instead of transferring again, for as long as the call record exists; the same key with a different target, mode, headers or ring timeout is refused with <code>INVALID_ARGUMENT</code> and <code>reason=request-id-conflict</code>. A first request that was refused with a gRPC status stored nothing, so its retry runs again; a first request that answered an outcome (also a telephony failure such as <code>TRANSFER_OUTCOME_TIMEOUT</code>) is replayed. A replay writes no second audit record and emits no event. Empty means no deduplication. In a <code>TransferCallsRequest</code> each entry carries its own key. |
+| request_id | [string](#string) |  | Optional idempotency key, with the semantics of <code>InviteToCallRequest.request_id</code>: 1 to 255 visible ASCII characters, scoped to <code>call_name</code>. A repeated request with the same <code>call_name</code> and <code>request_id</code> returns the <code>TransferCallResponse</code> of the first request instead of transferring again, for as long as the call record exists; the same key with a different target, mode, headers, ring timeout or <code>warm_transfer_config</code> is refused with <code>INVALID_ARGUMENT</code> and <code>reason=request-id-conflict</code>. A first request that was refused with a gRPC status stored nothing, so its retry runs again; a first request that answered an outcome (also a telephony failure such as <code>TRANSFER_OUTCOME_TIMEOUT</code>) is replayed. A replay writes no second audit record and emits no event. Empty means no deduplication. In a <code>TransferCallsRequest</code> each entry carries its own key. |
+| warm_transfer_config | [WarmTransferConfig](#ondewo.vtsi.WarmTransferConfig) |  | WARM only: the warm intro of this transfer, merged field by field over the call&apos;s <code>VoiceInteractionConfig.warm_transfer_config</code> and the project&apos;s <code>VtsiProject.warm_transfer_defaults</code> (see <code>WarmTransferConfig</code>). Set with <code>TRANSFER_MODE_BLIND</code> it is refused with <code>INVALID_ARGUMENT</code>. When the effective config enables the intro, the target must be a human (<code>phone_number</code> or <code>softphone_account_name</code>; a listener, the listener queue or an IVR menu is refused with <code>INVALID_ARGUMENT</code> <code>reason=warm-intro-target-not-human</code>), and these preconditions are checked before anything rings, each refused with <code>FAILED_PRECONDITION</code> and the reason: <code>warm-intro-disabled</code> (the deployment switch is off), <code>asterisk-not-local</code>, <code>no-nlu-session</code> (the call has no live NLU session), <code>warm-intro-needs-listener</code> (the project has no listener to run the intro), <code>warm-intro-needs-session-from-sip-context</code>, <code>warm-intro-cross-project</code> (the listeners use another NLU project than the call), <code>warm-intro-notice-unsupported</code> (the call&apos;s SIP container cannot deliver the outcome to the caller), <code>call-control-disabled</code> and <code>phase-b-not-enabled</code>. The response is then <code>TRANSFER_OUTCOME_PENDING</code>; the outcome arrives in <code>Call.last_transfer</code> and the events <code>VTSI_EVENT_CALL_WARM_INTRO_*</code> |
 
 
 
@@ -23317,7 +25124,7 @@ Response to transfer a call to a phone number or voip number
 | call_name | [string](#string) |  | call name to transfer For listener this is <pre><code>projects/&lt;project_uuid&gt;/listeners/&lt;listener_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> For callers this is <pre><code>projects/&lt;project_uuid&gt;/callers/&lt;caller_uuid&gt;/calls/&lt;call_uuid&gt;</code></pre> |
 | transfer_id | [string](#string) |  | The legacy raw target of the request (<code>TransferCallRequest.transfer_id</code>), echoed; empty for a typed <code>target</code> (see <code>resolved_target</code>) |
 | error_message | [string](#string) |  | Empty unless the transfer failed. <code>TransferCall</code> reports a refusal before any side effect as a gRPC status and a telephony outcome in <code>outcome</code> / <code>error_reason</code>, so it is empty there. In an entry of <code>TransferCallsResponse</code> it is the error of an entry <code>TransferCall</code> would have refused with a gRPC status, prefixed with the name of that status code, e.g. <code>FAILED_PRECONDITION: reason=call-not-connected</code>. |
-| outcome | [TransferOutcome](#ondewo.vtsi.TransferOutcome) |  | Outcome of the transfer |
+| outcome | [TransferOutcome](#ondewo.vtsi.TransferOutcome) |  | Outcome of the transfer. A WARM transfer with a warm intro answers <code>TRANSFER_OUTCOME_PENDING</code>; its final outcome arrives in <code>Call.last_transfer</code> and the events |
 | resolved_target | [string](#string) |  | The dialplan extension the target resolved to, e.g. <code>ondewo0007</code>, a softphone user name, <code>ondewoqueue</code> or the E.164 number |
 | sip_response_code | [int32](#int32) |  | SIP response code of the REFER where known (<code>202</code> accepted, the refusal code otherwise), else <code>0</code> |
 | error_reason | [string](#string) |  | Stable reason token of a refusal or failure, e.g. <code>target-not-registered</code>, <code>listener-busy</code>, <code>queue-empty</code>, <code>self-transfer</code>, <code>number-not-allowed</code>; empty on success |
@@ -23833,13 +25640,17 @@ Lifecycle state of a ScheduledCaller
 | ---- | ------ | ----------- |
 | TRANSFER_OUTCOME_UNSPECIFIED | 0 | No outcome recorded |
 | TRANSFER_OUTCOME_ACCEPTED | 1 | BLIND: the REFER was accepted and the bot left the call. WARM: the target answered and was bridged, and the bot left the call |
-| TRANSFER_OUTCOME_PENDING | 2 | WARM: the target is ringing. Follow <code>VTSI_EVENT_CALL_TRANSFERRED</code> / <code>VTSI_EVENT_CALL_TRANSFER_FAILED</code> or <code>Call.last_transfer</code> |
+| TRANSFER_OUTCOME_PENDING | 2 | WARM: the target is ringing (with a warm intro: the target is ringing or being briefed). Follow <code>VTSI_EVENT_CALL_TRANSFERRED</code> / <code>VTSI_EVENT_CALL_TRANSFER_FAILED</code> (and the <code>VTSI_EVENT_CALL_WARM_INTRO_*</code> events) or <code>Call.last_transfer</code> |
 | TRANSFER_OUTCOME_TARGET_INVALID | 3 | Refused before anything was sent; the call is untouched. <code>error_reason</code> says why |
 | TRANSFER_OUTCOME_REFER_REJECTED | 4 | The SIP server refused the REFER (including an unknown target extension); the call is KEPT with the bot. <code>sip_response_code</code> carries the code where known |
 | TRANSFER_OUTCOME_TIMEOUT | 5 | No answer to the REFER in time, or (WARM) the target did not answer; the call is KEPT with the bot |
 | TRANSFER_OUTCOME_CALL_ENDED | 6 | The far end left the call during the attempt |
 | TRANSFER_OUTCOME_CALL_SCOPE_MISMATCH | 7 | The call this request names is no longer the call the container is serving (e.g. the next call of a persistent listener); nothing was sent |
 | TRANSFER_OUTCOME_SIP_UNREACHABLE | 8 | The call&apos;s SIP container could not be reached |
+| TRANSFER_OUTCOME_DECLINED | 9 | Warm intro: the target declined; the call stays with the bot, which tells the caller |
+| TRANSFER_OUTCOME_NO_DECISION | 10 | Warm intro: the target answered but gave no decision in time; the call stays with the bot |
+| TRANSFER_OUTCOME_TARGET_UNAVAILABLE | 11 | Warm intro: the target answered but is gone (hung up during the intro, a mailbox is suspected); the call stays with the bot. <code>CallTransferRecord.warm_intro.cause</code> says which |
+| TRANSFER_OUTCOME_INTRO_UNAVAILABLE | 12 | Warm intro: the intro could not run and <code>WarmTransferConfig.on_intro_unavailable</code> is <code>WARM_INTRO_UNAVAILABLE_POLICY_RETURN_TO_CALLER</code>; the target was hung up and the call stays with the bot |
 
 
  <!-- end enums -->
@@ -23887,7 +25698,7 @@ Lifecycle state of a ScheduledCaller
 | StopCall | [StopCallRequest](#ondewo.vtsi.StopCallRequest) | [StopCallResponse](#ondewo.vtsi.StopCallResponse) | <p>Stops a call: hangs it up if it is still active and stops (releases) the listener or caller that serves it, like <code>StopCaller</code> / <code>StopListener</code>. A call that already ended is not an error: its listener or caller is still released if it is deployed, and when there was nothing left to release the response carries <code>error_message = Call ... was not released</code>, so a repeat succeeds with that message.</p> <p>Errors are gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed request or an unknown <code>field_mask</code> path; <code>NOT_FOUND</code> for an unknown project or call, or a call of another project; with authorization enforced <code>PERMISSION_DENIED</code>.</p> <p>Events: <code>VTSI_EVENT_CALL_STOPPED</code>, and <code>VTSI_EVENT_CALLER_STOPPED</code> / <code>VTSI_EVENT_LISTENER_STOPPED</code> for the released resource.</p> <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p> |
 | StopCalls | [StopCallsRequest](#ondewo.vtsi.StopCallsRequest) | [StopCallsResponse](#ondewo.vtsi.StopCallsResponse) | <p>Stops several calls of one project, each like <code>StopCall</code>, at most 1000 distinct names. Not atomic: every call is stopped on its own and reported in its own entry, in request order; a failed entry carries an <code>error_message</code> prefixed with the gRPC status code name <code>StopCall</code> would have answered and does not stop the others. No entry, more than 1000 names or a malformed <code>vtsi_project_name</code> is <code>INVALID_ARGUMENT</code>, an unknown project <code>NOT_FOUND</code>, and then nothing is stopped.</p> <p>Authorization: as <code>StopCall</code>.</p> |
 | StopAllCalls | [StopAllCallsRequest](#ondewo.vtsi.StopAllCallsRequest) | [StopCallsResponse](#ondewo.vtsi.StopCallsResponse) | <p>Stops every call of a VTSI project (listener and caller calls alike), or, with <code>call_filter</code>, those it matches, each like <code>StopCall</code>. Not atomic and not bounded in size; a project with nothing to stop answers an empty response, so the RPC is idempotent. If a stop fails part-way, the remaining calls are still stopped one by one and every call gets its own entry.</p> <p>Errors: <code>INVALID_ARGUMENT</code> for a malformed request, an invalid <code>call_filter</code> or an unknown <code>field_mask</code> path; <code>NOT_FOUND</code> for an unknown project or campaign; with authorization enforced <code>PERMISSION_DENIED</code>.</p> <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p> |
-| TransferCall | [TransferCallRequest](#ondewo.vtsi.TransferCallRequest) | [TransferCallResponse](#ondewo.vtsi.TransferCallResponse) | <p>Transfer a call to a phone number, a softphone account, another listener or the listener queue.</p> <p>The target is either the typed <code>target</code> or the legacy raw <code>transfer_id</code>, never both. It is resolved and validated before anything is sent; an invalid target is answered with <code>TRANSFER_OUTCOME_TARGET_INVALID</code> and an <code>error_reason</code>, and the call is untouched.</p> <p><code>TRANSFER_MODE_BLIND</code> (default) sends a SIP REFER and reports its outcome: a refused REFER keeps the call with the bot. <code>TRANSFER_MODE_WARM</code> rings the target into the call first, and the bot leaves only after the target joined (Asterisk 22 only).</p> <p>Telephony outcomes (busy, no answer, REFER rejected) are successful RPCs carrying an <code>outcome</code>. Refusals before any side effect also return a gRPC status with <code>reason=&lt;token&gt;</code> in its details: <code>INVALID_ARGUMENT</code> (both targets set, malformed target), <code>NOT_FOUND</code> (call or target not found, including another project&apos;s), <code>FAILED_PRECONDITION</code> (<code>call-not-connected</code>, <code>amd-in-progress</code>, <code>call-not-yet-identified</code>, <code>participants-present</code>, <code>asterisk-version-unsupported</code>, <code>sip-image-too-old</code>), <code>ABORTED</code> (<code>transfer-in-progress</code>), <code>UNAVAILABLE</code> (<code>sip-unreachable</code>).</p> <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced. Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p> |
+| TransferCall | [TransferCallRequest](#ondewo.vtsi.TransferCallRequest) | [TransferCallResponse](#ondewo.vtsi.TransferCallResponse) | <p>Transfer a call to a phone number, a softphone account, another listener, the listener queue or a published IVR menu.</p> <p>The target is either the typed <code>target</code> or the legacy raw <code>transfer_id</code>, never both. It is resolved and validated before anything is sent; an invalid target is answered with <code>TRANSFER_OUTCOME_TARGET_INVALID</code> and an <code>error_reason</code>, and the call is untouched.</p> <p><code>TRANSFER_MODE_BLIND</code> (default) sends a SIP REFER and reports its outcome: a refused REFER keeps the call with the bot. <code>TRANSFER_MODE_WARM</code> rings the target into the call first, and the bot leaves only after the target joined (Asterisk 22 only).</p> <p>A WARM transfer whose effective <code>WarmTransferConfig</code> is enabled runs a WARM INTRO: once the human target answers, an ONDEWO bot asks whether a person is on the line, briefs them and asks whether they accept; only an accepting target is joined. It answers <code>TRANSFER_OUTCOME_PENDING</code>, and the final outcome (<code>TRANSFER_OUTCOME_ACCEPTED</code>, <code>_DECLINED</code>, <code>_NO_DECISION</code>, <code>_TARGET_UNAVAILABLE</code>, <code>_INTRO_UNAVAILABLE</code>, or a busy / unanswered target&apos;s usual outcome) arrives in <code>Call.last_transfer</code> and the events. See <code>TransferCallRequest.warm_transfer_config</code> for its refusals.</p> <p>Telephony outcomes (busy, no answer, REFER rejected) are successful RPCs carrying an <code>outcome</code>. Refusals before any side effect also return a gRPC status with <code>reason=&lt;token&gt;</code> in its details: <code>INVALID_ARGUMENT</code> (both targets set, malformed target), <code>NOT_FOUND</code> (call or target not found, including another project&apos;s), <code>FAILED_PRECONDITION</code> (<code>call-not-connected</code>, <code>amd-in-progress</code>, <code>call-not-yet-identified</code>, <code>participants-present</code>, <code>asterisk-version-unsupported</code>, <code>sip-image-too-old</code>), <code>ABORTED</code> (<code>transfer-in-progress</code>), <code>UNAVAILABLE</code> (<code>sip-unreachable</code>).</p> <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced. Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p> |
 | TransferCalls | [TransferCallsRequest](#ondewo.vtsi.TransferCallsRequest) | [TransferCallsResponse](#ondewo.vtsi.TransferCallsResponse) | <p>Transfer several calls, each like <code>TransferCall</code>, at most 1000. Not atomic: every transfer is run on its own and reported in its own entry, in request order; an entry <code>TransferCall</code> would have refused with a gRPC status carries that refusal in its <code>error_message</code> (prefixed with the status code name) and does not stop the others. Idempotent per entry <code>request_id</code>.</p> <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced. Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p> |
 | GetCall | [GetCallRequest](#ondewo.vtsi.GetCallRequest) | [Call](#ondewo.vtsi.Call) | <p>Gets a call, populated according to <code>call_view</code> and <code>field_mask</code> (the call&apos;s log lines are read with <code>Logs.ListCallLogs</code>). <code>FULL</code> also returns every participant ever invited into the call (see <code>Call.participants</code>).</p> <p>Errors: <code>INVALID_ARGUMENT</code> for a malformed name or an unknown <code>field_mask</code> path; <code>NOT_FOUND</code> for an unknown project or call, or a call of another project; with authorization enforced <code>PERMISSION_DENIED</code>.</p> <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p> |
 | ListCalls | [ListCallsRequest](#ondewo.vtsi.ListCallsRequest) | [ListCallsResponse](#ondewo.vtsi.ListCallsResponse) | <p>Lists the calls of a VTSI project, ended ones included, narrowed by <code>call_filter</code>, ordered by <code>call_sorting</code> (default: by <code>start_time</code>, oldest first) and paged with <code>page_size</code> / <code>page_token</code>; <code>total_size</code> counts every match.</p> <p>With <code>call_filter.campaign_name</code> or <code>call_filter.campaign_display_name</code> set, lists only the calls of that campaign: the calls placed by the attempts of its campaign calls.</p> <p>Errors: <code>INVALID_ARGUMENT</code> for a malformed request, an invalid filter, a negative <code>page_size</code>, a <code>page_token</code> of another listing or an unknown <code>field_mask</code> path; <code>NOT_FOUND</code> for an unknown project or campaign; with authorization enforced <code>PERMISSION_DENIED</code>.</p> <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p> |
@@ -23900,6 +25711,7 @@ Lifecycle state of a ScheduledCaller
 | InviteToCall | [InviteToCallRequest](#ondewo.vtsi.InviteToCallRequest) | [InviteToCallResponse](#ondewo.vtsi.InviteToCallResponse) | <p>Invite a registered softphone account of the project into a connected call. Returns the participant in <code>PARTICIPANT_STATE_RINGING</code>; follow <code>Call.participants</code> or the events <code>VTSI_EVENT_CALL_PARTICIPANT_*</code> for JOINED, FAILED and LEFT.</p> <p><code>PARTICIPANT_MODE_CONFERENCE</code> (default) joins the softphone into the call: Asterisk mixes the caller, the bot and the participant, and by default the bot keeps talking and listening (<code>BOT_POLICY_ON_JOIN_KEEP</code>). <code>PARTICIPANT_MODE_MONITOR</code> lets the participant listen only. When the bot&apos;s leg ends, every participant is hung up; the caller is handed over only by a WARM <code>TransferCall</code>. Idempotent per <code>request_id</code>.</p> <p>Errors: <code>INVALID_ARGUMENT</code>, <code>NOT_FOUND</code> (call or softphone account, including another project&apos;s), <code>FAILED_PRECONDITION</code> (<code>call-not-connected</code>, <code>amd-in-progress</code>, <code>softphone-not-registered</code>, <code>softphone-disabled</code>, <code>softphone-unrouted</code>, <code>call-not-yet-identified</code>, <code>bot-channel-ambiguous</code>, <code>asterisk-not-local</code>, <code>asterisk-version-unsupported</code>), <code>ALREADY_EXISTS</code> (the softphone is already ringing or joined), <code>ABORTED</code> (<code>transfer-in-progress</code>), <code>RESOURCE_EXHAUSTED</code> (participant cap), <code>UNAVAILABLE</code> (<code>asterisk-unreachable</code>).</p> <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced. Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p> |
 | RemoveCallParticipant | [RemoveCallParticipantRequest](#ondewo.vtsi.RemoveCallParticipantRequest) | [RemoveCallParticipantResponse](#ondewo.vtsi.RemoveCallParticipantResponse) | <p>Hang up a participant of a call (ringing or joined). The participant ends as <code>PARTICIPANT_STATE_LEFT</code> with <code>end_reason = REMOVED</code>; the call and the bot are not affected. Returns the participant after the request.</p> <p>Idempotent: a participant that already FAILED or LEFT (for whatever reason) is returned unchanged with OK, and nothing is sent.</p> <p>Errors: <code>INVALID_ARGUMENT</code> for a malformed request; <code>NOT_FOUND</code> with <code>reason=call-not-found</code> for an unknown call or a call of another project, and with <code>reason=participant-not-found</code> for an unknown <code>participant_id</code> or a participant of another call; <code>ABORTED</code> with <code>reason=call-control-busy</code> while another call-control request for the call runs (retry); <code>UNAVAILABLE</code> with <code>reason=asterisk-unreachable</code> when the hang-up could not be sent; with authorization enforced <code>PERMISSION_DENIED</code>.</p> <p>Events: <code>VTSI_EVENT_CALL_PARTICIPANT_LEFT</code> (or <code>VTSI_EVENT_CALL_PARTICIPANT_FAILED</code> for a participant that was still ringing).</p> <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher. Audited like <code>InviteToCall</code>.</p> |
 | SetCallMediaControl | [SetCallMediaControlRequest](#ondewo.vtsi.SetCallMediaControlRequest) | [SetCallMediaControlResponse](#ondewo.vtsi.SetCallMediaControlResponse) | <p>Mute the bot of a connected call and/or stop it listening to the caller, or undo either. Every request sets a desired level and never toggles: a repeat answers <code>changed = false</code>. The bot stays muted while anything else (a TALK take-over of <code>StreamCallAudio</code>, a participant bot policy) also holds it muted.</p> <p>Both settings <code>CALL_MEDIA_SETTING_UNCHANGED</code> is a valid read of the current state: it answers the effective <code>state</code> with <code>changed = false</code>, changes nothing, and writes no audit record and no event (see <code>SetCallMediaControlRequest.bot_voice</code>).</p> <p>Events: <code>VTSI_EVENT_CALL_BOT_MUTED</code> / <code>VTSI_EVENT_CALL_BOT_UNMUTED</code> / <code>VTSI_EVENT_CALL_LISTENING_PAUSED</code> / <code>VTSI_EVENT_CALL_LISTENING_RESUMED</code> when the effective state changed.</p> <p>Errors as for <code>InviteToCall</code>, plus <code>FAILED_PRECONDITION</code> <code>reason=sip-image-too-old</code>, <code>ABORTED</code> <code>reason=call-control-busy</code> (another call-control request for the call is running) and <code>UNAVAILABLE</code> <code>reason=sip-unreachable</code> or <code>reason=csi-media-control-failed</code> (the bot did not apply the level: a requested pause is rolled back, a requested mute is kept).</p> <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced. Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p> |
+| SendCallDtmf | [SendCallDtmfRequest](#ondewo.vtsi.SendCallDtmfRequest) | [SendCallDtmfResponse](#ondewo.vtsi.SendCallDtmfResponse) | <p>Press DTMF keys on a connected call, e.g. to navigate the IVR an outbound call reached or to enter a code on the caller&apos;s behalf. The keys go out as RFC 4733 telephone events from the bot&apos;s leg, one every 250 ms, in order; a later request for the same call follows the earlier one and never interleaves with it. No tone is played into the call audio, so the bot does not hear the keys. The response means the keys were queued: if the call ends meanwhile, the remaining keys are dropped. A peer that did not negotiate <code>telephone-event</code> receives no key.</p> <p>Events: <code>VTSI_EVENT_CALL_DTMF_SENT</code>. The keys are never written to a log, an event or an audit record: only their number is.</p> <p>Errors: <code>INVALID_ARGUMENT</code> (<code>reason=invalid-digits</code>: <code>digits</code> empty, longer than 64 or outside <code>0-9 * # A-D</code>), <code>NOT_FOUND</code> (<code>reason=call-not-found</code>), <code>FAILED_PRECONDITION</code> (<code>call-not-connected</code>, <code>amd-in-progress</code>, <code>call-not-yet-identified</code>, <code>sip-image-too-old</code>, <code>no-audio-stream</code>), <code>ABORTED</code> (<code>call-control-busy</code>), <code>UNAVAILABLE</code> (<code>sip-unreachable</code>).</p> <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced. Every action writes an audit record (who, call, when, number of keys). No announcement is played to the caller.</p> |
 | StreamCallAudio | [StreamCallAudioRequest](#ondewo.vtsi.StreamCallAudioRequest) stream | [StreamCallAudioResponse](#ondewo.vtsi.StreamCallAudioResponse) stream | <p>Live audio of a connected call, both ways. The first request MUST be <code>config</code> (within 2 seconds). LISTEN receives the caller mixed with the bot. TALK sends the agent&apos;s audio to the caller and REQUIRES <code>take_over</code>: the bot is muted and does not listen while the stream is connected, and resumes when it ends; in TALK the agent hears the caller only. Audio is LINEAR16 little-endian mono in 20 ms frames.</p> <p>Bidirectional streaming: available to native gRPC clients (python, nodejs) only. Browser (grpc-web) clients use <code>ListenCallAudio</code>, plus a softphone (<code>InviteToCall</code>) to talk.</p> <p>Errors: <code>INVALID_ARGUMENT</code> (no or invalid <code>config</code>, TALK without <code>take_over</code>, wrong frame size), <code>NOT_FOUND</code>, <code>FAILED_PRECONDITION</code> (<code>call-not-connected</code>, <code>amd-in-progress</code>, <code>call-not-yet-identified</code>, <code>bot-still-speaking</code>, <code>sip-image-too-old</code>), <code>RESOURCE_EXHAUSTED</code> (stream cap, a second TALK). A normal end sends one <code>ended</code> message, then OK. A second <code>config</code> or audio sent in LISTEN mode ends the stream with <code>INVALID_ARGUMENT</code>. A client half-close ends the stream (<code>CALL_AUDIO_END_REASON_CLIENT_CLOSED</code>), so a listening client keeps its request stream open.</p> <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced. Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p> |
 | ListenCallAudio | [ListenCallAudioRequest](#ondewo.vtsi.ListenCallAudioRequest) | [StreamCallAudioResponse](#ondewo.vtsi.StreamCallAudioResponse) stream | <p>Listen-only live audio of a connected call, like <code>StreamCallAudio</code> in LISTEN mode, as a server stream that grpc-web (browser) clients can consume. <code>config.mode</code> must be LISTEN or unspecified and <code>config.take_over</code> must be false, otherwise <code>INVALID_ARGUMENT</code> <code>reason=listen-only</code>.</p> <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced. Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p> |
 
@@ -25284,7 +27096,7 @@ and the unit of the <code>SubscribeVtsiEvents</code> stream.
 | event_id | [string](#string) |  | Unique id of the event (uuid). A retried webhook request carries the same id, and a call status change observed by several server replicas carries one id, so it identifies a duplicate. |
 | event | [VtsiEvent](#ondewo.vtsi.VtsiEvent) |  | The event. |
 | vtsi_project_name | [string](#string) |  | VTSI project of the event. The format is: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
-| resource_name | [string](#string) |  | The resource the event is about (call, caller, listener, scheduled caller, campaign, campaign call, project, softphone account). |
+| resource_name | [string](#string) |  | The resource the event is about (call, caller, listener, scheduled caller, campaign, campaign call, project, softphone account, IVR menu). |
 | event_time | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the event happened. |
 | sip_status_type | [ondewo.sip.SipStatus.StatusType](#ondewo.sip.SipStatus.StatusType) | optional | SIP status after the change, for call and campaign call events. |
 | sip_status_description | [string](#string) |  | SIP status description, where the event has one. |
@@ -25450,8 +27262,8 @@ and <code>resource_sequence</code> (the call&apos;s status change number), and h
 | VTSI_EVENT_CALL_CONNECTED | 102 | The call was answered: <code>INCOMING_CALL_CONNECTED</code> / <code>OUTGOING_CALL_CONNECTED</code>. Call status attributes. |
 | VTSI_EVENT_CALL_FINISHED | 103 | The call ended normally: <code>INCOMING_CALL_FINISHED</code> / <code>OUTGOING_CALL_FINISHED</code>. Call status attributes. |
 | VTSI_EVENT_CALL_FAILED | 104 | The call failed: <code>INCOMING_CALL_FAILED</code> / <code>OUTGOING_CALL_FAILED</code>. Call status attributes. |
-| VTSI_EVENT_CALL_TRANSFER_INITIATED | 105 | A transfer of the call started: <code>TRANSFER_CALL_INITIATED</code>. Emitted when a BLIND transfer was accepted, or when the target of a WARM transfer starts ringing. <p>Attributes: <code>transfer_id</code> (the target, a phone number masked to its last 3 digits, e.g. <code>***678</code>, or an extension), <code>target_type</code> (<code>phone_number</code>, <code>softphone</code>, <code>listener</code>, <code>listener_queue</code>, <code>legacy</code>, <code>unknown</code>), <code>mode</code> (<code>blind</code> / <code>warm</code>; <code>WARM</code>, upper case, when reported for the ringing WARM leg), <code>outcome</code> (<code>accepted</code>, <code>pending</code>, ...), <code>sip_response_code</code> (SIP code, <code>0</code> when unknown), <code>error_reason</code> (kebab-case token, may be empty), <code>participant_id</code> (WARM leg), <code>source</code> (<code>call_monitor</code> when observed by the call monitor). Sets <code>call_name</code>.</p> |
-| VTSI_EVENT_CALL_TRANSFERRED | 106 | <code>TransferCall</code> transferred the call. Emitted at the call&apos;s terminal edge: a <code>*_CALL_FINISHED</code> status whose description is <code>Call transferred</code>. <p>Attributes: <code>transfer_id</code> (masked as above), <code>mode</code> (<code>blind</code> / <code>warm</code>), <code>outcome</code> (<code>accepted</code>), <code>sip_response_code</code>, <code>source</code> (<code>call_monitor</code>), and the call status attributes (<code>caller_name</code> / <code>listener_name</code> / <code>scheduled_caller_name</code>, <code>phone_number</code>). Sets the call status fields.</p> |
+| VTSI_EVENT_CALL_TRANSFER_INITIATED | 105 | A transfer of the call started: <code>TRANSFER_CALL_INITIATED</code>. Emitted when a BLIND transfer was accepted, or when the target of a WARM transfer starts ringing. <p>Attributes: <code>transfer_id</code> (the target, a phone number masked to its last 3 digits, e.g. <code>***678</code>, or an extension), <code>target_type</code> (<code>phone_number</code>, <code>softphone</code>, <code>listener</code>, <code>listener_queue</code>, <code>ivr_menu</code>, <code>legacy</code>, <code>unknown</code>), <code>mode</code> (<code>blind</code> / <code>warm</code>; <code>WARM</code>, upper case, when reported for the ringing WARM leg), <code>outcome</code> (<code>accepted</code>, <code>pending</code>, ...), <code>sip_response_code</code> (SIP code, <code>0</code> when unknown), <code>error_reason</code> (kebab-case token, may be empty), <code>participant_id</code> (WARM leg), <code>source</code> (<code>call_monitor</code> when observed by the call monitor). Sets <code>call_name</code>.</p> |
+| VTSI_EVENT_CALL_TRANSFERRED | 106 | <code>TransferCall</code> transferred the call. Emitted at the call&apos;s terminal edge: a <code>*_CALL_FINISHED</code> status whose description is <code>Call transferred</code>. <p>Attributes: <code>transfer_id</code> (masked as above), <code>mode</code> (<code>blind</code> / <code>warm</code>), <code>outcome</code> (<code>accepted</code>), <code>sip_response_code</code>, <code>source</code> (<code>call_monitor</code>), and the call status attributes (<code>caller_name</code> / <code>listener_name</code> / <code>scheduled_caller_name</code>, <code>phone_number</code>). Sets the call status fields. A WARM transfer whose warm intro was enabled but skipped (<code>WARM_INTRO_UNAVAILABLE_POLICY_CONNECT_WITHOUT_INTRO</code>) also carries <code>intro_skipped_reason</code> (a kebab-case token such as <code>no-free-listener</code> or <code>prepare-failed</code>).</p> |
 | VTSI_EVENT_CALL_TRANSFER_FAILED | 107 | A transfer failed and the call was KEPT with the bot: <code>TRANSFER_CALL_FAILED</code>, a refused or unanswered REFER, or a WARM target that was busy or did not answer. <p>Attributes: as <code>VTSI_EVENT_CALL_TRANSFER_INITIATED</code>, with <code>outcome</code> naming the failure (<code>target_invalid</code>, <code>refer_rejected</code>, <code>timeout</code>, <code>call_ended</code>, <code>call_scope_mismatch</code>, <code>sip_unreachable</code>, <code>refused</code>, or the SIP reason in snake case), <code>error_reason</code> and, for a WARM leg, <code>participant_id</code> and <code>end_reason</code> (as on <code>VTSI_EVENT_CALL_PARTICIPANT_FAILED</code>). <code>description</code> says why.</p> |
 | VTSI_EVENT_CALL_HANGUP_INITIATED | 108 | A hang-up started: <code>SOFT_HANGUP_INITIATED</code> / <code>HARD_HANGUP_INITIATED</code>. Call status attributes. |
 | VTSI_EVENT_CALL_ANSWERING_MACHINE_DETECTED | 109 | An answering machine was detected: <code>OUTGOING_CALL_ANSWERING_MACHINE_DETECTED</code>. Call status attributes. |
@@ -25468,6 +27280,13 @@ and <code>resource_sequence</code> (the call&apos;s status change number), and h
 | VTSI_EVENT_CALL_AUDIO_STREAM_CONNECTED | 120 | A live call audio stream (<code>StreamCallAudio</code> / <code>ListenCallAudio</code>) connected. Attributes: <code>stream_id</code> (uuid), <code>mode</code> (<code>LISTEN</code> / <code>TALK</code>), <code>rpc</code> (<code>ListenCallAudio</code> / <code>StreamCallAudio</code>), <code>actor</code> (the authenticated user, when known). Sets <code>call_name</code>. |
 | VTSI_EVENT_CALL_AUDIO_STREAM_DISCONNECTED | 121 | A live call audio stream disconnected. Attributes as <code>VTSI_EVENT_CALL_AUDIO_STREAM_CONNECTED</code>, plus <code>end_reason</code> (the <code>CallAudioEndReason</code> name without prefix: <code>CLIENT_CLOSED</code>, <code>CALL_ENDED</code>, <code>CALL_TRANSFERRED</code>, <code>MAX_DURATION</code>, <code>STALLED</code>, <code>INTERNAL</code>, <code>UNSPECIFIED</code>). |
 | VTSI_EVENT_CALL_UPDATED | 122 | The stored record of the call was updated (<code>UpdateCall</code>, <code>UpdateCalls</code>); the call itself is unchanged. Attribute <code>updated_fields</code> (the <code>update_mask</code> paths, e.g. <code>labels</code>). Never carries a label value. Sets <code>call_name</code>. Not emitted for an entry of a batch that failed, nor when the update changed nothing. |
+| VTSI_EVENT_CALL_DTMF_SENT | 123 | DTMF keys were queued on the call (<code>SendCallDtmf</code>). Attributes: <code>keys</code> (the NUMBER of keys, never the keys) and <code>actor</code> (the authenticated user, when known). Sets <code>call_name</code>. |
+| VTSI_EVENT_CALL_WARM_INTRO_STARTED | 124 | The warm intro of a WARM transfer started: the target answered and an intro bot greets it. <p>Attributes (the warm intro attributes, also on 125 to 128): <code>intro_id</code> (the participant id of the target&apos;s leg), <code>target_kind</code> (<code>phone_number</code> / <code>softphone</code>), <code>text_source</code> (<code>template</code> / <code>llm_summary</code>), <code>decided_by</code> (<code>dtmf</code> / <code>speech</code> / <code>timeout</code>, on 125 to 127), <code>reason_present</code> (<code>true</code> / <code>false</code>, on 126), <code>intro_ms</code> (milliseconds from the target&apos;s answer, on 125 to 128) and <code>cause</code> (kebab-case token). Never carries an intro text, a decline reason or a full phone number. Sets <code>call_name</code>.</p> |
+| VTSI_EVENT_CALL_WARM_INTRO_ACCEPTED | 125 | The target of a warm intro accepted. <code>VTSI_EVENT_CALL_TRANSFERRED</code> follows once the target joined. The warm intro attributes (see 124). |
+| VTSI_EVENT_CALL_WARM_INTRO_DECLINED | 126 | The target of a warm intro declined; the call stays with the bot, which tells the caller. The warm intro attributes (see 124). |
+| VTSI_EVENT_CALL_WARM_INTRO_NO_DECISION | 127 | The target of a warm intro gave no decision in time; the call stays with the bot. The warm intro attributes (see 124). |
+| VTSI_EVENT_CALL_WARM_INTRO_TARGET_UNAVAILABLE | 128 | The target of a warm intro answered but is gone, or the intro could not run with <code>WARM_INTRO_UNAVAILABLE_POLICY_RETURN_TO_CALLER</code>; the call stays with the bot. The warm intro attributes (see 124), <code>cause</code> being <code>voicemail-suspected</code>, <code>target-hung-up</code> or <code>intro-unavailable</code>. |
+| VTSI_EVENT_CALL_WARM_TRANSFER_OUTCOME_NOTICE_UNDELIVERED | 129 | WARNING: the outcome of a warm intro (a decline, no decision, an unreachable target) could not be handed to the call&apos;s bot, so the caller may not be told; <code>CallTransferRecord.warm_intro.notice_delivered</code> is <code>false</code>. Attributes: <code>intro_id</code> and <code>reason</code> (kebab-case token: the bot&apos;s refusal, e.g. <code>disabled</code>, <code>invalid</code>, <code>pending</code>, or <code>sip-unreachable</code>). Sets <code>call_name</code>. |
 | VTSI_EVENT_CALLER_STARTED | 200 | A caller started and placed its call. No attributes; sets <code>call_name</code>. |
 | VTSI_EVENT_CALLER_START_FAILED | 201 | A caller could not be started; <code>description</code> says why. No attributes. |
 | VTSI_EVENT_CALLER_STOPPED | 202 | A caller was stopped (<code>StopCaller</code>, <code>StopCallers</code>). No attributes. |
@@ -25542,6 +27361,12 @@ and <code>resource_sequence</code> (the call&apos;s status change number), and h
 | VTSI_EVENT_EVENT_SUBSCRIPTION_CREATED | 904 | An event subscription was created (resource_name: the subscription). No attributes. |
 | VTSI_EVENT_EVENT_SUBSCRIPTION_UPDATED | 905 | An event subscription was updated; attribute <code>updated_fields</code>. |
 | VTSI_EVENT_EVENT_SUBSCRIPTION_DELETED | 906 | An event subscription was deleted. No attributes. |
+| VTSI_EVENT_IVR_MENU_CREATED | 1001 | An IVR menu was created (<code>CreateIvrMenu</code>, <code>CloneIvrMenu</code>). |
+| VTSI_EVENT_IVR_MENU_UPDATED | 1002 | An IVR menu was updated; attribute <code>updated_fields</code> (the mask paths). |
+| VTSI_EVENT_IVR_MENU_DELETED | 1003 | An IVR menu was deleted. |
+| VTSI_EVENT_IVR_MENU_PUBLISHED | 1004 | A revision of an IVR menu was published and its phone numbers route to it. |
+| VTSI_EVENT_IVR_MENU_PUBLISH_FAILED | 1005 | A publish of an IVR menu failed; the previous published revision stays live. <code>description</code> says why (no personal data). |
+| VTSI_EVENT_IVR_MENU_TESTED | 1006 | A test call of an IVR menu finished; attributes <code>test_id</code>, <code>state</code> (<code>IvrMenuTestState</code> name without prefix) and <code>steps</code> (the number of nodes entered). |
 
 
 
@@ -25668,6 +27493,723 @@ retry); <code>OUT_OF_RANGE</code> for a <code>start_time</code> older than the j
 | TestWebhook | [TestWebhookRequest](#ondewo.vtsi.TestWebhookRequest) | [TestWebhookResponse](#ondewo.vtsi.TestWebhookResponse) | <p>Sends one test event to a webhook now, without retries, and reports the outcome: a <code>VTSI_EVENT_WEBHOOK_TEST</code> event, or, with <code>sample_event</code>, an event shaped like that real event (see <code>TestWebhookRequest.sample_event</code>). The request carries every header of a real delivery (signature included) plus <code>X-Ondewo-Vtsi-Test: true</code>. Works on a disabled webhook too, and ignores an open circuit. The test event is not journaled, not counted in <code>delivery_statistics</code> and not delivered anywhere else.</p> <p>Errors: <code>INVALID_ARGUMENT</code> for an empty or malformed <code>name</code>, or a <code>sample_event</code> that is reserved or unknown to the server; <code>NOT_FOUND</code> for an unknown project or webhook. A failed delivery is reported in the response, not as an error status.</p> |
 | RedeliverWebhookEvents | [RedeliverWebhookEventsRequest](#ondewo.vtsi.RedeliverWebhookEventsRequest) | [RedeliverWebhookEventsResponse](#ondewo.vtsi.RedeliverWebhookEventsResponse) | <p>Sends events from the server&apos;s event journal to a webhook again: the events named by <code>event_ids</code>, or the events of a time window that the webhook&apos;s event subscriptions select (optionally narrowed by <code>filter</code>). Each event is queued for the webhook like a new delivery (same body and <code>event_id</code>, so a receiver de-duplicates as usual, attempt numbers from 1, retries and backoff as configured, header <code>X-Ondewo-Vtsi-Redelivery: true</code>) on the replica that serves the request, oldest first. Best effort like every webhook delivery: the RPC answers once the events are queued, not delivered; follow <code>delivery_statistics</code> or the receiver.</p> <p>Only what the journal still holds can be sent: events older than <code>ONDEWO_VTSI_EVENT_JOURNAL_RETENTION_S</code> (24 h by default) and events of a period in which the project had neither an open stream nor an enabled event subscription are not available and are counted in <code>not_in_journal_count</code> when named. At most 1000 events are queued per request (<code>not_enqueued_count</code> and <code>next_start_time</code> say how to continue). Not idempotent: a repeat sends the events again. Emits no event.</p> <p>Errors: <code>INVALID_ARGUMENT</code> for an empty or malformed <code>webhook_name</code>, neither or both of <code>event_ids</code> and <code>start_time</code>, more than 1000 <code>event_ids</code>, an <code>event_id</code> that is not a uuid, <code>end_time</code> without <code>start_time</code> or not after it, a window longer than the journal retention, or an invalid <code>filter</code> (as on <code>SubscribeVtsiEvents</code>); <code>NOT_FOUND</code> for an unknown project or webhook; <code>FAILED_PRECONDITION</code> for a disabled webhook (enable it first; <code>TestWebhook</code> works on a disabled one); <code>OUT_OF_RANGE</code> for a <code>start_time</code> older than the journal retention; <code>RESOURCE_EXHAUSTED</code> when the server&apos;s webhook queue cannot take a single event now (retry later).</p> |
 | SubscribeVtsiEvents | [SubscribeVtsiEventsRequest](#ondewo.vtsi.SubscribeVtsiEventsRequest) | [SubscribeVtsiEventsResponse](#ondewo.vtsi.SubscribeVtsiEventsResponse) stream | <p>Streams the events of a project as they happen, selected either by a named event subscription or by an inline filter. An empty message is sent as a keep-alive after <code>ONDEWO_VTSI_EVENT_STREAM_KEEPALIVE_S</code> (15 s by default) without an event. After a disconnect, pass the last <code>resume_token</code> to continue where the stream stopped, or open with a <code>start_time</code> to replay from a point in time; events older than the server&apos;s retention (24 h by default) are no longer available, and the journal records a project&apos;s events only while it has an open stream (and for 1 h after the last one closed) or an enabled event subscription. A stream sees events of other server replicas from at most a few seconds after it opened. A client that stops reading for longer than the server&apos;s stall timeout (<code>ONDEWO_VTSI_STREAM_STALL_TIMEOUT_S</code>, 30 s by default) is disconnected; one that reads so slowly that the stream&apos;s buffer (<code>ONDEWO_VTSI_EVENT_STREAM_BUFFER_SIZE</code>, 1000 events) overflows gets a last message with <code>STREAM_END_REASON_CLIENT_TOO_SLOW</code>; reconnect with the <code>resume_token</code> in both cases.</p> <p>The server ends the stream with a last message carrying <code>end_reason</code>, <code>end_reason_type</code> and a final <code>resume_token</code>: at the maximum stream duration <code>ONDEWO_VTSI_EVENT_STREAM_MAX_DURATION_S</code> (3600 s by default), on server shutdown, when the client is too slow, when the named subscription is deleted or disabled, and when the project is deleted (after delivering <code>VTSI_EVENT_VTSI_PROJECT_DELETED</code>). While authorization is enforced, the caller&apos;s role is re-checked periodically; a revoked role ends the RPC with <code>PERMISSION_DENIED</code>, an expired credential with <code>UNAUTHENTICATED</code>.</p> <p>Errors: <code>NOT_FOUND</code> for an unknown project or subscription; <code>INVALID_ARGUMENT</code> for a malformed <code>vtsi_project_name</code>, a malformed or foreign <code>event_subscription_name</code> (of another project), a malformed <code>resume_token</code> or one issued for another project, <code>resume_token</code> together with <code>start_time</code>, a <code>start_time</code> in the future, or an invalid <code>filter</code> (a reserved or unspecified event, an event both selected and excluded, <code>all_events</code> with <code>events</code>, a malformed campaign name or one of another project, more than 50 prefixes or campaign names); <code>OUT_OF_RANGE</code> for a <code>start_time</code> older than the journal retention; <code>FAILED_PRECONDITION</code> for a disabled subscription; <code>RESOURCE_EXHAUSTED</code> when the server has no free stream slot; <code>UNAVAILABLE</code> when the replica reached serves no event streams (retry).</p> |
+
+ <!-- end services -->
+
+
+
+<a name="ondewo/vtsi/ivr_menus.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## ondewo/vtsi/ivr_menus.proto
+
+
+
+<a name="ondewo.vtsi.CloneIvrMenuRequest"></a>
+
+### CloneIvrMenuRequest
+Request to clone an IVR menu. The clone has no <code>inbound_phone_numbers</code>, <code>default_inbound</code>
+<code>false</code> and the state DRAFT.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Required. The source menu: <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre> |
+| display_name | [string](#string) |  | Required. The clone&apos;s display name, unique within the project. |
+| revision | [int64](#int64) |  | The source revision; <code>0</code>: the current one. |
+| idempotency_key | [string](#string) |  | Optional client idempotency key, as <code>CreateIvrMenuRequest.idempotency_key</code>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.CreateIvrMenuRequest"></a>
+
+### CreateIvrMenuRequest
+Request to create an IVR menu
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | Required. The project: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| ivr_menu | [IvrMenu](#ondewo.vtsi.IvrMenu) |  | Required. The menu; its output-only fields must be unset. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the <code>IvrMenu</code> field paths to return. <code>name</code> is always returned. Unset or empty returns every field except <code>node_stats</code>. |
+| idempotency_key | [string](#string) |  | Optional client idempotency key with the semantics of <a href="index.html#ondewo.vtsi.CreateCampaignRequest">CreateCampaignRequest.idempotency_key</a>: at most 255 printable ASCII characters, scoped to the project and to this RPC, kept 24 hours. |
+| validate_only | [bool](#bool) |  | Optional. Run every check and return the would-be menu; write and emit nothing. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DeleteIvrMenuRequest"></a>
+
+### DeleteIvrMenuRequest
+Request to delete an IVR menu
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre> |
+| display_name | [string](#string) |  | The display name, resolved within <code>vtsi_project_name</code> |
+| vtsi_project_name | [string](#string) |  | The project, required with <code>display_name</code>. |
+| force | [bool](#bool) |  | <code>false</code> refuses a PUBLISHED menu with bound phone numbers (<code>FAILED_PRECONDITION</code> <code>reason=menu-published</code>); <code>true</code> unroutes them and deletes. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.DeleteIvrMenuResponse"></a>
+
+### DeleteIvrMenuResponse
+Response to the deletion of an IVR menu
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| unrouted_phone_numbers | [int32](#int32) |  | How many phone numbers now fall back to the project&apos;s routing without a menu. |
+| default_inbound_removed | [bool](#bool) |  | Whether the deleted menu was the project&apos;s <code>default_inbound</code> menu. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.GetIvrMenuDialplanRequest"></a>
+
+### GetIvrMenuDialplanRequest
+Request to get the rendered dialplan of an IVR menu revision
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Required. <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre> |
+| revision | [int64](#int64) |  | <code>0</code>: the published revision. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.GetIvrMenuDialplanResponse"></a>
+
+### GetIvrMenuDialplanResponse
+Response with the rendered dialplan of an IVR menu revision
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| dialplan | [string](#string) |  | The rendered dialplan contexts of that revision |
+| prompt_files | [string](#string) | repeated | Absolute paths of its prompt files inside the Asterisk container |
+
+
+
+
+
+
+<a name="ondewo.vtsi.GetIvrMenuRequest"></a>
+
+### GetIvrMenuRequest
+Request to get an IVR menu
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre> |
+| display_name | [string](#string) |  | The display name, resolved within <code>vtsi_project_name</code> |
+| vtsi_project_name | [string](#string) |  | The project: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>. Required with <code>display_name</code>; checked against <code>name</code> when both are set. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response, as <code>CreateIvrMenuRequest.field_mask</code>. The path <code>node_stats</code> adds the traffic counters, which are never returned otherwise. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.GetIvrMenuTestRequest"></a>
+
+### GetIvrMenuTestRequest
+Request to get a test call of an IVR menu
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Required. The test, as <code>IvrMenuTest.name</code>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.IvrMenu"></a>
+
+### IvrMenu
+<p>An IVR menu of a VTSI project. The graph fields (<code>entry_node_id</code>, <code>nodes</code>,
+<code>language_code</code>, <code>t2s_pipeline_id</code>) are versioned by <code>revision</code>; the routing
+fields (<code>inbound_phone_numbers</code>, <code>default_inbound</code>, <code>disabled</code>) take effect on the
+next publish.</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Output only. Resource name of the menu. The format is: <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre> |
+| display_name | [string](#string) |  | Required. Unique within the project, 1 to 128 characters. Sent sanitized to a bot as <code>X-ondewo-ivr-menu</code>. |
+| description | [string](#string) |  | At most 1000 characters. |
+| entry_node_id | [string](#string) |  | Required. The node a caller enters first; must name a node of <code>nodes</code>. |
+| nodes | [IvrNode](#ondewo.vtsi.IvrNode) | repeated | Required. The nodes, 1 to <code>ONDEWO_VTSI_IVR_MAX_NODES</code>; order is irrelevant. Every node must be reachable from <code>entry_node_id</code>. |
+| language_code | [string](#string) |  | Language of the text prompts for text-to-speech, e.g. <code>de-DE</code>. Empty: the project&apos;s default. |
+| t2s_pipeline_id | [string](#string) |  | Text-to-speech pipeline of the text prompts. Empty: the project&apos;s default pipeline. |
+| inbound_phone_numbers | [string](#string) | repeated | E.164 phone numbers (DIDs) of the project&apos;s SIP trunk routed into this menu once it is published. A number can be bound by one menu only. |
+| default_inbound | [bool](#bool) |  | Whether this menu takes every inbound number no menu names. At most one menu per project. |
+| disabled | [bool](#bool) |  | <code>true</code>: the menu&apos;s numbers are unrouted on the next publish (the menu is kept). |
+| state | [IvrMenuState](#ondewo.vtsi.IvrMenuState) |  | Output only. Publication state. |
+| revision | [int64](#int64) |  | Output only. The current revision, +1 per accepted graph change; 1 after create. |
+| published_revision | [int64](#int64) |  | Output only. The published revision; <code>0</code> = never published. |
+| state_message | [string](#string) |  | Output only. Why the last publish failed (bounded text without personal data); empty otherwise. |
+| layout | [IvrMenu.LayoutEntry](#ondewo.vtsi.IvrMenu.LayoutEntry) | repeated | Canvas positions of the nodes for the editor, keyed by <code>node_id</code>. Opaque to the server and not versioned. |
+| created_by | [string](#string) |  | Output only. The user who created the menu. |
+| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only. Creation time. |
+| modified_by | [string](#string) |  | Output only. The user who saved the current revision. |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only. When the current revision was saved. |
+| published_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only. When the published revision was published. |
+| published_by | [string](#string) |  | Output only. The user who published it. |
+| node_stats | [IvrMenu.NodeStatsEntry](#ondewo.vtsi.IvrMenu.NodeStatsEntry) | repeated | Output only, and only with the <code>field_mask</code> path <code>node_stats</code>: how often callers entered each node, keyed by <code>node_id</code>, for EVERY call through the menu (also those routed straight to a person, which leave no call record). Approximate: counted in the Asterisk and collected about once a minute. |
+| node_stats_updated_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only, with <code>node_stats</code>: when the counters were last collected. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.IvrMenu.LayoutEntry"></a>
+
+### IvrMenu.LayoutEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [IvrNodePosition](#ondewo.vtsi.IvrNodePosition) |  |  |
+
+
+
+
+
+
+<a name="ondewo.vtsi.IvrMenu.NodeStatsEntry"></a>
+
+### IvrMenu.NodeStatsEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [IvrNodeStats](#ondewo.vtsi.IvrNodeStats) |  |  |
+
+
+
+
+
+
+<a name="ondewo.vtsi.IvrMenuFilter"></a>
+
+### IvrMenuFilter
+Filter of <code>ListIvrMenus</code>; every set field must match
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| display_name_contains | [string](#string) |  | Case-insensitive substring of <code>display_name</code>; empty does not filter. |
+| state | [IvrMenuState](#ondewo.vtsi.IvrMenuState) |  | <code>IVR_MENU_STATE_UNSPECIFIED</code>: any state. |
+| inbound_phone_number | [string](#string) |  | Exact E.164 number of <code>inbound_phone_numbers</code>; empty does not filter. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.IvrMenuIssue"></a>
+
+### IvrMenuIssue
+<p>One problem of an IVR menu draft</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| severity | [IvrMenuIssueSeverity](#ondewo.vtsi.IvrMenuIssueSeverity) |  | Whether the issue blocks a save or a publish |
+| code | [string](#string) |  | Stable kebab-case token, e.g. <code>dangling-next-node</code>, <code>duplicate-key</code>, <code>unreachable-node</code>, <code>keyless-cycle</code>, <code>number-not-allowed</code>, <code>unknown-softphone</code>, <code>unknown-listener</code>, <code>unknown-menu</code>, <code>self-goto</code>, <code>number-bound-twice</code>, <code>second-default-inbound</code>, <code>prompt-format</code>, <code>prompt-too-large</code>, <code>field-not-for-node-type</code>, <code>menu-without-prompt</code> (a WARNING). The list in <code>docs/ivr_menus.md</code> is complete. |
+| path | [string](#string) |  | Path of the offending field, e.g. <code>nodes[node_id=billing].options[dtmf=2].next_node_id</code>. |
+| node_id | [string](#string) |  | The node of the issue; empty for an issue of the whole menu. |
+| message | [string](#string) |  | English description for logs; a user interface translates by <code>code</code>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.IvrMenuRevision"></a>
+
+### IvrMenuRevision
+<p>One saved revision of an IVR menu</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| revision | [int64](#int64) |  | The revision number |
+| snapshot | [IvrMenu](#ondewo.vtsi.IvrMenu) |  | The graph fields as saved at that revision (no <code>layout</code>, no routing fields, no output-only fields) |
+| modified_by | [string](#string) |  | Who saved it |
+| modified_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When it was saved |
+| published | [bool](#bool) |  | Whether it was ever published |
+| live | [bool](#bool) |  | Whether it is still rendered in the Asterisk (it is published, or a caller may still be inside it) |
+
+
+
+
+
+
+<a name="ondewo.vtsi.IvrMenuTest"></a>
+
+### IvrMenuTest
+<p>A test call of an IVR menu, started by <code>TestIvrMenu</code>. Leaves no call record and no NLU session.</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Resource name of the test. The format is: <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;/tests/&lt;test_id&gt;</code></pre> |
+| test_id | [string](#string) |  | The test id: 32 lower-case hex characters. |
+| state | [IvrMenuTestState](#ondewo.vtsi.IvrMenuTestState) |  | The state of the test |
+| revision | [int64](#int64) |  | The revision traversed (the published revision when the test started) |
+| path | [IvrTraversalStep](#ondewo.vtsi.IvrTraversalStep) | repeated | The nodes entered so far, in order |
+| final_node_id | [string](#string) |  | The last node entered; empty before the first |
+| route | [string](#string) |  | What the terminal ROUTE stub recorded, <code>route:&lt;kind&gt;:&lt;target&gt;</code> (<code>kind</code> being <code>phone_number</code> with the number masked to its last 3 digits, <code>softphone</code>, <code>listener</code> or <code>listener_queue</code>); empty when the test did not end on a ROUTE node |
+| error_message | [string](#string) |  | Why the test failed; empty otherwise |
+| started_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the test call started |
+| finished_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When it ended; unset while it runs |
+
+
+
+
+
+
+<a name="ondewo.vtsi.IvrNode"></a>
+
+### IvrNode
+<p>One node of an IVR menu. Which fields apply depends on <code>type</code>; a field set on a node type it does not
+apply to is refused with <code>INVALID_ARGUMENT</code>.</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| node_id | [string](#string) |  | Required. <code>^[a-z0-9_-]{1,64}$</code>, unique within the menu. |
+| display_name | [string](#string) |  | At most 128 characters: the node&apos;s name in the editor and its label in <code>X-ondewo-ivr-path</code> (reduced to <code>[A-Za-z0-9_-]{1,32}</code>). |
+| type | [IvrNodeType](#ondewo.vtsi.IvrNodeType) |  | Required. The kind of node. |
+| prompt | [IvrPrompt](#ondewo.vtsi.IvrPrompt) |  | MENU (required) and PLAY (required): played when the node is entered. |
+| options | [IvrOption](#ondewo.vtsi.IvrOption) | repeated | MENU: one option per key, 1 to 12. |
+| timeout_s | [uint32](#uint32) |  | MENU: seconds to wait for a key after the prompt; <code>0</code> = 5, valid 1 - 30. |
+| max_retries | [uint32](#uint32) |  | MENU: how often an invalid key or a timeout replays the prompt before <code>invalid_next_node_id</code> / <code>timeout_next_node_id</code>; <code>0</code> = 2, valid 1 - 5. |
+| timeout_next_node_id | [string](#string) |  | MENU: the node after the last retry without a key; empty: hang up. |
+| invalid_next_node_id | [string](#string) |  | MENU: the node after the last invalid key; empty: <code>timeout_next_node_id</code>. |
+| next_node_id | [string](#string) |  | PLAY: the node after the prompt. SCHEDULE: the node inside the opening hours. |
+| route_target | [CallTarget](#ondewo.vtsi.CallTarget) |  | ROUTE (required): <code>phone_number</code> (must pass <code>VtsiProject.transfer_phone_number_allowlist</code>), <code>softphone_account_name</code>, <code>listener_name</code> or <code>listener_queue</code> of the same project; <code>ivr_menu_name</code> is refused (use a GOTO_MENU node). |
+| schedule | [CampaignCallingWindow](#ondewo.vtsi.CampaignCallingWindow) |  | SCHEDULE (required): the opening hours, as a time zone and weekly slots. |
+| closed_next_node_id | [string](#string) |  | SCHEDULE: the node outside the opening hours. |
+| busy_next_node_id | [string](#string) |  | ROUTE: the node when the target does not answer or is busy; empty: a busy announcement, then hang up. |
+| reprompt | [IvrPrompt](#ondewo.vtsi.IvrPrompt) |  | MENU: played on an invalid key or a timeout before the prompt is repeated; unset: none. |
+| goto_menu_name | [string](#string) |  | GOTO_MENU (required): another menu of the same project, <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>. The caller enters that menu&apos;s PUBLISHED revision at its entry node; the hop limit counts across menus, so a cycle of menus ends after <code>ONDEWO_VTSI_IVR_MAX_HOPS</code> entries. Naming the menu itself is refused. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.IvrNodePosition"></a>
+
+### IvrNodePosition
+<p>Position of a node on the editor canvas</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| x | [double](#double) |  | Horizontal position |
+| y | [double](#double) |  | Vertical position |
+
+
+
+
+
+
+<a name="ondewo.vtsi.IvrNodeStats"></a>
+
+### IvrNodeStats
+<p>Traffic counters of one node, in <code>IvrMenu.node_stats</code>. Approximate.</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| published_revision_entries | [int64](#int64) |  | Entries into the node in the published revision since it was published. |
+| total_entries | [int64](#int64) |  | Entries into the node over every revision still rendered in the Asterisk. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.IvrOption"></a>
+
+### IvrOption
+<p>One key of a MENU node</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| dtmf | [string](#string) |  | Required. Exactly one of <code>0-9 * #</code>, unique within the node. |
+| next_node_id | [string](#string) |  | Required. The node the key leads to. |
+| label | [string](#string) |  | At most 64 characters: the edge label in the editor and in <code>X-ondewo-ivr-path</code> (sanitized as <code>IvrNode.display_name</code>). |
+
+
+
+
+
+
+<a name="ondewo.vtsi.IvrPrompt"></a>
+
+### IvrPrompt
+<p>An audio prompt. Exactly one source must be set.</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| text | [string](#string) |  | Text, 1 to 1000 characters, synthesized by VTSI with text-to-speech at publish (cached by content). |
+| wav | [bytes](#bytes) |  | A RIFF WAV file: PCM 16 bit mono at 8000 or 16000 Hz (not transcoded), at most <code>ONDEWO_VTSI_IVR_MAX_PROMPT_BYTES</code> and 120 seconds. |
+| asterisk_sound | [string](#string) |  | A stock Asterisk sound from the allowlist in <code>docs/ivr_menus.md</code>, e.g. <code>beep</code>. |
+| sha256 | [string](#string) |  | Output only. SHA-256 (hex) of the rendered audio; empty before the first publish. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.IvrTestStep"></a>
+
+### IvrTestStep
+<p>One step of the key script of a test call</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| wait_ms | [uint32](#uint32) |  | Milliseconds to wait after the previous step (for the first step: after the call entered the menu) before <code>dtmf</code> is pressed. <code>0</code> means 1000; at most 30000. A key pressed during a prompt interrupts it, as for a real caller. |
+| dtmf | [string](#string) |  | The keys to press, <code>^[0-9*#]{0,8}$</code>; empty presses nothing, so the next step waits out the node&apos;s timeout (the timeout path). |
+
+
+
+
+
+
+<a name="ondewo.vtsi.IvrTraversalStep"></a>
+
+### IvrTraversalStep
+<p>One node entry of a test call</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| node_id | [string](#string) |  | The node entered (of the menu named by <code>ivr_menu_name</code>, which changes after a GOTO_MENU node) |
+| input | [string](#string) |  | What led out of the node: the key, <code>t</code> (timeout) or <code>i</code> (invalid key); empty for a node left without input |
+| next_node_id | [string](#string) |  | The node entered next; empty for the last node |
+| entered_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | When the node was entered, to the millisecond (the Asterisk&apos;s clock) |
+| ivr_menu_name | [string](#string) |  | The menu of <code>node_id</code>: <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre> |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListIvrMenuRevisionsRequest"></a>
+
+### ListIvrMenuRevisionsRequest
+Request to list the revisions of an IVR menu
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Required. <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre> |
+| page_size | [int32](#int32) |  | Optional. Maximum revisions per page. <code>0</code> means 20; values above 100 are clamped to 100. |
+| page_token | [string](#string) | optional | Optional. The <code>next_page_token</code> of a previous response for the same menu. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListIvrMenuRevisionsResponse"></a>
+
+### ListIvrMenuRevisionsResponse
+Response to list the revisions of an IVR menu
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| revisions | [IvrMenuRevision](#ondewo.vtsi.IvrMenuRevision) | repeated | The revisions of this page, newest first |
+| next_page_token | [string](#string) |  | Token of the next page; empty on the last page. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListIvrMenusRequest"></a>
+
+### ListIvrMenusRequest
+Request to list the IVR menus of a project
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | Required. The project: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| filter | [IvrMenuFilter](#ondewo.vtsi.IvrMenuFilter) |  | Optional. Narrows the listed menus. |
+| page_size | [int32](#int32) |  | Optional. Maximum menus per page. <code>0</code> means 20; values above 1000 are clamped to 1000; negative values are refused with <code>INVALID_ARGUMENT</code>. |
+| page_token | [string](#string) | optional | Optional. The <code>next_page_token</code> of a previous response; valid only with the same project, filter and order. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response: the <code>IvrMenu</code> field paths of each listed menu, as <code>CreateIvrMenuRequest.field_mask</code>. |
+| order_by | [IvrMenuOrderBy](#ondewo.vtsi.IvrMenuOrderBy) |  | Optional. Sort order. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ListIvrMenusResponse"></a>
+
+### ListIvrMenusResponse
+Response to list the IVR menus of a project
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ivr_menus | [IvrMenu](#ondewo.vtsi.IvrMenu) | repeated | The menus of this page. |
+| next_page_token | [string](#string) |  | Token of the next page; empty on the last page. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.PublishIvrMenuRequest"></a>
+
+### PublishIvrMenuRequest
+Request to publish an IVR menu
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Required. <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre> |
+| revision | [int64](#int64) |  | <code>0</code>: the current revision. Any other revision must be the current one, else <code>ABORTED</code> <code>reason=revision-mismatch</code>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.TestIvrMenuRequest"></a>
+
+### TestIvrMenuRequest
+Request to start a test call through the published revision of an IVR menu
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | Required. <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre> |
+| steps | [IvrTestStep](#ondewo.vtsi.IvrTestStep) | repeated | The key script, at most 20 steps. Empty: no key is pressed. |
+| max_duration_s | [uint32](#uint32) |  | Seconds the test call may last after its last step; <code>0</code> means 60, at most <code>ONDEWO_VTSI_IVR_TEST_MAX_DURATION_S</code> (300). A test still in a menu then is <code>IVR_MENU_TEST_STATE_TIMED_OUT</code>. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.UpdateIvrMenuRequest"></a>
+
+### UpdateIvrMenuRequest
+Request to update an IVR menu
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ivr_menu | [IvrMenu](#ondewo.vtsi.IvrMenu) |  | Required. The menu, identified by <code>ivr_menu.name</code>, carrying the new values of the fields named in <code>update_mask</code>. |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Required. Paths within <code>ivr_menu</code> WITHOUT an <code>ivr_menu.</code> prefix, e.g. <code>nodes</code>, <code>inbound_phone_numbers</code>, <code>layout</code>. Repeated and map fields are replaced whole. A path named but not set clears the field. An unknown or output-only path is refused with <code>INVALID_ARGUMENT</code> naming it. |
+| field_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Optional. Partial response, as <code>CreateIvrMenuRequest.field_mask</code>. |
+| validate_only | [bool](#bool) |  | Optional. Run every check and return the would-be menu; write and emit nothing. |
+| expected_revision | [int64](#int64) |  | Optional. <code>0</code>: no check. Otherwise the revision the client edited; a different current revision is refused with <code>ABORTED</code> <code>reason=revision-mismatch</code> and nothing is written. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ValidateIvrMenuRequest"></a>
+
+### ValidateIvrMenuRequest
+Request to validate an IVR menu draft
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vtsi_project_name | [string](#string) |  | Required. The project: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre> |
+| ivr_menu | [IvrMenu](#ondewo.vtsi.IvrMenu) |  | Required. The draft as edited; <code>name</code> may be empty for a menu not created yet. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.ValidateIvrMenuResponse"></a>
+
+### ValidateIvrMenuResponse
+Response to validate an IVR menu draft
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| issues | [IvrMenuIssue](#ondewo.vtsi.IvrMenuIssue) | repeated | Every issue found |
+| valid | [bool](#bool) |  | Whether no issue is an ERROR |
+
+
+
+
+
+ <!-- end messages -->
+
+
+<a name="ondewo.vtsi.IvrMenuIssueSeverity"></a>
+
+### IvrMenuIssueSeverity
+Severity of an <code>IvrMenuIssue</code>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| IVR_MENU_ISSUE_SEVERITY_UNSPECIFIED | 0 | Not set |
+| IVR_MENU_ISSUE_SEVERITY_ERROR | 1 | Create, Update and Publish refuse the menu |
+| IVR_MENU_ISSUE_SEVERITY_WARNING | 2 | Accepted, but probably not intended |
+
+
+
+<a name="ondewo.vtsi.IvrMenuOrderBy"></a>
+
+### IvrMenuOrderBy
+Sort order of <code>ListIvrMenus</code>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| IVR_MENU_ORDER_BY_UNSPECIFIED | 0 | Same as <code>IVR_MENU_ORDER_BY_DISPLAY_NAME</code> |
+| IVR_MENU_ORDER_BY_DISPLAY_NAME | 1 | By display name, ascending |
+| IVR_MENU_ORDER_BY_MODIFIED_AT_DESC | 2 | By <code>modified_at</code>, newest first |
+
+
+
+<a name="ondewo.vtsi.IvrMenuState"></a>
+
+### IvrMenuState
+<p>Publication state of an IVR menu</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| IVR_MENU_STATE_UNSPECIFIED | 0 | Not set |
+| IVR_MENU_STATE_DRAFT | 1 | The current revision is not published (<code>revision &gt; published_revision</code>) |
+| IVR_MENU_STATE_PUBLISHED | 2 | The current revision is published |
+| IVR_MENU_STATE_PUBLISH_FAILED | 3 | The last publish failed; the previous published revision, if any, stays live |
+
+
+
+<a name="ondewo.vtsi.IvrMenuTestState"></a>
+
+### IvrMenuTestState
+<p>State of a test call of an IVR menu</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| IVR_MENU_TEST_STATE_UNSPECIFIED | 0 | Not set |
+| IVR_MENU_TEST_STATE_RUNNING | 1 | The test call is still in the menu |
+| IVR_MENU_TEST_STATE_SUCCEEDED | 2 | The test call reached a terminal node (ROUTE stub or HANGUP) |
+| IVR_MENU_TEST_STATE_TIMED_OUT | 3 | The test call was still in a menu after <code>max_duration_s</code> |
+| IVR_MENU_TEST_STATE_FAILED | 4 | The test call could not run or ended unexpectedly; <code>error_message</code> says why |
+
+
+
+<a name="ondewo.vtsi.IvrNodeType"></a>
+
+### IvrNodeType
+<p>The kind of an IVR node</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| IVR_NODE_TYPE_UNSPECIFIED | 0 | Not allowed |
+| IVR_NODE_TYPE_MENU | 1 | A prompt and one key (<code>options</code>) |
+| IVR_NODE_TYPE_PLAY | 2 | A prompt, then <code>next_node_id</code> |
+| IVR_NODE_TYPE_ROUTE | 3 | Leave the menu to <code>route_target</code> (terminal unless <code>busy_next_node_id</code>) |
+| IVR_NODE_TYPE_HANGUP | 4 | Hang up (terminal) |
+| IVR_NODE_TYPE_SCHEDULE | 5 | Opening hours: <code>next_node_id</code> inside, <code>closed_next_node_id</code> outside |
+| IVR_NODE_TYPE_GOTO_MENU | 6 | Continue in another published menu of the project (<code>goto_menu_name</code>) |
+
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="ondewo.vtsi.IvrMenus"></a>
+
+### IvrMenus
+<p>ONDEWO VTSI API</p>
+<p>Manages the IVR MENUS of a VTSI project: keypad (DTMF) menus that a caller dialling one of the project&apos;s
+inbound phone numbers goes through BEFORE a bot or a person takes the call (&quot;press 1 for sales, 2 for
+billing&quot;). A menu is a graph of nodes (<code>IvrNode</code>): MENU (a prompt and one key), PLAY (a prompt),
+SCHEDULE (opening hours), ROUTE (to a listener, the listener queue, a softphone account or a phone number),
+GOTO_MENU (into another menu of the project) and HANGUP. The project&apos;s Asterisk executes a menu as generated
+dialplan: a menu keeps running while VTSI is down, and no user text ever reaches the dialplan.</p>
+<p>Lifecycle: <code>CreateIvrMenu</code> / <code>UpdateIvrMenu</code> save a DRAFT revision (every save is
+validated; <code>ValidateIvrMenu</code> returns every issue at once). Nothing routes until
+<code>PublishIvrMenu</code> renders a revision into the project&apos;s Asterisk and switches the menu&apos;s
+<code>inbound_phone_numbers</code> to it; a failed publish leaves the previous published revision live. A caller
+inside a menu during a publish finishes on the revision they entered. <code>TestIvrMenu</code> runs a scripted
+test call through the published revision inside the Asterisk, and <code>GetIvrMenuTest</code> reports it.</p>
+<p>A bot reached through a menu learns the path: the headers <code>X-ondewo-ivr-menu</code> (the menu&apos;s
+display name, sanitized), <code>X-ondewo-ivr-path</code> (the option labels taken, e.g.
+<code>main:1&gt;billing:2</code>) and <code>X-ondewo-dialed-number</code> become parameters of the bot&apos;s
+SIP context, and the call records them in <code>Call.ivr_menu_display_name</code> / <code>Call.ivr_path</code>,
+and the menu&apos;s resource name in <code>Call.ivr_menu_name</code>.
+Labels therefore must never carry a secret.</p>
+<p>Deployment switch: with <code>ONDEWO_VTSI_IVR_ACTIVE=false</code> (the default) every RPC of this service
+answers <code>UNIMPLEMENTED</code> with <code>reason=ivr-disabled</code>. <code>VtsiProject.ivr_menus_enabled</code>
+switches the routes of one project off, and <code>VtsiProject.feature_availability.ivr</code> says whether a project
+can use IVR menus at all (a project whose Asterisk is not run by this server cannot: Publish is refused with
+<code>FAILED_PRECONDITION</code> <code>reason=asterisk-not-local</code>).</p>
+<p>Limits: <code>ONDEWO_VTSI_IVR_MAX_NODES</code> nodes per menu (100),
+<code>ONDEWO_VTSI_IVR_MAX_MENUS_PER_PROJECT</code> menus (50), <code>ONDEWO_VTSI_IVR_MAX_PROMPT_BYTES</code> per uploaded prompt (1048576),
+<code>ONDEWO_VTSI_IVR_MAX_PROMPTS_TOTAL_BYTES</code> per menu (52428800), <code>ONDEWO_VTSI_IVR_MAX_HOPS</code> node
+entries per call across menus (50; the call is then hung up).</p>
+<p>Every RPC about ONE menu accepts its resource name; Get and Delete also accept its display name, unique within a
+project and resolved within <code>vtsi_project_name</code>, which is then REQUIRED.</p>
+<p>Authorization (Keycloak auth mode <code>ENFORCE</code>, as Campaigns): <code>PROJECT_DEVELOPER</code> or higher
+for Create, Update, Delete, Publish, Clone and Test; <code>PROJECT_EXECUTOR</code> or higher for Get, List,
+Validate, ListRevisions, GetDialplan and GetIvrMenuTest. Every change emits its <code>VTSI_EVENT_IVR_MENU_*</code>
+event; a request with <code>validate_only</code> emits nothing.</p>
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| CreateIvrMenu | [CreateIvrMenuRequest](#ondewo.vtsi.CreateIvrMenuRequest) | [IvrMenu](#ondewo.vtsi.IvrMenu) | <p>Creates an IVR menu as a DRAFT (revision 1). Nothing routes until it is published.</p> <p>Errors: <code>INVALID_ARGUMENT</code> with the code and path of the FIRST error issue (see <code>IvrMenuIssue</code>; <code>ValidateIvrMenu</code> returns all of them), a set output-only field, or a malformed <code>idempotency_key</code>; <code>ALREADY_EXISTS</code> for a display name the project already has; <code>RESOURCE_EXHAUSTED</code> beyond <code>ONDEWO_VTSI_IVR_MAX_MENUS_PER_PROJECT</code>; <code>NOT_FOUND</code> for an unknown project.</p> |
+| GetIvrMenu | [GetIvrMenuRequest](#ondewo.vtsi.GetIvrMenuRequest) | [IvrMenu](#ondewo.vtsi.IvrMenu) | <p>Returns an IVR menu at its current revision.</p> |
+| UpdateIvrMenu | [UpdateIvrMenuRequest](#ondewo.vtsi.UpdateIvrMenuRequest) | [IvrMenu](#ondewo.vtsi.IvrMenu) | <p>Updates the fields named in <code>update_mask</code> and saves a new DRAFT revision (+1) when a graph field changed. <code>layout</code> alone is saved without a new revision.</p> <p>Errors: as <code>CreateIvrMenu</code>, plus <code>ABORTED</code> <code>reason=revision-mismatch</code> when <code>expected_revision</code> is set and not the current revision.</p> |
+| DeleteIvrMenu | [DeleteIvrMenuRequest](#ondewo.vtsi.DeleteIvrMenuRequest) | [DeleteIvrMenuResponse](#ondewo.vtsi.DeleteIvrMenuResponse) | <p>Deletes an IVR menu and all its revisions; its bound phone numbers fall back to the project&apos;s routing without a menu at once.</p> <p>Errors: <code>FAILED_PRECONDITION</code> <code>reason=menu-published</code> for a PUBLISHED menu with bound phone numbers unless <code>force</code>; <code>FAILED_PRECONDITION</code> <code>reason=menu-referenced</code> while a GOTO_MENU node of another menu names it; <code>NOT_FOUND</code> for an unknown menu.</p> |
+| ListIvrMenus | [ListIvrMenusRequest](#ondewo.vtsi.ListIvrMenusRequest) | [ListIvrMenusResponse](#ondewo.vtsi.ListIvrMenusResponse) | <p>Lists the IVR menus of a project.</p> |
+| ValidateIvrMenu | [ValidateIvrMenuRequest](#ondewo.vtsi.ValidateIvrMenuRequest) | [ValidateIvrMenuResponse](#ondewo.vtsi.ValidateIvrMenuResponse) | <p>Runs every check of Create, Update and Publish on the given draft and returns ALL issues with their node paths. Writes nothing and emits nothing.</p> |
+| PublishIvrMenu | [PublishIvrMenuRequest](#ondewo.vtsi.PublishIvrMenuRequest) | [IvrMenu](#ondewo.vtsi.IvrMenu) | <p>Renders the given (or the current) revision into the project&apos;s Asterisk: prompts synthesized or copied, the dialplan reloaded and read back, every prompt checked, and only then the bound phone numbers switched to it. Any failure restores the previous dialplan, leaves the previous published revision live and answers the menu with <code>IVR_MENU_STATE_PUBLISH_FAILED</code> and <code>state_message</code>. Re-validates first, because the allowlist, the softphone accounts or the listeners may have changed since the save. Binding or unbinding a phone number ends no call.</p> <p>Errors: <code>INVALID_ARGUMENT</code> for an error issue; <code>ABORTED</code> <code>reason=revision-mismatch</code> for a revision that is not current; <code>FAILED_PRECONDITION</code> <code>reason=asterisk-not-local</code>, <code>reason=project-not-deployed</code> or <code>reason=ivr-entry-hook-missing</code> (a project whose own dialplan lacks the IVR entry hook); <code>FAILED_PRECONDITION</code> <code>reason=target-menu-not-published</code> when a GOTO_MENU node names a menu that is not published.</p> |
+| CloneIvrMenu | [CloneIvrMenuRequest](#ondewo.vtsi.CloneIvrMenuRequest) | [IvrMenu](#ondewo.vtsi.IvrMenu) | <p>Copies a menu (its current or a given revision) into a new DRAFT menu without phone numbers.</p> |
+| ListIvrMenuRevisions | [ListIvrMenuRevisionsRequest](#ondewo.vtsi.ListIvrMenuRevisionsRequest) | [ListIvrMenuRevisionsResponse](#ondewo.vtsi.ListIvrMenuRevisionsResponse) | <p>Lists the saved revisions of a menu, newest first.</p> |
+| TestIvrMenu | [TestIvrMenuRequest](#ondewo.vtsi.TestIvrMenuRequest) | [IvrMenuTest](#ondewo.vtsi.IvrMenuTest) | <p>Starts a test call through the PUBLISHED revision of a menu and returns at once with the test in <code>IVR_MENU_TEST_STATE_RUNNING</code>; poll <code>GetIvrMenuTest</code> for the result. The test call runs INSIDE the project&apos;s Asterisk: a local channel enters the menu, presses the scripted keys and records the nodes it passes. No SIP container, no bot and no NLU session take part, and every ROUTE node is a stub that records the target and hangs up: a test NEVER dials a listener, a softphone or a phone number.</p> <p>Errors: <code>FAILED_PRECONDITION</code> <code>reason=menu-not-published</code>, <code>reason=asterisk-not-local</code> or <code>reason=project-not-deployed</code>; <code>INVALID_ARGUMENT</code> for invalid steps or a <code>max_duration_s</code> above <code>ONDEWO_VTSI_IVR_TEST_MAX_DURATION_S</code>.</p> |
+| GetIvrMenuTest | [GetIvrMenuTestRequest](#ondewo.vtsi.GetIvrMenuTestRequest) | [IvrMenuTest](#ondewo.vtsi.IvrMenuTest) | <p>Returns a test started by <code>TestIvrMenu</code>: its state and the path traversed so far. A test is kept for 24 hours after it finished, then <code>NOT_FOUND</code>.</p> |
+| GetIvrMenuDialplan | [GetIvrMenuDialplanRequest](#ondewo.vtsi.GetIvrMenuDialplanRequest) | [GetIvrMenuDialplanResponse](#ondewo.vtsi.GetIvrMenuDialplanResponse) | <p>Returns the rendered dialplan of one revision, read-only, for support.</p> <p>Errors: <code>FAILED_PRECONDITION</code> <code>reason=revision-not-rendered</code> for a revision that is no longer (or was never) in the project&apos;s Asterisk.</p> |
 
  <!-- end services -->
 
@@ -26426,6 +28968,22 @@ This is a protobuf message definition for the response of getting a list of VTSI
 
 
 
+<a name="ondewo.vtsi.TransferTargetDirectoryItem"></a>
+
+### TransferTargetDirectoryItem
+<p>One human transfer target of <code>VtsiProject.transfer_target_directory</code>. Carries no secret</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| display_name | [string](#string) |  | Who the target is, e.g. <code>Frau Berger, Buchhaltung</code>. 1 to 128 characters |
+| description | [string](#string) |  | The target&apos;s role and context, for a warm intro&apos;s briefing. At most 512 characters |
+
+
+
+
+
+
 <a name="ondewo.vtsi.UndeployVtsiProjectRequest"></a>
 
 ### UndeployVtsiProjectRequest
@@ -26521,6 +29079,43 @@ The VTSI project with its configuration setting
 | status_changed_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only. When <code>vtsi_project_status</code> last changed. Unset for a project whose status has not changed since an older server created it. Ignored on create and update. |
 | trunk_registration_state | [TrunkRegistrationState](#ondewo.vtsi.TrunkRegistrationState) |  | Output only. Registration state of the project&apos;s SIP trunk with the carrier, as last observed on the running Asterisk (<code>pjsip show registrations</code>), refreshed every <code>ONDEWO_VTSI_ASTERISK_OBSERVER_INTERVAL_S</code> seconds (default 30), so it may lag by that much. <code>TRUNK_REGISTRATION_STATE_UNSPECIFIED</code> when the project is not <code>DEPLOYED</code> or has not been observed yet. Ignored on create and update. |
 | asterisk_version_effective | [string](#string) |  | Output only. The Asterisk version the project&apos;s container RUNS, i.e. the docker image tag of the ONDEWO Asterisk image it was deployed from: <code>asterisk_configs.asterisk_version</code> when pinned, otherwise the server default (<code>ONDEWO_VTSI_ASTERISK_IMAGE_TAG</code>) at the moment of the deployment. Empty when the project is not deployed. It can differ from what a new deployment would start, e.g. after the server default changed. Ignored on create and update. |
+| warm_transfer_defaults | [WarmTransferConfig](#ondewo.vtsi.WarmTransferConfig) |  | OPTIONAL: The project&apos;s default warm intro of a WARM transfer (see <a href="index.html#ondewo.vtsi.WarmTransferConfig">WarmTransferConfig</a>): the level below a call&apos;s <code>VoiceInteractionConfig.warm_transfer_config</code> and a <code>TransferCallRequest.warm_transfer_config</code>. <code>enabled=true</code> while the deployment switch <code>ONDEWO_VTSI_WARM_TRANSFER_ENABLED</code> is off, or a phase-B field while phase B is off, is refused with <code>FAILED_PRECONDITION</code> (<code>reason=warm-intro-disabled</code> / <code>reason=phase-b-not-enabled</code>); an invalid field with <code>INVALID_ARGUMENT</code> naming it. Updatable with the update mask path <code>warm_transfer_defaults</code> or its leaf paths, e.g. <code>warm_transfer_defaults.enabled</code>. Touches no Asterisk. |
+| feature_availability | [VtsiProjectFeatureAvailability](#ondewo.vtsi.VtsiProjectFeatureAvailability) |  | Output only. Which features can run in this project with the deployment, the Asterisk and the listeners it has now, computed on every <code>GetVtsiProject</code> / <code>ListVtsiProjects</code> (it costs no RPC). Read it instead of learning from a refusal. Ignored on create and update. |
+| ivr_menus_enabled | [bool](#bool) | optional | OPTIONAL: Whether the project&apos;s published IVR menus route its inbound phone numbers. Unset means <code>true</code>. <code>false</code> switches every route off at once (every inbound number reaches the listener queue as without a menu) and keeps the menus and their phone number bindings, so <code>true</code> restores them. Updatable with the update mask path <code>ivr_menus_enabled</code>; it reloads no Asterisk and ends no call. |
+| transfer_target_directory | [VtsiProject.TransferTargetDirectoryEntry](#ondewo.vtsi.VtsiProject.TransferTargetDirectoryEntry) | repeated | OPTIONAL: Directory of the project&apos;s human transfer targets, keyed by the target: an E.164 phone number (<code>^\+[1-9][0-9]{6,14}$</code>, which must pass <code>transfer_phone_number_allowlist</code>) or the <code>sip_username</code> of a softphone account of the project. It names a target in a warm intro (<code>{callee_name}</code>) and describes it, below a transfer&apos;s own <code>WarmTransferConfig.callee_display_name</code> / <code>callee_description</code> and the softphone account&apos;s <code>display_name</code> / <code>description</code>. That is how the bot&apos;s own handover to a target names the right person. At most 200 entries; an invalid key or entry is refused with <code>INVALID_ARGUMENT</code> naming it. Updatable with the update mask path <code>transfer_target_directory</code> (the whole map is replaced). Touches no Asterisk. |
+
+
+
+
+
+
+<a name="ondewo.vtsi.VtsiProject.TransferTargetDirectoryEntry"></a>
+
+### VtsiProject.TransferTargetDirectoryEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [TransferTargetDirectoryItem](#ondewo.vtsi.TransferTargetDirectoryItem) |  |  |
+
+
+
+
+
+
+<a name="ondewo.vtsi.VtsiProjectFeatureAvailability"></a>
+
+### VtsiProjectFeatureAvailability
+<p>Which features can run in a VTSI project. Output only</p>
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| warm_intro | [WarmIntroAvailability](#ondewo.vtsi.WarmIntroAvailability) |  | Whether a WARM transfer can run a warm intro |
+| warm_intro_phase_b | [bool](#bool) |  | Whether the phase-B fields of <code>WarmTransferConfig</code> (LLM summary, hold music) are accepted |
+| ivr | [IvrAvailability](#ondewo.vtsi.IvrAvailability) |  | Whether the project can publish and route IVR menus |
 
 
 
@@ -26543,6 +29138,20 @@ This protobuf message defines the sorting order for VTSI (Virtual Telephone Syst
 
 
  <!-- end messages -->
+
+
+<a name="ondewo.vtsi.IvrAvailability"></a>
+
+### IvrAvailability
+<p>Whether a project can use IVR menus, and if not, why</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| IVR_AVAILABILITY_UNSPECIFIED | 0 | Not computed (e.g. an older server) |
+| IVR_AVAILABILITY_AVAILABLE | 1 | IVR menus can be published and routed |
+| IVR_AVAILABILITY_DISABLED_BY_DEPLOYMENT | 2 | The deployment switch <code>ONDEWO_VTSI_IVR_ACTIVE</code> is off |
+| IVR_AVAILABILITY_NEEDS_LOCAL_ASTERISK | 3 | The project&apos;s Asterisk is not run by this server |
+
 
 
 <a name="ondewo.vtsi.SipTrunkTransport"></a>
@@ -26647,6 +29256,22 @@ Structure of VTSI_PROJECT view
 | VTSI_PROJECT_VIEW_MINIMUM | 3 | Minimum view including only VTSI_PROJECT UUID and VTSI_PROJECT display name |
 
 
+
+<a name="ondewo.vtsi.WarmIntroAvailability"></a>
+
+### WarmIntroAvailability
+<p>Whether a project can run warm intros, and if not, why</p>
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| WARM_INTRO_AVAILABILITY_UNSPECIFIED | 0 | Not computed (e.g. an older server) |
+| WARM_INTRO_AVAILABILITY_AVAILABLE | 1 | Warm intros can run |
+| WARM_INTRO_AVAILABILITY_DISABLED_BY_DEPLOYMENT | 2 | The deployment switch <code>ONDEWO_VTSI_WARM_TRANSFER_ENABLED</code> is off |
+| WARM_INTRO_AVAILABILITY_NEEDS_LOCAL_ASTERISK | 3 | The project&apos;s Asterisk is not run by this server (or is older than Asterisk 22) |
+| WARM_INTRO_AVAILABILITY_NEEDS_LISTENER | 4 | The project has no listener to run the intro (a project with pooled callers only) |
+| WARM_INTRO_AVAILABILITY_NEEDS_CALL_CONTROL_KEY | 5 | The deployment has no call-control key (<code>ONDEWO_VTSI_CALL_CONTROL_KEY</code>) |
+
+
  <!-- end enums -->
 
  <!-- end HasExtensions -->
@@ -26705,7 +29330,7 @@ with <code>validate_only</code> emits nothing.</p>
 | ----------- | ------------ | ------------- | ------------|
 | CreateVtsiProject | [CreateVtsiProjectRequest](#ondewo.vtsi.CreateVtsiProjectRequest) | [CreateVtsiProjectResponse](#ondewo.vtsi.CreateVtsiProjectResponse) | <p>Creates a VTSI project with its configuration. The project is created <code>UNDEPLOYED</code>; nothing is started. <code>max_callers</code> caller and <code>max_listeners</code> listener SIP accounts are provisioned for it and an Asterisk port is assigned when none was given.</p> <p>With <code>validate_only</code> every check of a real create runs (authorization included) and nothing is written, reserved or emitted; the would-be project is returned.</p> <p>Errors: <code>INVALID_ARGUMENT</code> for an empty or over-long (more than 256 characters) <code>display_name</code>, a negative <code>max_callers</code> or <code>max_listeners</code>, a port outside 0..65535, <code>asterisk_port</code> and <code>asterisk_configs.asterisk_port</code> both set and different, a malformed <code>name</code>, an invalid <code>asterisk_configs</code> (each naming the field); <code>ALREADY_EXISTS</code> when <code>vtsi_project.name</code> names an existing project (also when two creates of the same name race); <code>ABORTED</code>, <code>UNAUTHENTICATED</code>, <code>PERMISSION_DENIED</code> as in the service description.</p> <p>Authorization: <code>PROJECT_DEVELOPER</code> or higher on EVERY agent of <code>nlu_agent_names</code>; a project with no agent can only be created by <code>SERVER_ADMIN</code>.</p> <p>Idempotency: none. A retry after a lost response creates a second project unless <code>vtsi_project.name</code> is set, in which case the retry is answered <code>ALREADY_EXISTS</code>.</p> |
 | GetVtsiProject | [GetVtsiProjectRequest](#ondewo.vtsi.GetVtsiProjectRequest) | [VtsiProject](#ondewo.vtsi.VtsiProject) | <p>Returns a VTSI project with its configuration.</p> <p>Errors: <code>INVALID_ARGUMENT</code> for an empty or malformed <code>name</code> or an unknown <code>field_mask</code> path; <code>NOT_FOUND</code> for an unknown project; <code>UNAUTHENTICATED</code>, <code>PERMISSION_DENIED</code> as in the service description.</p> <p>Authorization: <code>PROJECT_DEVELOPER</code> or higher on the project.</p> |
-| UpdateVtsiProject | [UpdateVtsiProjectRequest](#ondewo.vtsi.UpdateVtsiProjectRequest) | [UpdateVtsiProjectResponse](#ondewo.vtsi.UpdateVtsiProjectResponse) | <p>Updates a VTSI project: the fields named in <code>update_mask</code>, or, with no mask, the fields <code>vtsi_project</code> sets (see <code>UpdateVtsiProjectRequest.update_mask</code>).</p> <p>An update of an <code>UNDEPLOYED</code> project only writes it. An update of a <code>DEPLOYED</code> project is applied to the running Asterisk by the cheapest path that applies every change, chosen by the server: <code>display_name</code>, <code>nlu_agent_names</code> and <code>transfer_phone_number_allowlist</code> touch no Asterisk; a configuration change that Asterisk measurably applies on a reload is reloaded in place and keeps every call; every other change is a RESTART of the Asterisk container or a REDEPLOY of the project (a changed <code>max_callers</code>, <code>max_listeners</code>, Asterisk port, <code>asterisk_version</code> or managed account), and ENDS EVERY CALL of the project: a redeploy undeploys and deploys the project and recycles its listeners and pooled callers. Use <code>validate_only</code> to check an update first.</p> <p>Errors: <code>INVALID_ARGUMENT</code> for an empty or malformed <code>vtsi_project.name</code>, an unknown <code>update_mask</code> path (also the prefixed form <code>vtsi_project.x</code>), a mask that clears the configuration source (<code>asterisk_configs</code> with no arm set), an out-of-range value (as on create) or an unknown <code>field_mask</code> path; <code>NOT_FOUND</code> for an unknown project; <code>FAILED_PRECONDITION</code> while the project is <code>DELETING</code>; <code>ABORTED</code> when another lifecycle operation of the project held it too long or the project changed concurrently, nothing being written; <code>UNAUTHENTICATED</code>, <code>PERMISSION_DENIED</code> as in the service description. When a deployed project&apos;s Asterisk cannot be reloaded, restarted or redeployed the RPC fails (<code>INTERNAL</code> or <code>UNAVAILABLE</code>) and the project is left as the failure left it (see <code>status_message</code>).</p> <p>Authorization: <code>PROJECT_DEVELOPER</code> or higher on the project and on every agent of the stored AND of the resulting <code>nlu_agent_names</code> (removing an agent needs the same role as adding it).</p> <p>Idempotency: an update is a set of absolute values, so a retry with the same request converges to the same project (a redeploying update ends the calls of the retry&apos;s moment too).</p> |
+| UpdateVtsiProject | [UpdateVtsiProjectRequest](#ondewo.vtsi.UpdateVtsiProjectRequest) | [UpdateVtsiProjectResponse](#ondewo.vtsi.UpdateVtsiProjectResponse) | <p>Updates a VTSI project: the fields named in <code>update_mask</code>, or, with no mask, the fields <code>vtsi_project</code> sets (see <code>UpdateVtsiProjectRequest.update_mask</code>).</p> <p>An update of an <code>UNDEPLOYED</code> project only writes it. An update of a <code>DEPLOYED</code> project is applied to the running Asterisk by the cheapest path that applies every change, chosen by the server: <code>display_name</code>, <code>nlu_agent_names</code> and <code>transfer_phone_number_allowlist</code>, <code>warm_transfer_defaults</code> and <code>transfer_target_directory</code> touch no Asterisk; <code>ivr_menus_enabled</code> only rewrites the inbound routes in the running Asterisk&apos;s database and keeps every call; a configuration change that Asterisk measurably applies on a reload is reloaded in place and keeps every call; every other change is a RESTART of the Asterisk container or a REDEPLOY of the project (a changed <code>max_callers</code>, <code>max_listeners</code>, Asterisk port, <code>asterisk_version</code> or managed account), and ENDS EVERY CALL of the project: a redeploy undeploys and deploys the project and recycles its listeners and pooled callers. Use <code>validate_only</code> to check an update first.</p> <p>Errors: <code>INVALID_ARGUMENT</code> for an empty or malformed <code>vtsi_project.name</code>, an unknown <code>update_mask</code> path (also the prefixed form <code>vtsi_project.x</code>), a mask that clears the configuration source (<code>asterisk_configs</code> with no arm set), an out-of-range value (as on create) or an unknown <code>field_mask</code> path; <code>NOT_FOUND</code> for an unknown project; <code>FAILED_PRECONDITION</code> while the project is <code>DELETING</code>; <code>ABORTED</code> when another lifecycle operation of the project held it too long or the project changed concurrently, nothing being written; <code>UNAUTHENTICATED</code>, <code>PERMISSION_DENIED</code> as in the service description. When a deployed project&apos;s Asterisk cannot be reloaded, restarted or redeployed the RPC fails (<code>INTERNAL</code> or <code>UNAVAILABLE</code>) and the project is left as the failure left it (see <code>status_message</code>).</p> <p>Authorization: <code>PROJECT_DEVELOPER</code> or higher on the project and on every agent of the stored AND of the resulting <code>nlu_agent_names</code> (removing an agent needs the same role as adding it).</p> <p>Idempotency: an update is a set of absolute values, so a retry with the same request converges to the same project (a redeploying update ends the calls of the retry&apos;s moment too).</p> |
 | DeleteVtsiProject | [DeleteVtsiProjectRequest](#ondewo.vtsi.DeleteVtsiProjectRequest) | [DeleteVtsiProjectResponse](#ondewo.vtsi.DeleteVtsiProjectResponse) | <p>Deletes a VTSI project and its configuration. A project that is deployed, deploying, undeploying or <code>DEPLOY_FAILED</code> is UNDEPLOYED FIRST, automatically, exactly as by <code>UndeployVtsiProject</code>: every call of the project ends and its listeners, callers and Asterisk container are removed. The undeploy is best effort: a failing teardown is logged and the deletion goes on. The project then moves to <code>DELETING</code>, its stored configuration is removed and the project no longer exists (<code>DELETED</code> is never returned: a deleted project is <code>NOT_FOUND</code>). Deletion is permanent.</p> <p>Errors: <code>INVALID_ARGUMENT</code> for an empty or malformed <code>name</code>; <code>NOT_FOUND</code> for an unknown project, also for a retry of a deletion that succeeded (the RPC is not idempotent); <code>ABORTED</code>, <code>UNAUTHENTICATED</code>, <code>PERMISSION_DENIED</code> as in the service description.</p> <p>Authorization: <code>PROJECT_DEVELOPER</code> or higher on the project.</p> <p>Events: <code>VTSI_EVENT_VTSI_PROJECT_UNDEPLOYED</code> when it had to undeploy, then <code>VTSI_EVENT_VTSI_PROJECT_DELETED</code>, the last event of the project.</p> |
 | DeployVtsiProject | [DeployVtsiProjectRequest](#ondewo.vtsi.DeployVtsiProjectRequest) | [DeployVtsiProjectResponse](#ondewo.vtsi.DeployVtsiProjectResponse) | <p>Deploys a VTSI project: starts its Asterisk container with the stored configuration and waits until the container runs. SYNCHRONOUS: the RPC returns when the project is <code>DEPLOYED</code> or the deployment failed. The status moves <code>UNDEPLOYED</code> (or <code>DEPLOY_FAILED</code>) &gt; <code>DEPLOYING</code> &gt; <code>DEPLOYED</code>; on failure the half-started container is removed, the status becomes <code>DEPLOY_FAILED</code> with the reason in <code>status_message</code>, and the RPC fails. The server waits about 30 seconds for the container to run, plus the docker API timeout of each docker call (<code>ONDEWO_VTSI_DOCKER_API_TIMEOUT_S</code>, default 90 seconds); a client deadline of at least 3 minutes is recommended. Deploying applies the project&apos;s softphone accounts to the new Asterisk. No caller or listener is started: start them with the <code>Calls</code> service.</p> <p>Idempotent: deploying a <code>DEPLOYED</code> project changes nothing and succeeds (nothing is restarted); a deploy that arrives while another deploy of the project runs waits for it and then finds the project <code>DEPLOYED</code>.</p> <p>Errors: <code>INVALID_ARGUMENT</code> for an empty or malformed <code>name</code>; <code>NOT_FOUND</code> for an unknown project; <code>FAILED_PRECONDITION</code> while the project is <code>DELETING</code>, or <code>DEPLOYING</code> / <code>UNDEPLOYING</code> after the operation that set the status was interrupted (undeploy the project first); <code>INTERNAL</code> or <code>UNAVAILABLE</code> when the deployment failed (the project is then <code>DEPLOY_FAILED</code>); <code>ABORTED</code>, <code>UNAUTHENTICATED</code>, <code>PERMISSION_DENIED</code> as in the service description.</p> <p>Authorization: <code>PROJECT_DEVELOPER</code> or higher on the project.</p> <p>Events: <code>VTSI_EVENT_VTSI_PROJECT_DEPLOYED</code> or <code>VTSI_EVENT_VTSI_PROJECT_DEPLOY_FAILED</code>, and <code>VTSI_EVENT_VTSI_PROJECT_STATUS_CHANGED</code> per status change.</p> |
 | UndeployVtsiProject | [UndeployVtsiProjectRequest](#ondewo.vtsi.UndeployVtsiProjectRequest) | [UndeployVtsiProjectResponse](#ondewo.vtsi.UndeployVtsiProjectResponse) | <p>Undeploys a VTSI project. SYNCHRONOUS: the status moves to <code>UNDEPLOYING</code>, EVERY CALL of the project is ended (callers and listeners alike, campaign calls included), the listeners and the pooled callers are undeployed, the Asterisk container is removed, and the status becomes <code>UNDEPLOYED</code>. The registrations of the project&apos;s softphone accounts end with the container; the accounts themselves are kept and are applied again on the next deploy. The stored configuration, callers, listeners and campaigns are kept. A failed undeploy restores the previous status (or <code>UNDEPLOYED</code> when the container is already gone) and fails the RPC.</p> <p>Idempotent: undeploying an <code>UNDEPLOYED</code> project changes nothing and succeeds. Undeploying a <code>DEPLOY_FAILED</code> project removes what the failed deployment left and makes it <code>UNDEPLOYED</code>.</p> <p>Errors: <code>INVALID_ARGUMENT</code> for an empty or malformed <code>name</code>; <code>NOT_FOUND</code> for an unknown project; <code>FAILED_PRECONDITION</code> while the project is <code>DELETING</code>; <code>INTERNAL</code> or <code>UNAVAILABLE</code> when the teardown failed; <code>ABORTED</code>, <code>UNAUTHENTICATED</code>, <code>PERMISSION_DENIED</code> as in the service description.</p> <p>Authorization: <code>PROJECT_DEVELOPER</code> or higher on the project.</p> <p>Events: <code>VTSI_EVENT_VTSI_PROJECT_UNDEPLOYED</code> or <code>VTSI_EVENT_VTSI_PROJECT_UNDEPLOY_FAILED</code>, and <code>VTSI_EVENT_VTSI_PROJECT_STATUS_CHANGED</code> per status change.</p> |
@@ -27017,6 +29642,7 @@ secret.
 | locked | [bool](#bool) |  | Output only. Whether the account is LOCKED: <code>RevokeSoftphoneCertificate</code> revoked its ACTIVE certificate, so the account is removed from the Asterisk and cannot register or call until <code>RotateSoftphoneCredentials</code> unlocks it. Independent of <code>enabled</code>: an account is usable only when it is enabled AND not locked. |
 | locked_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | Output only. When the account was locked. Unset when it is not locked (also for an account locked by a server older than 9.1.0 whose lock time is not known). |
 | locked_reason | [string](#string) |  | Output only. Why the account was locked: the <code>reason</code> given to the <code>RevokeSoftphoneCertificate</code> that locked it (empty when none was given or the account is not locked). |
+| description | [string](#string) |  | The person or role behind the account, e.g. <code>Buchhaltung, Rechnungsfragen</code>: the context a warm intro&apos;s briefing gives the target when the call is transferred to this account (see <code>WarmTransferConfig.callee_description</code>). At most 512 characters. Updatable. |
 
 
 
@@ -27250,7 +29876,7 @@ The request message for
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | softphone_account | [SoftphoneAccount](#ondewo.vtsi.SoftphoneAccount) |  | The account to update, identified by <code>softphone_account.name</code>, carrying the new values of the fields named in <code>update_mask</code>. |
-| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Required. The fields to update. Paths are field paths within <code>softphone_account</code> WITHOUT a <code>softphone_account.</code> prefix. Updatable paths: <code>display_name</code>, <code>transport_security</code>, <code>enabled</code>, <code>max_contacts</code>, <code>labels</code>, <code>allowed_destinations</code>. Semantics: <ul> <li>Mask unset or empty: rejected with <code>INVALID_ARGUMENT</code>. There is no implicit &quot;update everything sent&quot;.</li> <li>Path in the mask: the field is written with the value sent; a value that is not set is written as the field&apos;s create default (<code>enabled</code> unset writes <code>true</code>, <code>max_contacts</code> 0 writes the server default, an empty <code>labels</code> or <code>allowed_destinations</code> clears them).</li> <li>Path absent from the mask: the field is left untouched, whether or not a value was sent.</li> <li>Unknown, output-only or immutable path (<code>name</code>, <code>sip_username</code>, the certificate and audit fields): rejected with <code>INVALID_ARGUMENT</code> naming the path, never ignored.</li> </ul> |
+| update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  | Required. The fields to update. Paths are field paths within <code>softphone_account</code> WITHOUT a <code>softphone_account.</code> prefix. Updatable paths: <code>display_name</code>, <code>transport_security</code>, <code>enabled</code>, <code>max_contacts</code>, <code>labels</code>, <code>allowed_destinations</code>, <code>description</code>. Semantics: <ul> <li>Mask unset or empty: rejected with <code>INVALID_ARGUMENT</code>. There is no implicit &quot;update everything sent&quot;.</li> <li>Path in the mask: the field is written with the value sent; a value that is not set is written as the field&apos;s create default (<code>enabled</code> unset writes <code>true</code>, <code>max_contacts</code> 0 writes the server default, an empty <code>labels</code> or <code>allowed_destinations</code> clears them).</li> <li>Path absent from the mask: the field is left untouched, whether or not a value was sent.</li> <li>Unknown, output-only or immutable path (<code>name</code>, <code>sip_username</code>, the certificate and audit fields): rejected with <code>INVALID_ARGUMENT</code> naming the path, never ignored.</li> </ul> |
 
 
 
