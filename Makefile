@@ -19,15 +19,10 @@
 # example: API 2.9.0 --> Client 2.9.X
 ONDEWO_VTSI_API_VERSION=9.5.0
 
-# Development pin (OND236-120): ondewo-nlu-api 7.6.0 (warm transfer intros) is not tagged yet; move back to tags/7.6.0
-# at release. It brings the unreleased 7.5.0 surface (the Logs service, turn control) with it.
-ONDEWO_NLU_API_GIT_BRANCH=09169d1b766c4d19c123b9c072e80ff693fec3d9
-# Development pin (OND236-120): ondewo-s2t-api 7.6.0 is not tagged yet; move back to tags/7.6.0 at release.
-ONDEWO_S2T_API_GIT_BRANCH=9b1c059c4f8993f9ed2f3ac6f61bc5c4c9060bec
-ONDEWO_T2S_API_GIT_BRANCH=tags/6.6.0
-# Development pin (OND236-120): ondewo-sip-api 5.7.0 (transfer delegation, warm-transfer outcome notice) is not
-# tagged yet; move back to tags/5.7.0 at release.
-ONDEWO_SIP_API_GIT_BRANCH=b92a13f63696a0bc013dda19d72166f87346282e
+ONDEWO_NLU_API_GIT_BRANCH=tags/7.6.0
+ONDEWO_S2T_API_GIT_BRANCH=tags/7.6.0
+ONDEWO_T2S_API_GIT_BRANCH=tags/6.7.0
+ONDEWO_SIP_API_GIT_BRANCH=tags/5.7.0
 ONDEWO_NLU_DIR=ondewo-nlu-api
 ONDEWO_S2T_DIR=ondewo-s2t-api
 ONDEWO_T2S_DIR=ondewo-t2s-api

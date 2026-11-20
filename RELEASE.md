@@ -56,17 +56,16 @@
   preconditions, outcomes, events, security and privacy).
 * [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `docs/ivr_menus.md`: a hand-written guide to IVR menus (the graph, prompts,
   lifecycle, test calls, the headers a bot receives, every validation issue code, configuration and privacy).
-* Tracking ondewo-nlu-api 7.6.0 (`09169d1b766c4d19c123b9c072e80ff693fec3d9`, not tagged yet; was 7.4.0) and
-  ondewo-sip-api 5.7.0 (`b92a13f63696a0bc013dda19d72166f87346282e`, not tagged yet; was 5.6.0). The vendored
-  `ondewo/nlu` and `ondewo/sip` trees are byte-identical copies at those commits. The nlu tree brings the 7.5.0
+* Tracking ondewo-nlu-api 7.6.0 (`tags/7.6.0`; was 7.4.0) and ondewo-sip-api 5.7.0 (`tags/5.7.0`; was 5.6.0). The
+  vendored `ondewo/nlu`, `ondewo/qa` and `ondewo/sip` trees are byte-identical copies at those tags. The nlu tree brings the 7.5.0
   surface with it (the `Logs` service, turn control on `StreamingDetectIntent`) and 7.6.0's
   `PrepareWarmTransferIntro` / `GetWarmTransferIntroOutcome` and `Agent.warm_transfer_settings`; the sip tree brings
   transfer delegation, `SipStatus.capabilities` and the warm-transfer outcome notice. A consumer that also installs
-  `ondewo-nlu-client` or `ondewo-sip-client` must move them together with this API. `ondewo-t2s-api` is
-  unchanged.
-* Tracking ondewo-s2t-api 7.6.0 at `9b1c059c4f8993f9ed2f3ac6f61bc5c4c9060bec` (not tagged yet; was
-  `c96712335d732c054c33b23eb6c7dbd533e1b253`). The vendored `ondewo/s2t` tree is a byte-identical copy at that
-  commit: `TurnDetectionOptions` chooses its turn detector with `oneof oneof_turn_detector`
+  `ondewo-nlu-client` or `ondewo-sip-client` must move them together with this API.
+* Tracking ondewo-t2s-api 6.7.0 (`tags/6.7.0`; was 6.6.0). The vendored `ondewo/t2s` tree is a byte-identical copy
+  at that tag; 6.7.0 changes only comments in `text-to-speech.proto`, no message, field or RPC.
+* Tracking ondewo-s2t-api 7.6.0 (`tags/7.6.0`; was `c96712335d732c054c33b23eb6c7dbd533e1b253`). The vendored
+  `ondewo/s2t` tree is a byte-identical copy at that tag: `TurnDetectionOptions` chooses its turn detector with `oneof oneof_turn_detector`
   (`turn_detection_chat_llm_options`, `turn_detection_end_of_utterance_llm_options`,
   `turn_detection_ondewo_de_options`, `turn_detection_ondewo_de_fusion_options`,
   `turn_detection_pipecat_smart_turn_options`), fields 3 - 5 are deprecated but still honoured, and the 7.6.0
