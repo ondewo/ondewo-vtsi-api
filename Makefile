@@ -359,7 +359,8 @@ CLIENTS := python nodejs typescript angular js cpp csharp go java php rust
 # returned": unauthenticated (60 requests/hour, so a rate-limited run wrote an empty `tags/`), in an
 # undocumented order, and any new compiler tag silently moved every client's pin mid-release. Move it
 # deliberately; `make check_proto_compiler_is_latest` tells you when a newer tag exists.
-ONDEWO_PROTO_COMPILER_VERSION=5.15.7
+# 5.17.0 (OND236-120): protoc 35.1 and the runtime floors listed in RELEASE.md under 9.5.0.
+ONDEWO_PROTO_COMPILER_VERSION=5.17.0
 
 CLIENT_GIT_URL_PREFIX?=git@github.com:ondewo/ondewo-vtsi-client-
 # The RELEASE.md a client's release slices its notes from (the js family keeps it in src/).

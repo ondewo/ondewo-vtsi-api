@@ -74,6 +74,28 @@
   `turn_detection_pipecat_smart_turn_options` also carry `end_of_turn_probability_threshold`. A consumer that also installs `ondewo-s2t-client` must move it
   together with this API. This API's own `TurnDetectionConfig` is unchanged.
 
+### Breaking Changes
+
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) The clients of this release are generated with
+  ondewo-proto-compiler 5.17.0 (protoc 35.1; was 5.15.7), pinned by `ONDEWO_PROTO_COMPILER_VERSION`. The generated
+  code requires these runtimes or newer:
+  * Python: `protobuf>=7.35.1` and `grpcio>=1.85.1` (every `_pb2.py` carries `# Protobuf Python Version: 7.35.1`,
+    every `_pb2_grpc.py` `GRPC_GENERATED_VERSION = '1.85.1'`, and both refuse an older runtime at import), so
+    `requires-python >=3.10`. The `.pyi` stubs come from mypy-protobuf 5.1.0. The Python client no longer
+    declares `grpcio-tools`, `grpcio-reflection` or `mypy-protobuf` as runtime dependencies.
+  * Java: protobuf-java 4.35.1, grpc-java 1.85.1, proto-google-common-protos 2.82.0.
+  * C#: Google.Protobuf 3.35.1, Grpc.Core.Api / Grpc.Net.Client 2.85.0, Google.Api.CommonProtos 2.17.0.
+  * PHP: `google/protobuf` 5.35.1 (a major step from 4.33.6; needs php >= 8.2.0) and `grpc/grpc` 1.85.0.
+  * Go: `google.golang.org/grpc` v1.85.0, `google.golang.org/protobuf` v1.36.12, `go 1.26.0`.
+  * Rust: prost / prost-types 0.14.6, tonic / tonic-prost 0.14.9.
+  * js, typescript: grpc-web 2.1.1 (`protoc-gen-grpc-web` 2.1.1), `google-protobuf ^4.0.3`. grpc-web 2.1.1 limits
+    a response to 4 MB by default; a client that receives more must set `maxReceiveMessageSize`.
+  * Angular: `"grpc-web": "2.1.1"` as an exact direct dependency plus `"overrides": { "grpc-web": "$grpc-web" }`
+    (`@ngx-grpc/grpc-web-client` still declares the peer `grpc-web ^1.2.1`), `@ngx-grpc/*` `~3.1.2`,
+    `google-protobuf ~3.21.4`.
+  * Nodejs: `@grpc/grpc-js` 1.14.7 and `google-protobuf` 3.21.4.
+  * C++: unchanged (protobuf 3.21.12, grpc 1.51.1).
+
 *****************
 
 ## Release ONDEWO VTSI API 9.4.0
