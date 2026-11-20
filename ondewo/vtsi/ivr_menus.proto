@@ -1,0 +1,803 @@
+// Copyright 2021 ONDEWO GmbH
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+syntax = "proto3";
+
+package ondewo.vtsi;
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+// <code>CallTarget</code>, the target of a ROUTE node.
+import "ondewo/vtsi/calls.proto";
+// <code>CampaignCallingWindow</code>, the opening hours of a SCHEDULE node.
+import "ondewo/vtsi/campaigns.proto";
+
+// <p>ONDEWO VTSI API</p>
+// <p>Manages the IVR MENUS of a VTSI project: keypad (DTMF) menus that a caller dialling one of the project&apos;s
+// inbound phone numbers goes through BEFORE a bot or a person takes the call (&quot;press 1 for sales, 2 for
+// billing&quot;). A menu is a graph of nodes (<code>IvrNode</code>): MENU (a prompt and one key), PLAY (a prompt),
+// SCHEDULE (opening hours), ROUTE (to a listener, the listener queue, a softphone account or a phone number),
+// GOTO_MENU (into another menu of the project) and HANGUP. The project&apos;s Asterisk executes a menu as generated
+// dialplan: a menu keeps running while VTSI is down, and no user text ever reaches the dialplan.</p>
+// <p>Lifecycle: <code>CreateIvrMenu</code> / <code>UpdateIvrMenu</code> save a DRAFT revision (every save is
+// validated; <code>ValidateIvrMenu</code> returns every issue at once). Nothing routes until
+// <code>PublishIvrMenu</code> renders a revision into the project&apos;s Asterisk and switches the menu&apos;s
+// <code>inbound_phone_numbers</code> to it; a failed publish leaves the previous published revision live. A caller
+// inside a menu during a publish finishes on the revision they entered. <code>TestIvrMenu</code> runs a scripted
+// test call through the published revision inside the Asterisk, and <code>GetIvrMenuTest</code> reports it.</p>
+// <p>A bot reached through a menu learns the path: the headers <code>X-ondewo-ivr-menu</code> (the menu&apos;s
+// display name, sanitized), <code>X-ondewo-ivr-path</code> (the option labels taken, e.g.
+// <code>main:1&gt;billing:2</code>) and <code>X-ondewo-dialed-number</code> become parameters of the bot&apos;s
+// SIP context, and the call records them in <code>Call.ivr_menu_display_name</code> / <code>Call.ivr_path</code>,
+// and the menu&apos;s resource name in <code>Call.ivr_menu_name</code>.
+// Labels therefore must never carry a secret.</p>
+// <p>Deployment switch: with <code>ONDEWO_VTSI_IVR_ACTIVE=false</code> (the default) every RPC of this service
+// answers <code>UNIMPLEMENTED</code> with <code>reason=ivr-disabled</code>. <code>VtsiProject.ivr_menus_enabled</code>
+// switches the routes of one project off, and <code>VtsiProject.feature_availability.ivr</code> says whether a project
+// can use IVR menus at all (a project whose Asterisk is not run by this server cannot: Publish is refused with
+// <code>FAILED_PRECONDITION</code> <code>reason=asterisk-not-local</code>).</p>
+// <p>Limits: <code>ONDEWO_VTSI_IVR_MAX_NODES</code> nodes per menu (100),
+// <code>ONDEWO_VTSI_IVR_MAX_MENUS_PER_PROJECT</code> menus (50), <code>ONDEWO_VTSI_IVR_MAX_PROMPT_BYTES</code> per uploaded prompt (1048576),
+// <code>ONDEWO_VTSI_IVR_MAX_PROMPTS_TOTAL_BYTES</code> per menu (52428800), <code>ONDEWO_VTSI_IVR_MAX_HOPS</code> node
+// entries per call across menus (50; the call is then hung up).</p>
+// <p>Every RPC about ONE menu accepts its resource name; Get and Delete also accept its display name, unique within a
+// project and resolved within <code>vtsi_project_name</code>, which is then REQUIRED.</p>
+// <p>Authorization (Keycloak auth mode <code>ENFORCE</code>, as Campaigns): <code>PROJECT_DEVELOPER</code> or higher
+// for Create, Update, Delete, Publish, Clone and Test; <code>PROJECT_EXECUTOR</code> or higher for Get, List,
+// Validate, ListRevisions, GetDialplan and GetIvrMenuTest. Every change emits its <code>VTSI_EVENT_IVR_MENU_*</code>
+// event; a request with <code>validate_only</code> emits nothing.</p>
+service IvrMenus {
+
+    // <p>Creates an IVR menu as a DRAFT (revision 1). Nothing routes until it is published.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> with the code and path of the FIRST error issue (see
+    // <code>IvrMenuIssue</code>; <code>ValidateIvrMenu</code> returns all of them), a set output-only field, or a
+    // malformed <code>idempotency_key</code>; <code>ALREADY_EXISTS</code> for a display name the project already has;
+    // <code>RESOURCE_EXHAUSTED</code> beyond <code>ONDEWO_VTSI_IVR_MAX_MENUS_PER_PROJECT</code>;
+    // <code>NOT_FOUND</code> for an unknown project.</p>
+    rpc CreateIvrMenu (CreateIvrMenuRequest) returns (IvrMenu);
+
+    // <p>Returns an IVR menu at its current revision.</p>
+    rpc GetIvrMenu (GetIvrMenuRequest) returns (IvrMenu);
+
+    // <p>Updates the fields named in <code>update_mask</code> and saves a new DRAFT revision (+1) when a graph field
+    // changed. <code>layout</code> alone is saved without a new revision.</p>
+    // <p>Errors: as <code>CreateIvrMenu</code>, plus <code>ABORTED</code> <code>reason=revision-mismatch</code> when
+    // <code>expected_revision</code> is set and not the current revision.</p>
+    rpc UpdateIvrMenu (UpdateIvrMenuRequest) returns (IvrMenu);
+
+    // <p>Deletes an IVR menu and all its revisions; its bound phone numbers fall back to the project&apos;s routing
+    // without a menu at once.</p>
+    // <p>Errors: <code>FAILED_PRECONDITION</code> <code>reason=menu-published</code> for a PUBLISHED menu with bound
+    // phone numbers unless <code>force</code>; <code>FAILED_PRECONDITION</code> <code>reason=menu-referenced</code>
+    // while a GOTO_MENU node of another menu names it; <code>NOT_FOUND</code> for an unknown menu.</p>
+    rpc DeleteIvrMenu (DeleteIvrMenuRequest) returns (DeleteIvrMenuResponse);
+
+    // <p>Lists the IVR menus of a project.</p>
+    rpc ListIvrMenus (ListIvrMenusRequest) returns (ListIvrMenusResponse);
+
+    // <p>Runs every check of Create, Update and Publish on the given draft and returns ALL issues with their node
+    // paths. Writes nothing and emits nothing.</p>
+    rpc ValidateIvrMenu (ValidateIvrMenuRequest) returns (ValidateIvrMenuResponse);
+
+    // <p>Renders the given (or the current) revision into the project&apos;s Asterisk: prompts synthesized or copied,
+    // the dialplan reloaded and read back, every prompt checked, and only then the bound phone numbers switched to
+    // it. Any failure restores the previous dialplan, leaves the previous published revision live and answers the
+    // menu with <code>IVR_MENU_STATE_PUBLISH_FAILED</code> and <code>state_message</code>. Re-validates first,
+    // because the allowlist, the softphone accounts or the listeners may have changed since the save. Binding or
+    // unbinding a phone number ends no call.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> for an error issue; <code>ABORTED</code>
+    // <code>reason=revision-mismatch</code> for a revision that is not current; <code>FAILED_PRECONDITION</code>
+    // <code>reason=asterisk-not-local</code>, <code>reason=project-not-deployed</code> or
+    // <code>reason=ivr-entry-hook-missing</code> (a project whose own dialplan lacks the IVR entry hook);
+    // <code>FAILED_PRECONDITION</code> <code>reason=target-menu-not-published</code> when a GOTO_MENU node names a
+    // menu that is not published.</p>
+    rpc PublishIvrMenu (PublishIvrMenuRequest) returns (IvrMenu);
+
+    // <p>Copies a menu (its current or a given revision) into a new DRAFT menu without phone numbers.</p>
+    rpc CloneIvrMenu (CloneIvrMenuRequest) returns (IvrMenu);
+
+    // <p>Lists the saved revisions of a menu, newest first.</p>
+    rpc ListIvrMenuRevisions (ListIvrMenuRevisionsRequest) returns (ListIvrMenuRevisionsResponse);
+
+    // <p>Starts a test call through the PUBLISHED revision of a menu and returns at once with the test in
+    // <code>IVR_MENU_TEST_STATE_RUNNING</code>; poll <code>GetIvrMenuTest</code> for the result. The test call runs
+    // INSIDE the project&apos;s Asterisk: a local channel enters the menu, presses the scripted keys and records the
+    // nodes it passes. No SIP container, no bot and no NLU session take part, and every ROUTE node is a stub that
+    // records the target and hangs up: a test NEVER dials a listener, a softphone or a phone number.</p>
+    // <p>Errors: <code>FAILED_PRECONDITION</code> <code>reason=menu-not-published</code>,
+    // <code>reason=asterisk-not-local</code> or <code>reason=project-not-deployed</code>;
+    // <code>INVALID_ARGUMENT</code> for invalid steps or a <code>max_duration_s</code> above
+    // <code>ONDEWO_VTSI_IVR_TEST_MAX_DURATION_S</code>.</p>
+    rpc TestIvrMenu (TestIvrMenuRequest) returns (IvrMenuTest);
+
+    // <p>Returns a test started by <code>TestIvrMenu</code>: its state and the path traversed so far. A test is kept
+    // for 24 hours after it finished, then <code>NOT_FOUND</code>.</p>
+    rpc GetIvrMenuTest (GetIvrMenuTestRequest) returns (IvrMenuTest);
+
+    // <p>Returns the rendered dialplan of one revision, read-only, for support.</p>
+    // <p>Errors: <code>FAILED_PRECONDITION</code> <code>reason=revision-not-rendered</code> for a revision that is no
+    // longer (or was never) in the project&apos;s Asterisk.</p>
+    rpc GetIvrMenuDialplan (GetIvrMenuDialplanRequest) returns (GetIvrMenuDialplanResponse);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Resources
+//////////////////////////////////////////////////////////////////////////////
+
+// <p>An IVR menu of a VTSI project. The graph fields (<code>entry_node_id</code>, <code>nodes</code>,
+// <code>language_code</code>, <code>t2s_pipeline_id</code>) are versioned by <code>revision</code>; the routing
+// fields (<code>inbound_phone_numbers</code>, <code>default_inbound</code>, <code>disabled</code>) take effect on the
+// next publish.</p>
+message IvrMenu {
+
+    // Output only. Resource name of the menu.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>
+    string name = 1;
+
+    // Required. Unique within the project, 1 to 128 characters. Sent sanitized to a bot as
+    // <code>X-ondewo-ivr-menu</code>.
+    string display_name = 2;
+
+    // At most 1000 characters.
+    string description = 3;
+
+    // Required. The node a caller enters first; must name a node of <code>nodes</code>.
+    string entry_node_id = 4;
+
+    // Required. The nodes, 1 to <code>ONDEWO_VTSI_IVR_MAX_NODES</code>; order is irrelevant. Every node must be
+    // reachable from <code>entry_node_id</code>.
+    repeated IvrNode nodes = 5;
+
+    // Language of the text prompts for text-to-speech, e.g. <code>de-DE</code>. Empty: the project&apos;s default.
+    string language_code = 6;
+
+    // Text-to-speech pipeline of the text prompts. Empty: the project&apos;s default pipeline.
+    string t2s_pipeline_id = 7;
+
+    // E.164 phone numbers (DIDs) of the project&apos;s SIP trunk routed into this menu once it is published. A number
+    // can be bound by one menu only.
+    repeated string inbound_phone_numbers = 8;
+
+    // Whether this menu takes every inbound number no menu names. At most one menu per project.
+    bool default_inbound = 9;
+
+    // <code>true</code>: the menu&apos;s numbers are unrouted on the next publish (the menu is kept).
+    bool disabled = 10;
+
+    // Output only. Publication state.
+    IvrMenuState state = 11;
+
+    // Output only. The current revision, +1 per accepted graph change; 1 after create.
+    int64 revision = 12;
+
+    // Output only. The published revision; <code>0</code> = never published.
+    int64 published_revision = 13;
+
+    // Output only. Why the last publish failed (bounded text without personal data); empty otherwise.
+    string state_message = 14;
+
+    // Canvas positions of the nodes for the editor, keyed by <code>node_id</code>. Opaque to the server and not
+    // versioned.
+    map<string, IvrNodePosition> layout = 15;
+
+    // Output only. The user who created the menu.
+    string created_by = 16;
+
+    // Output only. Creation time.
+    google.protobuf.Timestamp created_at = 17;
+
+    // Output only. The user who saved the current revision.
+    string modified_by = 18;
+
+    // Output only. When the current revision was saved.
+    google.protobuf.Timestamp modified_at = 19;
+
+    // Output only. When the published revision was published.
+    google.protobuf.Timestamp published_at = 20;
+
+    // Output only. The user who published it.
+    string published_by = 21;
+
+    // Output only, and only with the <code>field_mask</code> path <code>node_stats</code>: how often callers entered
+    // each node, keyed by <code>node_id</code>, for EVERY call through the menu (also those routed straight to a
+    // person, which leave no call record). Approximate: counted in the Asterisk and collected about once a minute.
+    map<string, IvrNodeStats> node_stats = 22;
+
+    // Output only, with <code>node_stats</code>: when the counters were last collected.
+    google.protobuf.Timestamp node_stats_updated_at = 23;
+}
+
+// <p>One node of an IVR menu. Which fields apply depends on <code>type</code>; a field set on a node type it does not
+// apply to is refused with <code>INVALID_ARGUMENT</code>.</p>
+message IvrNode {
+
+    // Required. <code>^[a-z0-9_-]{1,64}$</code>, unique within the menu.
+    string node_id = 1;
+
+    // At most 128 characters: the node&apos;s name in the editor and its label in <code>X-ondewo-ivr-path</code>
+    // (reduced to <code>[A-Za-z0-9_-]{1,32}</code>).
+    string display_name = 2;
+
+    // Required. The kind of node.
+    IvrNodeType type = 3;
+
+    // MENU (required) and PLAY (required): played when the node is entered.
+    IvrPrompt prompt = 4;
+
+    // MENU: one option per key, 1 to 12.
+    repeated IvrOption options = 5;
+
+    // MENU: seconds to wait for a key after the prompt; <code>0</code> = 5, valid 1 - 30.
+    uint32 timeout_s = 6;
+
+    // MENU: how often an invalid key or a timeout replays the prompt before
+    // <code>invalid_next_node_id</code> / <code>timeout_next_node_id</code>; <code>0</code> = 2, valid 1 - 5.
+    uint32 max_retries = 7;
+
+    // MENU: the node after the last retry without a key; empty: hang up.
+    string timeout_next_node_id = 8;
+
+    // MENU: the node after the last invalid key; empty: <code>timeout_next_node_id</code>.
+    string invalid_next_node_id = 9;
+
+    // PLAY: the node after the prompt. SCHEDULE: the node inside the opening hours.
+    string next_node_id = 10;
+
+    // ROUTE (required): <code>phone_number</code> (must pass <code>VtsiProject.transfer_phone_number_allowlist</code>),
+    // <code>softphone_account_name</code>, <code>listener_name</code> or <code>listener_queue</code> of the same
+    // project; <code>ivr_menu_name</code> is refused (use a GOTO_MENU node).
+    CallTarget route_target = 11;
+
+    // SCHEDULE (required): the opening hours, as a time zone and weekly slots.
+    CampaignCallingWindow schedule = 12;
+
+    // SCHEDULE: the node outside the opening hours.
+    string closed_next_node_id = 13;
+
+    // ROUTE: the node when the target does not answer or is busy; empty: a busy announcement, then hang up.
+    string busy_next_node_id = 14;
+
+    // MENU: played on an invalid key or a timeout before the prompt is repeated; unset: none.
+    IvrPrompt reprompt = 15;
+
+    // GOTO_MENU (required): another menu of the same project,
+    // <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>. The caller enters
+    // that menu&apos;s PUBLISHED revision at its entry node; the hop limit counts across menus, so a cycle of menus
+    // ends after <code>ONDEWO_VTSI_IVR_MAX_HOPS</code> entries. Naming the menu itself is refused.
+    string goto_menu_name = 16;
+}
+
+// <p>The kind of an IVR node</p>
+enum IvrNodeType {
+
+    // Not allowed
+    IVR_NODE_TYPE_UNSPECIFIED = 0;
+
+    // A prompt and one key (<code>options</code>)
+    IVR_NODE_TYPE_MENU = 1;
+
+    // A prompt, then <code>next_node_id</code>
+    IVR_NODE_TYPE_PLAY = 2;
+
+    // Leave the menu to <code>route_target</code> (terminal unless <code>busy_next_node_id</code>)
+    IVR_NODE_TYPE_ROUTE = 3;
+
+    // Hang up (terminal)
+    IVR_NODE_TYPE_HANGUP = 4;
+
+    // Opening hours: <code>next_node_id</code> inside, <code>closed_next_node_id</code> outside
+    IVR_NODE_TYPE_SCHEDULE = 5;
+
+    // Continue in another published menu of the project (<code>goto_menu_name</code>)
+    IVR_NODE_TYPE_GOTO_MENU = 6;
+}
+
+// <p>One key of a MENU node</p>
+message IvrOption {
+
+    // Required. Exactly one of <code>0-9 * #</code>, unique within the node.
+    string dtmf = 1;
+
+    // Required. The node the key leads to.
+    string next_node_id = 2;
+
+    // At most 64 characters: the edge label in the editor and in <code>X-ondewo-ivr-path</code> (sanitized as
+    // <code>IvrNode.display_name</code>).
+    string label = 3;
+}
+
+// <p>An audio prompt. Exactly one source must be set.</p>
+message IvrPrompt {
+
+    // The source of the audio
+    oneof source {
+
+        // Text, 1 to 1000 characters, synthesized by VTSI with text-to-speech at publish (cached by content).
+        string text = 1;
+
+        // A RIFF WAV file: PCM 16 bit mono at 8000 or 16000 Hz (not transcoded), at most
+        // <code>ONDEWO_VTSI_IVR_MAX_PROMPT_BYTES</code> and 120 seconds.
+        bytes wav = 2;
+
+        // A stock Asterisk sound from the allowlist in <code>docs/ivr_menus.md</code>, e.g. <code>beep</code>.
+        string asterisk_sound = 3;
+    }
+
+    // Output only. SHA-256 (hex) of the rendered audio; empty before the first publish.
+    string sha256 = 4;
+}
+
+// <p>Position of a node on the editor canvas</p>
+message IvrNodePosition {
+
+    // Horizontal position
+    double x = 1;
+
+    // Vertical position
+    double y = 2;
+}
+
+// <p>Traffic counters of one node, in <code>IvrMenu.node_stats</code>. Approximate.</p>
+message IvrNodeStats {
+
+    // Entries into the node in the published revision since it was published.
+    int64 published_revision_entries = 1;
+
+    // Entries into the node over every revision still rendered in the Asterisk.
+    int64 total_entries = 2;
+}
+
+// <p>Publication state of an IVR menu</p>
+enum IvrMenuState {
+
+    // Not set
+    IVR_MENU_STATE_UNSPECIFIED = 0;
+
+    // The current revision is not published (<code>revision &gt; published_revision</code>)
+    IVR_MENU_STATE_DRAFT = 1;
+
+    // The current revision is published
+    IVR_MENU_STATE_PUBLISHED = 2;
+
+    // The last publish failed; the previous published revision, if any, stays live
+    IVR_MENU_STATE_PUBLISH_FAILED = 3;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Requests and responses
+//////////////////////////////////////////////////////////////////////////////
+
+// Request to create an IVR menu
+message CreateIvrMenuRequest {
+
+    // Required. The project: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Required. The menu; its output-only fields must be unset.
+    IvrMenu ivr_menu = 2;
+
+    // Optional. Partial response: the <code>IvrMenu</code> field paths to return. <code>name</code> is always
+    // returned. Unset or empty returns every field except <code>node_stats</code>.
+    google.protobuf.FieldMask field_mask = 3;
+
+    // Optional client idempotency key with the semantics of
+    // <a href="index.html#ondewo.vtsi.CreateCampaignRequest">CreateCampaignRequest.idempotency_key</a>: at most 255
+    // printable ASCII characters, scoped to the project and to this RPC, kept 24 hours.
+    string idempotency_key = 4;
+
+    // Optional. Run every check and return the would-be menu; write and emit nothing.
+    bool validate_only = 5;
+}
+
+// Request to get an IVR menu
+message GetIvrMenuRequest {
+
+    // The menu, by resource name or display name
+    oneof ivr_menu {
+
+        // <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>
+        string name = 1;
+
+        // The display name, resolved within <code>vtsi_project_name</code>
+        string display_name = 2;
+    }
+
+    // The project: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>. Required with
+    // <code>display_name</code>; checked against <code>name</code> when both are set.
+    string vtsi_project_name = 3;
+
+    // Optional. Partial response, as <code>CreateIvrMenuRequest.field_mask</code>. The path <code>node_stats</code>
+    // adds the traffic counters, which are never returned otherwise.
+    google.protobuf.FieldMask field_mask = 4;
+}
+
+// Request to update an IVR menu
+message UpdateIvrMenuRequest {
+
+    // Required. The menu, identified by <code>ivr_menu.name</code>, carrying the new values of the fields named in
+    // <code>update_mask</code>.
+    IvrMenu ivr_menu = 1;
+
+    // Required. Paths within <code>ivr_menu</code> WITHOUT an <code>ivr_menu.</code> prefix, e.g.
+    // <code>nodes</code>, <code>inbound_phone_numbers</code>, <code>layout</code>. Repeated and map fields are
+    // replaced whole. A path named but not set clears the field. An unknown or output-only path is refused with
+    // <code>INVALID_ARGUMENT</code> naming it.
+    google.protobuf.FieldMask update_mask = 2;
+
+    // Optional. Partial response, as <code>CreateIvrMenuRequest.field_mask</code>.
+    google.protobuf.FieldMask field_mask = 3;
+
+    // Optional. Run every check and return the would-be menu; write and emit nothing.
+    bool validate_only = 4;
+
+    // Optional. <code>0</code>: no check. Otherwise the revision the client edited; a different current revision is
+    // refused with <code>ABORTED</code> <code>reason=revision-mismatch</code> and nothing is written.
+    int64 expected_revision = 5;
+}
+
+// Request to delete an IVR menu
+message DeleteIvrMenuRequest {
+
+    // The menu, by resource name or display name
+    oneof ivr_menu {
+
+        // <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>
+        string name = 1;
+
+        // The display name, resolved within <code>vtsi_project_name</code>
+        string display_name = 2;
+    }
+
+    // The project, required with <code>display_name</code>.
+    string vtsi_project_name = 3;
+
+    // <code>false</code> refuses a PUBLISHED menu with bound phone numbers (<code>FAILED_PRECONDITION</code>
+    // <code>reason=menu-published</code>); <code>true</code> unroutes them and deletes.
+    bool force = 4;
+}
+
+// Response to the deletion of an IVR menu
+message DeleteIvrMenuResponse {
+
+    // How many phone numbers now fall back to the project&apos;s routing without a menu.
+    int32 unrouted_phone_numbers = 1;
+
+    // Whether the deleted menu was the project&apos;s <code>default_inbound</code> menu.
+    bool default_inbound_removed = 2;
+}
+
+// Filter of <code>ListIvrMenus</code>; every set field must match
+message IvrMenuFilter {
+
+    // Case-insensitive substring of <code>display_name</code>; empty does not filter.
+    string display_name_contains = 1;
+
+    // <code>IVR_MENU_STATE_UNSPECIFIED</code>: any state.
+    IvrMenuState state = 2;
+
+    // Exact E.164 number of <code>inbound_phone_numbers</code>; empty does not filter.
+    string inbound_phone_number = 3;
+}
+
+// Sort order of <code>ListIvrMenus</code>
+enum IvrMenuOrderBy {
+
+    // Same as <code>IVR_MENU_ORDER_BY_DISPLAY_NAME</code>
+    IVR_MENU_ORDER_BY_UNSPECIFIED = 0;
+
+    // By display name, ascending
+    IVR_MENU_ORDER_BY_DISPLAY_NAME = 1;
+
+    // By <code>modified_at</code>, newest first
+    IVR_MENU_ORDER_BY_MODIFIED_AT_DESC = 2;
+}
+
+// Request to list the IVR menus of a project
+message ListIvrMenusRequest {
+
+    // Required. The project: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Optional. Narrows the listed menus.
+    IvrMenuFilter filter = 2;
+
+    // Optional. Maximum menus per page. <code>0</code> means 20; values above 1000 are clamped to 1000; negative
+    // values are refused with <code>INVALID_ARGUMENT</code>.
+    int32 page_size = 3;
+
+    // Optional. The <code>next_page_token</code> of a previous response; valid only with the same project, filter
+    // and order.
+    optional string page_token = 4;
+
+    // Optional. Partial response: the <code>IvrMenu</code> field paths of each listed menu, as
+    // <code>CreateIvrMenuRequest.field_mask</code>.
+    google.protobuf.FieldMask field_mask = 5;
+
+    // Optional. Sort order.
+    IvrMenuOrderBy order_by = 6;
+}
+
+// Response to list the IVR menus of a project
+message ListIvrMenusResponse {
+
+    // The menus of this page.
+    repeated IvrMenu ivr_menus = 1;
+
+    // Token of the next page; empty on the last page.
+    string next_page_token = 2;
+}
+
+// Request to validate an IVR menu draft
+message ValidateIvrMenuRequest {
+
+    // Required. The project: <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Required. The draft as edited; <code>name</code> may be empty for a menu not created yet.
+    IvrMenu ivr_menu = 2;
+}
+
+// <p>One problem of an IVR menu draft</p>
+message IvrMenuIssue {
+
+    // Whether the issue blocks a save or a publish
+    IvrMenuIssueSeverity severity = 1;
+
+    // Stable kebab-case token, e.g. <code>dangling-next-node</code>, <code>duplicate-key</code>,
+    // <code>unreachable-node</code>, <code>keyless-cycle</code>, <code>number-not-allowed</code>,
+    // <code>unknown-softphone</code>, <code>unknown-listener</code>, <code>unknown-menu</code>,
+    // <code>self-goto</code>, <code>number-bound-twice</code>, <code>second-default-inbound</code>,
+    // <code>prompt-format</code>, <code>prompt-too-large</code>, <code>field-not-for-node-type</code>,
+    // <code>menu-without-prompt</code> (a WARNING). The list in <code>docs/ivr_menus.md</code> is complete.
+    string code = 2;
+
+    // Path of the offending field, e.g. <code>nodes[node_id=billing].options[dtmf=2].next_node_id</code>.
+    string path = 3;
+
+    // The node of the issue; empty for an issue of the whole menu.
+    string node_id = 4;
+
+    // English description for logs; a user interface translates by <code>code</code>.
+    string message = 5;
+}
+
+// Severity of an <code>IvrMenuIssue</code>
+enum IvrMenuIssueSeverity {
+
+    // Not set
+    IVR_MENU_ISSUE_SEVERITY_UNSPECIFIED = 0;
+
+    // Create, Update and Publish refuse the menu
+    IVR_MENU_ISSUE_SEVERITY_ERROR = 1;
+
+    // Accepted, but probably not intended
+    IVR_MENU_ISSUE_SEVERITY_WARNING = 2;
+}
+
+// Response to validate an IVR menu draft
+message ValidateIvrMenuResponse {
+
+    // Every issue found
+    repeated IvrMenuIssue issues = 1;
+
+    // Whether no issue is an ERROR
+    bool valid = 2;
+}
+
+// Request to publish an IVR menu
+message PublishIvrMenuRequest {
+
+    // Required. <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>
+    string name = 1;
+
+    // <code>0</code>: the current revision. Any other revision must be the current one, else <code>ABORTED</code>
+    // <code>reason=revision-mismatch</code>.
+    int64 revision = 2;
+}
+
+// Request to clone an IVR menu. The clone has no <code>inbound_phone_numbers</code>, <code>default_inbound</code>
+// <code>false</code> and the state DRAFT.
+message CloneIvrMenuRequest {
+
+    // Required. The source menu: <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>
+    string name = 1;
+
+    // Required. The clone&apos;s display name, unique within the project.
+    string display_name = 2;
+
+    // The source revision; <code>0</code>: the current one.
+    int64 revision = 3;
+
+    // Optional client idempotency key, as <code>CreateIvrMenuRequest.idempotency_key</code>.
+    string idempotency_key = 4;
+}
+
+// Request to list the revisions of an IVR menu
+message ListIvrMenuRevisionsRequest {
+
+    // Required. <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>
+    string name = 1;
+
+    // Optional. Maximum revisions per page. <code>0</code> means 20; values above 100 are clamped to 100.
+    int32 page_size = 2;
+
+    // Optional. The <code>next_page_token</code> of a previous response for the same menu.
+    optional string page_token = 3;
+}
+
+// <p>One saved revision of an IVR menu</p>
+message IvrMenuRevision {
+
+    // The revision number
+    int64 revision = 1;
+
+    // The graph fields as saved at that revision (no <code>layout</code>, no routing fields, no output-only
+    // fields)
+    IvrMenu snapshot = 2;
+
+    // Who saved it
+    string modified_by = 3;
+
+    // When it was saved
+    google.protobuf.Timestamp modified_at = 4;
+
+    // Whether it was ever published
+    bool published = 5;
+
+    // Whether it is still rendered in the Asterisk (it is published, or a caller may still be inside it)
+    bool live = 6;
+}
+
+// Response to list the revisions of an IVR menu
+message ListIvrMenuRevisionsResponse {
+
+    // The revisions of this page, newest first
+    repeated IvrMenuRevision revisions = 1;
+
+    // Token of the next page; empty on the last page.
+    string next_page_token = 2;
+}
+
+// <p>One step of the key script of a test call</p>
+message IvrTestStep {
+
+    // Milliseconds to wait after the previous step (for the first step: after the call entered the menu) before
+    // <code>dtmf</code> is pressed. <code>0</code> means 1000; at most 30000. A key pressed during a prompt
+    // interrupts it, as for a real caller.
+    uint32 wait_ms = 1;
+
+    // The keys to press, <code>^[0-9*#]{0,8}$</code>; empty presses nothing, so the next step waits out the
+    // node&apos;s timeout (the timeout path).
+    string dtmf = 2;
+}
+
+// Request to start a test call through the published revision of an IVR menu
+message TestIvrMenuRequest {
+
+    // Required. <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>
+    string name = 1;
+
+    // The key script, at most 20 steps. Empty: no key is pressed.
+    repeated IvrTestStep steps = 2;
+
+    // Seconds the test call may last after its last step; <code>0</code> means 60, at most
+    // <code>ONDEWO_VTSI_IVR_TEST_MAX_DURATION_S</code> (300). A test still in a menu then is
+    // <code>IVR_MENU_TEST_STATE_TIMED_OUT</code>.
+    uint32 max_duration_s = 3;
+}
+
+// Request to get a test call of an IVR menu
+message GetIvrMenuTestRequest {
+
+    // Required. The test, as <code>IvrMenuTest.name</code>.
+    string name = 1;
+}
+
+// <p>State of a test call of an IVR menu</p>
+enum IvrMenuTestState {
+
+    // Not set
+    IVR_MENU_TEST_STATE_UNSPECIFIED = 0;
+
+    // The test call is still in the menu
+    IVR_MENU_TEST_STATE_RUNNING = 1;
+
+    // The test call reached a terminal node (ROUTE stub or HANGUP)
+    IVR_MENU_TEST_STATE_SUCCEEDED = 2;
+
+    // The test call was still in a menu after <code>max_duration_s</code>
+    IVR_MENU_TEST_STATE_TIMED_OUT = 3;
+
+    // The test call could not run or ended unexpectedly; <code>error_message</code> says why
+    IVR_MENU_TEST_STATE_FAILED = 4;
+}
+
+// <p>One node entry of a test call</p>
+message IvrTraversalStep {
+
+    // The node entered (of the menu named by <code>ivr_menu_name</code>, which changes after a GOTO_MENU node)
+    string node_id = 1;
+
+    // What led out of the node: the key, <code>t</code> (timeout) or <code>i</code> (invalid key); empty for a node
+    // left without input
+    string input = 2;
+
+    // The node entered next; empty for the last node
+    string next_node_id = 3;
+
+    // When the node was entered, to the millisecond (the Asterisk&apos;s clock)
+    google.protobuf.Timestamp entered_at = 4;
+
+    // The menu of <code>node_id</code>:
+    // <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>
+    string ivr_menu_name = 5;
+}
+
+// <p>A test call of an IVR menu, started by <code>TestIvrMenu</code>. Leaves no call record and no NLU session.</p>
+message IvrMenuTest {
+
+    // Resource name of the test.
+    // The format is:
+    // <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;/tests/&lt;test_id&gt;</code></pre>
+    string name = 1;
+
+    // The test id: 32 lower-case hex characters.
+    string test_id = 2;
+
+    // The state of the test
+    IvrMenuTestState state = 3;
+
+    // The revision traversed (the published revision when the test started)
+    int64 revision = 4;
+
+    // The nodes entered so far, in order
+    repeated IvrTraversalStep path = 5;
+
+    // The last node entered; empty before the first
+    string final_node_id = 6;
+
+    // What the terminal ROUTE stub recorded, <code>route:&lt;kind&gt;:&lt;target&gt;</code> (<code>kind</code>
+    // being <code>phone_number</code> with the number masked to its last 3 digits, <code>softphone</code>,
+    // <code>listener</code> or <code>listener_queue</code>); empty when the test did not end on a ROUTE node
+    string route = 7;
+
+    // Why the test failed; empty otherwise
+    string error_message = 8;
+
+    // When the test call started
+    google.protobuf.Timestamp started_at = 9;
+
+    // When it ended; unset while it runs
+    google.protobuf.Timestamp finished_at = 10;
+}
+
+// Request to get the rendered dialplan of an IVR menu revision
+message GetIvrMenuDialplanRequest {
+
+    // Required. <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>
+    string name = 1;
+
+    // <code>0</code>: the published revision.
+    int64 revision = 2;
+}
+
+// Response with the rendered dialplan of an IVR menu revision
+message GetIvrMenuDialplanResponse {
+
+    // The rendered dialplan contexts of that revision
+    string dialplan = 1;
+
+    // Absolute paths of its prompt files inside the Asterisk container
+    repeated string prompt_files = 2;
+}

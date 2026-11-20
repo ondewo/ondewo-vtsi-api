@@ -405,6 +405,11 @@ message SoftphoneAccount {
     // <code>RevokeSoftphoneCertificate</code> that locked it (empty when none was given or the account is
     // not locked).
     string locked_reason = 21;
+
+    // The person or role behind the account, e.g. <code>Buchhaltung, Rechnungsfragen</code>: the context a warm
+    // intro&apos;s briefing gives the target when the call is transferred to this account (see
+    // <code>WarmTransferConfig.callee_description</code>). At most 512 characters. Updatable.
+    string description = 22;
 }
 
 // A client certificate issued to a softphone account by the project&apos;s SOFTPHONE certificate
@@ -748,7 +753,7 @@ message UpdateSoftphoneAccountRequest {
     // Required. The fields to update. Paths are field paths within <code>softphone_account</code> WITHOUT a
     // <code>softphone_account.</code> prefix. Updatable paths:
     // <code>display_name</code>, <code>transport_security</code>, <code>enabled</code>,
-    // <code>max_contacts</code>, <code>labels</code>, <code>allowed_destinations</code>.
+    // <code>max_contacts</code>, <code>labels</code>, <code>allowed_destinations</code>, <code>description</code>.
     // Semantics:
     // <ul>
     //   <li>Mask unset or empty: rejected with <code>INVALID_ARGUMENT</code>. There is no implicit

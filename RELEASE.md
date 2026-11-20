@@ -2,6 +2,160 @@
 
 *****************
 
+## Release ONDEWO VTSI API 9.5.0
+
+### New Features
+
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) Warm intro of a WARM transfer: after the human target answered and before it is
+  joined, an ONDEWO bot confirms a person is on the line, briefs them, asks whether they accept and, on a decline,
+  what to tell the caller; the caller waits with the paused bot. Configured by the new `WarmTransferConfig`
+  (`call_configs.proto`, 22 `optional` scalars plus `intro_text_source`, `on_intro_unavailable` and
+  `intro_listener_names`) on four levels, the most specific winning per field:
+  `TransferCallRequest.warm_transfer_config = 9`, `VoiceInteractionConfig.warm_transfer_config = 6`,
+  `VtsiProject.warm_transfer_defaults = 22` and the deployment. Off unless `enabled` is set and the deployment
+  switch `ONDEWO_VTSI_WARM_TRANSFER_ENABLED` is on; an explicit `enabled=true` otherwise is `FAILED_PRECONDITION`
+  `reason=warm-intro-disabled`. New top-level enums `WarmIntroTextSource`, `WarmIntroUnavailablePolicy`,
+  `WarmIntroDecision` and `WarmIntroDecidedBy`.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) A WARM transfer with a warm intro answers `TRANSFER_OUTCOME_PENDING`; its final
+  outcome arrives in `Call.last_transfer` and the events. New `TransferOutcome` values `TRANSFER_OUTCOME_DECLINED = 9`,
+  `TRANSFER_OUTCOME_NO_DECISION = 10`, `TRANSFER_OUTCOME_TARGET_UNAVAILABLE = 11` and
+  `TRANSFER_OUTCOME_INTRO_UNAVAILABLE = 12`; `CallTransferRecord` gains `warm_intro = 7` (`WarmIntroRecord`, no text)
+  and `effective_warm_transfer_config = 8` (the resolved configuration).
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) Events `VTSI_EVENT_CALL_WARM_INTRO_STARTED = 124`, `_ACCEPTED = 125`,
+  `_DECLINED = 126`, `_NO_DECISION = 127`, `_TARGET_UNAVAILABLE = 128` and the WARNING
+  `VTSI_EVENT_CALL_WARM_TRANSFER_OUTCOME_NOTICE_UNDELIVERED = 129`; `VTSI_EVENT_CALL_TRANSFERRED` carries
+  `intro_skipped_reason` when an enabled intro was skipped. No event carries a text or a full phone number.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `VtsiProject.feature_availability = 23` (output only,
+  `VtsiProjectFeatureAvailability`: `warm_intro` as `WarmIntroAvailability`, `warm_intro_phase_b`, `ivr` as
+  `IvrAvailability`), `VtsiProject.ivr_menus_enabled = 24` (`optional bool`, unset = `true`) and
+  `VtsiProject.transfer_target_directory = 25` (`map<string, TransferTargetDirectoryItem>`, at most 200 targets:
+  display name and description of a human transfer target).
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `SoftphoneAccount.description = 22`: the person or role behind the account, used
+  by a warm intro's briefing; updatable with the mask path `description`.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) New service `IvrMenus` (`ivr_menus.proto`): keypad (DTMF) menus on a project's
+  inbound phone numbers, run by the project's Asterisk as generated dialplan. 12 RPCs: `CreateIvrMenu`,
+  `GetIvrMenu`, `UpdateIvrMenu`, `DeleteIvrMenu`, `ListIvrMenus`, `ValidateIvrMenu`, `PublishIvrMenu`,
+  `CloneIvrMenu`, `ListIvrMenuRevisions`, `TestIvrMenu` (asynchronous: returns an `IvrMenuTest` at once, run
+  inside the Asterisk, never dials a person), `GetIvrMenuTest` and `GetIvrMenuDialplan`. Node types MENU, PLAY,
+  ROUTE, HANGUP, SCHEDULE and GOTO_MENU (into another published menu of the project); per-node traffic counters in
+  `IvrMenu.node_stats` (field mask path `node_stats`). Off unless the deployment sets `ONDEWO_VTSI_IVR_ACTIVE=true`
+  (otherwise `UNIMPLEMENTED reason=ivr-disabled`). `ListIvrMenusRequest.page_token` and
+  `ListIvrMenuRevisionsRequest.page_token` are `optional`, as in Campaigns.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `CallTarget.ivr_menu_name = 5`: `TransferCall(TRANSFER_MODE_BLIND)` into a published
+  IVR menu. `Call.ivr_menu_display_name = 27` and `Call.ivr_path = 28` (output only) record the menu and the option
+  labels a caller took before the bot answered.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `Call.ivr_menu_name = 29` (output only): the resource name
+  (`projects/<project_uuid>/ivr_menus/<ivr_menu_uuid>`) of the IVR menu `Call.ivr_menu_display_name` names, so a client
+  finds the menu by id instead of by its label; empty when the call did not pass an IVR menu.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) Events `VTSI_EVENT_IVR_MENU_CREATED = 1001`, `_UPDATED = 1002`, `_DELETED = 1003`,
+  `_PUBLISHED = 1004`, `_PUBLISH_FAILED = 1005` and `_TESTED = 1006`; they carry counts, never a phone number.
+
+### Improvements
+
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `docs/warm_transfer.md`: a hand-written guide to warm intros (levels, defaults,
+  preconditions, outcomes, events, security and privacy).
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `docs/ivr_menus.md`: a hand-written guide to IVR menus (the graph, prompts,
+  lifecycle, test calls, the headers a bot receives, every validation issue code, configuration and privacy).
+* Tracking ondewo-nlu-api 7.6.0 (`tags/7.6.0`; was 7.4.0) and ondewo-sip-api 5.7.0 (`tags/5.7.0`; was 5.6.0). The
+  vendored `ondewo/nlu`, `ondewo/qa` and `ondewo/sip` trees are byte-identical copies at those tags. The nlu tree brings the 7.5.0
+  surface with it (the `Logs` service, turn control on `StreamingDetectIntent`) and 7.6.0's
+  `PrepareWarmTransferIntro` / `GetWarmTransferIntroOutcome` and `Agent.warm_transfer_settings`; the sip tree brings
+  transfer delegation, `SipStatus.capabilities` and the warm-transfer outcome notice. A consumer that also installs
+  `ondewo-nlu-client` or `ondewo-sip-client` must move them together with this API.
+* Tracking ondewo-t2s-api 6.7.0 (`tags/6.7.0`; was 6.6.0). The vendored `ondewo/t2s` tree is a byte-identical copy
+  at that tag; 6.7.0 changes only comments in `text-to-speech.proto`, no message, field or RPC.
+* Tracking ondewo-s2t-api 7.6.0 (`tags/7.6.0`; was `c96712335d732c054c33b23eb6c7dbd533e1b253`). The vendored
+  `ondewo/s2t` tree is a byte-identical copy at that tag: `TurnDetectionOptions` chooses its turn detector with `oneof oneof_turn_detector`
+  (`turn_detection_chat_llm_options`, `turn_detection_end_of_utterance_llm_options`,
+  `turn_detection_ondewo_de_options`, `turn_detection_ondewo_de_fusion_options`,
+  `turn_detection_pipecat_smart_turn_options`), fields 3 - 5 are deprecated but still honoured, and the 7.6.0
+  pre-release field numbers 6 - 16 are reused; `turn_detection_ondewo_de_options` and
+  `turn_detection_pipecat_smart_turn_options` also carry `end_of_turn_probability_threshold`. A consumer that also installs `ondewo-s2t-client` must move it
+  together with this API. This API's own `TurnDetectionConfig` is unchanged.
+
+### Breaking Changes
+
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) The clients of this release are generated with
+  ondewo-proto-compiler 5.17.0 (protoc 35.1; was 5.15.7), pinned by `ONDEWO_PROTO_COMPILER_VERSION`. The generated
+  code requires these runtimes or newer:
+  * Python: `protobuf>=7.35.1` and `grpcio>=1.85.1` (every `_pb2.py` carries `# Protobuf Python Version: 7.35.1`,
+    every `_pb2_grpc.py` `GRPC_GENERATED_VERSION = '1.85.1'`, and both refuse an older runtime at import), so
+    `requires-python >=3.10`. The `.pyi` stubs come from mypy-protobuf 5.1.0. The Python client no longer
+    declares `grpcio-tools`, `grpcio-reflection` or `mypy-protobuf` as runtime dependencies.
+  * Java: protobuf-java 4.35.1, grpc-java 1.85.1, proto-google-common-protos 2.82.0.
+  * C#: Google.Protobuf 3.35.1, Grpc.Core.Api / Grpc.Net.Client 2.85.0, Google.Api.CommonProtos 2.17.0.
+  * PHP: `google/protobuf` 5.35.1 (a major step from 4.33.6; needs php >= 8.2.0) and `grpc/grpc` 1.85.0.
+  * Go: `google.golang.org/grpc` v1.85.0, `google.golang.org/protobuf` v1.36.12, `go 1.26.0`.
+  * Rust: prost / prost-types 0.14.6, tonic / tonic-prost 0.14.9.
+  * js, typescript: grpc-web 2.1.1 (`protoc-gen-grpc-web` 2.1.1), `google-protobuf ^4.0.3`. grpc-web 2.1.1 limits
+    a response to 4 MB by default; a client that receives more must set `maxReceiveMessageSize`.
+  * Angular: `"grpc-web": "2.1.1"` as an exact direct dependency plus `"overrides": { "grpc-web": "$grpc-web" }`
+    (`@ngx-grpc/grpc-web-client` still declares the peer `grpc-web ^1.2.1`), `@ngx-grpc/*` `~3.1.2`,
+    `google-protobuf ~3.21.4`.
+  * Nodejs: `@grpc/grpc-js` 1.14.7 and `google-protobuf` 3.21.4.
+  * C++: unchanged (protobuf 3.21.12, grpc 1.51.1).
+
+*****************
+
+## Release ONDEWO VTSI API 9.4.0
+
+### New Features
+
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `Calls.SendCallDtmf` presses DTMF keys on a
+  connected call (`digits`: 1 to 64 of `0-9 * # A-D`), sent as RFC 4733 events one every 250 ms, never interleaved
+  with an earlier request; event `VTSI_EVENT_CALL_DTMF_SENT = 123` carries the NUMBER of keys only. Authorized and
+  audited like `SetCallMediaControl`. Built on ondewo-sip-api 5.6.0 (`SipSendDtmf`).
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `VoiceInteractionConfig.dtmf_config = 5`
+  (`DtmfConfig`) configures the keys a caller presses per call: `enabled`, `barge_in`, `inter_digit_timeout_ms`
+  (300 - 10000) and `undeclared_policy` (`DROP` / `COMMIT_SINGLE`), all `optional`; unset keeps the deployment's
+  value.
+
+### Improvements
+
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `docs/dtmf.md`: a hand-written guide to DTMF
+  on the VTSI API: `Calls.SendCallDtmf` (semantics, authorization, every error), `VTSI_EVENT_CALL_DTMF_SENT`, the
+  per-call `DtmfConfig` and its replica settings, security, Python examples and limits.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `InterruptionHandlingConfig` gains
+  `optional int32 interruption_fade_out_ms = 9`: the duration in milliseconds over which the bot's voice fades out
+  (raised cosine) when the caller interrupts it, instead of stopping abruptly. Default 100, valid range 0 - 500,
+  `0` = stop at once; a value outside the range is refused with `INVALID_ARGUMENT`. Unset keeps the deployment's
+  default. Wire-compatible with 9.3.0: a 9.3.0 client simply never sends the field.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `TurnDetectionConfig` configures the turn
+  detection decision, its context and dictation per call: `conversation_context_turns`, `semantic_model_name`,
+  `end_of_turn_probability_threshold`, `hold_bands`, `uncertain_min_words`, `incomplete_max_silence_seconds`,
+  `exact_probability` (semantic mode only), `final_merge_window_seconds`, and a `DictationConfig` sub-message that
+  maps 1:1 to ondewo-csi's `CSI_DICTATION_*` settings (a per-call category map; `generic` is not a category and is
+  refused). Ranges and `INVALID_ARGUMENT` rules are documented per field; the model endpoint is deliberately not
+  configurable per call. Every field is `optional`; unset keeps the deployment's behaviour.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) Preemptive (speculative) generation of the answer
+  is configurable per call, in the config of the service each setting belongs to:
+  * `NluVtsiConfig.preemptive_generation_config = 10` (`NluPreemptiveGenerationConfig`): `max_drafts_per_turn`
+    (default 2, range 0 - 5), `min_stable_dwell_seconds` (default 0.25, range 0 - 2) and `min_interval_seconds`
+    (default 0.5, range 0 - 5).
+  * `T2sVtsiConfig.preemptive_synthesis_config = 3` (`T2sPreemptiveSynthesisConfig`): `enabled` (default true;
+    `false` asks the NLU only and synthesizes at the commit) and `chunked` (default false; hands a matching draft
+    over chunk by chunk while it is still being synthesized; it needs
+    `ResponseTimingConfig.t2s_chunked_streaming_enabled`, is ignored without it and has no effect while `enabled`
+    is false).
+  * `CsiVtsiConfig.preemptive_generation_config = 7` (`CsiPreemptiveGenerationConfig`): `enabled` (default: the
+    deployment's setting) and `commit_wait_timeout_seconds` (default 3.0, range 0 - 3; the commit waits for the
+    whole draft while `chunked` is off and only for the draft's first chunk while it is on).
+
+  Every scalar is `optional`; unset keeps the deployment's value, and a value outside its range is refused with
+  `INVALID_ARGUMENT`. `ResponseTimingConfig.preemptive_generation_enabled = 4` is **deprecated** in favour of
+  `CsiPreemptiveGenerationConfig.enabled`: it is still honoured when set alone, a request that sets both to
+  different values is refused with `INVALID_ARGUMENT`, and its documented default is corrected from `false` to the
+  deployment's setting (true unless changed). Wire-compatible: a client without these fields simply never sends them.
+* `ondewo-s2t-api` moves to 7.6.0 (the matching `TurnDetectionOptions` fields, the pipecat Smart Turn fields and
+  the turn-detection model selection by model name, `UtteranceDetectionOptions.min_audio_chunk_size`,
+  `UtteranceDetectionOptions.transcribe_not_final_period_seconds`, the per-request partial-transcription period, and
+  `StreamingSpeechRecognition.transcribe_not_final` as `optional bool`, wire-compatible: unset means the S2T server
+  default, now `true`, and an explicit `false` opts out). Until 7.6.0 is tagged the Makefile pins
+  `ONDEWO_S2T_API_GIT_BRANCH` to the full commit SHA.
+  `ondewo-nlu-api` 7.4.0, `ondewo-t2s-api` 6.6.0 and `ondewo-sip-api` 5.5.2 are unchanged.
+
+*****************
+
 ## Release ONDEWO VTSI API 9.3.0
 
 ### Improvements

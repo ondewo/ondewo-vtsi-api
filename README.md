@@ -196,9 +196,12 @@ Please use the issue tracker in this repo for discussions about this API, or the
 ├── CONTRIBUTING.md
 ├── Dockerfile.utils
 ├── docs
+│   ├── dtmf.md
 │   ├── index.html
 │   ├── index.md
-│   └── style.css
+│   ├── ivr_menus.md
+│   ├── style.css
+│   └── warm_transfer.md
 ├── install_nvm.sh
 ├── LICENSE
 ├── Makefile
@@ -406,6 +409,15 @@ workflow).
 ## Proto Documentation
 
 The documentation for this, and all other APIs and their available versions, can be found on [ondewo.github.io](https://ondewo.github.io). For Offline usage, it can also be found in the `docs` folder.
+
+A hand-written guide to the DTMF features (`Calls.SendCallDtmf`, `VTSI_EVENT_CALL_DTMF_SENT` and the per-call
+`DtmfConfig`) is [docs/dtmf.md](docs/dtmf.md).
+
+A hand-written guide to the warm intro of a WARM transfer (`WarmTransferConfig`, the new transfer outcomes,
+`WarmIntroRecord` and the events `VTSI_EVENT_CALL_WARM_INTRO_*`) is [docs/warm_transfer.md](docs/warm_transfer.md).
+
+A hand-written guide to IVR menus (the `IvrMenus` service, the node types, publishing, test calls and what a bot
+learns from a menu) is [docs/ivr_menus.md](docs/ivr_menus.md).
 
 As part of the `pre-commit` hooks, `update_githubio` is run. It will preemptively stop if:
 

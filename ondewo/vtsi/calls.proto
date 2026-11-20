@@ -402,13 +402,21 @@ service Calls {
     // <p>Authorization: <code>PROJECT_EXECUTOR</code> or higher on the project.</p>
     rpc StopAllCalls (StopAllCallsRequest) returns (StopCallsResponse);
 
-    // <p>Transfer a call to a phone number, a softphone account, another listener or the listener queue.</p>
+    // <p>Transfer a call to a phone number, a softphone account, another listener, the listener queue or a published
+    // IVR menu.</p>
     // <p>The target is either the typed <code>target</code> or the legacy raw <code>transfer_id</code>, never both. It is
     // resolved and validated before anything is sent; an invalid target is answered with
     // <code>TRANSFER_OUTCOME_TARGET_INVALID</code> and an <code>error_reason</code>, and the call is untouched.</p>
     // <p><code>TRANSFER_MODE_BLIND</code> (default) sends a SIP REFER and reports its outcome: a refused REFER keeps the
     // call with the bot. <code>TRANSFER_MODE_WARM</code> rings the target into the call first, and the bot leaves only
     // after the target joined (Asterisk 22 only).</p>
+    // <p>A WARM transfer whose effective <code>WarmTransferConfig</code> is enabled runs a WARM INTRO: once the human
+    // target answers, an ONDEWO bot asks whether a person is on the line, briefs them and asks whether they accept;
+    // only an accepting target is joined. It answers <code>TRANSFER_OUTCOME_PENDING</code>, and the final outcome
+    // (<code>TRANSFER_OUTCOME_ACCEPTED</code>, <code>_DECLINED</code>, <code>_NO_DECISION</code>,
+    // <code>_TARGET_UNAVAILABLE</code>, <code>_INTRO_UNAVAILABLE</code>, or a busy / unanswered target&apos;s
+    // usual outcome) arrives in <code>Call.last_transfer</code> and the events. See
+    // <code>TransferCallRequest.warm_transfer_config</code> for its refusals.</p>
     // <p>Telephony outcomes (busy, no answer, REFER rejected) are successful RPCs carrying an <code>outcome</code>.
     // Refusals before any side effect also return a gRPC status with <code>reason=&lt;token&gt;</code> in its details:
     // <code>INVALID_ARGUMENT</code> (both targets set, malformed target), <code>NOT_FOUND</code> (call or target not
@@ -564,6 +572,25 @@ service Calls {
     // <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced.
     // Every action writes an audit record (who, call, when, mode, target). No announcement is played to the caller.</p>
     rpc SetCallMediaControl (SetCallMediaControlRequest) returns (SetCallMediaControlResponse);
+
+    // <p>Press DTMF keys on a connected call, e.g. to navigate the IVR an outbound call reached or to enter a code on
+    // the caller&apos;s behalf. The keys go out as RFC 4733 telephone events from the bot&apos;s leg, one every
+    // 250 ms, in order; a later request for the same call follows the earlier one and never interleaves with it.
+    // No tone is played into the call audio, so the bot does not hear the keys. The response means the keys were
+    // queued: if the call ends meanwhile, the remaining keys are dropped. A peer that did not negotiate
+    // <code>telephone-event</code> receives no key.</p>
+    // <p>Events: <code>VTSI_EVENT_CALL_DTMF_SENT</code>. The keys are never written to a log, an event or an audit
+    // record: only their number is.</p>
+    // <p>Errors: <code>INVALID_ARGUMENT</code> (<code>reason=invalid-digits</code>: <code>digits</code> empty, longer
+    // than 64 or outside <code>0-9 * # A-D</code>), <code>NOT_FOUND</code> (<code>reason=call-not-found</code>),
+    // <code>FAILED_PRECONDITION</code> (<code>call-not-connected</code>, <code>amd-in-progress</code>,
+    // <code>call-not-yet-identified</code>, <code>sip-image-too-old</code>, <code>no-audio-stream</code>),
+    // <code>ABORTED</code> (<code>call-control-busy</code>), <code>UNAVAILABLE</code> (<code>sip-unreachable</code>).</p>
+    // <p>Authorization: requires the role <code>PROJECT_DEVELOPER</code> or higher on the project, and the server&apos;s
+    // Keycloak auth mode <code>ENFORCE</code>; otherwise <code>PERMISSION_DENIED</code>, or
+    // <code>FAILED_PRECONDITION</code> with <code>reason=call-supervision-requires-auth</code> when auth is not enforced.
+    // Every action writes an audit record (who, call, when, number of keys). No announcement is played to the caller.</p>
+    rpc SendCallDtmf (SendCallDtmfRequest) returns (SendCallDtmfResponse);
 
     // <p>Live audio of a connected call, both ways. The first request MUST be <code>config</code> (within 2 seconds).
     // LISTEN receives the caller mixed with the bot. TALK sends the agent&apos;s audio to the caller and REQUIRES
@@ -2348,12 +2375,31 @@ message TransferCallRequest{
     // ASCII characters, scoped to <code>call_name</code>. A repeated request with the same <code>call_name</code>
     // and <code>request_id</code> returns the <code>TransferCallResponse</code> of the first request instead of
     // transferring again, for as long as the call record exists; the same key with a different target, mode,
-    // headers or ring timeout is refused with <code>INVALID_ARGUMENT</code> and <code>reason=request-id-conflict</code>.
+    // headers, ring timeout or <code>warm_transfer_config</code> is refused with <code>INVALID_ARGUMENT</code> and
+    // <code>reason=request-id-conflict</code>.
     // A first request that was refused with a gRPC status stored nothing, so its retry runs again; a first request
     // that answered an outcome (also a telephony failure such as <code>TRANSFER_OUTCOME_TIMEOUT</code>) is replayed.
     // A replay writes no second audit record and emits no event. Empty means no deduplication. In a
     // <code>TransferCallsRequest</code> each entry carries its own key.
     string request_id = 8;
+
+    // WARM only: the warm intro of this transfer, merged field by field over the call&apos;s
+    // <code>VoiceInteractionConfig.warm_transfer_config</code> and the project&apos;s
+    // <code>VtsiProject.warm_transfer_defaults</code> (see <code>WarmTransferConfig</code>). Set with
+    // <code>TRANSFER_MODE_BLIND</code> it is refused with <code>INVALID_ARGUMENT</code>. When the effective config
+    // enables the intro, the target must be a human (<code>phone_number</code> or
+    // <code>softphone_account_name</code>; a listener, the listener queue or an IVR menu is refused with
+    // <code>INVALID_ARGUMENT</code> <code>reason=warm-intro-target-not-human</code>), and these preconditions are
+    // checked before anything rings, each refused with <code>FAILED_PRECONDITION</code> and the reason:
+    // <code>warm-intro-disabled</code> (the deployment switch is off), <code>asterisk-not-local</code>,
+    // <code>no-nlu-session</code> (the call has no live NLU session), <code>warm-intro-needs-listener</code> (the
+    // project has no listener to run the intro), <code>warm-intro-needs-session-from-sip-context</code>,
+    // <code>warm-intro-cross-project</code> (the listeners use another NLU project than the call),
+    // <code>warm-intro-notice-unsupported</code> (the call&apos;s SIP container cannot deliver the outcome to the
+    // caller), <code>call-control-disabled</code> and <code>phase-b-not-enabled</code>. The response is then
+    // <code>TRANSFER_OUTCOME_PENDING</code>; the outcome arrives in <code>Call.last_transfer</code> and the events
+    // <code>VTSI_EVENT_CALL_WARM_INTRO_*</code>
+    WarmTransferConfig warm_transfer_config = 9;
 
 }
 
@@ -2378,6 +2424,14 @@ message CallTarget {
 
         // The project&apos;s listener queue: any idle listener of the project takes the call
         ListenerQueueTarget listener_queue = 4;
+
+        // A PUBLISHED IVR menu of the same project:
+        // <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>. The caller enters
+        // the menu&apos;s published revision at its entry node. <code>TRANSFER_MODE_BLIND</code> only; with
+        // <code>TRANSFER_MODE_WARM</code> it is refused with <code>INVALID_ARGUMENT</code>. A menu that is not
+        // published is refused with <code>FAILED_PRECONDITION</code> <code>reason=menu-not-published</code>, and a
+        // deployment without IVR menus with <code>UNIMPLEMENTED</code> <code>reason=ivr-disabled</code>
+        string ivr_menu_name = 5;
     }
 }
 
@@ -2410,8 +2464,9 @@ enum TransferOutcome {
     // left the call
     TRANSFER_OUTCOME_ACCEPTED = 1;
 
-    // WARM: the target is ringing. Follow <code>VTSI_EVENT_CALL_TRANSFERRED</code> /
-    // <code>VTSI_EVENT_CALL_TRANSFER_FAILED</code> or <code>Call.last_transfer</code>
+    // WARM: the target is ringing (with a warm intro: the target is ringing or being briefed). Follow
+    // <code>VTSI_EVENT_CALL_TRANSFERRED</code> / <code>VTSI_EVENT_CALL_TRANSFER_FAILED</code> (and the
+    // <code>VTSI_EVENT_CALL_WARM_INTRO_*</code> events) or <code>Call.last_transfer</code>
     TRANSFER_OUTCOME_PENDING = 2;
 
     // Refused before anything was sent; the call is untouched. <code>error_reason</code> says why
@@ -2433,6 +2488,21 @@ enum TransferOutcome {
 
     // The call&apos;s SIP container could not be reached
     TRANSFER_OUTCOME_SIP_UNREACHABLE = 8;
+
+    // Warm intro: the target declined; the call stays with the bot, which tells the caller
+    TRANSFER_OUTCOME_DECLINED = 9;
+
+    // Warm intro: the target answered but gave no decision in time; the call stays with the bot
+    TRANSFER_OUTCOME_NO_DECISION = 10;
+
+    // Warm intro: the target answered but is gone (hung up during the intro, a mailbox is suspected); the call
+    // stays with the bot. <code>CallTransferRecord.warm_intro.cause</code> says which
+    TRANSFER_OUTCOME_TARGET_UNAVAILABLE = 11;
+
+    // Warm intro: the intro could not run and <code>WarmTransferConfig.on_intro_unavailable</code> is
+    // <code>WARM_INTRO_UNAVAILABLE_POLICY_RETURN_TO_CALLER</code>; the target was hung up and the call stays with
+    // the bot
+    TRANSFER_OUTCOME_INTRO_UNAVAILABLE = 12;
 }
 
 // Response to transfer a call to a phone number or voip number
@@ -2457,7 +2527,8 @@ message TransferCallResponse {
     // <code>FAILED_PRECONDITION: reason=call-not-connected</code>.
     string error_message = 4;
 
-    // Outcome of the transfer
+    // Outcome of the transfer. A WARM transfer with a warm intro answers <code>TRANSFER_OUTCOME_PENDING</code>; its
+    // final outcome arrives in <code>Call.last_transfer</code> and the events
     TransferOutcome outcome = 5;
 
     // The dialplan extension the target resolved to, e.g. <code>ondewo0007</code>, a softphone user name,
@@ -2494,6 +2565,15 @@ message CallTransferRecord {
 
     // When the outcome was recorded
     google.protobuf.Timestamp time = 6;
+
+    // The warm intro of the transfer; unset when the transfer ran no intro and tried none. A busy, unanswered or
+    // unreachable target keeps the outcome it had before 9.5.0 (<code>TRANSFER_OUTCOME_TIMEOUT</code>, ...)
+    WarmIntroRecord warm_intro = 7;
+
+    // The RESOLVED warm intro configuration the transfer ran with (every level merged, defaults filled in), for
+    // support. Holds configuration texts only, never a briefing or a decline reason. Unset when no intro was
+    // enabled
+    WarmTransferConfig effective_warm_transfer_config = 8;
 }
 
 // <p>Desired setting of one media control flag of a call</p>
@@ -2707,6 +2787,33 @@ message InviteToCallResponse {
     // Always empty: errors are reported as gRPC status codes with <code>reason=&lt;token&gt;</code> in the details.
     // Kept for wire compatibility.
     string error_message = 4;
+}
+
+// <p>Request of <code>SendCallDtmf</code></p>
+message SendCallDtmfRequest {
+
+    // VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Name of the connected call
+    string call_name = 2;
+
+    // The keys to press, in order: 1 to 64 of <code>0-9</code>, <code>*</code>, <code>#</code> and
+    // <code>A-D</code>. Never logged; treat it like a password (it may be a PIN).
+    string digits = 3;
+}
+
+// <p>Response of <code>SendCallDtmf</code></p>
+message SendCallDtmfResponse {
+
+    // VTSI project name of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
+    string vtsi_project_name = 1;
+
+    // Name of the call
+    string call_name = 2;
+
+    // Number of keys queued: the length of <code>digits</code>
+    int32 queued_keys = 3;
 }
 
 // <p>Request to hang up a participant of a call</p>
@@ -3175,6 +3282,22 @@ message Call {
     // This is the only mutable field of a <code>Call</code>: it exists so that a call can be annotated without
     // anything about the live call being changed. Set in the SHALLOW and FULL views.
     map<string, string> labels = 26;
+
+    // Output only. The display name of the IVR menu the caller came through before the bot took the call (from
+    // <code>X-ondewo-ivr-menu</code>); empty when the call did not pass an IVR menu. Set in the SHALLOW and FULL
+    // views
+    string ivr_menu_display_name = 27;
+
+    // Output only. The option labels the caller took through the IVR menus, e.g. <code>main:1&gt;billing:2</code>
+    // (from <code>X-ondewo-ivr-path</code>, at most 256 characters); empty when the call did not pass an IVR menu.
+    // Set in the SHALLOW and FULL views
+    string ivr_path = 28;
+
+    // Output only. Resource name of the IVR menu that handled the call&apos;s IVR leg, i.e. the menu
+    // <code>ivr_menu_display_name</code> names, so a client can find the menu by id instead of by its label.
+    // The format is: <pre><code>projects/&lt;project_uuid&gt;/ivr_menus/&lt;ivr_menu_uuid&gt;</code></pre>
+    // Empty when the call did not pass an IVR menu. Set in the SHALLOW and FULL views
+    string ivr_menu_name = 29;
 
 }
 
