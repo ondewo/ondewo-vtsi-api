@@ -281,12 +281,14 @@ message VtsiProject{
 
     // OPTIONAL: The project&apos;s transfer phone-number allowlist: the phone numbers any call of this project may be
     // transferred to. Each entry is an E.164 number or a prefix of one (<code>+</code> and 1 to 15 digits, the first
-    // not <code>0</code>: <pre><code>^\+[1-9][0-9]{0,14}$</code></pre>), and a number is allowed when it STARTS WITH
-    // any entry.
-    // <p>Empty (the default): no restriction; every number the deployment accepts as dialable is allowed (by default
-    // <code>+</code> and 7 to 15 digits, the operator setting <code>ONDEWO_VTSI_TRANSFER_PHONE_NUMBER_PATTERN</code>).
-    // There is no per-call setting and no deployment-wide list: the allowlist is the project&apos;s alone and applies
-    // to every listener, caller, campaign and scheduled caller of the project.</p>
+    // not <code>0</code>: <code>^\+[1-9][0-9]{0,14}$</code>), and a number is allowed when it STARTS WITH any
+    // entry.
+    // <p>Empty (the default): no project restriction. A <code>CallTarget.phone_number</code> target must still be a
+    // number the deployment accepts as dialable (by default <code>+</code> and 7 to 15 digits; the operator can
+    // change the accepted format). A legacy <code>transfer_id</code> and the bot&apos;s own transfers are not held to
+    // that format unless the operator changed it. There is no per-call setting and no deployment-wide list: the
+    // allowlist is the project&apos;s alone and applies to every listener, caller, campaign and scheduled caller of
+    // the project.</p>
     // <p>Example: <code>[&quot;+43&quot;, &quot;+4930123456&quot;]</code> allows every Austrian number, the number
     // <code>+4930123456</code> and every extension dialled behind it (<code>+4930123456789</code>), and refuses
     // <code>+4989...</code>.</p>
@@ -297,12 +299,15 @@ message VtsiProject{
     // <code>error_reason = number-not-allowed</code>; nothing is sent and the call stays as it was. Read at the
     // moment of the transfer, so an edit applies to the next transfer of every running call.</li>
     // <li>The legacy raw <code>transfer_id</code> of <code>TransferCall</code> when it is shaped like a phone number
-    // (e.g. <code>+4312345678</code> or <code>4312345678</code>): its digits must pass the list, so the raw field
-    // is no way around it; while the list is non-empty such an id that carries anything but digits is refused too.
-    // A softphone user name or a dialplan extension is not a phone number and is not checked.</li>
-    // <li>The bot&apos;s OWN transfers (a transfer the NLU agent asks for during the call): checked inside the call
-    // in the same way. A listener or caller receives the list when it is DEPLOYED, so a running listener keeps the
-    // list it was started with until it is redeployed; a pooled (persistent) caller started before an edit is not
+    // (<code>+</code> and digits, or 4 digits followed by more characters, e.g. <code>+4312345678</code>,
+    // <code>4312345678</code> or <code>12345</code>): its digits must pass the list, so the raw field is no way
+    // around it; while the list is non-empty such an id that carries anything but digits is refused too. A softphone
+    // user name routed in the project is not checked even when it looks like a number, nor is an id of any other
+    // shape.</li>
+    // <li>The bot&apos;s OWN transfers (a transfer the NLU agent asks for during the call): checked inside the call;
+    // there every phone-shaped target, a numeric softphone user name included, counts as a number. A listener or
+    // caller receives the list when it is DEPLOYED, so a running listener keeps the list it was started with until
+    // it is redeployed; a pooled (persistent) caller started before an edit is not
     // reused afterwards, a new one is deployed with the new list. A listener or caller whose project allowlist cannot
     // be read is not deployed (<code>FAILED_PRECONDITION</code>, <code>reason=transfer-allowlist-unreadable</code>),
     // rather than started with no restriction.</li>
@@ -364,9 +369,11 @@ message VtsiProject{
     // <code>feature_availability</code> first. A field out of its documented range is refused with
     // <code>INVALID_ARGUMENT</code> naming it; <code>intro_listener_names</code> is valid on this level only.</p>
     // <p>When it takes effect: the intro settings are read at the moment of each transfer, so an edit applies to the
-    // next transfer of every running call. <code>apply_to_bot_transfers</code> (whether the bot&apos;s OWN transfers
-    // to a human get an intro) is read when a listener or caller is DEPLOYED: a listener running at the time of the
-    // edit, and a pooled caller reused after it, keep the earlier value until they are redeployed.</p>
+    // next transfer of every running call. Whether the bot&apos;s OWN transfers to a human can get an intro is fixed
+    // when a listener or caller is DEPLOYED: switching <code>apply_to_bot_transfers</code> (or <code>enabled</code>)
+    // on reaches a running listener, and a pooled caller deployed before the edit, only after they are redeployed.
+    // Switching it off applies to the next bot transfer of every running call, which is then sent without an
+    // intro.</p>
     // <p>Unset: no project defaults; only the call&apos;s and the transfer&apos;s values and the built-in defaults
     // apply (<code>enabled</code> unset everywhere is <code>false</code>). Withheld from
     // <code>PROJECT_EXECUTOR</code> and <code>PROJECT_USER</code>. Updatable with the update mask path
@@ -408,9 +415,10 @@ message VtsiProject{
     // target softphone account&apos;s <code>display_name</code> / <code>description</code>, then this directory. With
     // none, the intro speaks a variant without a name. This is how the bot&apos;s own handover to a target (the NLU
     // agent naming a softphone user, e.g. <code>berger</code>) names the right person.</p>
-    // <p>Example: <pre><code>{&quot;berger&quot;: {display_name: &quot;Frau Berger, Buchhaltung&quot;,
-    // description: &quot;Handles invoices and reminders&quot;}, &quot;+4312345678&quot;: {display_name:
-    // &quot;Support hotline&quot;}}</code></pre></p>
+    // <p>Example (JSON):</p>
+    // <pre><code>{&quot;berger&quot;: {&quot;displayName&quot;: &quot;Frau Berger, Buchhaltung&quot;,
+    //   &quot;description&quot;: &quot;Handles invoices and reminders&quot;},
+    //  &quot;+4312345678&quot;: {&quot;displayName&quot;: &quot;Support hotline&quot;}}</code></pre>
     // <p>Read at the moment of each warm intro, so an edit applies to the next transfer. At most 200 entries; a key
     // that is neither an allowed phone number nor a softphone user name of the project, or an invalid entry (see
     // <code>TransferTargetDirectoryItem</code>), is refused with <code>INVALID_ARGUMENT</code> naming it. Empty (the
@@ -475,13 +483,12 @@ enum WarmIntroAvailability {
     // <code>FAILED_PRECONDITION</code> <code>reason=warm-intro-disabled</code>.
     WARM_INTRO_AVAILABILITY_DISABLED_BY_DEPLOYMENT = 2;
 
-    // The deployment runs on several hosts (a multi-node Docker swarm), where the server cannot reach the
+    // The deployment runs on several hosts, where the server cannot reach the
     // project&apos;s Asterisk directly to run the intro.
     WARM_INTRO_AVAILABILITY_NEEDS_LOCAL_ASTERISK = 3;
 
     // The project cannot spare a listener to run the intro bot: its <code>max_listeners</code> is not above the
-    // number of listeners the deployment keeps free for customer calls (operator setting
-    // <code>ONDEWO_VTSI_WARM_TRANSFER_RESERVED_LISTENERS</code>, default 1), and
+    // number of listeners the deployment keeps free for customer calls (1 unless the operator changed it), and
     // <code>warm_transfer_defaults.intro_listener_names</code> reserves none. A caller-only project
     // (<code>max_listeners = 0</code>) is the typical case. Raise <code>max_listeners</code> or reserve intro
     // listeners.
@@ -506,7 +513,7 @@ enum IvrAvailability {
     // <code>false</code>): no menu routes an inbound call.
     IVR_AVAILABILITY_DISABLED_BY_DEPLOYMENT = 2;
 
-    // The deployment runs on several hosts (a multi-node Docker swarm), where the server cannot reach the
+    // The deployment runs on several hosts, where the server cannot reach the
     // project&apos;s Asterisk directly to apply the routes.
     IVR_AVAILABILITY_NEEDS_LOCAL_ASTERISK = 3;
 }

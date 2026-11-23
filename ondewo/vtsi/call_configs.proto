@@ -113,8 +113,10 @@ message NluVtsiConfig{
         // The values are never logged and can be withheld when the call configuration is read back
         Credentials credentials = 2;
 
-        // Authentication token. Kept for wire compatibility only: current versions neither validate the request
-        // with it nor authenticate the call with it, so it has no effect. Use <code>credentials</code> instead
+        // Authentication token. Kept for wire compatibility only: VTSI does not validate the request with it, and
+        // the speech-to-speech service of current SIP images does not read it, so it has no effect there. It is
+        // still handed to the call, so a call running an older SIP image (<code>SipBaseConfig.sip_sim_version</code>)
+        // may still use it. Use <code>credentials</code> instead
         string auth_token = 3;
     }
 
@@ -287,8 +289,9 @@ message S2tVtsiConfig{
     // <code>TurnDetectionConfig</code> present, partial (not final) transcripts and the start-of-speech signal are
     // requested unless this config already says otherwise.
     // <code>TurnDetectionConfig.min_endpointing_delay_seconds</code> is applied through the <code>pyannote</code>
-    // block of this config; without such a block it is dropped with a warning, unless the deployment sets
-    // <code>ONDEWO_VTSI_S2T_PYANNOTE_PARTIAL_BLOCK_SUPPORTED</code>, in which case the block is created.</p>
+    // block of this config. Supply a <code>pyannote</code> block when you set it: without one the delay is applied
+    // only where the deployment supports creating the block, and is otherwise dropped with a warning in the server
+    // log.</p>
     ondewo.s2t.TranscribeRequestConfig s2t_transcribe_request_config = 2;
 
     // Optional: What the call does when the S2T service stays unreachable after all retries, i.e. when the bot can
@@ -329,9 +332,10 @@ message S2tVtsiConfig{
 //       callee and its SIP headers may differ), so a different value of any field here gets a different
 //       caller.</li>
 // </ul>
-// <p>Example: to let the caller interrupt the bot with two words or more, set
-// <code>voice_interaction_config.interruption_handling_config.enabled = true</code> and
-// <code>min_interruption_words = 2</code>; leave everything else unset to keep the defaults.</p>
+// <p>Example: to let the caller interrupt (barge in on) the bot, set
+// <code>voice_interaction_config.interruption_handling_config.enabled = true</code> and leave everything else unset
+// to keep the defaults; add e.g. <code>min_interruption_duration_seconds = 0.8</code> to let short noises pass.
+// (How many words interrupt depends on the turn detection mode, see <code>InterruptionHandlingConfig</code>.)</p>
 message CommonServicesConfig{
 
     // Speech-to-text configuration (see <code>S2tVtsiConfig</code>). Required
@@ -362,9 +366,11 @@ message CommonServicesConfig{
 // deployment (all its inbound calls) or one pooled persistent caller, and a pooled caller is reused only for a
 // request with the same configuration, so every field applies to the call(s) of exactly this configuration.
 // <p>Every field is <code>optional</code>. An unset field sends nothing, and the container&apos;s built-in
-// default applies; only <code>register_interval_seconds</code> has a deployment-wide setting
-// (<code>ONDEWO_VTSI_SIP_REGISTER_INTERVAL_S</code>), which a set value wins over. A value outside its range
-// (including NaN for a float field) is refused with <code>INVALID_ARGUMENT</code> naming the field.</p>
+// default applies. <code>register_interval_seconds</code> has a deployment-wide setting
+// (<code>ONDEWO_VTSI_SIP_REGISTER_INTERVAL_S</code>), which a set value wins over. For the two live call audio
+// stream limits the deployment&apos;s own limit applies in addition, so the stricter of the two wins. A value
+// outside its range (including NaN for a float field) is refused with <code>INVALID_ARGUMENT</code> naming the
+// field.</p>
 // <p>The defaults are the recommended values; most integrations leave this message unset.</p>
 message SipVtsiConfig{
 
@@ -398,11 +404,12 @@ message SipVtsiConfig{
     // lookup of the callee&apos;s address may take, or a slow but working dial would be cut short.
     optional float outgoing_dial_watchdog_seconds = 5;
 
-    // Optional: Seconds the container asks the Asterisk to keep its SIP registration; the registration is renewed
-    // 30 s before it expires. A listener can be reached by inbound calls only while it is registered. Unit:
-    // seconds. Default: 600. Valid range: 60 - 86400 (the Asterisk grants no less than 60 s). A set value wins
-    // over the deployment&apos;s <code>ONDEWO_VTSI_SIP_REGISTER_INTERVAL_S</code>; unset, that setting applies
-    // when the operator set it above 0, else the default.
+    // Optional: Seconds the container asks the Asterisk to keep its SIP registration; the Asterisk may grant less
+    // (it grants no less than 60 s and, by default, no more than 7200 s), and the registration is renewed 30 s
+    // before the GRANTED time expires. A listener can be reached by inbound calls only while it is registered.
+    // Unit: seconds. Default: 600. Valid range: 60 - 86400; a value above the Asterisk&apos;s maximum behaves like
+    // that maximum. A set value wins over the deployment&apos;s <code>ONDEWO_VTSI_SIP_REGISTER_INTERVAL_S</code>;
+    // unset, that setting applies when the operator set it above 0, else the default.
     optional uint32 register_interval_seconds = 6;
 
     // Optional: Live call audio streams (<code>StreamCallAudio</code>, <code>ListenCallAudio</code>) the call admits
@@ -437,8 +444,8 @@ message VoiceInteractionConfig{
     TurnDetectionConfig turn_detection_config = 1;
 
     // Whether and how the caller can interrupt (barge in on) the bot while it speaks, and what happens to the
-    // interrupted answer (see <code>InterruptionHandlingConfig</code>). Unset: the bot cannot be interrupted and
-    // always finishes speaking
+    // interrupted answer (see <code>InterruptionHandlingConfig</code>). Unset: speech never interrupts the bot; a
+    // DTMF key the bot asked for still does unless <code>DtmfConfig.barge_in</code> is false
     InterruptionHandlingConfig interruption_handling_config = 2;
 
     // When and how the bot responds, e.g. after caller silence, with fillers while it is thinking, and how its
@@ -532,8 +539,8 @@ message BotTransferConfig{
 // <p>Every field is <code>optional</code>. A field left unset inherits: the deployment&apos;s
 // <code>ONDEWO_VTSI_CSI_DTMF_*</code> / <code>ONDEWO_VTSI_SIP_DTMF_FORWARD_ACTIVE</code> setting where one exists
 // and is set, else the built-in default listed per field. A set value always wins over the deployment setting.
-// Leaving the whole message unset gives the built-in behaviour: keys on, a key interrupts the bot, keys the bot
-// did not ask for are ignored.</p>
+// Leaving the whole message unset keeps the deployment settings, and without them gives the built-in behaviour:
+// keys on, a key interrupts the bot, keys the bot did not ask for are ignored.</p>
 // <p>Example: a bot that must let the caller finish listening before keys count, and that treats every key as a
 // menu choice even when no menu was declared:</p>
 // <pre><code>dtmf_config { barge_in: false undeclared_policy: &quot;COMMIT_SINGLE&quot; }</code></pre>
@@ -592,8 +599,8 @@ message DtmfConfig{
     // the keys (default: <code>[DTMF:{digits}]</code>; no deployment setting). Example: <code>Taste {digits}</code>
     // sends the entry 4711 as <code>Taste 4711</code> and an invalid entry as <code>Taste INVALID</code>.
     // <p>Rules: 1 - 64 characters, no control character; <code>{digits}</code> must occur exactly once and no
-    // other placeholder may occur (write a literal brace twice: <code>{{</code> / <code>}}</code>). Otherwise
-    // refused with <code>INVALID_ARGUMENT</code>.</p>
+    // other placeholder may occur (write a literal brace twice: <code>{{</code> / <code>}}</code>, but not around
+    // the word <code>digits</code>). Otherwise refused with <code>INVALID_ARGUMENT</code>.</p>
     // <p>Change it only together with the training phrases of the NLU agent: the ONDEWO NLU recognises a key turn
     // by the default <code>[DTMF:...]</code> form only (it passes that form to intent detection unchanged,
     // matches <code>[DTMF:ANY]</code> training phrases and stores masked entries masked). With another template
@@ -656,7 +663,9 @@ message DtmfConfig{
 // (<code>ONDEWO_VTSI_CALL_CONTROL_KEY</code>, <code>reason=call-control-disabled</code>), the call has no live NLU
 // session (<code>no-nlu-session</code>), the project has no listener to spare (<code>warm-intro-needs-listener</code>),
 // a listener the intro may reach uses another NLU project than the call (<code>warm-intro-cross-project</code>) or the
-// call runs on a component too old to tell the caller the outcome (<code>warm-intro-notice-unsupported</code>). What
+// call cannot tell the caller the outcome (<code>warm-intro-notice-unsupported</code>: an older component, or a
+// listener or pooled caller deployed before warm intros were switched on in the deployment; such a container
+// refuses warm intros until it is redeployed). What
 // can only fail once the transfer runs (no listener free at that moment, the NLU agent has warm intros switched off,
 // the intro could not be prepared within <code>ONDEWO_VTSI_WARM_TRANSFER_PREPARE_TIMEOUT_S</code>, default 6 s) makes
 // the intro unavailable, and <code>on_intro_unavailable</code> decides.</p>
@@ -685,9 +694,10 @@ message WarmTransferConfig {
 
     // With <code>WARM_INTRO_TEXT_SOURCE_TEMPLATE</code>: the briefing the target hears after the
     // <code>ready_question</code>, with the placeholders <code>{caller_name}</code>, <code>{callee_name}</code>,
-    // <code>{topic}</code> and <code>{summary}</code> (what the call&apos;s NLU session knows of the caller and the
-    // topic; a value that is not known renders empty, an unknown caller as &quot;Ein Anrufer&quot; / &quot;A
-    // caller&quot;). Unset or empty: the built-in template, (de) &quot;{caller_name} möchte mit Ihnen sprechen. Es
+    // and <code>{topic}</code> (what the call&apos;s NLU session knows of the caller and the topic; a value that is
+    // not known renders empty, an unknown caller as &quot;Ein Anrufer&quot; / &quot;A caller&quot;).
+    // <code>{summary}</code> is accepted but always renders empty with a TEMPLATE: only an LLM summary writes one.
+    // Unset or empty: the built-in template, (de) &quot;{caller_name} möchte mit Ihnen sprechen. Es
     // geht um {topic}.&quot; (without the second sentence when no topic is known). Example: &quot;{caller_name} ruft
     // wegen {topic} an.&quot; With <code>WARM_INTRO_TEXT_SOURCE_LLM_SUMMARY</code> (<i>phase B</i>): the instruction
     // to the LLM that writes the briefing from the call so far; unset or empty, a built-in instruction asks for at
@@ -729,9 +739,10 @@ message WarmTransferConfig {
 
     // Asked after a decline, to learn what to tell the caller. Unset: the NLU agent&apos;s text, else the built-in
     // one, (de) &quot;Was darf ich dem Anrufer ausrichten?&quot;, (en) &quot;What may I tell the caller?&quot;.
-    // <code>&quot;&quot;</code> means: do not ask, the target is hung up at once and the caller hears the decline
-    // without a reason. Whatever the target says next is the reason (a key press gives none; no answer within
-    // <code>decision_timeout_s</code> is a decline without a reason). The reason is relayed to the caller only
+    // <code>&quot;&quot;</code> means: do not ask; the intro bot thanks the target (&quot;Danke, ich richte es
+    // aus.&quot;) and hangs up, and the caller hears the decline without a reason. Whatever the target says next
+    // is the reason (a key press gives none; no answer within <code>decision_timeout_s</code> is a decline without a
+    // reason). The reason is relayed to the caller only
     // through the bot&apos;s NLU (normalised: SIP markup removed, at most 300 characters, digit runs of 12 or more
     // masked); VTSI never receives it. At most 1000 characters
     optional string decline_reason_question = 7;
@@ -978,7 +989,7 @@ message WarmIntroRecord {
 // <p>Configuration of the turn detection of a call, i.e. how the bot decides that the caller has finished speaking and
 // that it is its turn to answer. Too eager, and the bot answers a caller who only paused (&quot;Ich möchte ... einen
 // Termin am Dienstag&quot; becomes two turns); too patient, and the caller waits in silence for every answer.</p>
-// <p>Three services take part: the speech-to-text service ends an utterance after a silence (voice activity
+// <p>Two services take part: the speech-to-text service ends an utterance after a silence (voice activity
 // detection) and, with a turn detection model, judges whether the words so far are a finished turn; the
 // speech-to-speech service of the call decides which final transcription becomes ONE turn for the NLU, and when the
 // caller may interrupt the bot.</p>
@@ -1013,8 +1024,10 @@ message TurnDetectionConfig{
         TURN_DETECTION_MODE_UNSPECIFIED = 0;
 
         // The turn ends on silence alone: the speech-to-text service commits a final transcription once the caller
-        // was silent for its minimum silence (<code>min_endpointing_delay_seconds</code>). No turn detection model
-        // is asked, not even a deployment-wide one. With interruptions enabled, any caller speech that lasts the
+        // was silent for its minimum silence (<code>min_endpointing_delay_seconds</code>). VTSI asks no turn
+        // detection model, not even a deployment-wide one; a turn detection block already in the call&apos;s
+        // <code>S2tVtsiConfig.s2t_transcribe_request_config</code> is passed on unchanged, so remove it there as
+        // well. With interruptions enabled, any caller speech that lasts the
         // minimum interruption duration interrupts the bot. The fields read only by a turn detection model are
         // refused with this mode
         VAD = 1;
@@ -1115,10 +1128,14 @@ message TurnDetectionConfig{
 
     // Optional: Name of the turn detection model the speech-to-text service uses for this call; the name also
     // selects the kind of model: <code>livekit/turn-detector</code> is an end-of-utterance model, a name starting
-    // with <code>pipecat-smart-turn</code> the audio Smart Turn model, any other name a chat-LLM model. Unset uses
-    // the model of the speech-to-text configuration, else the deployment&apos;s
-    // <code>ONDEWO_VTSI_S2T_TURN_DETECTION_MODEL</code>. The model must be served by the deployment: its endpoint
-    // is deliberately not configurable per call. Valid: 1 - 256 characters, no whitespace or control characters.
+    // with <code>pipecat-smart-turn</code> the audio Smart Turn model, a name starting with
+    // <code>ondewo-s2t-model-de-vad-tsd-ondewo-qwen3</code> or <code>ondewo-s2t-model-de-fusion-turn-detection</code>
+    // one of the ONDEWO German turn detection models, any other name a chat-LLM model. A model or a detector
+    // already named in the call&apos;s <code>S2tVtsiConfig.s2t_transcribe_request_config</code> wins over this value
+    // (it is then applied only when it selects the same kind of model). Unset uses that model, else the
+    // deployment&apos;s <code>ONDEWO_VTSI_S2T_TURN_DETECTION_MODEL</code>. The model must be served by the
+    // deployment: its endpoint is deliberately not configurable per call. Valid: 1 - 256 characters, no whitespace
+    // or control characters.
     // Only valid with the mode <code>SEMANTIC_MODEL</code> (or unspecified): set together with <code>VAD</code> or
     // <code>AUDIO_MODEL</code>, or invalid, it is refused with <code>INVALID_ARGUMENT</code>
     optional string semantic_model_name = 8;
@@ -1255,7 +1272,8 @@ message TurnDetectionConfig{
 // groups (&quot;null sechs sechs vier ... eins zwei drei ...&quot;), and the speech-to-text service ends an
 // utterance at every such pause, so without the hold the bot answers half a phone number. With the hold, a final
 // transcription whose dictated value is not complete yet is held until the caller continues, and the groups reach
-// the NLU as ONE turn; a complete value is released at once. The value recognition is German (number words, spelled
+// the NLU as ONE turn; a complete value is released at once (a value that is only weakly complete is held at most
+// <code>hold_generic_max_seconds</code>). The value recognition is German (number words, spelled
 // letters, months); the hold is never applied while the bot speaks, and a caller who is not dictating costs no
 // latency.</p>
 // <p>How long a value is held depends on what the bot asked for: with <code>expected_input_enabled</code> the
@@ -1295,9 +1313,11 @@ message DictationConfig{
     // deployment setting exists for it
     optional bool read_back_from_bot_text_enabled = 3;
 
-    // Optional: Seconds the generic rule (no expected value) holds at most (valid range: 0 - 2; default: 1.5;
-    // 0 switches the generic rule off). The generic rule holds on a guess, which is why its ceiling is lower than a
-    // category&apos;s. Deployment setting: <code>ONDEWO_VTSI_CSI_DICTATION_HOLD_GENERIC_MAX_SECONDS</code>
+    // Optional: Seconds the generic rule (no expected value) holds at most, and the longest hold of an expected
+    // value that is only weakly complete (e.g. an address with only the street line, a date with only day and
+    // month) (valid range: 0 - 2; default: 1.5; 0 switches both off). The generic rule holds on a guess, which is
+    // why its ceiling is lower than a category&apos;s. Deployment setting:
+    // <code>ONDEWO_VTSI_CSI_DICTATION_HOLD_GENERIC_MAX_SECONDS</code>
     optional float hold_generic_max_seconds = 4;
 
     // Optional: Seconds an unfinished value of a category is held at most, keyed by the category (valid range: 0 - 4
@@ -1329,9 +1349,12 @@ message DictationConfig{
     // is expected, so that the speech-to-text service itself stops cutting between the groups (valid: 0 = off, or
     // 0.5 - 4; default: 0). Applies while an expected value other than a read-back confirmation is known, so it
     // needs <code>expected_input_enabled</code> (not <code>hold_enabled</code>); after the turn the minimum silence
-    // is set back to <code>s2t_slot_min_duration_off_restore_seconds</code>. It only takes effect when that restore
-    // value is known (set, or a minimum silence in the call&apos;s speech-to-text configuration), and needs a
-    // speech-to-text service that accepts the change mid-call. A value between 0 and 0.5 is refused with
+    // is set back to <code>s2t_slot_min_duration_off_restore_seconds</code>. It only takes effect when the call&apos;s
+    // speech-to-text configuration carries a <code>pyannote</code> block (supplied in
+    // <code>S2tVtsiConfig.s2t_transcribe_request_config</code>, or created from
+    // <code>TurnDetectionConfig.min_endpointing_delay_seconds</code> on a deployment that supports creating it) and
+    // the restore value is known (set, or a minimum silence in that block), and it needs a speech-to-text service
+    // that accepts the change mid-call. A value between 0 and 0.5 is refused with
     // <code>INVALID_ARGUMENT</code>. Deployment setting:
     // <code>ONDEWO_VTSI_CSI_DICTATION_S2T_SLOT_MIN_DURATION_OFF_SECONDS</code>
     optional float s2t_slot_min_duration_off_seconds = 8;
@@ -1345,7 +1368,8 @@ message DictationConfig{
 }
 
 // <p>Interruption (barge-in) handling: what happens when the caller speaks while the bot is speaking. Off by
-// default: the caller is not listened to while the bot speaks, and the bot always finishes its answer (right for a
+// default: the caller is not listened to while the bot speaks, and speech never stops the bot. A DTMF key the bot
+// asked for still stops it (<code>DtmfConfig.barge_in</code>, on by default; set it to false as well for a
 // disclaimer that must be heard in full).</p>
 // <p>With <code>enabled=true</code>, caller speech over the bot goes through these steps:</p>
 // <p>(1) Is it an interruption? Speech within <code>first_message_protected_seconds</code> after the greeting
@@ -1364,22 +1388,27 @@ message DictationConfig{
 // the caller heard of it (<code>nlu_turn_control_enabled</code>, <code>heard_report_enabled</code>). If no turn is
 // committed in time, the interruption is FALSE (a cough, a short noise): with
 // <code>resume_after_false_interruption</code> the bot continues where its voice faded out, else the rest of the
-// answer is dropped. The window waits for a caller who is still speaking: each new partial transcription extends
-// it, up to twice <code>false_interruption_timeout_seconds</code> after the interruption.</p>
-// <p>Example: let the caller interrupt with two words or more, ignore anything shorter than 0.6 s, and never
-// interrupt the first 3 s of the greeting:
-// <code>enabled: true, min_interruption_words: 2, min_interruption_duration_seconds: 0.6,
-// first_message_protected_seconds: 3</code></p>
+// answer is dropped, and then, as after a real one, its synthesis is cancelled and a call action it carries is
+// dropped (<code>t2s_cancel_on_barge_in</code>). The window waits for a caller who is still speaking: each partial
+// transcription that changes what the caller said extends it, up to twice
+// <code>false_interruption_timeout_seconds</code> (at most 9 s) after the interruption.</p>
+// <p>Example: let the caller interrupt, ignore anything shorter than 0.6 s, and never interrupt the first 3 s of
+// the greeting:
+// <code>enabled: true, min_interruption_duration_seconds: 0.6, first_message_protected_seconds: 3</code></p>
 // <p>Scope and precedence as in <code>VoiceInteractionConfig</code>: unset means inherit, i.e. the
 // deployment&apos;s <code>ONDEWO_VTSI_*</code> setting where a field names one, else the default given at the
 // field. A value outside a field&apos;s range is refused with <code>INVALID_ARGUMENT</code>.</p>
 message InterruptionHandlingConfig{
 
-    // Optional: Let the caller interrupt (barge in on) the bot while it is speaking (default: false). False: the
-    // caller is not heard while the bot speaks and the bot always finishes its answer. Every other field of this
-    // message only matters when this is true, except <code>transcribe_on_disabled_interruptions</code>,
-    // <code>cancel_on_speech_while_thinking</code>, and <code>nlu_turn_control_enabled</code> /
-    // <code>heard_report_enabled</code>, which also serve <code>cancel_on_speech_while_thinking</code>
+    // Optional: Let the caller interrupt (barge in on) the bot by speaking while it speaks (default: false). False:
+    // the caller&apos;s speech is not heard while the bot speaks, and speech never stops the bot. A DTMF key the bot
+    // asked for still stops it (see <code>DtmfConfig.barge_in</code>, on by default; set it to false as well for a
+    // disclaimer that must be heard in full). The speech-related fields of this message only matter when this is
+    // true. Exceptions: <code>transcribe_on_disabled_interruptions</code> and
+    // <code>cancel_on_speech_while_thinking</code>, plus <code>interruption_fade_out_ms</code>,
+    // <code>t2s_cancel_on_barge_in</code>, <code>nlu_turn_control_enabled</code>, <code>heard_report_enabled</code>,
+    // <code>heard_text_alignment_enabled</code> and <code>ai_teams_cancel_pending_on_interrupt</code>, which also
+    // apply when a key stops the bot, when an operator mutes it and when a turn is replaced
     optional bool enabled = 1;
 
     // Optional: Minimum duration in seconds the caller must have been speaking over the bot before it counts as an
@@ -1397,9 +1426,10 @@ message InterruptionHandlingConfig{
 
     // Optional: Seconds after an interruption within which the caller&apos;s speech must become a complete turn for
     // the interruption to be REAL; otherwise it is FALSE (a cough, brief noise) and
-    // <code>resume_after_false_interruption</code> decides (default: 2.0, valid: 0 or more). Each new partial
-    // transcription extends the window, up to twice this value after the interruption. The paused rest of an
-    // answer is kept for at most 10 s, so a longer window cannot resume it
+    // <code>resume_after_false_interruption</code> decides (default: 2.0, valid: 0 or more). Each partial
+    // transcription that changes what the caller said re-arms the window. The window lasts at most twice this value
+    // after the interruption, and never more than 9 s (a window of 9 s or more is not extended). The paused rest of
+    // an answer is kept for at most 10 s, so a longer window cannot resume it
     optional float false_interruption_timeout_seconds = 4;
 
     // Optional: After a FALSE interruption, continue the paused answer where the bot&apos;s voice faded out (with a
@@ -1441,30 +1471,38 @@ message InterruptionHandlingConfig{
     // value wins over the deployment&apos;s <code>ONDEWO_VTSI_CSI_CANCEL_ON_SPEECH_WHILE_THINKING</code></p>
     optional bool cancel_on_speech_while_thinking = 10;
 
-    // <p>Optional: Whether a caller&apos;s interruption cancels the AI Teams asynchronous tool calls the interrupted
-    // turn dispatched and that have not started yet (default: unset = the NLU deployment&apos;s own setting, which is
+    // <p>Optional: Whether a turn that was cut cancels the AI Teams asynchronous tool calls it dispatched that have
+    // not started yet. A turn is cut by a caller&apos;s interruption, by a turn replaced through
+    // <code>cancel_on_speech_while_thinking</code>, by an operator mute or takeover, or by the end of the call while
+    // its answer is still being generated (default: unset = the NLU deployment&apos;s own setting, which is
     // on unless its operator turned it off). True or false decides it for this call alone, also against the
     // deployment&apos;s setting.</p>
     // <p>Only tools, agents or members whose team document declares <code>async.on_interrupt: cancel_pending</code>
     // are ever cancelled (one declaring <code>keep</code> never is), only while the task is still pending (a task
     // already running is delivered as usual), and only when the caller did not hear the dispatch acknowledged. Needs
-    // an NLU with turn control and <code>nlu_turn_control_enabled</code>; without it nothing is cancelled. Example:
+    // an NLU with turn control, <code>nlu_turn_control_enabled</code> and the call-length NLU request
+    // (<code>ResponseTimingConfig.nlu_call_stream_enabled</code>); without them nothing is cancelled and this value
+    // never reaches the NLU. Example:
     // false keeps a callback the caller asked for even when they talked over the bot&apos;s confirmation</p>
     optional bool ai_teams_cancel_pending_on_interrupt = 11;
 
-    // Optional: On a REAL interruption, stop producing the interrupted answer (default: true): its speech synthesis
-    // is cancelled at once and a call action it carries (e.g. a transfer or hangup the answer would have triggered)
-    // is dropped. While a false interruption may still resume the answer, a further
-    // message of it is held until that is decided instead of starting. False restores the previous behaviour: the
-    // interrupted answer is synthesised to its end unheard, nothing is held and its call actions still run. Only
-    // matters when <code>enabled</code> is true. A set value wins over the deployment&apos;s
+    // Optional: When an interruption discards the rest of the bot&apos;s answer, stop producing it (default: true).
+    // That is a REAL interruption, or a FALSE one while <code>resume_after_false_interruption</code> is false. In
+    // that case the answer&apos;s speech synthesis is cancelled at once, and a call action the answer carries (e.g. a
+    // transfer or hangup the answer would have triggered) is dropped. While a false interruption may still resume
+    // the answer, a further message of it is held until that is decided instead of starting. False restores the
+    // previous behaviour: the interrupted answer is synthesised to its end unheard, nothing is held and its call
+    // actions still run. A set value wins over the deployment&apos;s
     // <code>ONDEWO_VTSI_CSI_T2S_CANCEL_ON_BARGE_IN</code>
     optional bool t2s_cancel_on_barge_in = 12;
 
     // Optional: Tell an NLU that supports turn control which turn was cancelled (default: true): the turn a real
     // interruption cut, a turn replaced by <code>cancel_on_speech_while_thinking</code>, and a turn still being
     // generated when the call ends. The NLU then stops generating it and stores it as an interrupted turn. An NLU
-    // without turn control is sent nothing either way. <code>heard_report_enabled</code> and
+    // without turn control is sent nothing either way. An operator mute or takeover through call control also tells
+    // the NLU that the current turn was cut. Turn control rides the call-length NLU request, so it needs
+    // <code>ResponseTimingConfig.streaming_enabled</code> and <code>nlu_call_stream_enabled</code> (both true by
+    // default); without them nothing is sent. <code>heard_report_enabled</code> and
     // <code>ai_teams_cancel_pending_on_interrupt</code> depend on it. A set value wins over the deployment&apos;s
     // <code>ONDEWO_VTSI_CSI_NLU_TURN_CONTROL_ACTIVE</code>
     optional bool nlu_turn_control_enabled = 13;
@@ -1473,7 +1511,8 @@ message InterruptionHandlingConfig{
     // answer, so the conversation history and the agent&apos;s memory hold what was said rather than everything that
     // was generated (default: true). Example: the bot is cut after &quot;Your appointment is on Monday&quot; of a
     // longer answer; the agent&apos;s next turn knows the caller heard only that much. Needs
-    // <code>nlu_turn_control_enabled</code>. A set value wins over the deployment&apos;s
+    // <code>nlu_turn_control_enabled</code> and the call-length NLU request
+    // (<code>ResponseTimingConfig.nlu_call_stream_enabled</code>). A set value wins over the deployment&apos;s
     // <code>ONDEWO_VTSI_CSI_HEARD_REPORT_ACTIVE</code>
     optional bool heard_report_enabled = 14;
 
@@ -1539,9 +1578,11 @@ message ResponseTimingConfig{
 
     // Optional: Ask the NLU for each answer with its streaming request instead of the unary one (default: the
     // deployment&apos;s <code>ONDEWO_VTSI_CSI_STREAMING_ACTIVE</code>, and true when that is not set).
-    // <code>false</code> asks every caller turn with the unary request, which also turns off
-    // <code>nlu_call_stream_enabled</code> and the chunked playback of answers
-    // (<code>t2s_chunked_streaming_enabled</code>)
+    // <code>false</code> asks every caller turn with the unary request, and the caller is not transcribed while an
+    // answer is being prepared, so speech in that time is lost. It also turns off <code>nlu_call_stream_enabled</code>
+    // (and with it turn control, heard reports and results the NLU delivers on its own), the chunked playback of
+    // answers (<code>t2s_chunked_streaming_enabled</code>) and
+    // <code>InterruptionHandlingConfig.cancel_on_speech_while_thinking</code>
     optional bool streaming_enabled = 6;
 
     // Optional: Keep ONE streaming NLU request open for the whole call instead of opening one per caller turn
@@ -1889,10 +1930,11 @@ message SipCallerConfig{
     // SIP headers sent on the outbound INVITE, header name to value, e.g.
     // <code>{"X-ondewo-phonesystem-call-id": "4711"}</code>. At most 64 entries, otherwise
     // <code>INVALID_ARGUMENT</code>. Keys are sent as SIP header names, so they should be valid header names (by
-    // convention <code>X-</code> headers); VTSI does not restrict them further, and a header the SIP stack or the
-    // Asterisk cannot send is dropped by them. Unlike <code>TransferCallRequest.headers</code>, which only takes
-    // <code>X-ondewo-*</code> keys because it is delivered through the dialplan, these are sent by the caller&apos;s
-    // own SIP stack. Updatable on a scheduled caller with <code>UpdateScheduledCaller</code>.
+    // convention <code>X-</code> headers). <code>X-ondewo-vtsi-caller-call-id</code> is reserved: on a pooled
+    // persistent caller VTSI replaces it with the id of the call. VTSI does not restrict the other keys; a header
+    // the SIP stack or the Asterisk cannot send is dropped by them. Unlike <code>TransferCallRequest.headers</code>,
+    // which only takes <code>X-ondewo-*</code> keys because it is delivered through the dialplan, these are sent by
+    // the caller&apos;s own SIP stack. Updatable on a scheduled caller with <code>UpdateScheduledCaller</code>.
     map<string, string> sip_headers = 3;
 
 }
@@ -1950,8 +1992,9 @@ message CsiVtsiConfig{
 // draft that does not match is discarded and the caller hears nothing of it. A matching draft answers the caller
 // sooner; every draft costs an extra NLU request (and, unless switched off, a speech synthesis), also when it is
 // discarded. It never ends the caller&apos;s turn early.
-// <p>Every field is optional; an unset field keeps the deployment&apos;s value. A value outside its range is refused
-// with <code>INVALID_ARGUMENT</code>. The NLU bounds (how many drafts a turn may start) are set with
+// <p>Every field is optional. An unset <code>enabled</code> keeps the deployment&apos;s setting (see the field); an
+// unset <code>commit_wait_timeout_seconds</code> keeps the built-in default given at the field. A value outside its
+// range is refused with <code>INVALID_ARGUMENT</code>. The NLU bounds (how many drafts a turn may start) are set with
 // <code>NluVtsiConfig.preemptive_generation_config</code>, the speech synthesis of a draft with
 // <code>T2sVtsiConfig.preemptive_synthesis_config</code>.</p>
 // <p>Example: <code>enabled=false</code> switches speculation off for this call, e.g. to save NLU requests on an
@@ -2017,8 +2060,10 @@ message AudioObjectStorageServicesActivationConfig{
 // <code>message_broker_services_activation_config</code> is <code>true</code>. Every unset flag counts as
 // <code>false</code>; there is no deployment-wide default for these flags.</p>
 // <p>Activating the broker requires a complete <code>rabbit_mq_config</code>: host, both ports, user and password
-// must be set, and the broker must be reachable and accept the credentials when the request is validated;
-// otherwise the request is refused with <code>INVALID_ARGUMENT</code>.</p>
+// must be set. When the request is validated the broker must be reachable over TLS, present a certificate for
+// <code>host</code> that the deployment trusts, accept VTSI&apos;s client certificate and accept the credentials;
+// otherwise the request is refused with <code>INVALID_ARGUMENT</code>. The call connects to the broker over TLS as
+// well.</p>
 // <p>Example: <code>activate_message_broker=true</code> with
 // <code>message_broker_services_activation_config.activate_s2t=true</code> publishes every final transcription of
 // the call, e.g. for a live transcript in another application.</p>
@@ -2069,8 +2114,9 @@ message RabbitMqConfig{
     // connectivity check at start. 0 or below is <code>INVALID_ARGUMENT</code>
     int32 port = 2;
 
-    // Management (HTTP API) port of the RabbitMQ server (typically <code>15672</code>), 1 to 65535. It is passed to
-    // the call and is not used for the connectivity check. 0 or below is <code>INVALID_ARGUMENT</code>
+    // Management (HTTP API) port of the RabbitMQ server (typically <code>15672</code>), 1 to 65535. Required while
+    // the broker is activated (0 or below is <code>INVALID_ARGUMENT</code>), but currently not used: neither the
+    // connectivity check nor the call connects to it
     int32 port_2 = 3;
 
     // User name on the RabbitMQ server. Required while the broker is activated; empty is

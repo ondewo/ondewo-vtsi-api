@@ -2578,16 +2578,19 @@ message TransferCallRequest{
     // <code>VoiceInteractionConfig.warm_transfer_config</code> and the project&apos;s
     // <code>VtsiProject.warm_transfer_defaults</code> (see <code>WarmTransferConfig</code>): a field set here wins
     // for this transfer only, a field left unset takes the call&apos;s value, then the project&apos;s, then the
-    // deployment&apos;s <code>ONDEWO_VTSI_WARM_TRANSFER_*</code> settings. Unset as a whole, those levels alone
-    // decide whether the intro runs. Set with
+    // built-in default documented at the field (for <code>ready_question</code>, <code>accept_question</code>,
+    // <code>decline_reason_question</code>, <code>caller_declined_message</code> and
+    // <code>caller_unreachable_message</code>, the NLU agent&apos;s warm transfer text comes before the built-in
+    // one). The deployment switch decides only whether warm intros can run at all. Unset as a whole, those levels
+    // alone decide whether the intro runs. Set with
     // <code>TRANSFER_MODE_BLIND</code> it is refused with <code>INVALID_ARGUMENT</code>. When the effective config
     // enables the intro, the target must be a human (<code>phone_number</code> or
     // <code>softphone_account_name</code>; a listener, the listener queue or an IVR menu is refused with
     // <code>INVALID_ARGUMENT</code> <code>reason=warm-intro-target-not-human</code>), and these preconditions are
     // checked before anything rings, each refused with <code>FAILED_PRECONDITION</code> and the reason:
-    // <code>warm-intro-disabled</code> (the deployment switch is off), <code>asterisk-not-local</code>,
-    // <code>no-nlu-session</code> (the call has no live NLU session), <code>warm-intro-needs-listener</code> (the
-    // project has no listener to run the intro), <code>warm-intro-needs-session-from-sip-context</code>,
+    // <code>warm-intro-disabled</code> (the deployment switch is off), <code>asterisk-not-local</code> /
+    // <code>asterisk-version-unsupported</code>, <code>no-nlu-session</code> (the call has no live NLU session),
+    // <code>warm-intro-needs-listener</code> (the project has no listener to run the intro),
     // <code>warm-intro-cross-project</code> (the listeners use another NLU project than the call),
     // <code>warm-intro-notice-unsupported</code> (the call&apos;s SIP container cannot deliver the outcome to the
     // caller), <code>call-control-disabled</code> and <code>phase-b-not-enabled</code>. The response is then

@@ -69,11 +69,14 @@ import "ondewo/vtsi/call_configs.proto";
 // number its campaign call reports.</p>
 // <p>How a campaign call behaves: every setting of the effective configuration acts on that one call
 // exactly as if a <code>StartCallerRequest</code> had carried it (the call settings are explained at
-// <a href="index.html#ondewo.vtsi.CommonServicesConfig">CommonServicesConfig</a>). For each setting the
-// first of these that is present decides:</p>
+// <a href="index.html#ondewo.vtsi.CommonServicesConfig">CommonServicesConfig</a>). For each single-valued
+// setting the first of these that is present decides (a list setting combines the campaign&apos;s entries and
+// the call&apos;s, a map such as <code>sip_headers</code> merges by key, and a deployment-wide limit or master
+// switch applies on top of any value; see <code>Campaign.campaign_common_services_config</code>):</p>
 // <ol>
 //   <li>the call&apos;s own value (its entry of <code>AddCallersToCampaign</code> /
-//       <code>AddScheduledCallersToCampaign</code>);</li>
+//       <code>AddScheduledCallersToCampaign</code>); for a warm transfer, the <code>TransferCall</code>
+//       request&apos;s own <code>warm_transfer_config</code> wins over all of these;</li>
 //   <li>the campaign&apos;s value (<code>campaign_common_services_config</code> /
 //       <code>campaign_sip_caller_config</code>);</li>
 //   <li>a project default where one exists (e.g. <code>VtsiProject.warm_transfer_defaults</code> for a
@@ -751,15 +754,15 @@ message Campaign {
     // <pre><code>campaign_common_services_config {
     //   voice_interaction_config {
     //     interruption_handling_config { enabled: true }
-    //     response_timing_config { turn_timeout_seconds: 8 }
+    //     response_timing_config { turn_timeout_seconds: 8 turn_timeout_intent: &quot;i.still.there&quot; }
     //   }
     // }</code></pre>
-    // <p>every call of the campaign lets the callee interrupt the bot and starts its follow-up after 8 s of
-    // callee silence, while every other interruption and timing setting the campaign leaves unset keeps the
-    // deployment&apos;s value. A call whose entry carries
+    // <p>every call of the campaign lets the callee interrupt the bot and, after 8 s of callee silence, plays the
+    // answer of the intent <code>i.still.there</code>, while every other interruption and timing setting the
+    // campaign leaves unset keeps the deployment&apos;s value. A call whose entry carries
     // <code>interruption_handling_config { enabled: false }</code> is not interruptible and still uses 8 s; a
-    // call whose entry carries <code>response_timing_config { turn_timeout_seconds: 5 }</code> uses 5 s and is
-    // interruptible.</p>
+    // call whose entry carries <code>response_timing_config { turn_timeout_seconds: 5 }</code> uses 5 s (the
+    // intent still comes from the campaign) and is interruptible.</p>
     // <p>Validation: the default itself is NOT checked when it is created or updated (it may be partial; the
     // calls may supply the rest). The effective configuration of each call is validated exactly as a
     // <code>StartCallerRequest</code> carrying it, so an entry of <code>AddCallersToCampaign</code> /
