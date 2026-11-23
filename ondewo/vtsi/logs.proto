@@ -23,29 +23,15 @@ import "ondewo/nlu/common.proto";
 // <code>ondewo.vtsi.CallType</code>.
 import "ondewo/vtsi/calls.proto";
 
-// <p>ONDEWO VTSI API</p>
-// <p>Reads, follows, exports and erases the CONTAINER LOGS VTSI captures from the per-call
-// ondewo-sip / ondewo-csi containers of a VTSI project. Entries are served from the VTSI database, not
-// from the docker daemon, so the logs of a container that was already removed stay readable until
-// retention or <code>DeleteCallLogs</code> removes them.</p>
-// <p><b>Secrets are redacted server-side</b> in every RPC that returns log text
-// (<code>StreamCallLogs</code>, <code>ListCallLogs</code>, <code>ExportCallLogs</code>): the
-// project&apos;s SIP passwords, the call-control secrets and, unless the operator disabled it
-// (<code>ONDEWO_VTSI_LOG_MASK_IDENTIFIERS</code>, default true), identifiers such as phone numbers. The
-// redaction runs when the entry is read, so a redaction rule added later also applies to entries
-// captured before it.</p>
-// <p>Errors are reported as gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed name,
-// filter, cursor, <code>page_token</code> or <code>field_mask</code> (each naming the field);
-// <code>NOT_FOUND</code> for an unknown project or log stream; <code>RESOURCE_EXHAUSTED</code> when the
-// server already serves its maximum of concurrent streams or exports; <code>UNAVAILABLE</code> when the
-// database cannot be reached.</p>
-// <p>Authorization (only when the server enforces it, see the <code>Projects</code> service): a caller
-// without a credential is <code>UNAUTHENTICATED</code>; every RPC of this service requires
-// <code>PROJECT_DEVELOPER</code> or higher on the project (<code>PROJECT_EXECUTOR</code> and
-// <code>PROJECT_USER</code> are refused, because log text can carry conversation content), otherwise
-// <code>PERMISSION_DENIED</code>, also for an unknown project. A long-running
-// <code>StreamCallLogs</code> or <code>ExportCallLogs</code> re-checks the caller&apos;s role
-// periodically and ends when it was revoked or the credential expired.</p>
+// ONDEWO VTSI API
+//
+// Reads, follows, exports and erases the CONTAINER LOGS VTSI captures from the per-call ondewo-sip / ondewo-csi containers of a VTSI project. Entries are served from the VTSI database, not from the docker daemon, so the logs of a container that was already removed stay readable until retention or <code>DeleteCallLogs</code> removes them.
+//
+// <b>Secrets are redacted server-side</b> in every RPC that returns log text (<code>StreamCallLogs</code>, <code>ListCallLogs</code>, <code>ExportCallLogs</code>): the project&apos;s SIP passwords, the call-control secrets and, unless the operator disabled it (<code>ONDEWO_VTSI_LOG_MASK_IDENTIFIERS</code>, default true), identifiers such as phone numbers. The redaction runs when the entry is read, so a redaction rule added later also applies to entries captured before it.
+//
+// Errors are reported as gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed name, filter, cursor, <code>page_token</code> or <code>field_mask</code> (each naming the field); <code>NOT_FOUND</code> for an unknown project or log stream; <code>RESOURCE_EXHAUSTED</code> when the server already serves its maximum of concurrent streams or exports; <code>UNAVAILABLE</code> when the database cannot be reached.
+//
+// Authorization (only when the server enforces it, see the <code>Projects</code> service): a caller without a credential is <code>UNAUTHENTICATED</code>; every RPC of this service requires <code>PROJECT_DEVELOPER</code> or higher on the project (<code>PROJECT_EXECUTOR</code> and <code>PROJECT_USER</code> are refused, because log text can carry conversation content), otherwise <code>PERMISSION_DENIED</code>, also for an unknown project. A long-running <code>StreamCallLogs</code> or <code>ExportCallLogs</code> re-checks the caller&apos;s role periodically and ends when it was revoked or the credential expired.
 service Logs {
 
     //////////////////////////////////////////////////////////////////////////////
@@ -168,8 +154,7 @@ service Logs {
 // Enums
 //////////////////////////////////////////////////////////////////////////////
 
-// Which process inside the container emitted a log entry. All of these share a single docker log
-// stream, because ondewo-csi runs as a child process of the ondewo-sip container.
+// Which process inside the container emitted a log entry. All of these share a single docker log stream, because ondewo-csi runs as a child process of the ondewo-sip container.
 enum LogSource {
 
     // Unspecified or unrecognised source.
@@ -206,9 +191,7 @@ enum LogStreamChannel {
     LOG_STREAM_CHANNEL_STDERR = 2;
 }
 
-// The state of VTSI&apos;s capture of one log stream. This describes the CAPTURE, not the container:
-// a healthy container whose capture lease was lost is <code>DETACHED</code>, and a container that no
-// longer exists but whose capture completed cleanly is <code>STOPPED</code>.
+// The state of VTSI&apos;s capture of one log stream. This describes the CAPTURE, not the container: a healthy container whose capture lease was lost is <code>DETACHED</code>, and a container that no longer exists but whose capture completed cleanly is <code>STOPPED</code>.
 enum LogCaptureState {
 
     // Unspecified.
@@ -227,9 +210,7 @@ enum LogCaptureState {
     LOG_CAPTURE_STATE_DETACHED = 4;
 }
 
-// Identifies a field of <a href="index.html#ondewo.vtsi.CallLogFilter">CallLogFilter</a>. Used by
-// <a href="index.html#ondewo.vtsi.ListCallLogsResponse">ListCallLogsResponse.scope_limited_filters</a>
-// to declare which filters could only be applied inside the returned window.
+// Identifies a field of <a href="index.html#ondewo.vtsi.CallLogFilter">CallLogFilter</a>. Used by <a href="index.html#ondewo.vtsi.ListCallLogsResponse">ListCallLogsResponse.scope_limited_filters</a> to declare which filters could only be applied inside the returned window.
 enum CallLogFilterField {
 
     // Unspecified.
@@ -257,9 +238,7 @@ enum CallLogFilterField {
     CALL_LOG_FILTER_FIELD_SIP_HEADERS = 7;
 }
 
-// Why the SERVER ended a <code>StreamCallLogs</code> stream. Carried by the final
-// <a href="index.html#ondewo.vtsi.StreamCallLogsResponse">StreamCallLogsResponse</a> beside the
-// human-readable <code>end_reason</code>. A stream ended by the client has no final message.
+// Why the SERVER ended a <code>StreamCallLogs</code> stream. Carried by the final <a href="index.html#ondewo.vtsi.StreamCallLogsResponse">StreamCallLogsResponse</a> beside the human-readable <code>end_reason</code>. A stream ended by the client has no final message.
 enum LogStreamEndReason {
 
     // Not ended by the server: every message except the final one, and the final message of a 9.0.0
@@ -287,9 +266,7 @@ enum LogStreamEndReason {
     LOG_STREAM_END_REASON_CREDENTIALS_EXPIRED = 5;
 }
 
-// File format of an <a href="index.html#ondewo.vtsi.Logs.ExportCallLogs">ExportCallLogs</a> export. Every
-// format is UTF-8 with <code>\n</code> line endings and one entry per record; a multi-line entry stays one
-// record.
+// File format of an <a href="index.html#ondewo.vtsi.Logs.ExportCallLogs">ExportCallLogs</a> export. Every format is UTF-8 with <code>\n</code> line endings and one entry per record; a multi-line entry stays one record.
 enum LogExportFormat {
 
     // Unspecified: identical to <code>LOG_EXPORT_FORMAT_TEXT</code>.
@@ -320,9 +297,7 @@ enum LogExportFormat {
 // Messages
 //////////////////////////////////////////////////////////////////////////////
 
-// A single captured container log record. One record may span several physical docker log lines: a
-// Python traceback, a protobuf <code>str()</code> dump and a multi-line configuration banner are all
-// one record, and are stored and returned as one entry.
+// A single captured container log record. One record may span several physical docker log lines: a Python traceback, a protobuf <code>str()</code> dump and a multi-line configuration banner are all one record, and are stored and returned as one entry.
 message CallLogEntry {
 
     // Ordering cursor. Assigned by the database, monotonically increasing WITHIN ONE LOG STREAM.
@@ -401,12 +376,9 @@ message SipHeaderFilter {
     string value = 2;
 }
 
-// Narrows a log query. Every field is optional; an empty repeated field means &quot;do not filter on
-// this&quot;. Fields are combined with AND; the values within one repeated field are combined with OR.
+// Narrows a log query. Every field is optional; an empty repeated field means &quot;do not filter on this&quot;. Fields are combined with AND; the values within one repeated field are combined with OR.
 //
-// <p>Filters fall into two groups. IDENTITY filters select which containers and which calls are of
-// interest and are resolved against VTSI&apos;s own call records. CONTENT filters select which
-// entries of those containers to return.</p>
+// Filters fall into two groups. IDENTITY filters select which containers and which calls are of interest and are resolved against VTSI&apos;s own call records. CONTENT filters select which entries of those containers to return.
 message CallLogFilter {
 
     //////////////////////////////////////////////////////////////////////////////
@@ -540,9 +512,7 @@ message CallLogFilter {
     repeated int32 asterisk_port_numbers = 34;
 }
 
-// One capture generation of one container on one docker channel. A container that is recreated
-// yields a NEW log stream, because a recreated container is a different docker container and the
-// previous container&apos;s logs no longer exist anywhere except here.
+// One capture generation of one container on one docker channel. A container that is recreated yields a NEW log stream, because a recreated container is a different docker container and the previous container&apos;s logs no longer exist anywhere except here.
 message CallLogStream {
 
     // Resource name of the log stream.
@@ -624,8 +594,7 @@ message CallLogStream {
     string vtsi_project_name = 22;
 }
 
-// The request message for
-// <a href="index.html#ondewo.vtsi.Logs.StreamCallLogs">Logs.StreamCallLogs</a>.
+// The request message for <a href="index.html#ondewo.vtsi.Logs.StreamCallLogs">Logs.StreamCallLogs</a>.
 message StreamCallLogsRequest {
 
     // VTSI project name for which to stream the logs.
@@ -657,10 +626,7 @@ message StreamCallLogsRequest {
     optional int64 after_seq = 5;
 }
 
-// The response message for
-// <a href="index.html#ondewo.vtsi.Logs.StreamCallLogs">Logs.StreamCallLogs</a>. The stream carries an
-// envelope rather than a bare entry so that a viewer can tell a healthy quiet container from a
-// capture that has died.
+// The response message for <a href="index.html#ondewo.vtsi.Logs.StreamCallLogs">Logs.StreamCallLogs</a>. The stream carries an envelope rather than a bare entry so that a viewer can tell a healthy quiet container from a capture that has died.
 message StreamCallLogsResponse {
 
     // The entries in this batch, oldest first. May be empty, e.g. on the final message that carries
@@ -694,8 +660,7 @@ message StreamCallLogsResponse {
     LogStreamEndReason end_reason_code = 7;
 }
 
-// The request message for
-// <a href="index.html#ondewo.vtsi.Logs.ListCallLogs">Logs.ListCallLogs</a>.
+// The request message for <a href="index.html#ondewo.vtsi.Logs.ListCallLogs">Logs.ListCallLogs</a>.
 message ListCallLogsRequest {
 
     // VTSI project name for which to list the logs.
@@ -746,8 +711,7 @@ message ListCallLogsRequest {
     bool include_counts = 9;
 }
 
-// The response message for
-// <a href="index.html#ondewo.vtsi.Logs.ListCallLogs">Logs.ListCallLogs</a>.
+// The response message for <a href="index.html#ondewo.vtsi.Logs.ListCallLogs">Logs.ListCallLogs</a>.
 message ListCallLogsResponse {
 
     // The matching entries, oldest first.
@@ -792,8 +756,7 @@ message ListCallLogsResponse {
     map<string, int64> count_by_level = 10;
 }
 
-// The request message for
-// <a href="index.html#ondewo.vtsi.Logs.GetCallLogStream">Logs.GetCallLogStream</a>.
+// The request message for <a href="index.html#ondewo.vtsi.Logs.GetCallLogStream">Logs.GetCallLogStream</a>.
 message GetCallLogStreamRequest {
 
     // VTSI project name which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>
@@ -813,8 +776,7 @@ message GetCallLogStreamRequest {
     google.protobuf.FieldMask field_mask = 3;
 }
 
-// The request message for
-// <a href="index.html#ondewo.vtsi.Logs.ListCallLogStreams">Logs.ListCallLogStreams</a>.
+// The request message for <a href="index.html#ondewo.vtsi.Logs.ListCallLogStreams">Logs.ListCallLogStreams</a>.
 message ListCallLogStreamsRequest {
 
     // VTSI project name for which to list the log streams.
@@ -854,8 +816,7 @@ message ListCallLogStreamsRequest {
     repeated LogCaptureState capture_states = 6;
 }
 
-// The response message for
-// <a href="index.html#ondewo.vtsi.Logs.ListCallLogStreams">Logs.ListCallLogStreams</a>.
+// The response message for <a href="index.html#ondewo.vtsi.Logs.ListCallLogStreams">Logs.ListCallLogStreams</a>.
 message ListCallLogStreamsResponse {
 
     // The log streams of this page, newest <code>capture_started_at</code> first.
@@ -866,8 +827,7 @@ message ListCallLogStreamsResponse {
     string next_page_token = 2;
 }
 
-// The request message for
-// <a href="index.html#ondewo.vtsi.Logs.DeleteCallLogs">Logs.DeleteCallLogs</a>.
+// The request message for <a href="index.html#ondewo.vtsi.Logs.DeleteCallLogs">Logs.DeleteCallLogs</a>.
 message DeleteCallLogsRequest {
 
     // VTSI project name for which to delete the logs.
@@ -886,8 +846,7 @@ message DeleteCallLogsRequest {
     bool validate_only = 3;
 }
 
-// The response message for
-// <a href="index.html#ondewo.vtsi.Logs.DeleteCallLogs">Logs.DeleteCallLogs</a>.
+// The response message for <a href="index.html#ondewo.vtsi.Logs.DeleteCallLogs">Logs.DeleteCallLogs</a>.
 message DeleteCallLogsResponse {
 
     // How many log entries were deleted (with <code>validate_only</code>: would be deleted).
@@ -898,8 +857,7 @@ message DeleteCallLogsResponse {
     int64 deleted_log_stream_count = 2;
 }
 
-// The request message for
-// <a href="index.html#ondewo.vtsi.Logs.ExportCallLogs">Logs.ExportCallLogs</a>.
+// The request message for <a href="index.html#ondewo.vtsi.Logs.ExportCallLogs">Logs.ExportCallLogs</a>.
 message ExportCallLogsRequest {
 
     // VTSI project whose logs to export.

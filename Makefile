@@ -122,6 +122,15 @@ presence_check: ## Check the proto field-presence surface against presence/expec
 presence_update: ## Regenerate presence/presence-manifest.json after an intended presence change
 	@$(or ${PRESENCE_PY},${PRESENCE_RUNNER}) presence/check_presence.py --write
 
+# protoc-gen-doc renders file, service, message and enum descriptions with `{{p .Description}}`, which starts a
+# new paragraph at EVERY newline: a description wrapped across source lines renders broken mid-sentence on the
+# published page. These descriptions keep one paragraph per source line (doc_rendering/README.md).
+doc_rendering_check: ## Check that every p-rendered proto description keeps one paragraph per source line
+	@python3 doc_rendering/reflow_proto_docs.py --check ondewo/vtsi/*.proto
+
+doc_rendering_fix: ## Reflow the p-rendered proto descriptions to one paragraph per source line
+	@python3 doc_rendering/reflow_proto_docs.py ondewo/vtsi/*.proto
+
 help: ## Print usage info about help targets
 	# (first comment after target starting with double hashes ##)
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' Makefile | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-40s\033[0m %s\n", $$1, $$2}'
@@ -307,7 +316,7 @@ checkout_defined_submodule_versions: ## Update submodule versions
 # repositories check out. RUN `make build` AND COMMIT ITS OUTPUT BEFORE `make ondewo_release`.
 .NOTPARALLEL:
 
-RELEASE_STEPS = presence_check create_release_branch create_release_tag build_and_release_to_github_via_docker
+RELEASE_STEPS = presence_check doc_rendering_check create_release_branch create_release_tag build_and_release_to_github_via_docker
 
 release: ${RELEASE_STEPS} ## Automate the entire release process
 	@echo "Release Finished"

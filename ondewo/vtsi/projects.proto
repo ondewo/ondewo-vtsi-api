@@ -19,51 +19,17 @@ import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 import "ondewo/vtsi/call_configs.proto";
 
-// <p>ONDEWO VTSI API</p>
-// <p>Manages VTSI (Virtual Telephone System Integration) PROJECTS: the per-project configuration of an
-// Asterisk SIP server (its SIP trunk, its ports, its Asterisk version) together with the caller and
-// listener capacity of the project and the ONDEWO NLU agents it serves. Deploying a project starts its
-// Asterisk container; callers, listeners, campaigns and softphone accounts of the project need a
-// <code>DEPLOYED</code> project to place or take calls.</p>
-// <p>Errors are reported as gRPC status codes. The <code>error_message</code> fields of the responses
-// are never set, neither on success nor on failure (they predate the status codes and are kept for wire
-// compatibility): <code>INVALID_ARGUMENT</code> for a malformed name, an unknown <code>update_mask</code>
-// or <code>field_mask</code> path, a malformed <code>page_token</code> or an out-of-range value (each
-// naming the field); <code>NOT_FOUND</code> for an unknown project; <code>ALREADY_EXISTS</code> when
-// <code>CreateVtsiProject</code> names a project that exists; <code>FAILED_PRECONDITION</code> when the
-// project is in a status that does not allow the operation (each RPC names its cases);
-// <code>ABORTED</code> when another create, update, deploy, undeploy or delete of the same project held
-// it for longer than the server waits (about 30 seconds), in which case nothing was changed and the
-// request can be retried; <code>UNAVAILABLE</code> when the docker daemon or the database cannot be
-// reached.</p>
-// <p>Authorization (only when the server enforces it, i.e. <code>ONDEWO_VTSI_KEYCLOAK_AUTH_ENABLED</code>
-// and <code>ONDEWO_VTSI_AUTH_REQUIRED</code> are both true): a caller without a credential is
-// <code>UNAUTHENTICATED</code> whatever it sent. A caller needs a server role (<code>SERVER_ADMIN</code>,
-// <code>SERVER_MANAGER</code> or <code>SERVER_USER</code>), else every RPC is
-// <code>PERMISSION_DENIED</code>. The project roles are derived from the caller&apos;s roles on the
-// project&apos;s <code>nlu_agent_names</code>: <code>CreateVtsiProject</code>,
-// <code>GetVtsiProject</code>, <code>UpdateVtsiProject</code>, <code>DeleteVtsiProject</code>,
-// <code>DeployVtsiProject</code> and <code>UndeployVtsiProject</code> require
-// <code>PROJECT_DEVELOPER</code> or higher (<code>PROJECT_ADMIN</code>); <code>ListVtsiProjects</code>
-// is open to every project role and returns only the projects the caller holds a role on.
-// <code>SERVER_ADMIN</code> passes every project check. With enforcement on, a well-formed request naming
-// a project the caller holds no role on, an unknown project included, is answered
-// <code>PERMISSION_DENIED</code> rather than <code>NOT_FOUND</code>, so the answer does not reveal
-// whether the project exists; <code>NOT_FOUND</code> is then reserved to <code>SERVER_ADMIN</code>. With
-// enforcement off (the default) every request is served and only logged.</p>
-// <p><b>Credentials.</b> <code>AsteriskConfigsVariables.sip_trunk_password</code> is stored and returned
-// as sent (it is not write-only): <code>GetVtsiProject</code>, <code>CreateVtsiProject</code>,
-// <code>UpdateVtsiProject</code> and <code>ListVtsiProjects</code> return it to every caller allowed to
-// call them with a view that populates <code>asterisk_configs</code>. With enforcement on,
-// <code>ListVtsiProjects</code> withholds the whole <code>asterisk_configs</code> (and every other
-// configuration field) from a caller whose highest role on the project is <code>PROJECT_EXECUTOR</code>
-// or <code>PROJECT_USER</code>. Use a <code>field_mask</code> without <code>asterisk_configs</code> where
-// the password is not needed.</p>
-// <p>Events: every change emits the matching <code>VtsiEvent</code> of the project
-// (<code>VTSI_EVENT_VTSI_PROJECT_UPDATED</code>, <code>_DEPLOYED</code>, <code>_DEPLOY_FAILED</code>,
-// <code>_UNDEPLOYED</code>, <code>_UNDEPLOY_FAILED</code>, <code>_DELETED</code>) and, for every change
-// of <code>vtsi_project_status</code>, <code>VTSI_EVENT_VTSI_PROJECT_STATUS_CHANGED</code>. A request
-// with <code>validate_only</code> emits nothing.</p>
+// ONDEWO VTSI API
+//
+// Manages VTSI (Virtual Telephone System Integration) PROJECTS: the per-project configuration of an Asterisk SIP server (its SIP trunk, its ports, its Asterisk version) together with the caller and listener capacity of the project and the ONDEWO NLU agents it serves. Deploying a project starts its Asterisk container; callers, listeners, campaigns and softphone accounts of the project need a <code>DEPLOYED</code> project to place or take calls.
+//
+// Errors are reported as gRPC status codes. The <code>error_message</code> fields of the responses are never set, neither on success nor on failure (they predate the status codes and are kept for wire compatibility): <code>INVALID_ARGUMENT</code> for a malformed name, an unknown <code>update_mask</code> or <code>field_mask</code> path, a malformed <code>page_token</code> or an out-of-range value (each naming the field); <code>NOT_FOUND</code> for an unknown project; <code>ALREADY_EXISTS</code> when <code>CreateVtsiProject</code> names a project that exists; <code>FAILED_PRECONDITION</code> when the project is in a status that does not allow the operation (each RPC names its cases); <code>ABORTED</code> when another create, update, deploy, undeploy or delete of the same project held it for longer than the server waits (about 30 seconds), in which case nothing was changed and the request can be retried; <code>UNAVAILABLE</code> when the docker daemon or the database cannot be reached.
+//
+// Authorization (only when the server enforces it, i.e. <code>ONDEWO_VTSI_KEYCLOAK_AUTH_ENABLED</code> and <code>ONDEWO_VTSI_AUTH_REQUIRED</code> are both true): a caller without a credential is <code>UNAUTHENTICATED</code> whatever it sent. A caller needs a server role (<code>SERVER_ADMIN</code>, <code>SERVER_MANAGER</code> or <code>SERVER_USER</code>), else every RPC is <code>PERMISSION_DENIED</code>. The project roles are derived from the caller&apos;s roles on the project&apos;s <code>nlu_agent_names</code>: <code>CreateVtsiProject</code>, <code>GetVtsiProject</code>, <code>UpdateVtsiProject</code>, <code>DeleteVtsiProject</code>, <code>DeployVtsiProject</code> and <code>UndeployVtsiProject</code> require <code>PROJECT_DEVELOPER</code> or higher (<code>PROJECT_ADMIN</code>); <code>ListVtsiProjects</code> is open to every project role and returns only the projects the caller holds a role on. <code>SERVER_ADMIN</code> passes every project check. With enforcement on, a well-formed request naming a project the caller holds no role on, an unknown project included, is answered <code>PERMISSION_DENIED</code> rather than <code>NOT_FOUND</code>, so the answer does not reveal whether the project exists; <code>NOT_FOUND</code> is then reserved to <code>SERVER_ADMIN</code>. With enforcement off (the default) every request is served and only logged.
+//
+// <b>Credentials.</b> <code>AsteriskConfigsVariables.sip_trunk_password</code> is stored and returned as sent (it is not write-only): <code>GetVtsiProject</code>, <code>CreateVtsiProject</code>, <code>UpdateVtsiProject</code> and <code>ListVtsiProjects</code> return it to every caller allowed to call them with a view that populates <code>asterisk_configs</code>. With enforcement on, <code>ListVtsiProjects</code> withholds the whole <code>asterisk_configs</code> (and every other configuration field) from a caller whose highest role on the project is <code>PROJECT_EXECUTOR</code> or <code>PROJECT_USER</code>. Use a <code>field_mask</code> without <code>asterisk_configs</code> where the password is not needed.
+//
+// Events: every change emits the matching <code>VtsiEvent</code> of the project (<code>VTSI_EVENT_VTSI_PROJECT_UPDATED</code>, <code>_DEPLOYED</code>, <code>_DEPLOY_FAILED</code>, <code>_UNDEPLOYED</code>, <code>_UNDEPLOY_FAILED</code>, <code>_DELETED</code>) and, for every change of <code>vtsi_project_status</code>, <code>VTSI_EVENT_VTSI_PROJECT_STATUS_CHANGED</code>. A request with <code>validate_only</code> emits nothing.
 service Projects {
 
     //////////////////////////////////////////////////////////////////////////////
@@ -429,10 +395,7 @@ message VtsiProject{
 
 }
 
-// <p>One human transfer target of <code>VtsiProject.transfer_target_directory</code>: how a warm intro names and
-// describes the person behind one phone number or softphone account. Both texts are given to the intro bot and may
-// be spoken to the target; neither may contain SIP markup (<code>&lt;SIP:</code>), which is refused with
-// <code>INVALID_ARGUMENT</code>. Carries no secret.</p>
+// One human transfer target of <code>VtsiProject.transfer_target_directory</code>: how a warm intro names and describes the person behind one phone number or softphone account. Both texts are given to the intro bot and may be spoken to the target; neither may contain SIP markup (<code>&lt;SIP:</code>), which is refused with <code>INVALID_ARGUMENT</code>. Carries no secret.
 message TransferTargetDirectoryItem {
 
     // Required. Who the target is, spoken as <code>{callee_name}</code> in a warm intro, e.g.
@@ -444,9 +407,7 @@ message TransferTargetDirectoryItem {
     string description = 2;
 }
 
-// <p>Which optional call features can run in a VTSI project, and if not, why. Output only; computed from the
-// deployment&apos;s switches, where the project&apos;s Asterisk runs and the project&apos;s listener capacity, never
-// from a single call&apos;s configuration.</p>
+// Which optional call features can run in a VTSI project, and if not, why. Output only; computed from the deployment&apos;s switches, where the project&apos;s Asterisk runs and the project&apos;s listener capacity, never from a single call&apos;s configuration.
 message VtsiProjectFeatureAvailability {
 
     // Whether a WARM transfer of this project can run a warm intro. Anything but
@@ -466,9 +427,7 @@ message VtsiProjectFeatureAvailability {
     IvrAvailability ivr = 3;
 }
 
-// <p>Whether a project can run warm intros, and if not, why. When several reasons apply, the first one in this
-// order is reported: <code>DISABLED_BY_DEPLOYMENT</code>, <code>NEEDS_CALL_CONTROL_KEY</code>,
-// <code>NEEDS_LOCAL_ASTERISK</code>, <code>NEEDS_LISTENER</code>.</p>
+// Whether a project can run warm intros, and if not, why. When several reasons apply, the first one in this order is reported: <code>DISABLED_BY_DEPLOYMENT</code>, <code>NEEDS_CALL_CONTROL_KEY</code>, <code>NEEDS_LOCAL_ASTERISK</code>, <code>NEEDS_LISTENER</code>.
 enum WarmIntroAvailability {
 
     // Not computed, e.g. by a server older than warm intros. Treat it as unknown, not as available.
@@ -499,7 +458,7 @@ enum WarmIntroAvailability {
     WARM_INTRO_AVAILABILITY_NEEDS_CALL_CONTROL_KEY = 5;
 }
 
-// <p>Whether a project can use IVR menus, and if not, why. The same for every project of a deployment.</p>
+// Whether a project can use IVR menus, and if not, why. The same for every project of a deployment.
 enum IvrAvailability {
 
     // Not computed, e.g. by a server older than IVR menus. Treat it as unknown, not as available.
@@ -542,10 +501,7 @@ enum TrunkRegistrationState {
     TRUNK_REGISTRATION_STATE_NOT_CONFIGURED = 4;
 }
 
-// Status of a VtsiProject.
-// Released with unprefixed value names, which are package scoped in proto3 (so no other enum of
-// <code>ondewo.vtsi</code> can declare e.g. <code>UNSPECIFIED</code>); kept for wire and source
-// compatibility.
+// Status of a VtsiProject. Released with unprefixed value names, which are package scoped in proto3 (so no other enum of <code>ondewo.vtsi</code> can declare e.g. <code>UNSPECIFIED</code>); kept for wire and source compatibility.
 enum VtsiProjectStatus {
 
     // No status specified. Never returned for a stored project.
@@ -793,8 +749,7 @@ message GetVtsiProjectRequest{
     google.protobuf.FieldMask field_mask = 3;
 }
 
-// Request to list VTSI projects. The filters are combined with AND; the values within one repeated
-// field are combined with OR; an unset field or an empty repeated field does not filter.
+// Request to list VTSI projects. The filters are combined with AND; the values within one repeated field are combined with OR; an unset field or an empty repeated field does not filter.
 message ListVtsiProjectsRequest {
 
     // Optional. Specify the view of the returned VtsiProject (full view by default)
@@ -863,8 +818,7 @@ message ListVtsiProjectsResponse {
 // This protobuf message defines the sorting order for VTSI (Virtual Telephone System Integration) projects.
 message VtsiProjectSorting {
 
-    // Enum to specify the sorting field for VTSI projects.
-    // Enum defining the field by which VTSI projects can be sorted
+    // Enum to specify the sorting field for VTSI projects. Enum defining the field by which VTSI projects can be sorted
     enum VtsiProjectSortingField {
 
         // The default order: by <code>display_name</code>, ascending.
@@ -890,11 +844,7 @@ message VtsiProjectSorting {
     optional VtsiProjectSortingMode sorting_mode = 2;
 }
 
-// Sorting mode.
-// Note: unlike most enums of this API the zero value is a real mode, <code>ASCENDING</code>, not an
-// <code>..._UNSPECIFIED</code> placeholder, so an unset mode means ascending. Released this way and kept
-// for wire and source compatibility (it is also reused by
-// <a href="index.html#ondewo.vtsi.SoftphoneAccountSorting">SoftphoneAccountSorting</a>).
+// Sorting mode. Note: unlike most enums of this API the zero value is a real mode, <code>ASCENDING</code>, not an <code>..._UNSPECIFIED</code> placeholder, so an unset mode means ascending. Released this way and kept for wire and source compatibility (it is also reused by <a href="index.html#ondewo.vtsi.SoftphoneAccountSorting">SoftphoneAccountSorting</a>).
 enum VtsiProjectSortingMode {
     // The ascending sorting mode.
     // When sorting using this mode, VtsiProject objects will be arranged
@@ -907,13 +857,7 @@ enum VtsiProjectSortingMode {
     DESCENDING = 1;
 }
 
-// Structure of VTSI_PROJECT view
-// <ul>
-//   <li>CreateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW</li>
-//   <li>UpdateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW</li>
-//   <li>GetVTSI_PROJECT: VTSI_PROJECT_VIEW_FULL</li>
-//   <li>ListVTSI_PROJECTs: VTSI_PROJECT_VIEW_SHALLOW</li>
-// </ul>
+// Structure of VTSI_PROJECT view <ul> <li>CreateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW</li> <li>UpdateVTSI_PROJECT: VTSI_PROJECT_VIEW_SHALLOW</li> <li>GetVTSI_PROJECT: VTSI_PROJECT_VIEW_FULL</li> <li>ListVTSI_PROJECTs: VTSI_PROJECT_VIEW_SHALLOW</li> </ul>
 enum VtsiProjectView {
 
     // Unspecified VTSI_PROJECT view: the view is defined by the call:
@@ -1002,9 +946,7 @@ message UpdateVtsiProjectResponse{
     VtsiProject vtsi_project = 3;
 }
 
-// Request to delete a VTSI project
-// A deployed VTSI project is undeployed automatically before it is deleted (see
-// <a href="index.html#ondewo.vtsi.Projects.DeleteVtsiProject">DeleteVtsiProject</a>).
+// Request to delete a VTSI project A deployed VTSI project is undeployed automatically before it is deleted (see <a href="index.html#ondewo.vtsi.Projects.DeleteVtsiProject">DeleteVtsiProject</a>).
 message DeleteVtsiProjectRequest{
 
     // VTSI project name with which to perform the call of the form <pre><code>projects/&lt;project_uuid&gt;/project</code></pre>

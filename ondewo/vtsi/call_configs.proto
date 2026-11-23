@@ -37,12 +37,9 @@ import "ondewo/t2s/text-to-speech.proto";
 // declare them in the generated <code>call_configs_pb</code> module only, which must be imported (and exported
 // from a client&apos;s public API) in its own right.</p>
 
-// Address and server trust of one upstream service of a call: the speech-to-text (S2T), NLU and text-to-speech
-// (T2S) services of a <code>CommonServicesConfig</code>, and the Asterisk of an <code>AsteriskConfig</code>.
-// <p>For S2T, NLU and T2S the request is checked LIVE when the caller or listener is started: VTSI connects to
-// the service with these values (the S2T pipeline and the NLU agent are read), so an address that cannot be
-// reached, or a certificate the service&apos;s certificate does not chain to, refuses the request instead of
-// failing later inside the call.</p>
+// Address and server trust of one upstream service of a call: the speech-to-text (S2T), NLU and text-to-speech (T2S) services of a <code>CommonServicesConfig</code>, and the Asterisk of an <code>AsteriskConfig</code>.
+//
+// For S2T, NLU and T2S the request is checked LIVE when the caller or listener is started: VTSI connects to the service with these values (the S2T pipeline and the NLU agent are read), so an address that cannot be reached, or a certificate the service&apos;s certificate does not chain to, refuses the request instead of failing later inside the call.
 message BaseServiceConfig{
 
     // Host name or IP address of the service, as the call reaches it, e.g. <code>s2t.example.com</code>.
@@ -67,15 +64,11 @@ message BaseServiceConfig{
     string grpc_cert = 3;
 }
 
-// User name and password the call logs in to the NLU service with (the NLU <code>credentials</code> of
-// <code>NluVtsiConfig</code>), usually the project&apos;s technical user.
-// <p>They are checked when the caller or listener is started: VTSI reads the configured NLU agent with them, so
-// credentials the NLU service (or its login server) refuses refuse the request. Where the deployment logs in
-// through Keycloak, the same login also authorizes the S2T and T2S checks of that request. The password is
-// never logged, and read responses may withhold it depending on the reader&apos;s role (see
-// <code>GetCaller</code>).</p>
-// <p>Pooled callers: credentials are not part of the configuration a pooled caller is matched by, but they are
-// compared exactly before one is reused, so a changed password always gets a caller that logs in with it.</p>
+// User name and password the call logs in to the NLU service with (the NLU <code>credentials</code> of <code>NluVtsiConfig</code>), usually the project&apos;s technical user.
+//
+// They are checked when the caller or listener is started: VTSI reads the configured NLU agent with them, so credentials the NLU service (or its login server) refuses refuse the request. Where the deployment logs in through Keycloak, the same login also authorizes the S2T and T2S checks of that request. The password is never logged, and read responses may withhold it depending on the reader&apos;s role (see <code>GetCaller</code>).
+//
+// Pooled callers: credentials are not part of the configuration a pooled caller is matched by, but they are compared exactly before one is reused, so a changed password always gets a caller that logs in with it.
 message Credentials {
 
     // Account name the call logs in with, usually an email address, e.g. <code>technical-user@example.com</code>
@@ -85,19 +78,13 @@ message Credentials {
     string password = 2;
 }
 
-// NLU configuration of a call: which NLU agent answers the caller, in which language, how the call authenticates
-// to the NLU, how the conversation is opened, and how the bot behaves when the NLU is slow or unreachable.
-// <p>Scope: the configuration of a LISTENER applies to every inbound call that listener deployment serves; the
-// configuration of a caller, a campaign or a scheduled caller applies to its own calls. A pooled (persistent)
-// caller is only reused for a request whose configuration is identical (the credentials are compared exactly, so a
-// changed password deploys a new caller).</p>
-// <p>Unless a field says otherwise, an unset <code>optional</code> field means &quot;inherit&quot;: the call keeps
-// the built-in default of the speech-to-speech service. A value set here wins for the calls this configuration
-// serves.</p>
-// <p>The request is validated before any call is placed: the NLU must be reachable and the agent must exist and be
-// readable with the given credentials. A missing <code>agent_name</code>, an unknown agent or rejected credentials
-// are refused with <code>INVALID_ARGUMENT</code>; an NLU that does not answer at all is <code>UNAVAILABLE</code>
-// (retryable).</p>
+// NLU configuration of a call: which NLU agent answers the caller, in which language, how the call authenticates to the NLU, how the conversation is opened, and how the bot behaves when the NLU is slow or unreachable.
+//
+// Scope: the configuration of a LISTENER applies to every inbound call that listener deployment serves; the configuration of a caller, a campaign or a scheduled caller applies to its own calls. A pooled (persistent) caller is only reused for a request whose configuration is identical (the credentials are compared exactly, so a changed password deploys a new caller).
+//
+// Unless a field says otherwise, an unset <code>optional</code> field means &quot;inherit&quot;: the call keeps the built-in default of the speech-to-speech service. A value set here wins for the calls this configuration serves.
+//
+// The request is validated before any call is placed: the NLU must be reachable and the agent must exist and be readable with the given credentials. A missing <code>agent_name</code>, an unknown agent or rejected credentials are refused with <code>INVALID_ARGUMENT</code>; an NLU that does not answer at all is <code>UNAVAILABLE</code> (retryable).
 message NluVtsiConfig{
 
     // Required: Address of the NLU gRPC server (host, port and the certificate its server certificate chains to).
@@ -188,17 +175,11 @@ message NluVtsiConfig{
     optional bool session_id_from_sip_context = 13;
 }
 
-// Bounds of the preemptive (speculative) NLU requests. While preemptive generation is on
-// (<code>CsiVtsiConfig.preemptive_generation_config.enabled</code>), the bot asks the NLU for the answer of a
-// stable partial transcription BEFORE the caller&apos;s final transcription arrives, and uses that draft only when
-// the final transcription matches it; otherwise the draft is discarded and the caller hears nothing of it. A draft
-// never ends the caller&apos;s turn early; it only saves time when it matches. Every extra draft is an extra NLU
-// request, and these bounds limit how many a turn may cost.
-// <p>Every field is optional; an unset field keeps the built-in default (there is no deployment-wide setting for
-// these). A value outside its range is refused with <code>INVALID_ARGUMENT</code>.</p>
-// <p>Example: <code>max_drafts_per_turn=1</code> and <code>min_stable_dwell_seconds=0.5</code> allow one draft per
-// turn, started only after the partial transcription stayed unchanged for half a second: fewer extra NLU requests,
-// less time saved.</p>
+// Bounds of the preemptive (speculative) NLU requests. While preemptive generation is on (<code>CsiVtsiConfig.preemptive_generation_config.enabled</code>), the bot asks the NLU for the answer of a stable partial transcription BEFORE the caller&apos;s final transcription arrives, and uses that draft only when the final transcription matches it; otherwise the draft is discarded and the caller hears nothing of it. A draft never ends the caller&apos;s turn early; it only saves time when it matches. Every extra draft is an extra NLU request, and these bounds limit how many a turn may cost.
+//
+// Every field is optional; an unset field keeps the built-in default (there is no deployment-wide setting for these). A value outside its range is refused with <code>INVALID_ARGUMENT</code>.
+//
+// Example: <code>max_drafts_per_turn=1</code> and <code>min_stable_dwell_seconds=0.5</code> allow one draft per turn, started only after the partial transcription stayed unchanged for half a second: fewer extra NLU requests, less time saved.
 message NluPreemptiveGenerationConfig{
 
     // Optional: Number of drafts one caller turn may start at most. Unset: 2. Valid range: 0 - 5; 0 starts no draft
@@ -216,16 +197,11 @@ message NluPreemptiveGenerationConfig{
     optional float min_interval_seconds = 3;
 }
 
-// Text-to-speech configuration of the call: which text-to-speech service and pipeline voices the bot, and how the
-// answers of preemptive drafts are synthesized.
-// <p>Scope: the configuration of a listener applies to every inbound call that listener deployment serves; the
-// configuration of a caller, a campaign or a scheduled caller applies to its own calls. A pooled persistent caller
-// is reused only for a request with the identical configuration, so callers with different values are never
-// shared.</p>
-// <p>The service and the pipeline are checked when the request arrives: an empty <code>t2s_pipeline_id</code>, a
-// pipeline the text-to-speech service does not know and an inactive pipeline are refused with
-// <code>INVALID_ARGUMENT</code>; a text-to-speech service that does not answer is reported as
-// <code>UNAVAILABLE</code> (a campaign then retries the call later).</p>
+// Text-to-speech configuration of the call: which text-to-speech service and pipeline voices the bot, and how the answers of preemptive drafts are synthesized.
+//
+// Scope: the configuration of a listener applies to every inbound call that listener deployment serves; the configuration of a caller, a campaign or a scheduled caller applies to its own calls. A pooled persistent caller is reused only for a request with the identical configuration, so callers with different values are never shared.
+//
+// The service and the pipeline are checked when the request arrives: an empty <code>t2s_pipeline_id</code>, a pipeline the text-to-speech service does not know and an inactive pipeline are refused with <code>INVALID_ARGUMENT</code>; a text-to-speech service that does not answer is reported as <code>UNAVAILABLE</code> (a campaign then retries the call later).
 message T2sVtsiConfig{
 
     // Host, port and trust anchor of the text-to-speech service the call uses. Required; see
@@ -245,13 +221,9 @@ message T2sVtsiConfig{
     T2sPreemptiveSynthesisConfig preemptive_synthesis_config = 3;
 }
 
-// Speech synthesis of the answer of a preemptive (speculative) draft. With preemptive generation on, the NLU is asked
-// for the answer of a stable partial transcription while the caller is still finishing the sentence; when the final
-// transcription matches that draft, its answer is used instead of asking again, which shortens the pause before the
-// bot speaks. These two switches decide how much of the speech synthesis is done ahead of time as well.
-// <p>Every field is optional; an unset field keeps the built-in default listed per field. Neither field has a value
-// that is refused, and both are ignored while preemptive generation is off
-// (<code>CsiVtsiConfig.preemptive_generation_config.enabled</code>).</p>
+// Speech synthesis of the answer of a preemptive (speculative) draft. With preemptive generation on, the NLU is asked for the answer of a stable partial transcription while the caller is still finishing the sentence; when the final transcription matches that draft, its answer is used instead of asking again, which shortens the pause before the bot speaks. These two switches decide how much of the speech synthesis is done ahead of time as well.
+//
+// Every field is optional; an unset field keeps the built-in default listed per field. Neither field has a value that is refused, and both are ignored while preemptive generation is off (<code>CsiVtsiConfig.preemptive_generation_config.enabled</code>).
 message T2sPreemptiveSynthesisConfig{
 
     // Optional: Synthesize the answer of a draft already while the caller is still speaking (default: true).
@@ -270,11 +242,9 @@ message T2sPreemptiveSynthesisConfig{
     optional bool chunked = 2;
 }
 
-// Speech-to-text (S2T) configuration of a call: which S2T service and pipeline transcribe the caller, how each
-// utterance is transcribed, and what happens when the S2T service becomes unreachable during the call.
-// <p>Checked when the caller or listener is started: the S2T service must be reachable and the pipeline named in
-// <code>s2t_transcribe_request_config.s2t_pipeline_id</code> must exist and be active, otherwise the request is
-// refused.</p>
+// Speech-to-text (S2T) configuration of a call: which S2T service and pipeline transcribe the caller, how each utterance is transcribed, and what happens when the S2T service becomes unreachable during the call.
+//
+// Checked when the caller or listener is started: the S2T service must be reachable and the pipeline named in <code>s2t_transcribe_request_config.s2t_pipeline_id</code> must exist and be active, otherwise the request is refused.
 message S2tVtsiConfig{
 
     // Address and server trust of the S2T service (see <code>BaseServiceConfig</code>). Required
@@ -309,33 +279,15 @@ message S2tVtsiConfig{
     optional string failure_sip_trigger = 3;
 }
 
-// The service configuration of a call: speech-to-text (S2T), NLU, text-to-speech (T2S), the speech-to-speech
-// service (CSI), the voice interaction (turn-taking, interruptions, response timing, AMD, DTMF, transfers) and the
-// media behaviour of the call&apos;s SIP container. The same message is used by callers, listeners, scheduled
-// callers and campaigns.
-// <p><b>Unset means inherit.</b> Every <code>optional</code> field and every message left unset sends nothing to
-// the call, so the call runs with the deployment&apos;s setting where the operator configured one (an
-// <code>ONDEWO_VTSI_*</code> setting of the VTSI server, named at the field) and otherwise with the built-in
-// default documented at the field. A value set here always wins over both: per-call value &gt; deployment
-// setting &gt; built-in default. A value outside its documented range is refused with
-// <code>INVALID_ARGUMENT</code> and nothing is started.</p>
-// <p><b>Scope.</b></p>
-// <ul>
-//   <li>A <b>listener</b>&apos;s configuration applies to every inbound call that listener deployment serves, one
-//       after the other, until it is stopped. <code>UpdateListener</code> changes the stored configuration only
-//       (see there).</li>
-//   <li>A <b>caller</b> or <b>scheduled caller</b> applies its configuration to its own call.</li>
-//   <li>A <b>campaign</b>&apos;s <code>campaign_common_services_config</code> is the default of every call of the
-//       campaign; each call&apos;s own configuration is merged over it, so a field the call sets wins (see
-//       <code>Campaign</code>).</li>
-//   <li>A <b>pooled persistent caller</b> is reused only for a request whose configuration is identical (only the
-//       callee and its SIP headers may differ), so a different value of any field here gets a different
-//       caller.</li>
-// </ul>
-// <p>Example: to let the caller interrupt (barge in on) the bot, set
-// <code>voice_interaction_config.interruption_handling_config.enabled = true</code> and leave everything else unset
-// to keep the defaults; add e.g. <code>min_interruption_duration_seconds = 0.8</code> to let short noises pass.
-// (How many words interrupt depends on the turn detection mode, see <code>InterruptionHandlingConfig</code>.)</p>
+// The service configuration of a call: speech-to-text (S2T), NLU, text-to-speech (T2S), the speech-to-speech service (CSI), the voice interaction (turn-taking, interruptions, response timing, AMD, DTMF, transfers) and the media behaviour of the call&apos;s SIP container. The same message is used by callers, listeners, scheduled callers and campaigns.
+//
+// <b>Unset means inherit.</b> Every <code>optional</code> field and every message left unset sends nothing to the call, so the call runs with the deployment&apos;s setting where the operator configured one (an <code>ONDEWO_VTSI_*</code> setting of the VTSI server, named at the field) and otherwise with the built-in default documented at the field. A value set here always wins over both: per-call value &gt; deployment setting &gt; built-in default. A value outside its documented range is refused with <code>INVALID_ARGUMENT</code> and nothing is started.
+//
+// <b>Scope.</b>
+//
+// <ul> <li>A <b>listener</b>&apos;s configuration applies to every inbound call that listener deployment serves, one after the other, until it is stopped. <code>UpdateListener</code> changes the stored configuration only (see there).</li> <li>A <b>caller</b> or <b>scheduled caller</b> applies its configuration to its own call.</li> <li>A <b>campaign</b>&apos;s <code>campaign_common_services_config</code> is the default of every call of the campaign; each call&apos;s own configuration is merged over it, so a field the call sets wins (see <code>Campaign</code>).</li> <li>A <b>pooled persistent caller</b> is reused only for a request whose configuration is identical (only the callee and its SIP headers may differ), so a different value of any field here gets a different caller.</li> </ul>
+//
+// Example: to let the caller interrupt (barge in on) the bot, set <code>voice_interaction_config.interruption_handling_config.enabled = true</code> and leave everything else unset to keep the defaults; add e.g. <code>min_interruption_duration_seconds = 0.8</code> to let short noises pass. (How many words interrupt depends on the turn detection mode, see <code>InterruptionHandlingConfig</code>.)
 message CommonServicesConfig{
 
     // Speech-to-text configuration (see <code>S2tVtsiConfig</code>). Required
@@ -362,16 +314,11 @@ message CommonServicesConfig{
     SipVtsiConfig sip_vtsi_config = 6;
 }
 
-// Media and SIP behaviour of the SIP container that carries the call. A container serves one call, one listener
-// deployment (all its inbound calls) or one pooled persistent caller, and a pooled caller is reused only for a
-// request with the same configuration, so every field applies to the call(s) of exactly this configuration.
-// <p>Every field is <code>optional</code>. An unset field sends nothing, and the container&apos;s built-in
-// default applies. <code>register_interval_seconds</code> has a deployment-wide setting
-// (<code>ONDEWO_VTSI_SIP_REGISTER_INTERVAL_S</code>), which a set value wins over. For the two live call audio
-// stream limits the deployment&apos;s own limit applies in addition, so the stricter of the two wins. A value
-// outside its range (including NaN for a float field) is refused with <code>INVALID_ARGUMENT</code> naming the
-// field.</p>
-// <p>The defaults are the recommended values; most integrations leave this message unset.</p>
+// Media and SIP behaviour of the SIP container that carries the call. A container serves one call, one listener deployment (all its inbound calls) or one pooled persistent caller, and a pooled caller is reused only for a request with the same configuration, so every field applies to the call(s) of exactly this configuration.
+//
+// Every field is <code>optional</code>. An unset field sends nothing, and the container&apos;s built-in default applies. <code>register_interval_seconds</code> has a deployment-wide setting (<code>ONDEWO_VTSI_SIP_REGISTER_INTERVAL_S</code>), which a set value wins over. For the two live call audio stream limits the deployment&apos;s own limit applies in addition, so the stricter of the two wins. A value outside its range (including NaN for a float field) is refused with <code>INVALID_ARGUMENT</code> naming the field.
+//
+// The defaults are the recommended values; most integrations leave this message unset.
 message SipVtsiConfig{
 
     // Optional: Milliseconds of audio the sound device&apos;s playback buffer holds for the caller&apos;s audio on
@@ -426,17 +373,11 @@ message SipVtsiConfig{
     optional uint32 call_audio_stream_max_duration_seconds = 8;
 }
 
-// <p>How the bot of a call takes turns, lets the caller interrupt it, times its answers, reads the caller&apos;s
-// keypad and transfers the call: turn detection, interruption (barge-in) handling, response timing, answering
-// machine detection, DTMF keys, warm intros and the transfers the bot starts itself.</p>
-// <p>Scope: set in the <code>CommonServicesConfig</code> of a listener, it applies to every inbound call that
-// listener deployment serves; set for a caller, a campaign or a scheduled caller, it applies to each of its own
-// calls. A pooled persistent caller is reused only for a request with an identical configuration, so two requests
-// that differ here never share a caller.</p>
-// <p>Precedence: every sub-message and every field is optional, and unset means inherit. A set per-call value wins
-// over the deployment&apos;s <code>ONDEWO_VTSI_*</code> setting for the same behaviour (where one exists), which
-// wins over the built-in default. A value outside its documented range is refused with
-// <code>INVALID_ARGUMENT</code>.</p>
+// How the bot of a call takes turns, lets the caller interrupt it, times its answers, reads the caller&apos;s keypad and transfers the call: turn detection, interruption (barge-in) handling, response timing, answering machine detection, DTMF keys, warm intros and the transfers the bot starts itself.
+//
+// Scope: set in the <code>CommonServicesConfig</code> of a listener, it applies to every inbound call that listener deployment serves; set for a caller, a campaign or a scheduled caller, it applies to each of its own calls. A pooled persistent caller is reused only for a request with an identical configuration, so two requests that differ here never share a caller.
+//
+// Precedence: every sub-message and every field is optional, and unset means inherit. A set per-call value wins over the deployment&apos;s <code>ONDEWO_VTSI_*</code> setting for the same behaviour (where one exists), which wins over the built-in default. A value outside its documented range is refused with <code>INVALID_ARGUMENT</code>.
 message VoiceInteractionConfig{
 
     // When the caller&apos;s turn is over and the bot may answer: turn detection mode, endpointing delays, partial
@@ -473,24 +414,13 @@ message VoiceInteractionConfig{
     BotTransferConfig bot_transfer_config = 7;
 }
 
-// <p>The transfers the bot of a call starts itself, i.e. a transfer the NLU agent or an LLM agent decides on during
-// the conversation. A transfer a client requests with <code>TransferCall</code> is not affected (its wait is the
-// deployment&apos;s <code>ONDEWO_VTSI_TRANSFER_OUTCOME_TIMEOUT_MS</code>).</p>
-// <p>What the caller experiences: the bot sends the transfer to the phone system and waits up to
-// <code>outcome_timeout_ms</code> for its answer. Accepted: the caller is handed over to the target and the bot
-// leaves the call. Rejected (e.g. the target does not exist): the call stays up and <code>failed_action</code>
-// decides what happens next. No answer in time: the call stays up as well (if the phone system accepts the
-// transfer later, the caller is still handed over and the bot leaves); <code>continue</code> and
-// <code>exit</code> then keep the call with the bot, <code>hangup</code> ends it. A transfer refused because
-// invited participants are in the call always keeps the call, whatever <code>failed_action</code> says. When the
-// call&apos;s warm transfer configuration asks for warm intros on the bot&apos;s transfers, the bot&apos;s transfer
-// is handed to that warm intro instead and the call stays with the bot meanwhile.</p>
-// <p>Scope and precedence as in <code>VoiceInteractionConfig</code>; these fields have no deployment setting, so
-// unset means the built-in default. Every field is <code>optional</code>, and a value outside its range is refused
-// with <code>INVALID_ARGUMENT</code>.</p>
-// <p>Example: to send a caller whose transfer failed to the project&apos;s exit extension (e.g. a queue) rather
-// than back to the bot, and to wait up to 8 s for the phone system:
-// <code>outcome_timeout_ms: 8000, failed_action: &quot;exit&quot;</code></p>
+// The transfers the bot of a call starts itself, i.e. a transfer the NLU agent or an LLM agent decides on during the conversation. A transfer a client requests with <code>TransferCall</code> is not affected (its wait is the deployment&apos;s <code>ONDEWO_VTSI_TRANSFER_OUTCOME_TIMEOUT_MS</code>).
+//
+// What the caller experiences: the bot sends the transfer to the phone system and waits up to <code>outcome_timeout_ms</code> for its answer. Accepted: the caller is handed over to the target and the bot leaves the call. Rejected (e.g. the target does not exist): the call stays up and <code>failed_action</code> decides what happens next. No answer in time: the call stays up as well (if the phone system accepts the transfer later, the caller is still handed over and the bot leaves); <code>continue</code> and <code>exit</code> then keep the call with the bot, <code>hangup</code> ends it. A transfer refused because invited participants are in the call always keeps the call, whatever <code>failed_action</code> says. When the call&apos;s warm transfer configuration asks for warm intros on the bot&apos;s transfers, the bot&apos;s transfer is handed to that warm intro instead and the call stays with the bot meanwhile.
+//
+// Scope and precedence as in <code>VoiceInteractionConfig</code>; these fields have no deployment setting, so unset means the built-in default. Every field is <code>optional</code>, and a value outside its range is refused with <code>INVALID_ARGUMENT</code>.
+//
+// Example: to send a caller whose transfer failed to the project&apos;s exit extension (e.g. a queue) rather than back to the bot, and to wait up to 8 s for the phone system: <code>outcome_timeout_ms: 8000, failed_action: &quot;exit&quot;</code>
 message BotTransferConfig{
 
     // Optional: Milliseconds a bot transfer waits for the phone system to accept or reject it before the call is
@@ -518,31 +448,18 @@ message BotTransferConfig{
     optional float warm_transfer_outcome_commit_timeout_seconds = 3;
 }
 
-// <p>How the call treats the DTMF keys (the telephone keypad) the caller presses. Keys let a caller answer a menu
-// (&quot;for sales press 1, for support press 2&quot;) or type a value such as a PIN or a customer number instead of
-// speaking it.</p>
-// <p>A key reaches the bot only when the bot&apos;s LAST answer asked for keys: a key menu or a key entry, declared
-// in the ONDEWO NLU agent by the intent tags <code>ondewo-voice:dtmf-menu:&lt;id&gt;</code> /
-// <code>ondewo-voice:dtmf-digits:&lt;id&gt;</code> (or by an AI team through its <code>c-voice-turn</code>
-// context). The finished choice or entry is then sent to the NLU as the caller&apos;s turn, by default as the text
-// <code>[DTMF:&lt;keys&gt;]</code> (<code>*</code> and <code>#</code> spelled <code>STAR</code> and
-// <code>HASH</code>, an invalid entry as <code>[DTMF:INVALID]</code>), together with a one-turn context
-// <code>c-dtmf</code>. A menu key is sent at once; a key entry is sent when the caller presses the terminator
-// (<code>#</code> by default), reaches the declared maximum number of keys, or stops pressing for
-// <code>inter_digit_timeout_ms</code>. Keys are never written to a log in clear.</p>
-// <p>While a key entry is open, and shortly after a key turn, the caller&apos;s speech is not sent to the NLU: a key
-// wins its turn. Keys are also ignored while answering machine detection is still deciding on an outbound
-// call.</p>
-// <p>Scope: applies to every call of the deployment it is set on: every inbound call a listener serves, every call
-// of a caller, a campaign or a scheduled caller. A pooled persistent caller is only reused for a call with an
-// identical configuration.</p>
-// <p>Every field is <code>optional</code>. A field left unset inherits: the deployment&apos;s
-// <code>ONDEWO_VTSI_CSI_DTMF_*</code> / <code>ONDEWO_VTSI_SIP_DTMF_FORWARD_ACTIVE</code> setting where one exists
-// and is set, else the built-in default listed per field. A set value always wins over the deployment setting.
-// Leaving the whole message unset keeps the deployment settings, and without them gives the built-in behaviour:
-// keys on, a key interrupts the bot, keys the bot did not ask for are ignored.</p>
-// <p>Example: a bot that must let the caller finish listening before keys count, and that treats every key as a
-// menu choice even when no menu was declared:</p>
+// How the call treats the DTMF keys (the telephone keypad) the caller presses. Keys let a caller answer a menu (&quot;for sales press 1, for support press 2&quot;) or type a value such as a PIN or a customer number instead of speaking it.
+//
+// A key reaches the bot only when the bot&apos;s LAST answer asked for keys: a key menu or a key entry, declared in the ONDEWO NLU agent by the intent tags <code>ondewo-voice:dtmf-menu:&lt;id&gt;</code> / <code>ondewo-voice:dtmf-digits:&lt;id&gt;</code> (or by an AI team through its <code>c-voice-turn</code> context). The finished choice or entry is then sent to the NLU as the caller&apos;s turn, by default as the text <code>[DTMF:&lt;keys&gt;]</code> (<code>*</code> and <code>#</code> spelled <code>STAR</code> and <code>HASH</code>, an invalid entry as <code>[DTMF:INVALID]</code>), together with a one-turn context <code>c-dtmf</code>. A menu key is sent at once; a key entry is sent when the caller presses the terminator (<code>#</code> by default), reaches the declared maximum number of keys, or stops pressing for <code>inter_digit_timeout_ms</code>. Keys are never written to a log in clear.
+//
+// While a key entry is open, and shortly after a key turn, the caller&apos;s speech is not sent to the NLU: a key wins its turn. Keys are also ignored while answering machine detection is still deciding on an outbound call.
+//
+// Scope: applies to every call of the deployment it is set on: every inbound call a listener serves, every call of a caller, a campaign or a scheduled caller. A pooled persistent caller is only reused for a call with an identical configuration.
+//
+// Every field is <code>optional</code>. A field left unset inherits: the deployment&apos;s <code>ONDEWO_VTSI_CSI_DTMF_*</code> / <code>ONDEWO_VTSI_SIP_DTMF_FORWARD_ACTIVE</code> setting where one exists and is set, else the built-in default listed per field. A set value always wins over the deployment setting. Leaving the whole message unset keeps the deployment settings, and without them gives the built-in behaviour: keys on, a key interrupts the bot, keys the bot did not ask for are ignored.
+//
+// Example: a bot that must let the caller finish listening before keys count, and that treats every key as a menu choice even when no menu was declared:
+//
 // <pre><code>dtmf_config { barge_in: false undeclared_policy: &quot;COMMIT_SINGLE&quot; }</code></pre>
 message DtmfConfig{
 
@@ -608,80 +525,23 @@ message DtmfConfig{
     optional string text_template = 6;
 }
 
-// <p>Warm intro of a WARM transfer: after the human target answered and before the target is joined, an ONDEWO bot
-// (a free listener of the project, in an NLU session of its own) greets the target, confirms that a person is on
-// the line, briefs them (who calls and why), asks whether they accept the call and, on a decline, asks what to tell
-// the caller. Meanwhile the caller stays with the paused bot of the call and hears only what
-// <code>caller_disclosure_message</code>, <code>caller_hold_message</code> and <code>caller_hold_music</code>
-// configure (silence by default). On accept the caller hears <code>caller_accepted_message</code>, the target is
-// joined and the bot leaves as in every WARM transfer; on a decline, no decision or an unreachable target the target
-// is hung up and the call stays with the bot, which tells the caller (<code>caller_declined_message</code> /
-// <code>caller_unreachable_message</code>) and goes on with the conversation.</p>
-// <p>The conversation with the target, step by step, with the default settings:</p>
-// <pre>
-// 1. ready_question   &quot;... Ich habe einen Anruf für Sie. Sind Sie am Apparat? Sagen Sie ja oder drücken
-//                     Sie 1.&quot;
-//                     yes / key 1: go on; anything else: asked once more; no answer within decision_timeout_s or
-//                     a second unclear answer: NO_DECISION (a mailbox is suspected)
-// 2. briefing + accept_question
-//                     &quot;{caller_name} möchte mit Ihnen sprechen. Es geht um {topic}. Möchten Sie das Gespräch
-//                     übernehmen? Ja oder 1, nein oder 2.&quot;
-//                     yes / key 1: ACCEPTED; no / key 2: step 3; unclear: asked once more, then NO_DECISION
-// 3. decline_reason_question  &quot;Was darf ich dem Anrufer ausrichten?&quot;
-//                     whatever the target says next is the reason; silence: a decline without a reason
-// </pre>
-// <p>Levels: unset fields inherit, the most specific level winning per field (protobuf <code>MergeFrom</code>):
-// <code>TransferCallRequest.warm_transfer_config</code> (one transfer) &gt;
-// <code>VoiceInteractionConfig.warm_transfer_config</code> of the call (listener, caller, campaign, scheduled caller)
-// &gt; <code>VtsiProject.warm_transfer_defaults</code> &gt; the built-in defaults documented at each field. The
-// texts <code>ready_question</code>, <code>accept_question</code>, <code>decline_reason_question</code>,
-// <code>caller_declined_message</code> and <code>caller_unreachable_message</code> have one more level between the
-// project and the built-in text: the warm transfer settings of the ONDEWO NLU agent, in the intro&apos;s language.
-// The built-in texts exist in German and English; any other language gets the English one. The deployment settings
-// <code>ONDEWO_VTSI_WARM_TRANSFER_*</code> are not field defaults: they switch the feature on and off and govern
-// how many listeners are kept free (below). A LISTENER&apos;s config applies to every inbound call that listener
-// serves, a caller&apos;s, campaign&apos;s or scheduled caller&apos;s config to its own calls; a pooled persistent
-// caller is only reused for a call with an identical configuration.</p>
-// <p>Example: the project sets <code>warm_transfer_defaults { enabled: true caller_hold_message: &quot;Einen Moment
-// bitte, ich kündige Sie an.&quot; }</code>; one campaign sets <code>warm_transfer_config { decision_timeout_s: 30
-// }</code>. A WARM transfer of that campaign then runs an intro with the project&apos;s hold message and a 30 s
-// decision timeout, and every other field at its default.</p>
-// <p>Requires the deployment switch <code>ONDEWO_VTSI_WARM_TRANSFER_ENABLED=true</code> (default
-// <code>false</code>); otherwise an explicit <code>enabled=true</code> is refused with
-// <code>FAILED_PRECONDITION</code> <code>reason=warm-intro-disabled</code>, at every level (also on
-// <code>UpdateVtsiProject</code>), and a value stored before the switch was turned off is ignored: every WARM
-// transfer behaves exactly as before 9.5.0. <code>VtsiProject.feature_availability.warm_intro</code> says up front
-// whether warm intros can run in a project. Fields marked <i>phase B</i> (<code>intro_text_source =
-// WARM_INTRO_TEXT_SOURCE_LLM_SUMMARY</code>, <code>caller_hold_music = true</code>, a non-empty
-// <code>llm_ccai_service_name</code>) are refused with <code>FAILED_PRECONDITION</code>
-// <code>reason=phase-b-not-enabled</code> while the deployment has not enabled phase B
-// (<code>ONDEWO_VTSI_WARM_TRANSFER_PHASE_B</code>,
-// <code>VtsiProject.feature_availability.warm_intro_phase_b</code>).</p>
-// <p>A WARM transfer with an enabled intro is refused before anything rings when the target is not a person
-// (<code>INVALID_ARGUMENT</code> <code>reason=warm-intro-target-not-human</code>: only a phone number or a softphone
-// account can be briefed) and with <code>FAILED_PRECONDITION</code> when in-call control is not configured
-// (<code>ONDEWO_VTSI_CALL_CONTROL_KEY</code>, <code>reason=call-control-disabled</code>), the call has no live NLU
-// session (<code>no-nlu-session</code>), the project has no listener to spare (<code>warm-intro-needs-listener</code>),
-// a listener the intro may reach uses another NLU project than the call (<code>warm-intro-cross-project</code>) or the
-// call cannot tell the caller the outcome (<code>warm-intro-notice-unsupported</code>: an older component, or a
-// listener or pooled caller deployed before warm intros were switched on in the deployment; such a container
-// refuses warm intros until it is redeployed). What
-// can only fail once the transfer runs (no listener free at that moment, the NLU agent has warm intros switched off,
-// the intro could not be prepared within <code>ONDEWO_VTSI_WARM_TRANSFER_PREPARE_TIMEOUT_S</code>, default 6 s) makes
-// the intro unavailable, and <code>on_intro_unavailable</code> decides.</p>
-// <p>Texts are spoken by text-to-speech: what the target hears in the voice and language of the intro bot, what the
-// caller hears (<code>caller_disclosure_message</code>, <code>caller_hold_message</code>,
-// <code>caller_accepted_message</code>) in the voice and language of the call. The placeholders are
-// <code>{project}</code>, <code>{caller_name}</code>, <code>{callee_name}</code>, <code>{topic}</code>,
-// <code>{summary}</code> and <code>{reason}</code>, where a field lists them; any other placeholder is refused with
-// <code>INVALID_ARGUMENT</code> <code>reason=unknown-placeholder</code>. A text must not contain SIP markup
-// (<code>&lt;SIP:</code>): refused with <code>INVALID_ARGUMENT</code> <code>reason=sip-markup</code>. No text of an
-// intro (the briefing, the decline reason) is ever stored by VTSI, logged, sent in an event or a SIP header: it
-// lives only in the intro bot&apos;s NLU session.</p>
-// <p>Every scalar is <code>optional</code>: unset inherits, a set value (also <code>&quot;&quot;</code> or
-// <code>0</code>) is that level&apos;s value. Values outside a documented range are refused with
-// <code>INVALID_ARGUMENT</code> (<code>reason=out-of-range</code>, <code>text-too-long</code>, ...), naming the
-// field.</p>
+// Warm intro of a WARM transfer: after the human target answered and before the target is joined, an ONDEWO bot (a free listener of the project, in an NLU session of its own) greets the target, confirms that a person is on the line, briefs them (who calls and why), asks whether they accept the call and, on a decline, asks what to tell the caller. Meanwhile the caller stays with the paused bot of the call and hears only what <code>caller_disclosure_message</code>, <code>caller_hold_message</code> and <code>caller_hold_music</code> configure (silence by default). On accept the caller hears <code>caller_accepted_message</code>, the target is joined and the bot leaves as in every WARM transfer; on a decline, no decision or an unreachable target the target is hung up and the call stays with the bot, which tells the caller (<code>caller_declined_message</code> / <code>caller_unreachable_message</code>) and goes on with the conversation.
+//
+// The conversation with the target, step by step, with the default settings:
+//
+// <pre>&#10;1. ready_question   &quot;... Ich habe einen Anruf für Sie. Sind Sie am Apparat? Sagen Sie ja oder drücken&#10;                    Sie 1.&quot;&#10;                    yes / key 1: go on; anything else: asked once more; no answer within decision_timeout_s or&#10;                    a second unclear answer: NO_DECISION (a mailbox is suspected)&#10;2. briefing + accept_question&#10;                    &quot;{caller_name} möchte mit Ihnen sprechen. Es geht um {topic}. Möchten Sie das Gespräch&#10;                    übernehmen? Ja oder 1, nein oder 2.&quot;&#10;                    yes / key 1: ACCEPTED; no / key 2: step 3; unclear: asked once more, then NO_DECISION&#10;3. decline_reason_question  &quot;Was darf ich dem Anrufer ausrichten?&quot;&#10;                    whatever the target says next is the reason; silence: a decline without a reason&#10;</pre>
+//
+// Levels: unset fields inherit, the most specific level winning per field (protobuf <code>MergeFrom</code>): <code>TransferCallRequest.warm_transfer_config</code> (one transfer) &gt; <code>VoiceInteractionConfig.warm_transfer_config</code> of the call (listener, caller, campaign, scheduled caller) &gt; <code>VtsiProject.warm_transfer_defaults</code> &gt; the built-in defaults documented at each field. The texts <code>ready_question</code>, <code>accept_question</code>, <code>decline_reason_question</code>, <code>caller_declined_message</code> and <code>caller_unreachable_message</code> have one more level between the project and the built-in text: the warm transfer settings of the ONDEWO NLU agent, in the intro&apos;s language. The built-in texts exist in German and English; any other language gets the English one. The deployment settings <code>ONDEWO_VTSI_WARM_TRANSFER_*</code> are not field defaults: they switch the feature on and off and govern how many listeners are kept free (below). A LISTENER&apos;s config applies to every inbound call that listener serves, a caller&apos;s, campaign&apos;s or scheduled caller&apos;s config to its own calls; a pooled persistent caller is only reused for a call with an identical configuration.
+//
+// Example: the project sets <code>warm_transfer_defaults { enabled: true caller_hold_message: &quot;Einen Moment bitte, ich kündige Sie an.&quot; }</code>; one campaign sets <code>warm_transfer_config { decision_timeout_s: 30 }</code>. A WARM transfer of that campaign then runs an intro with the project&apos;s hold message and a 30 s decision timeout, and every other field at its default.
+//
+// Requires the deployment switch <code>ONDEWO_VTSI_WARM_TRANSFER_ENABLED=true</code> (default <code>false</code>); otherwise an explicit <code>enabled=true</code> is refused with <code>FAILED_PRECONDITION</code> <code>reason=warm-intro-disabled</code>, at every level (also on <code>UpdateVtsiProject</code>), and a value stored before the switch was turned off is ignored: every WARM transfer behaves exactly as before 9.5.0. <code>VtsiProject.feature_availability.warm_intro</code> says up front whether warm intros can run in a project. Fields marked <i>phase B</i> (<code>intro_text_source = WARM_INTRO_TEXT_SOURCE_LLM_SUMMARY</code>, <code>caller_hold_music = true</code>, a non-empty <code>llm_ccai_service_name</code>) are refused with <code>FAILED_PRECONDITION</code> <code>reason=phase-b-not-enabled</code> while the deployment has not enabled phase B (<code>ONDEWO_VTSI_WARM_TRANSFER_PHASE_B</code>, <code>VtsiProject.feature_availability.warm_intro_phase_b</code>).
+//
+// A WARM transfer with an enabled intro is refused before anything rings when the target is not a person (<code>INVALID_ARGUMENT</code> <code>reason=warm-intro-target-not-human</code>: only a phone number or a softphone account can be briefed) and with <code>FAILED_PRECONDITION</code> when in-call control is not configured (<code>ONDEWO_VTSI_CALL_CONTROL_KEY</code>, <code>reason=call-control-disabled</code>), the call has no live NLU session (<code>no-nlu-session</code>), the project has no listener to spare (<code>warm-intro-needs-listener</code>), a listener the intro may reach uses another NLU project than the call (<code>warm-intro-cross-project</code>) or the call cannot tell the caller the outcome (<code>warm-intro-notice-unsupported</code>: an older component, or a listener or pooled caller deployed before warm intros were switched on in the deployment; such a container refuses warm intros until it is redeployed). What can only fail once the transfer runs (no listener free at that moment, the NLU agent has warm intros switched off, the intro could not be prepared within <code>ONDEWO_VTSI_WARM_TRANSFER_PREPARE_TIMEOUT_S</code>, default 6 s) makes the intro unavailable, and <code>on_intro_unavailable</code> decides.
+//
+// Texts are spoken by text-to-speech: what the target hears in the voice and language of the intro bot, what the caller hears (<code>caller_disclosure_message</code>, <code>caller_hold_message</code>, <code>caller_accepted_message</code>) in the voice and language of the call. The placeholders are <code>{project}</code>, <code>{caller_name}</code>, <code>{callee_name}</code>, <code>{topic}</code>, <code>{summary}</code> and <code>{reason}</code>, where a field lists them; any other placeholder is refused with <code>INVALID_ARGUMENT</code> <code>reason=unknown-placeholder</code>. A text must not contain SIP markup (<code>&lt;SIP:</code>): refused with <code>INVALID_ARGUMENT</code> <code>reason=sip-markup</code>. No text of an intro (the briefing, the decline reason) is ever stored by VTSI, logged, sent in an event or a SIP header: it lives only in the intro bot&apos;s NLU session.
+//
+// Every scalar is <code>optional</code>: unset inherits, a set value (also <code>&quot;&quot;</code> or <code>0</code>) is that level&apos;s value. Values outside a documented range are refused with <code>INVALID_ARGUMENT</code> (<code>reason=out-of-range</code>, <code>text-too-long</code>, ...), naming the field.
 message WarmTransferConfig {
 
     // Master switch of the warm intro: <code>true</code> turns every WARM transfer on this level into a WARM
@@ -864,7 +724,7 @@ message WarmTransferConfig {
     repeated string intro_listener_names = 25;
 }
 
-// <p>How the briefing of a warm intro is produced</p>
+// How the briefing of a warm intro is produced
 enum WarmIntroTextSource {
 
     // Chosen by the deployment: <code>WARM_INTRO_TEXT_SOURCE_LLM_SUMMARY</code> with phase B enabled, else
@@ -880,7 +740,7 @@ enum WarmIntroTextSource {
     WARM_INTRO_TEXT_SOURCE_LLM_SUMMARY = 2;
 }
 
-// <p>What a WARM transfer does when its warm intro cannot run</p>
+// What a WARM transfer does when its warm intro cannot run
 enum WarmIntroUnavailablePolicy {
 
     // Same as <code>WARM_INTRO_UNAVAILABLE_POLICY_CONNECT_WITHOUT_INTRO</code>
@@ -897,7 +757,7 @@ enum WarmIntroUnavailablePolicy {
     WARM_INTRO_UNAVAILABLE_POLICY_RETURN_TO_CALLER = 2;
 }
 
-// <p>The target&apos;s decision in a warm intro</p>
+// The target&apos;s decision in a warm intro
 enum WarmIntroDecision {
 
     // No decision: the intro still runs, it never started, the target never answered or hung up before deciding
@@ -917,7 +777,7 @@ enum WarmIntroDecision {
     WARM_INTRO_DECISION_NO_DECISION = 3;
 }
 
-// <p>How the decision of a warm intro was taken</p>
+// How the decision of a warm intro was taken
 enum WarmIntroDecidedBy {
 
     // Not decided
@@ -933,8 +793,7 @@ enum WarmIntroDecidedBy {
     WARM_INTRO_DECIDED_BY_TIMEOUT = 3;
 }
 
-// <p>Audit of one warm intro, in <code>CallTransferRecord.warm_intro</code>. Output only. Holds NO intro text and NO
-// decline reason text.</p>
+// Audit of one warm intro, in <code>CallTransferRecord.warm_intro</code>. Output only. Holds NO intro text and NO decline reason text.
 message WarmIntroRecord {
 
     // Id of the intro: the participant id of the target&apos;s leg (the <code>participant_id</code> of the events)
@@ -986,32 +845,19 @@ message WarmIntroRecord {
     bool intro_started = 12;
 }
 
-// <p>Configuration of the turn detection of a call, i.e. how the bot decides that the caller has finished speaking and
-// that it is its turn to answer. Too eager, and the bot answers a caller who only paused (&quot;Ich möchte ... einen
-// Termin am Dienstag&quot; becomes two turns); too patient, and the caller waits in silence for every answer.</p>
-// <p>Two services take part: the speech-to-text service ends an utterance after a silence (voice activity
-// detection) and, with a turn detection model, judges whether the words so far are a finished turn; the
-// speech-to-speech service of the call decides which final transcription becomes ONE turn for the NLU, and when the
-// caller may interrupt the bot.</p>
-// <p>Presence and precedence: every <code>optional</code> field is applied only when it is set; an unset field
-// inherits, in this order, the deployment setting of the VTSI server (the <code>ONDEWO_VTSI_*</code> variable named at
-// the field, where one exists), then the built-in default of the service that applies it. A set per-call value wins
-// over the deployment setting. Leaving the whole message unset keeps the deployment&apos;s turn detection: the
-// deployment-wide turn detection model when the operator switched it on
-// (<code>ONDEWO_VTSI_S2T_TURN_DETECTION_ACTIVE</code>), else the speech-to-text pipeline&apos;s own silence detection.
-// Setting the message at all also asks the speech-to-text service for partial transcriptions and the start of
-// speech, which every timer of the turn detection needs.</p>
-// <p>Scope: the configuration of a LISTENER applies to every inbound call that listener deployment serves; the one of
-// a caller, a campaign or a scheduled caller to each of its own calls. A pooled persistent caller is only reused for
-// a call with an identical configuration.</p>
-// <p>Validation: a value outside its range, and a field that only the semantic turn detection model reads set
-// together with the mode <code>VAD</code> or <code>AUDIO_MODEL</code>, are refused with
-// <code>INVALID_ARGUMENT</code>.</p>
-// <p>Example, a line that collects phone numbers and wants patient turn taking:</p>
-// <pre><code>mode: SEMANTIC_MODEL
-// turn_eagerness: PATIENT
-// final_merge_window_seconds: 0.7
-// dictation_config { hold_enabled: true expected_input_enabled: true }</code></pre>
+// Configuration of the turn detection of a call, i.e. how the bot decides that the caller has finished speaking and that it is its turn to answer. Too eager, and the bot answers a caller who only paused (&quot;Ich möchte ... einen Termin am Dienstag&quot; becomes two turns); too patient, and the caller waits in silence for every answer.
+//
+// Two services take part: the speech-to-text service ends an utterance after a silence (voice activity detection) and, with a turn detection model, judges whether the words so far are a finished turn; the speech-to-speech service of the call decides which final transcription becomes ONE turn for the NLU, and when the caller may interrupt the bot.
+//
+// Presence and precedence: every <code>optional</code> field is applied only when it is set; an unset field inherits, in this order, the deployment setting of the VTSI server (the <code>ONDEWO_VTSI_*</code> variable named at the field, where one exists), then the built-in default of the service that applies it. A set per-call value wins over the deployment setting. Leaving the whole message unset keeps the deployment&apos;s turn detection: the deployment-wide turn detection model when the operator switched it on (<code>ONDEWO_VTSI_S2T_TURN_DETECTION_ACTIVE</code>), else the speech-to-text pipeline&apos;s own silence detection. Setting the message at all also asks the speech-to-text service for partial transcriptions and the start of speech, which every timer of the turn detection needs.
+//
+// Scope: the configuration of a LISTENER applies to every inbound call that listener deployment serves; the one of a caller, a campaign or a scheduled caller to each of its own calls. A pooled persistent caller is only reused for a call with an identical configuration.
+//
+// Validation: a value outside its range, and a field that only the semantic turn detection model reads set together with the mode <code>VAD</code> or <code>AUDIO_MODEL</code>, are refused with <code>INVALID_ARGUMENT</code>.
+//
+// Example, a line that collects phone numbers and wants patient turn taking:
+//
+// <pre><code>mode: SEMANTIC_MODEL&#10;turn_eagerness: PATIENT&#10;final_merge_window_seconds: 0.7&#10;dictation_config { hold_enabled: true expected_input_enabled: true }</code></pre>
 message TurnDetectionConfig{
 
     // How the end of the caller&apos;s turn is detected
@@ -1244,8 +1090,7 @@ message TurnDetectionConfig{
     // outside the range is refused with <code>INVALID_ARGUMENT</code>
     optional float post_unmute_phantom_window_seconds = 20;
 
-    // Hold bands of an end-of-utterance turn detection model (see <code>hold_bands</code>). The message is a
-    // wrapper so that &quot;no bands&quot; can be told apart from &quot;unset&quot;
+    // Hold bands of an end-of-utterance turn detection model (see <code>hold_bands</code>). The message is a wrapper so that &quot;no bands&quot; can be told apart from &quot;unset&quot;
     message EndOfTurnHoldBands {
 
         // The bands (at most 10, in any order). They are sorted by <code>upper_probability</code>, and the first
@@ -1268,26 +1113,15 @@ message TurnDetectionConfig{
     }
 }
 
-// <p>Configuration of the dictation hold of a call. A caller who dictates a value often pauses 1 - 2.5 s between its
-// groups (&quot;null sechs sechs vier ... eins zwei drei ...&quot;), and the speech-to-text service ends an
-// utterance at every such pause, so without the hold the bot answers half a phone number. With the hold, a final
-// transcription whose dictated value is not complete yet is held until the caller continues, and the groups reach
-// the NLU as ONE turn; a complete value is released at once (a value that is only weakly complete is held at most
-// <code>hold_generic_max_seconds</code>). The value recognition is German (number words, spelled
-// letters, months); the hold is never applied while the bot speaks, and a caller who is not dictating costs no
-// latency.</p>
-// <p>How long a value is held depends on what the bot asked for: with <code>expected_input_enabled</code> the
-// expected value (slot) is read from each NLU answer and its category&apos;s cap applies; without a slot only the
-// generic rule holds (a trailing digit group after a lead-in such as &quot;Kundennummer&quot;, or a trailing
-// &quot;Stiege&quot;, &quot;Stock&quot;, &quot;Tür&quot;, &quot;am&quot;, &quot;um&quot;, ...).</p>
-// <p>Presence and precedence: every field is applied only when it is set; an unset field keeps the deployment
-// setting (the <code>ONDEWO_VTSI_CSI_DICTATION_*</code> variable named at the field), else the default. A set
-// per-call value wins over the deployment setting. A field that is out of range, and an unknown category, are refused
-// with <code>INVALID_ARGUMENT</code>.</p>
-// <p>Example, a line that collects IBANs from an agent whose prompts ask for them:</p>
-// <pre><code>hold_enabled: true
-// expected_input_enabled: true
-// hold_max_seconds_by_category { key: &quot;iban&quot; value: 4.0 }</code></pre>
+// Configuration of the dictation hold of a call. A caller who dictates a value often pauses 1 - 2.5 s between its groups (&quot;null sechs sechs vier ... eins zwei drei ...&quot;), and the speech-to-text service ends an utterance at every such pause, so without the hold the bot answers half a phone number. With the hold, a final transcription whose dictated value is not complete yet is held until the caller continues, and the groups reach the NLU as ONE turn; a complete value is released at once (a value that is only weakly complete is held at most <code>hold_generic_max_seconds</code>). The value recognition is German (number words, spelled letters, months); the hold is never applied while the bot speaks, and a caller who is not dictating costs no latency.
+//
+// How long a value is held depends on what the bot asked for: with <code>expected_input_enabled</code> the expected value (slot) is read from each NLU answer and its category&apos;s cap applies; without a slot only the generic rule holds (a trailing digit group after a lead-in such as &quot;Kundennummer&quot;, or a trailing &quot;Stiege&quot;, &quot;Stock&quot;, &quot;Tür&quot;, &quot;am&quot;, &quot;um&quot;, ...).
+//
+// Presence and precedence: every field is applied only when it is set; an unset field keeps the deployment setting (the <code>ONDEWO_VTSI_CSI_DICTATION_*</code> variable named at the field), else the default. A set per-call value wins over the deployment setting. A field that is out of range, and an unknown category, are refused with <code>INVALID_ARGUMENT</code>.
+//
+// Example, a line that collects IBANs from an agent whose prompts ask for them:
+//
+// <pre><code>hold_enabled: true&#10;expected_input_enabled: true&#10;hold_max_seconds_by_category { key: &quot;iban&quot; value: 4.0 }</code></pre>
 message DictationConfig{
 
     // Optional: Hold a final transcription whose dictated value is unfinished, up to the cap of its category (or
@@ -1367,37 +1201,19 @@ message DictationConfig{
     optional float s2t_slot_min_duration_off_restore_seconds = 9;
 }
 
-// <p>Interruption (barge-in) handling: what happens when the caller speaks while the bot is speaking. Off by
-// default: the caller is not listened to while the bot speaks, and speech never stops the bot. A DTMF key the bot
-// asked for still stops it (<code>DtmfConfig.barge_in</code>, on by default; set it to false as well for a
-// disclaimer that must be heard in full).</p>
-// <p>With <code>enabled=true</code>, caller speech over the bot goes through these steps:</p>
-// <p>(1) Is it an interruption? Speech within <code>first_message_protected_seconds</code> after the greeting
-// started, speech shorter than <code>min_interruption_duration_seconds</code> and sounds without words
-// (&quot;hmm&quot;, &quot;mhm&quot;) are ignored. Otherwise, with the turn detection mode <code>VAD</code> (and
-// whenever no semantic turn detection runs for the call), any recognised speech interrupts; with
-// <code>SEMANTIC_MODEL</code> or <code>AUDIO_MODEL</code> a final transcription with at least one word interrupts
-// at once, and a partial transcription interrupts once it has <code>min_interruption_words</code> words. Speech
-// that does not interrupt is dropped: the bot keeps talking and the speech is not answered.</p>
-// <p>(2) The bot pauses: its voice fades out over <code>interruption_fade_out_ms</code>, and the rest of its answer
-// is kept.</p>
-// <p>(3) Real or false? If the caller&apos;s speech becomes a complete turn (a final transcription) within
-// <code>false_interruption_timeout_seconds</code>, the interruption is REAL: the rest of the answer is discarded,
-// the bot stays silent for <code>backoff_seconds</code> and then answers what the caller said. Its synthesis is
-// cancelled (<code>t2s_cancel_on_barge_in</code>), and an NLU that supports it is told which turn was cut and what
-// the caller heard of it (<code>nlu_turn_control_enabled</code>, <code>heard_report_enabled</code>). If no turn is
-// committed in time, the interruption is FALSE (a cough, a short noise): with
-// <code>resume_after_false_interruption</code> the bot continues where its voice faded out, else the rest of the
-// answer is dropped, and then, as after a real one, its synthesis is cancelled and a call action it carries is
-// dropped (<code>t2s_cancel_on_barge_in</code>). The window waits for a caller who is still speaking: each partial
-// transcription that changes what the caller said extends it, up to twice
-// <code>false_interruption_timeout_seconds</code> (at most 9 s) after the interruption.</p>
-// <p>Example: let the caller interrupt, ignore anything shorter than 0.6 s, and never interrupt the first 3 s of
-// the greeting:
-// <code>enabled: true, min_interruption_duration_seconds: 0.6, first_message_protected_seconds: 3</code></p>
-// <p>Scope and precedence as in <code>VoiceInteractionConfig</code>: unset means inherit, i.e. the
-// deployment&apos;s <code>ONDEWO_VTSI_*</code> setting where a field names one, else the default given at the
-// field. A value outside a field&apos;s range is refused with <code>INVALID_ARGUMENT</code>.</p>
+// Interruption (barge-in) handling: what happens when the caller speaks while the bot is speaking. Off by default: the caller is not listened to while the bot speaks, and speech never stops the bot. A DTMF key the bot asked for still stops it (<code>DtmfConfig.barge_in</code>, on by default; set it to false as well for a disclaimer that must be heard in full).
+//
+// With <code>enabled=true</code>, caller speech over the bot goes through these steps:
+//
+// (1) Is it an interruption? Speech within <code>first_message_protected_seconds</code> after the greeting started, speech shorter than <code>min_interruption_duration_seconds</code> and sounds without words (&quot;hmm&quot;, &quot;mhm&quot;) are ignored. Otherwise, with the turn detection mode <code>VAD</code> (and whenever no semantic turn detection runs for the call), any recognised speech interrupts; with <code>SEMANTIC_MODEL</code> or <code>AUDIO_MODEL</code> a final transcription with at least one word interrupts at once, and a partial transcription interrupts once it has <code>min_interruption_words</code> words. Speech that does not interrupt is dropped: the bot keeps talking and the speech is not answered.
+//
+// (2) The bot pauses: its voice fades out over <code>interruption_fade_out_ms</code>, and the rest of its answer is kept.
+//
+// (3) Real or false? If the caller&apos;s speech becomes a complete turn (a final transcription) within <code>false_interruption_timeout_seconds</code>, the interruption is REAL: the rest of the answer is discarded, the bot stays silent for <code>backoff_seconds</code> and then answers what the caller said. Its synthesis is cancelled (<code>t2s_cancel_on_barge_in</code>), and an NLU that supports it is told which turn was cut and what the caller heard of it (<code>nlu_turn_control_enabled</code>, <code>heard_report_enabled</code>). If no turn is committed in time, the interruption is FALSE (a cough, a short noise): with <code>resume_after_false_interruption</code> the bot continues where its voice faded out, else the rest of the answer is dropped, and then, as after a real one, its synthesis is cancelled and a call action it carries is dropped (<code>t2s_cancel_on_barge_in</code>). The window waits for a caller who is still speaking: each partial transcription that changes what the caller said extends it, up to twice <code>false_interruption_timeout_seconds</code> (at most 9 s) after the interruption.
+//
+// Example: let the caller interrupt, ignore anything shorter than 0.6 s, and never interrupt the first 3 s of the greeting: <code>enabled: true, min_interruption_duration_seconds: 0.6, first_message_protected_seconds: 3</code>
+//
+// Scope and precedence as in <code>VoiceInteractionConfig</code>: unset means inherit, i.e. the deployment&apos;s <code>ONDEWO_VTSI_*</code> setting where a field names one, else the default given at the field. A value outside a field&apos;s range is refused with <code>INVALID_ARGUMENT</code>.
 message InterruptionHandlingConfig{
 
     // Optional: Let the caller interrupt (barge in on) the bot by speaking while it speaks (default: false). False:
@@ -1524,19 +1340,13 @@ message InterruptionHandlingConfig{
     optional bool heard_text_alignment_enabled = 15;
 }
 
-// Response timing of the call: what the bot does while the caller stays silent, how it bridges a slow answer, and
-// how an answer is requested from the NLU and streamed to the caller.
-// <p>Every scalar is <code>optional</code>: an unset field inherits, i.e. the call keeps the deployment&apos;s
-// value where a replica-wide <code>ONDEWO_VTSI_*</code> setting exists for it (named per field), and the built-in
-// default listed per field otherwise. A set value always wins over the deployment setting. A value outside its
-// range is refused with <code>INVALID_ARGUMENT</code>.</p>
-// <p>Scope: the configuration of a listener applies to every inbound call that listener deployment serves; the
-// configuration of a caller, a campaign or a scheduled caller applies to its own calls. A pooled persistent caller
-// is reused only for a request with the identical configuration.</p>
-// <p>The caller-silence windows (<code>turn_timeout_seconds</code>, <code>silence_end_call_timeout_seconds</code>)
-// restart whenever the caller speaks, presses a key or the bot plays audio, and never elapse while the bot is
-// speaking, an answer is being prepared or an interruption is being decided. While listening is paused through call
-// control, neither window and no soft-timeout filler fires.</p>
+// Response timing of the call: what the bot does while the caller stays silent, how it bridges a slow answer, and how an answer is requested from the NLU and streamed to the caller.
+//
+// Every scalar is <code>optional</code>: an unset field inherits, i.e. the call keeps the deployment&apos;s value where a replica-wide <code>ONDEWO_VTSI_*</code> setting exists for it (named per field), and the built-in default listed per field otherwise. A set value always wins over the deployment setting. A value outside its range is refused with <code>INVALID_ARGUMENT</code>.
+//
+// Scope: the configuration of a listener applies to every inbound call that listener deployment serves; the configuration of a caller, a campaign or a scheduled caller applies to its own calls. A pooled persistent caller is reused only for a request with the identical configuration.
+//
+// The caller-silence windows (<code>turn_timeout_seconds</code>, <code>silence_end_call_timeout_seconds</code>) restart whenever the caller speaks, presses a key or the bot plays audio, and never elapse while the bot is speaking, an answer is being prepared or an interruption is being decided. While listening is paused through call control, neither window and no soft-timeout filler fires.
 message ResponseTimingConfig{
 
     // Optional: Seconds of caller silence after which the bot re-engages the caller by triggering
@@ -1607,14 +1417,9 @@ message ResponseTimingConfig{
     optional int32 t2s_max_edge_silence_ms = 9;
 }
 
-// Soft timeout of the call: filler messages (e.g. &quot;One moment please.&quot;) the bot speaks while the answer
-// to a caller turn takes longer than <code>timeout_seconds</code> to prepare, so that the caller does not hear a
-// silent line. The timer starts when the NLU is asked for the answer and is stopped as soon as the answer starts
-// playing; a filler is never played after the answer. With interruptions enabled, the caller can interrupt a
-// filler like any other bot utterance.
-// <p>Example: <code>timeout_seconds=3</code>, <code>messages=[&quot;One moment please.&quot;, &quot;Let me check
-// that.&quot;]</code> and <code>max_per_generation=1</code> speak &quot;One moment please.&quot; when an answer is not
-// ready after 3 s, &quot;Let me check that.&quot; the next time it happens in the call, and then start over.</p>
+// Soft timeout of the call: filler messages (e.g. &quot;One moment please.&quot;) the bot speaks while the answer to a caller turn takes longer than <code>timeout_seconds</code> to prepare, so that the caller does not hear a silent line. The timer starts when the NLU is asked for the answer and is stopped as soon as the answer starts playing; a filler is never played after the answer. With interruptions enabled, the caller can interrupt a filler like any other bot utterance.
+//
+// Example: <code>timeout_seconds=3</code>, <code>messages=[&quot;One moment please.&quot;, &quot;Let me check that.&quot;]</code> and <code>max_per_generation=1</code> speak &quot;One moment please.&quot; when an answer is not ready after 3 s, &quot;Let me check that.&quot; the next time it happens in the call, and then start over.
 message SoftTimeoutConfig{
 
     // Optional: Seconds an answer may take before a filler message is played (default: off; valid range:
@@ -1635,60 +1440,27 @@ message SoftTimeoutConfig{
     optional int32 max_per_generation = 3;
 }
 
-// <p>Answering machine detection (AMD) of an outbound call: in the first seconds after the callee answered, the
-// call decides who or what picked up (a person, an answering machine, a fax, an automated menu (IVR), a call
-// screening assistant or a network announcement such as &quot;the number is not reachable&quot;) and can hang up on
-// the ones that are not a person, or leave a voice message on a mailbox.</p>
-// <p>How the call behaves while AMD decides: detection LISTENS first. The bot stays silent and nothing the callee
-// says reaches the NLU until a verdict is reached or the decision window ends; the bot&apos;s greeting therefore
-// starts only after the verdict. The possible verdicts and what happens with each:</p>
-// <ul>
-// <li>a person, no speech at all (<code>initial_silence_ms</code>) or no verdict in time (UNKNOWN): the call
-// continues with the bot&apos;s greeting like any other call; it is never hung up</li>
-// <li>an answering machine (MACHINE): hung up under <code>HANG_UP</code>; under <code>LEAVE_VOICE_MESSAGE</code> a
-// voice message is spoken first</li>
-// <li>a fax, a network announcement, an IVR or a call screening assistant: hung up (also under
-// <code>LEAVE_VOICE_MESSAGE</code>, without a message) only when its switch <code>hang_up_on_fax</code> /
-// <code>hang_up_on_network_announcement</code> / <code>hang_up_on_ivr</code> /
-// <code>hang_up_on_call_screening</code> is on; otherwise the call continues like a call to a person</li>
-// <li>under <code>DETECT_ONLY</code> nothing is ever hung up</li>
-// </ul>
-// <p>Reporting: the verdict is reported as <code>ondewo.sip.SipStatus.amd_result</code>. A verdict that would hang
-// up (MACHINE, or a verdict whose <code>hang_up_on_*</code> switch is on) sets the non-terminal status
-// <code>ondewo.sip.SipStatus.StatusType.OUTGOING_CALL_ANSWERING_MACHINE_DETECTED</code> (the call is still up),
-// also under <code>DETECT_ONLY</code>. A call ended by AMD reaches the terminal status
-// <code>OUTGOING_CALL_FINISHED</code> exactly once, with one of these descriptions, also recorded on the call as
-// <code>Call.answering_machine_detection_end_description</code>:</p>
-// <ul>
-// <li>&quot;Answering machine detected with hang up&quot;: the caller hung up without leaving a voice message</li>
-// <li>&quot;Answering machine detected with left voice message and hang up&quot;: the caller hung up after starting
-// the voice message</li>
-// <li>&quot;Answering machine detected, call ended by the answering machine&quot;: the far end hung up before a voice
-// message was started</li>
-// <li>&quot;Answering machine detected, call ended by the answering machine after leaving a voice message&quot;: the
-// far end hung up after the voice message was started</li>
-// </ul>
-// <p>Where it is accepted: only on a caller served by the caller pool (a pooled persistent caller), i.e.
-// <code>StartCaller</code> / <code>StartCallers</code> and the callers of a campaign while the deployment setting
-// <code>ONDEWO_VTSI_CALLER_PERSISTENT</code> is on (the default). On a listener (also in
-// <code>UpdateListener</code>), a scheduled caller, an <code>UpdateCaller</code> of a caller that is not pooled, or
-// while <code>ONDEWO_VTSI_CALLER_PERSISTENT</code> is off the request is refused with <code>INVALID_ARGUMENT</code>
-// (<code>reason=amd-requires-persistent-caller</code>) instead of placing calls that are silently not screened.
-// The settings are part of the pooled caller&apos;s configuration: callers with different AMD settings are never
-// pooled together, so a pooled caller is only reused for calls with identical settings.</p>
-// <p>Defaults and precedence: every scalar is <code>optional</code>. A field left unset inherits the
-// deployment&apos;s <code>ONDEWO_VTSI_AMD_&lt;FIELD&gt;</code> setting when the operator set one (e.g.
-// <code>ONDEWO_VTSI_AMD_SENSITIVITY</code>), else the built-in default listed per field. A set value always wins
-// over the deployment setting. Leaving the whole message unset runs no detection unless the deployment switched
-// it on with <code>ONDEWO_VTSI_AMD_ACTIVE</code>. A value outside a documented range is refused with
-// <code>INVALID_ARGUMENT</code>.</p>
-// <p>Example: screen a campaign and hang up on mailboxes and faxes, with the built-in tuning:</p>
+// Answering machine detection (AMD) of an outbound call: in the first seconds after the callee answered, the call decides who or what picked up (a person, an answering machine, a fax, an automated menu (IVR), a call screening assistant or a network announcement such as &quot;the number is not reachable&quot;) and can hang up on the ones that are not a person, or leave a voice message on a mailbox.
+//
+// How the call behaves while AMD decides: detection LISTENS first. The bot stays silent and nothing the callee says reaches the NLU until a verdict is reached or the decision window ends; the bot&apos;s greeting therefore starts only after the verdict. The possible verdicts and what happens with each:
+//
+// <ul> <li>a person, no speech at all (<code>initial_silence_ms</code>) or no verdict in time (UNKNOWN): the call continues with the bot&apos;s greeting like any other call; it is never hung up</li> <li>an answering machine (MACHINE): hung up under <code>HANG_UP</code>; under <code>LEAVE_VOICE_MESSAGE</code> a voice message is spoken first</li> <li>a fax, a network announcement, an IVR or a call screening assistant: hung up (also under <code>LEAVE_VOICE_MESSAGE</code>, without a message) only when its switch <code>hang_up_on_fax</code> / <code>hang_up_on_network_announcement</code> / <code>hang_up_on_ivr</code> / <code>hang_up_on_call_screening</code> is on; otherwise the call continues like a call to a person</li> <li>under <code>DETECT_ONLY</code> nothing is ever hung up</li> </ul>
+//
+// Reporting: the verdict is reported as <code>ondewo.sip.SipStatus.amd_result</code>. A verdict that would hang up (MACHINE, or a verdict whose <code>hang_up_on_*</code> switch is on) sets the non-terminal status <code>ondewo.sip.SipStatus.StatusType.OUTGOING_CALL_ANSWERING_MACHINE_DETECTED</code> (the call is still up), also under <code>DETECT_ONLY</code>. A call ended by AMD reaches the terminal status <code>OUTGOING_CALL_FINISHED</code> exactly once, with one of these descriptions, also recorded on the call as <code>Call.answering_machine_detection_end_description</code>:
+//
+// <ul> <li>&quot;Answering machine detected with hang up&quot;: the caller hung up without leaving a voice message</li> <li>&quot;Answering machine detected with left voice message and hang up&quot;: the caller hung up after starting the voice message</li> <li>&quot;Answering machine detected, call ended by the answering machine&quot;: the far end hung up before a voice message was started</li> <li>&quot;Answering machine detected, call ended by the answering machine after leaving a voice message&quot;: the far end hung up after the voice message was started</li> </ul>
+//
+// Where it is accepted: only on a caller served by the caller pool (a pooled persistent caller), i.e. <code>StartCaller</code> / <code>StartCallers</code> and the callers of a campaign while the deployment setting <code>ONDEWO_VTSI_CALLER_PERSISTENT</code> is on (the default). On a listener (also in <code>UpdateListener</code>), a scheduled caller, an <code>UpdateCaller</code> of a caller that is not pooled, or while <code>ONDEWO_VTSI_CALLER_PERSISTENT</code> is off the request is refused with <code>INVALID_ARGUMENT</code> (<code>reason=amd-requires-persistent-caller</code>) instead of placing calls that are silently not screened. The settings are part of the pooled caller&apos;s configuration: callers with different AMD settings are never pooled together, so a pooled caller is only reused for calls with identical settings.
+//
+// Defaults and precedence: every scalar is <code>optional</code>. A field left unset inherits the deployment&apos;s <code>ONDEWO_VTSI_AMD_&lt;FIELD&gt;</code> setting when the operator set one (e.g. <code>ONDEWO_VTSI_AMD_SENSITIVITY</code>), else the built-in default listed per field. A set value always wins over the deployment setting. Leaving the whole message unset runs no detection unless the deployment switched it on with <code>ONDEWO_VTSI_AMD_ACTIVE</code>. A value outside a documented range is refused with <code>INVALID_ARGUMENT</code>.
+//
+// Example: screen a campaign and hang up on mailboxes and faxes, with the built-in tuning:
+//
 // <pre><code>answering_machine_detection_config { active: true action: HANG_UP }</code></pre>
-// <p>To calibrate first, run the same campaign with <code>action: DETECT_ONLY</code>: every call is detected and
-// reported but every callee is greeted.</p>
-// <p>Compliance: leaving a recorded message on a consumer&apos;s mailbox for marketing purposes requires the consent
-// of the callee in many jurisdictions (e.g. in Germany § 7 UWG). <code>HANG_UP</code> is therefore the
-// default action.</p>
+//
+// To calibrate first, run the same campaign with <code>action: DETECT_ONLY</code>: every call is detected and reported but every callee is greeted.
+//
+// Compliance: leaving a recorded message on a consumer&apos;s mailbox for marketing purposes requires the consent of the callee in many jurisdictions (e.g. in Germany § 7 UWG). <code>HANG_UP</code> is therefore the default action.
 message AnsweringMachineDetectionConfig{
 
     // What the call does once a verdict is reached that is not a person
@@ -1723,9 +1495,7 @@ message AnsweringMachineDetectionConfig{
         LEAVE_VOICE_MESSAGE = 3;
     }
 
-    // How readily the detection decides that a machine answered. It selects which detection rules may hang up;
-    // the timing fields below are not changed by it. Whatever the sensitivity, a person-like answer, silence and
-    // an undecided call are never hung up on
+    // How readily the detection decides that a machine answered. It selects which detection rules may hang up; the timing fields below are not changed by it. Whatever the sensitivity, a person-like answer, silence and an undecided call are never hung up on
     enum AmdSensitivity {
 
         // Not set explicitly. As a value of <code>sensitivity</code> it selects the built-in default
@@ -1887,9 +1657,7 @@ message AnsweringMachineDetectionConfig{
     optional bool cadence_detection_active = 21;
 }
 
-// SIP side of a listener or caller: which version of the SIP container image carries the call. A listener is
-// started with this message alone (<code>StartListenerRequest.sip_base_config</code>); a caller needs the
-// callee as well and carries it inside <code>SipCallerConfig</code>.
+// SIP side of a listener or caller: which version of the SIP container image carries the call. A listener is started with this message alone (<code>StartListenerRequest.sip_base_config</code>); a caller needs the callee as well and carries it inside <code>SipCallerConfig</code>.
 message SipBaseConfig{
 
     // Optional: Tag of the SIP container image the call runs in, e.g. a semantic version (<code>5.1.0</code>,
@@ -1905,12 +1673,9 @@ message SipBaseConfig{
 
 }
 
-// SIP side of an outbound call: the SIP container image, whom to dial and the SIP headers of the INVITE. Used by
-// <code>StartCaller</code>, scheduled callers and campaigns (<code>Campaign.campaign_sip_caller_config</code>,
-// merged under each call&apos;s own value).
-// <p>Pooled persistent callers: <code>callee_id</code> and <code>sip_headers</code> are sent with each call and
-// are NOT part of the configuration a pooled caller is matched by, so calls to different callees, or with
-// different headers, can reuse the same caller; <code>sip_base_config</code> is part of it.</p>
+// SIP side of an outbound call: the SIP container image, whom to dial and the SIP headers of the INVITE. Used by <code>StartCaller</code>, scheduled callers and campaigns (<code>Campaign.campaign_sip_caller_config</code>, merged under each call&apos;s own value).
+//
+// Pooled persistent callers: <code>callee_id</code> and <code>sip_headers</code> are sent with each call and are NOT part of the configuration a pooled caller is matched by, so calls to different callees, or with different headers, can reuse the same caller; <code>sip_base_config</code> is part of it.
 message SipCallerConfig{
 
     // SIP container image of the call (see <code>SipBaseConfig</code>)
@@ -1940,14 +1705,11 @@ message SipCallerConfig{
 }
 
 
-// Configuration of the speech-to-speech service of a call (the service that streams the caller&apos;s audio to
-// speech-to-text, sends the transcriptions to the NLU and plays the synthesized answers): control messages,
-// preemptive generation, storage of the call audio and publishing of call events to a RabbitMQ message broker.
-// <p>Scope: the configuration of a LISTENER applies to every inbound call that listener deployment serves; the
-// configuration of a caller, a campaign or a scheduled caller applies to its own calls. A pooled (persistent)
-// caller is only reused for a request whose configuration is identical.</p>
-// <p>Unset fields inherit: the deployment-wide <code>ONDEWO_VTSI_*</code> setting where a field names one, else the
-// built-in default. A value set here wins over both for this call.</p>
+// Configuration of the speech-to-speech service of a call (the service that streams the caller&apos;s audio to speech-to-text, sends the transcriptions to the NLU and plays the synthesized answers): control messages, preemptive generation, storage of the call audio and publishing of call events to a RabbitMQ message broker.
+//
+// Scope: the configuration of a LISTENER applies to every inbound call that listener deployment serves; the configuration of a caller, a campaign or a scheduled caller applies to its own calls. A pooled (persistent) caller is only reused for a request whose configuration is identical.
+//
+// Unset fields inherit: the deployment-wide <code>ONDEWO_VTSI_*</code> setting where a field names one, else the built-in default. A value set here wins over both for this call.
 message CsiVtsiConfig{
 
     // Speech-to-text callbacks. Accepted and validated, but they have no effect: see <code>S2tVtsiCallbacks</code>
@@ -1987,18 +1749,11 @@ message CsiVtsiConfig{
 
 }
 
-// Preemptive (speculative) generation of the answer: on a stable partial transcription a draft answer is generated
-// before the caller&apos;s final transcription arrives, and played only when the final transcription matches it; a
-// draft that does not match is discarded and the caller hears nothing of it. A matching draft answers the caller
-// sooner; every draft costs an extra NLU request (and, unless switched off, a speech synthesis), also when it is
-// discarded. It never ends the caller&apos;s turn early.
-// <p>Every field is optional. An unset <code>enabled</code> keeps the deployment&apos;s setting (see the field); an
-// unset <code>commit_wait_timeout_seconds</code> keeps the built-in default given at the field. A value outside its
-// range is refused with <code>INVALID_ARGUMENT</code>. The NLU bounds (how many drafts a turn may start) are set with
-// <code>NluVtsiConfig.preemptive_generation_config</code>, the speech synthesis of a draft with
-// <code>T2sVtsiConfig.preemptive_synthesis_config</code>.</p>
-// <p>Example: <code>enabled=false</code> switches speculation off for this call, e.g. to save NLU requests on an
-// agent whose answers are expensive.</p>
+// Preemptive (speculative) generation of the answer: on a stable partial transcription a draft answer is generated before the caller&apos;s final transcription arrives, and played only when the final transcription matches it; a draft that does not match is discarded and the caller hears nothing of it. A matching draft answers the caller sooner; every draft costs an extra NLU request (and, unless switched off, a speech synthesis), also when it is discarded. It never ends the caller&apos;s turn early.
+//
+// Every field is optional. An unset <code>enabled</code> keeps the deployment&apos;s setting (see the field); an unset <code>commit_wait_timeout_seconds</code> keeps the built-in default given at the field. A value outside its range is refused with <code>INVALID_ARGUMENT</code>. The NLU bounds (how many drafts a turn may start) are set with <code>NluVtsiConfig.preemptive_generation_config</code>, the speech synthesis of a draft with <code>T2sVtsiConfig.preemptive_synthesis_config</code>.
+//
+// Example: <code>enabled=false</code> switches speculation off for this call, e.g. to save NLU requests on an agent whose answers are expensive.
 message CsiPreemptiveGenerationConfig{
 
     // Optional: Enable preemptive generation on this call. Precedence: this field, else the deprecated
@@ -2016,18 +1771,13 @@ message CsiPreemptiveGenerationConfig{
     optional float commit_wait_timeout_seconds = 2;
 }
 
-// Storage of the call audio: the caller&apos;s audio of every final transcription and the bot&apos;s audio of every
-// answer as it was played (an answer the caller interrupted is stored as far as it played) are stored as audio
-// files of the call&apos;s NLU session, next to the session&apos;s text.
-// <p>Nothing is stored unless <code>activate_audio_object_storage</code> AND the flag of the side are
-// <code>true</code>. Every unset flag counts as <code>false</code>; there is no deployment-wide default for these
-// flags.</p>
-// <p>Example: <code>activate_audio_object_storage=true</code>,
-// <code>audio_object_storage_services_activation_config.activate_s2t=true</code> and
-// <code>activate_t2s=true</code> store both sides of the conversation. With only
-// <code>activate_audio_object_storage=true</code> nothing is stored.</p>
-// <p>The audio of a warm-transfer intro call is governed by <code>WarmTransferConfig.store_intro_audio</code>
-// instead.</p>
+// Storage of the call audio: the caller&apos;s audio of every final transcription and the bot&apos;s audio of every answer as it was played (an answer the caller interrupted is stored as far as it played) are stored as audio files of the call&apos;s NLU session, next to the session&apos;s text.
+//
+// Nothing is stored unless <code>activate_audio_object_storage</code> AND the flag of the side are <code>true</code>. Every unset flag counts as <code>false</code>; there is no deployment-wide default for these flags.
+//
+// Example: <code>activate_audio_object_storage=true</code>, <code>audio_object_storage_services_activation_config.activate_s2t=true</code> and <code>activate_t2s=true</code> store both sides of the conversation. With only <code>activate_audio_object_storage=true</code> nothing is stored.
+//
+// The audio of a warm-transfer intro call is governed by <code>WarmTransferConfig.store_intro_audio</code> instead.
 message AudioObjectStorageConfig{
 
     // Optional: Master switch of the audio storage of the call. Unset or <code>false</code>: no audio of the call
@@ -2040,9 +1790,7 @@ message AudioObjectStorageConfig{
 
 }
 
-// Which side of the conversation is stored. Only takes effect while
-// <code>AudioObjectStorageConfig.activate_audio_object_storage</code> is <code>true</code>; every unset flag counts
-// as <code>false</code>
+// Which side of the conversation is stored. Only takes effect while <code>AudioObjectStorageConfig.activate_audio_object_storage</code> is <code>true</code>; every unset flag counts as <code>false</code>
 message AudioObjectStorageServicesActivationConfig{
 
     // Optional: Store the caller&apos;s audio (the audio sent to speech-to-text), one file per final transcription.
@@ -2054,19 +1802,12 @@ message AudioObjectStorageServicesActivationConfig{
 }
 
 // Publishing of call events to a RabbitMQ message broker, and receiving control messages for the call from it.
-// <p>While <code>activate_message_broker</code> is <code>true</code>, the call publishes its NLU project and session
-// with every NLU answer, starts listening for control messages addressed to its session after the first final
-// transcription (they are executed in the call), and publishes the events of every service whose flag in
-// <code>message_broker_services_activation_config</code> is <code>true</code>. Every unset flag counts as
-// <code>false</code>; there is no deployment-wide default for these flags.</p>
-// <p>Activating the broker requires a complete <code>rabbit_mq_config</code>: host, both ports, user and password
-// must be set. When the request is validated the broker must be reachable over TLS, present a certificate for
-// <code>host</code> that the deployment trusts, accept VTSI&apos;s client certificate and accept the credentials;
-// otherwise the request is refused with <code>INVALID_ARGUMENT</code>. The call connects to the broker over TLS as
-// well.</p>
-// <p>Example: <code>activate_message_broker=true</code> with
-// <code>message_broker_services_activation_config.activate_s2t=true</code> publishes every final transcription of
-// the call, e.g. for a live transcript in another application.</p>
+//
+// While <code>activate_message_broker</code> is <code>true</code>, the call publishes its NLU project and session with every NLU answer, starts listening for control messages addressed to its session after the first final transcription (they are executed in the call), and publishes the events of every service whose flag in <code>message_broker_services_activation_config</code> is <code>true</code>. Every unset flag counts as <code>false</code>; there is no deployment-wide default for these flags.
+//
+// Activating the broker requires a complete <code>rabbit_mq_config</code>: host, both ports, user and password must be set. When the request is validated the broker must be reachable over TLS, present a certificate for <code>host</code> that the deployment trusts, accept VTSI&apos;s client certificate and accept the credentials; otherwise the request is refused with <code>INVALID_ARGUMENT</code>. The call connects to the broker over TLS as well.
+//
+// Example: <code>activate_message_broker=true</code> with <code>message_broker_services_activation_config.activate_s2t=true</code> publishes every final transcription of the call, e.g. for a live transcript in another application.
 message MessageBrokerConfig{
 
     // Optional: Master switch of the message broker for the call. Unset or <code>false</code>: nothing is published,
@@ -2083,9 +1824,7 @@ message MessageBrokerConfig{
     }
 }
 
-// Which services of the call publish their events to RabbitMQ. Only takes effect while
-// <code>MessageBrokerConfig.activate_message_broker</code> is <code>true</code>; every unset flag counts as
-// <code>false</code>
+// Which services of the call publish their events to RabbitMQ. Only takes effect while <code>MessageBrokerConfig.activate_message_broker</code> is <code>true</code>; every unset flag counts as <code>false</code>
 message MessageBrokerServicesActivationConfig{
 
     // Optional: Publish every final transcription of the caller. Unset: <code>false</code>
@@ -2101,9 +1840,7 @@ message MessageBrokerServicesActivationConfig{
     optional bool activate_sip = 4;
 }
 
-// Address and credentials of the RabbitMQ server the call publishes to. Validated only while
-// <code>MessageBrokerConfig.activate_message_broker</code> is <code>true</code>: then every field is required, and
-// the server is contacted with these credentials when the request is validated
+// Address and credentials of the RabbitMQ server the call publishes to. Validated only while <code>MessageBrokerConfig.activate_message_broker</code> is <code>true</code>: then every field is required, and the server is contacted with these credentials when the request is validated
 message RabbitMqConfig{
 
     // Host name or IP address of the RabbitMQ server. Required while the broker is activated; empty is
@@ -2131,10 +1868,8 @@ message RabbitMqConfig{
 
 
 // Callbacks for the Speech-2-Text platform.
-// <p>Each entry is a non-empty string (an empty entry is <code>INVALID_ARGUMENT</code>) naming a callback. The
-// callbacks are accepted and validated but currently NOT executed: no component of the call consumes them, and a
-// call behaves exactly the same with or without them. The field is kept for wire compatibility and reserved for a
-// future callback mechanism, whose naming scheme will be documented then; do not rely on any effect.</p>
+//
+// Each entry is a non-empty string (an empty entry is <code>INVALID_ARGUMENT</code>) naming a callback. The callbacks are accepted and validated but currently NOT executed: no component of the call consumes them, and a call behaves exactly the same with or without them. The field is kept for wire compatibility and reserved for a future callback mechanism, whose naming scheme will be documented then; do not rely on any effect.
 message S2tVtsiCallbacks{
 
     // Names of callbacks to run before the audio is sent to speech-to-text. No effect (see the message comment)
@@ -2146,10 +1881,8 @@ message S2tVtsiCallbacks{
 }
 
 // Callbacks for the NLU platform.
-// <p>Each entry is a non-empty string (an empty entry is <code>INVALID_ARGUMENT</code>) naming a callback. The
-// callbacks are accepted and validated but currently NOT executed: no component of the call consumes them, and a
-// call behaves exactly the same with or without them. The field is kept for wire compatibility and reserved for a
-// future callback mechanism, whose naming scheme will be documented then; do not rely on any effect.</p>
+//
+// Each entry is a non-empty string (an empty entry is <code>INVALID_ARGUMENT</code>) naming a callback. The callbacks are accepted and validated but currently NOT executed: no component of the call consumes them, and a call behaves exactly the same with or without them. The field is kept for wire compatibility and reserved for a future callback mechanism, whose naming scheme will be documented then; do not rely on any effect.
 message NluVtsiCallbacks{
 
     // Names of callbacks to run before a request is sent to the NLU. No effect (see the message comment)
@@ -2160,10 +1893,8 @@ message NluVtsiCallbacks{
 
 }
 // Callbacks for the Text-2-Speech platform.
-// <p>Each entry is a non-empty string (an empty entry is <code>INVALID_ARGUMENT</code>) naming a callback. The
-// callbacks are accepted and validated but currently NOT executed: no component of the call consumes them, and a
-// call behaves exactly the same with or without them. The field is kept for wire compatibility and reserved for a
-// future callback mechanism, whose naming scheme will be documented then; do not rely on any effect.</p>
+//
+// Each entry is a non-empty string (an empty entry is <code>INVALID_ARGUMENT</code>) naming a callback. The callbacks are accepted and validated but currently NOT executed: no component of the call consumes them, and a call behaves exactly the same with or without them. The field is kept for wire compatibility and reserved for a future callback mechanism, whose naming scheme will be documented then; do not rely on any effect.
 message T2sVtsiCallbacks{
 
     // Names of callbacks to run before a text is synthesized. No effect (see the message comment)
