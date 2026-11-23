@@ -125,11 +125,15 @@ presence_update: ## Regenerate presence/presence-manifest.json after an intended
 # protoc-gen-doc renders file, service, message and enum descriptions with `{{p .Description}}`, which starts a
 # new paragraph at EVERY newline: a description wrapped across source lines renders broken mid-sentence on the
 # published page. These descriptions keep one paragraph per source line (doc_rendering/README.md).
+# Every tree under ondewo/ is published, the vendored nlu/qa/s2t/t2s/sip copies included, so the check covers
+# them too: a re-vendor of an upstream release that predates the same guard fails here (google/ is not published).
+DOC_RENDERING_PROTOS = ondewo/*/*.proto
+
 doc_rendering_check: ## Check that every p-rendered proto description keeps one paragraph per source line
-	@python3 doc_rendering/reflow_proto_docs.py --check ondewo/vtsi/*.proto
+	@python3 doc_rendering/reflow_proto_docs.py --check ${DOC_RENDERING_PROTOS}
 
 doc_rendering_fix: ## Reflow the p-rendered proto descriptions to one paragraph per source line
-	@python3 doc_rendering/reflow_proto_docs.py ondewo/vtsi/*.proto
+	@python3 doc_rendering/reflow_proto_docs.py ${DOC_RENDERING_PROTOS}
 
 help: ## Print usage info about help targets
 	# (first comment after target starting with double hashes ##)
