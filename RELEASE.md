@@ -2,6 +2,41 @@
 
 *****************
 
+## Release ONDEWO VTSI API 9.6.0
+
+### New Features
+
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) Every speech-to-speech and SIP setting that changes how a call behaves is
+  settable per call through `CommonServicesConfig`. Every new scalar is `optional`: unset emits nothing (the
+  deployment's `ONDEWO_VTSI_*` setting where one exists, else the service default); a set value WINS over the
+  deployment's setting. A value outside its documented range is refused with `INVALID_ARGUMENT`.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `InterruptionHandlingConfig`: `cancel_on_speech_while_thinking = 10`,
+  `ai_teams_cancel_pending_on_interrupt = 11` (forwarded to the NLU as request metadata; unset keeps the NLU's
+  deployment switch), `t2s_cancel_on_barge_in = 12`, `nlu_turn_control_enabled = 13`, `heard_report_enabled = 14`
+  and `heard_text_alignment_enabled = 15`.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `TurnDetectionConfig`: `s2t_emit_ms = 16` (20 - 1000), `s2t_request_partials = 17`,
+  `s2t_request_end_of_speech_candidate = 18`, `smart_turn_threshold = 19` (0 - 1) and
+  `post_unmute_phantom_window_seconds = 20` (0 - 1).
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `ResponseTimingConfig`: `streaming_enabled = 6`, `nlu_call_stream_enabled = 7`,
+  `turn_timeout_intent = 8` (the intent the turn timeout triggers) and `t2s_max_edge_silence_ms = 9` (-1 - 1000;
+  `int32`, so that -1 can switch the trimming off).
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `NluVtsiConfig`: `ai_teams_fillers_audible = 11`, `failure_apology_message = 12` (an
+  empty text switches the apology off) and `session_id_from_sip_context = 13`.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `S2tVtsiConfig.failure_sip_trigger = 3` (`hangup`, `human_handover` or `none`).
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `DtmfConfig`: `speech_guard_ms = 5` (0 - 5000) and `text_template = 6` (exactly one
+  `{digits}`).
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) New message `BotTransferConfig` (`VoiceInteractionConfig.bot_transfer_config = 7`), the
+  transfers the bot starts itself: `outcome_timeout_ms` (0 - 10000), `failed_action` (`continue`, `hangup` or
+  `exit`) and `warm_transfer_outcome_commit_timeout_seconds` (above 0 - 60).
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) New message `SipVtsiConfig` (`CommonServicesConfig.sip_vtsi_config = 6`), the media and
+  SIP behaviour of the call's SIP container: `playback_latency_ms` (40 - 1000), `software_clock_enabled`,
+  `rtp_stats_sample_interval_seconds` (0 or 1 - 3600), `hangup_wait_for_playback_timeout_seconds` (0 - 60),
+  `outgoing_dial_watchdog_seconds` (above 30 - 600), `register_interval_seconds` (60 - 86400),
+  `call_audio_stream_max_concurrent` (1 - 2) and `call_audio_stream_max_duration_seconds` (1 - 86400).
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) 32 new `optional` fields are declared in the presence guard.
+
+*****************
+
 ## Release ONDEWO VTSI API 9.5.0
 
 ### New Features

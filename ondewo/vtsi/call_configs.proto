@@ -109,6 +109,19 @@ message NluVtsiConfig{
     // <code>CsiVtsiConfig.preemptive_generation_config.enabled</code>
     NluPreemptiveGenerationConfig preemptive_generation_config = 10;
 
+    // Optional: Speak the filler messages an AI Teams agent of the NLU sends while it works on an answer
+    // (default: true). Sets <code>CSI_NLU_TEAM_FILLERS_AUDIBLE</code>
+    optional bool ai_teams_fillers_audible = 11;
+
+    // Optional: Text the bot speaks when the NLU cannot be reached during the call (default: an apology in the
+    // language of the call, German for <code>de-*</code>, English otherwise). An empty text switches the apology
+    // off. At most 500 characters, no control characters; otherwise refused with <code>INVALID_ARGUMENT</code>.
+    // Sets <code>NLU_FAILURE_APOLOGY_MESSAGE</code>
+    optional string failure_apology_message = 12;
+
+    // Optional: Derive the NLU session id of the call from its SIP header <code>X-ondewo-phonesystem-call-id</code>
+    // instead of minting a new one (default: true). Sets <code>SET_SESSION_ID_FROM_SIP_CONTEXT</code>
+    optional bool session_id_from_sip_context = 13;
 }
 
 // Bounds of the preemptive (speculative) NLU requests: on a stable partial transcription the speech-to-speech
@@ -166,6 +179,12 @@ message S2tVtsiConfig{
 
     // Configuration of Speech-2-Text
     ondewo.s2t.TranscribeRequestConfig s2t_transcribe_request_config = 2;
+
+    // Optional: What the call does when the speech-to-text service stays unreachable after all retries:
+    // <code>hangup</code> (default; the call is ended), <code>human_handover</code> (the call is handed over to a
+    // human agent) or <code>none</code> (the call stays up without transcription). Case-insensitive; any other
+    // value is refused with <code>INVALID_ARGUMENT</code>. Sets <code>S2T_FAILURE_SIP_TRIGGER</code>
+    optional string failure_sip_trigger = 3;
 }
 
 // Service Configs of Speech-2-Text, NLU, Text-2-Speech and CSI which are common for both listener and caller
@@ -186,6 +205,52 @@ message CommonServicesConfig{
     // Voice interaction configuration for turn detection, interruption (barge-in) handling and response timing
     VoiceInteractionConfig voice_interaction_config = 5;
 
+    // Media and SIP behaviour of the call&apos;s SIP container. Unset fields keep the container&apos;s defaults
+    SipVtsiConfig sip_vtsi_config = 6;
+}
+
+// Media and SIP behaviour of the SIP container of a call. A container serves one call, one listener deployment or
+// one pooled caller, and a pooled caller is reused only for a request with the same configuration, so every field
+// applies to the call(s) of exactly this configuration. Every field is <code>optional</code>; an unset field keeps
+// the container&apos;s default, and a value outside its range is refused with <code>INVALID_ARGUMENT</code>
+message SipVtsiConfig{
+
+    // Optional: Milliseconds of audio the sound device&apos;s playback buffer holds, i.e. how long the caller&apos;s
+    // audio waits before the speech-to-text service hears it (default: 60, valid range: 40 - 1000; 140 is the
+    // previous default). Sets <code>SIP_PJSIP_PLAYBACK_LATENCY_MS</code>
+    optional uint32 playback_latency_ms = 1;
+
+    // Optional: Clock the media of the call from a software clock instead of the sound device (default: true;
+    // false is the rollback to the sound device&apos;s clock). Sets <code>SIP_PJSIP_SOFTWARE_CLOCK</code>
+    optional bool software_clock_enabled = 2;
+
+    // Optional: Seconds between two RTP statistics log lines of a live call (default: 10, valid: 0 = off, or
+    // 1 - 3600). Sets <code>SIP_RTP_STATS_SAMPLE_INTERVAL_S</code>
+    optional float rtp_stats_sample_interval_seconds = 3;
+
+    // Optional: Seconds a hangup waits at most for audio files still playing into the call (default: 5.0, valid
+    // range: 0 - 60). Sets <code>SIP_HANGUP_WAIT_FOR_PLAYBACK_TIMEOUT_IN_S</code>
+    optional float hangup_wait_for_playback_timeout_seconds = 4;
+
+    // Optional: Seconds an outbound call of a pooled caller may stay at <code>OUTGOING_CALL_INITIATED</code> with
+    // no SIP session behind it before it is failed (default: 45, valid range: above 30 - 600; it must stay above
+    // the 30 s lifetime of a DNS lookup). Sets <code>SIP_OUTGOING_DIAL_WATCHDOG_S</code>
+    optional float outgoing_dial_watchdog_seconds = 5;
+
+    // Optional: Seconds the SIP registration of the container asks the Asterisk to keep it (default: 600, valid
+    // range: 60 - 86400; the Asterisk grants no less than 60 s). The registration is refreshed 30 s before it
+    // expires. Sets <code>SIP_REGISTER_INTERVAL_S</code>; a set value wins over the deployment&apos;s
+    // <code>ONDEWO_VTSI_SIP_REGISTER_INTERVAL_S</code>
+    optional uint32 register_interval_seconds = 6;
+
+    // Optional: Live audio streams (<code>StreamCallAudio</code>) the call admits at the same time (default: 2,
+    // valid range: 1 - 2). Sets <code>SIP_CALL_AUDIO_STREAM_MAX_CONCURRENT</code>
+    optional uint32 call_audio_stream_max_concurrent = 7;
+
+    // Optional: Seconds a live audio stream of the call may last at most; a stream&apos;s own
+    // <code>max_duration_s</code> can only lower it (default: 3600, valid range: 1 - 86400). Sets
+    // <code>SIP_CALL_AUDIO_STREAM_MAX_DURATION_S</code>
+    optional uint32 call_audio_stream_max_duration_seconds = 8;
 }
 
 // Configuration of the voice interaction behavior of a call:
@@ -214,6 +279,33 @@ message VoiceInteractionConfig{
     // inherits the project default <code>VtsiProject.warm_transfer_defaults</code>; a
     // <code>TransferCallRequest.warm_transfer_config</code> wins over it for that one transfer
     WarmTransferConfig warm_transfer_config = 6;
+
+    // Configuration of the transfers the bot starts itself (an NLU or LLM agent decision), not the ones a client
+    // asks for with <code>TransferCall</code>. Unset fields keep the speech-to-speech service&apos;s defaults
+    BotTransferConfig bot_transfer_config = 7;
+}
+
+// Configuration of the transfers the bot of a call starts itself (an NLU or LLM agent decision). Every field is
+// <code>optional</code>; an unset field keeps its default, and a value outside its range is refused with
+// <code>INVALID_ARGUMENT</code>
+message BotTransferConfig{
+
+    // Optional: Milliseconds a bot transfer waits for the far end to accept or reject the REFER before the bot
+    // leaves the call (default: 5000, valid range: 0 - 10000; 0 = leave at once without waiting for the outcome).
+    // Sets <code>CSI_TRANSFER_OUTCOME_TIMEOUT_MS</code>
+    optional uint32 outcome_timeout_ms = 1;
+
+    // Optional: What the bot does when a transfer it started fails while the call is still up:
+    // <code>continue</code> (default; the bot keeps the call), <code>hangup</code> (the call is ended) or
+    // <code>exit</code> (one more transfer to the <code>exit</code> extension of the project, the call is ended if
+    // that fails too). Case-insensitive; any other value is refused with <code>INVALID_ARGUMENT</code>. Sets
+    // <code>CSI_TRANSFER_FAILED_ACTION</code>
+    optional string failed_action = 2;
+
+    // Optional: Seconds the notice about a failed warm transfer waits to be answered by the NLU before its fallback
+    // text is spoken instead (default: 5.0, valid range: above 0 - 60). Sets
+    // <code>CSI_WARM_TRANSFER_OUTCOME_COMMIT_TIMEOUT_S</code>
+    optional float warm_transfer_outcome_commit_timeout_seconds = 3;
 }
 
 // Configuration of the DTMF keys a caller presses. A key reaches the bot only when the bot&apos;s last answer
@@ -240,6 +332,18 @@ message DtmfConfig{
     // not interrupted) or <code>COMMIT_SINGLE</code> (the key is sent to the NLU as a one-key turn). Any other
     // value is refused with <code>INVALID_ARGUMENT</code>
     optional string undeclared_policy = 4;
+
+    // Optional: Milliseconds after a key turn within which a spoken final transcription is dropped in favour of the
+    // keys (default 300, valid range 0 - 5000; a value outside the range is refused with
+    // <code>INVALID_ARGUMENT</code>). Sets <code>CSI_DTMF_SPEECH_GUARD_MS</code>
+    optional uint32 speech_guard_ms = 5;
+
+    // Optional: The text a key entry is sent to the NLU as, with <code>{digits}</code> standing for the keys
+    // (default <code>[DTMF:{digits}]</code>). <code>{digits}</code> must occur exactly once and no other
+    // placeholder may occur (a literal brace is written <code>{{</code> / <code>}}</code>); 1 - 64 characters, no
+    // control characters. Otherwise refused with <code>INVALID_ARGUMENT</code>. Change it only together with the
+    // training phrases of the NLU agent. Sets <code>CSI_DTMF_TEXT_TEMPLATE</code>
+    optional string text_template = 6;
 }
 
 // <p>Warm intro of a WARM transfer: after the human target answered and before the target is joined, an ONDEWO bot
@@ -628,6 +732,34 @@ message TurnDetectionConfig{
     // Valid with every mode. Unset fields keep the defaults
     DictationConfig dictation_config = 15;
 
+    // Optional: Milliseconds of caller audio the speech-to-speech service sends to the speech-to-text service per
+    // request (default: 40, valid range: 20 - 1000). Sets <code>CSI_S2T_EMIT_MS</code>; a set value wins over the
+    // deployment&apos;s <code>ONDEWO_VTSI_CSI_S2T_EMIT_MS</code>. A value outside the range is refused with
+    // <code>INVALID_ARGUMENT</code>
+    optional uint32 s2t_emit_ms = 16;
+
+    // Optional: Ask the speech-to-text service for partial transcriptions and the start of speech, which the
+    // interruption noise gate and the endpointing need, wherever the speech-to-text configuration of the call says
+    // nothing about them (default: true; an explicit setting in <code>s2t_transcribe_request_config</code> always
+    // wins). Sets <code>CSI_S2T_REQUEST_PARTIALS</code>
+    optional bool s2t_request_partials = 17;
+
+    // Optional: Ask the speech-to-text service for an early end-of-speech candidate, so that a turn can be
+    // prepared before its final transcription while preemptive generation is active (default: true). Sets
+    // <code>CSI_S2T_REQUEST_END_OF_SPEECH_CANDIDATE</code>
+    optional bool s2t_request_end_of_speech_candidate = 18;
+
+    // Optional: End-of-turn probability at or above which the audio-native turn detection model (mode
+    // <code>AUDIO_MODEL</code>) takes the caller to have finished the turn (default: 0.5, valid range: 0 - 1). Sets
+    // <code>SMART_TURN_THRESHOLD</code>. A value outside the range is refused with <code>INVALID_ARGUMENT</code>
+    optional float smart_turn_threshold = 19;
+
+    // Optional: Seconds after the caller&apos;s audio is unmuted (the bot stopped speaking) within which a final
+    // transcription with no voiced caller audio behind it is dropped as a phantom (default: 0.3, valid range:
+    // 0 - 1; 0 = off). Sets <code>CSI_S2T_POST_UNMUTE_PHANTOM_WINDOW_SECONDS</code>. A value outside the range is
+    // refused with <code>INVALID_ARGUMENT</code>
+    optional float post_unmute_phantom_window_seconds = 20;
+
     // Hold bands of the semantic turn detection model
     message EndOfTurnHoldBands {
 
@@ -735,6 +867,41 @@ message InterruptionHandlingConfig{
     // interrupts it, instead of stopping abruptly (default: 100, valid range: 0 - 500; 0 = stop at once).
     // A value outside the range is refused with <code>INVALID_ARGUMENT</code>
     optional int32 interruption_fade_out_ms = 9;
+
+    // Optional: Let a caller turn committed while the bot is still thinking (the answer of the previous turn is
+    // generated but not yet spoken) supersede that turn: the pending answer is cancelled and the new turn is
+    // answered instead (default: false). Sets <code>CSI_CANCEL_ON_SPEECH_WHILE_THINKING</code>; a set value wins
+    // over the deployment&apos;s <code>ONDEWO_VTSI_CSI_CANCEL_ON_SPEECH_WHILE_THINKING</code>
+    optional bool cancel_on_speech_while_thinking = 10;
+
+    // Optional: Whether a caller&apos;s interruption cancels the AI Teams asynchronous tool calls still pending
+    // for the call. Unset keeps the NLU&apos;s deployment switch; a tool whose team document says
+    // <code>async.on_interrupt: keep</code> is never cancelled. Sets
+    // <code>CSI_NLU_AI_TEAMS_CANCEL_PENDING_ON_INTERRUPT</code> (<code>true</code> / <code>false</code>), which the
+    // speech-to-speech service forwards to the NLU with every request of the call
+    optional bool ai_teams_cancel_pending_on_interrupt = 11;
+
+    // Optional: Cancel the text-to-speech synthesis of an answer the caller really interrupted, instead of letting
+    // it run to its end unheard (default: true). Sets <code>CSI_T2S_CANCEL_ON_BARGE_IN</code>; a set value wins over
+    // the deployment&apos;s <code>ONDEWO_VTSI_CSI_T2S_CANCEL_ON_BARGE_IN</code>
+    optional bool t2s_cancel_on_barge_in = 12;
+
+    // Optional: Tell an NLU that supports turn control which turn a real interruption cancelled (default: true;
+    // an NLU without turn control is sent nothing either way). Sets <code>CSI_NLU_TURN_CONTROL_ACTIVE</code>; a set
+    // value wins over the deployment&apos;s <code>ONDEWO_VTSI_CSI_NLU_TURN_CONTROL_ACTIVE</code>
+    optional bool nlu_turn_control_enabled = 13;
+
+    // Optional: Report to an NLU that supports turn control what the caller actually heard of an interrupted
+    // answer, so the conversation history holds what was said rather than what was generated (default: true).
+    // Sets <code>CSI_HEARD_REPORT_ACTIVE</code>; a set value wins over the deployment&apos;s
+    // <code>ONDEWO_VTSI_CSI_HEARD_REPORT_ACTIVE</code>
+    optional bool heard_report_enabled = 14;
+
+    // Optional: Map the measured cut position of an interrupted answer onto its text using the text-to-speech
+    // service&apos;s word timings, instead of estimating it from the audio length (default: true). Sets
+    // <code>CSI_HEARD_TEXT_ALIGNMENT_ACTIVE</code>; a set value wins over the deployment&apos;s
+    // <code>ONDEWO_VTSI_CSI_HEARD_TEXT_ALIGNMENT_ACTIVE</code>
+    optional bool heard_text_alignment_enabled = 15;
 }
 
 // Configuration of the response timing, i.e. when and how the bot responds
@@ -760,6 +927,28 @@ message ResponseTimingConfig{
 
     // Optional: Enable chunked text-to-speech streaming for a lower time to first audio (default: false)
     optional bool t2s_chunked_streaming_enabled = 5;
+
+    // Optional: Ask the NLU with its streaming request instead of the unary one (default: true; false falls every
+    // turn back to the unary request). Sets <code>CSI_STREAMING_ACTIVE</code>; a set value wins over the
+    // deployment&apos;s <code>ONDEWO_VTSI_CSI_STREAMING_ACTIVE</code>
+    optional bool streaming_enabled = 6;
+
+    // Optional: Keep ONE streaming NLU request open for the whole call instead of opening one per turn
+    // (default: true; needs <code>streaming_enabled</code>). Sets <code>CSI_NLU_CALL_STREAM_ACTIVE</code>; a set
+    // value wins over the deployment&apos;s <code>ONDEWO_VTSI_CSI_NLU_CALL_STREAM_ACTIVE</code>
+    optional bool nlu_call_stream_enabled = 7;
+
+    // Optional: Display name of the NLU intent triggered when the caller stays silent for
+    // <code>turn_timeout_seconds</code> after a bot response (default: none, i.e. the turn timeout re-engages
+    // nothing). 1 - 256 characters, no control characters; an empty or invalid value is refused with
+    // <code>INVALID_ARGUMENT</code>. Sets <code>TURN_TIMEOUT_INTENT</code>
+    optional string turn_timeout_intent = 8;
+
+    // Optional: Milliseconds of silence kept at most at the start and at the end of every synthesized bot
+    // utterance; longer edge silence is trimmed (default: 40, valid range: -1 - 1000; 0 keeps no edge silence,
+    // -1 disables the trimming). Sets <code>CSI_T2S_MAX_EDGE_SILENCE_MS</code>. A value outside the range is
+    // refused with <code>INVALID_ARGUMENT</code>
+    optional int32 t2s_max_edge_silence_ms = 9;
 }
 
 // Configuration of the soft timeout, i.e. filler messages played
