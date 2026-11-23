@@ -67,6 +67,25 @@ import "ondewo/vtsi/call_configs.proto";
 // is the callee: <code>campaign_sip_caller_config.callee_id</code> is resolved and FIXED when a call is
 // added (it is that call&apos;s <code>CampaignCall.phone_number</code>), so every attempt of a call dials the
 // number its campaign call reports.</p>
+// <p>How a campaign call behaves: every setting of the effective configuration acts on that one call
+// exactly as if a <code>StartCallerRequest</code> had carried it (the call settings are explained at
+// <a href="index.html#ondewo.vtsi.CommonServicesConfig">CommonServicesConfig</a>). For each setting the
+// first of these that is present decides:</p>
+// <ol>
+//   <li>the call&apos;s own value (its entry of <code>AddCallersToCampaign</code> /
+//       <code>AddScheduledCallersToCampaign</code>);</li>
+//   <li>the campaign&apos;s value (<code>campaign_common_services_config</code> /
+//       <code>campaign_sip_caller_config</code>);</li>
+//   <li>a project default where one exists (e.g. <code>VtsiProject.warm_transfer_defaults</code> for a
+//       warm transfer);</li>
+//   <li>the deployment-wide <code>ONDEWO_VTSI_*</code> setting of the server, where the operator set one;</li>
+//   <li>the built-in default of the setting.</li>
+// </ol>
+// <p>So a campaign default is a per-call value for every call that does not set its own: it wins over the
+// deployment-wide setting. Example: a campaign whose
+// <code>campaign_common_services_config.voice_interaction_config.interruption_handling_config</code> sets
+// <code>enabled = true</code> lets the callee interrupt the bot on every call of the campaign; an entry that
+// sets <code>enabled = false</code> turns it off for that one call only.</p>
 // <p>Partial responses: <code>ListCampaigns</code>, <code>ListCampaignCalls</code>,
 // <code>CreateCampaign</code>, <code>GetCampaign</code>, <code>UpdateCampaign</code>,
 // <code>DeleteCampaign</code> (paths of <code>DeleteCampaignResponse</code>), the four lifecycle RPCs
@@ -613,6 +632,11 @@ enum StreamEndReason {
 //////////////////////////////////////////////////////////////////////////////
 
 // A campaign: a set of outbound calls started with a limit on how many run at the same time.
+// <p>Besides when and how often calls are placed (<code>max_parallel_calls</code>, <code>max_attempts</code>,
+// <code>retry_delay</code>, <code>calling_window</code>), a campaign can carry call defaults
+// (<code>campaign_common_services_config</code>, <code>campaign_sip_caller_config</code>) that decide how each
+// of its calls behaves: which agent answers, which voice, whether the callee may interrupt the bot, and so on.
+// Every call takes them unless it sets its own value.</p>
 message Campaign {
 
     // Output only. Resource name of the campaign.
@@ -714,11 +738,42 @@ message Campaign {
     //   <li>a oneof member the call sets replaces whichever member the campaign set (e.g.
     //       <code>nlu_vtsi_config.credentials</code> versus <code>nlu_vtsi_config.auth_token</code>).</li>
     // </ul>
-    // <p>The effective configuration is validated exactly as a <code>StartCallerRequest</code> carrying it,
-    // so an entry of <code>AddCallersToCampaign</code> / <code>AddScheduledCallersToCampaign</code> may leave
-    // out what the campaign supplies. Because the default is read live, an update that makes the effective
-    // configuration of a not yet dispatched call invalid fails that call at dispatch as a failure that
-    // cannot succeed by repetition (it is not retried).</p>
+    // <p>What this means for the call-behaviour settings: almost every one of them (turn detection,
+    // interruptions, response timing, DTMF, dictation, bot transfers, <code>sip_vtsi_config</code>, ...) is an
+    // <code>optional</code> scalar, where unset means &quot;inherit&quot;. A setting the campaign leaves unset
+    // falls through to the deployment-wide <code>ONDEWO_VTSI_*</code> setting, if the operator set one, and
+    // otherwise to its built-in default. A setting the campaign sets applies to every call of the campaign
+    // and wins over the deployment-wide setting. A call can override it in either direction, because an
+    // <code>optional</code> field the call sets wins also when it is <code>false</code> or <code>0</code>; but a
+    // call cannot take a campaign value back to &quot;inherit&quot;: to let the calls inherit again, clear the
+    // field in the campaign (see <code>UpdateCampaignRequest.update_mask</code>).</p>
+    // <p>Example: with</p>
+    // <pre><code>campaign_common_services_config {
+    //   voice_interaction_config {
+    //     interruption_handling_config { enabled: true }
+    //     response_timing_config { turn_timeout_seconds: 8 }
+    //   }
+    // }</code></pre>
+    // <p>every call of the campaign lets the callee interrupt the bot and starts its follow-up after 8 s of
+    // callee silence, while every other interruption and timing setting the campaign leaves unset keeps the
+    // deployment&apos;s value. A call whose entry carries
+    // <code>interruption_handling_config { enabled: false }</code> is not interruptible and still uses 8 s; a
+    // call whose entry carries <code>response_timing_config { turn_timeout_seconds: 5 }</code> uses 5 s and is
+    // interruptible.</p>
+    // <p>Validation: the default itself is NOT checked when it is created or updated (it may be partial; the
+    // calls may supply the rest). The effective configuration of each call is validated exactly as a
+    // <code>StartCallerRequest</code> carrying it, so an entry of <code>AddCallersToCampaign</code> /
+    // <code>AddScheduledCallersToCampaign</code> may leave out what the campaign supplies, and a value out of
+    // its range, set by the campaign or by the entry, refuses that request with <code>INVALID_ARGUMENT</code>
+    // naming the entry&apos;s index; nothing is added. Because the default is read live, an update that makes
+    // the effective configuration of a not yet dispatched call invalid fails that call at dispatch as a
+    // failure that cannot succeed by repetition (it is not retried).</p>
+    // <p>Pooled callers: when the server keeps callers warm between calls (a pooled, persistent caller), a
+    // call reuses an idle pooled caller only when its effective configuration is the same as the one that
+    // caller was deployed with, apart from the callee and the SIP headers. Calls of one campaign that do not
+    // set their own call-behaviour values can therefore share warm callers; a call with values of its own,
+    // and every call dispatched after an update that changed its effective configuration, cannot reuse a
+    // warm caller of another configuration and is placed by a caller of its own.</p>
     // <p>Returned by <code>CreateCampaign</code>, <code>GetCampaign</code>, <code>UpdateCampaign</code>,
     // <code>ListCampaigns</code>, <code>StartCampaign</code>, <code>StopCampaign</code>,
     // <code>HardStopCampaign</code> and <code>ResumeCampaign</code>. Left UNSET (whatever is stored) in
@@ -734,7 +789,9 @@ message Campaign {
     // (agent, language, initial intent, platform, service hosts and ports, CSI control messages, voice
     // interaction config): a <code>PROJECT_EXECUTOR</code>, and also every caller when authorization is
     // disabled or only monitored, because a <code>Campaign</code> has no view that could leave the config
-    // out by default. A client that reads such a campaign and writes the whole config back with
+    // out by default. Every field outside that list reads back unset for them, also when the campaign sets
+    // it, so such a reader cannot tell from the response whether the calls inherit a setting there. A
+    // client that reads such a campaign and writes the whole config back with
     // <code>update_mask</code> path <code>campaign_common_services_config</code> overwrites the stored
     // credentials with the withheld (empty) ones; update a sub-path instead.</p>
     CommonServicesConfig campaign_common_services_config = 18;
@@ -748,7 +805,17 @@ message Campaign {
     // <code>campaign_common_services_config</code>: the effective <code>sip_caller_config</code> of a call
     // is a copy of this value with the call&apos;s own <code>StartCallerRequest.sip_caller_config</code>
     // merged over it (<code>MergeFrom</code>, the call winning); <code>sip_headers</code> are merged by
-    // key with the call&apos;s header winning on a shared name.</p>
+    // key with the call&apos;s header winning on a shared name, so every call sends the campaign&apos;s headers
+    // plus its own. Example: a campaign default <code>sip_headers { key: &quot;X-Campaign&quot; value:
+    // &quot;spring&quot; }</code> and an entry with <code>sip_headers { key: &quot;X-Customer&quot; value:
+    // &quot;42&quot; }</code> dial with both headers.</p>
+    // <p>Validation: what this default sets is checked when it is created or updated
+    // (<code>INVALID_ARGUMENT</code> naming the field): <code>sip_base_config.sip_sim_version</code> must be a
+    // valid image tag, <code>callee_id</code> at most 2048 characters and, when it holds no letter and no
+    // <code>@</code>, a valid phone number, and at most 64 <code>sip_headers</code>. The complete effective
+    // configuration is validated when a call is added and again at dispatch, as for
+    // <code>campaign_common_services_config</code>. The callee and the SIP headers never keep a call from
+    // reusing an idle pooled caller; the image version does.</p>
     // <p>EXCEPT <code>callee_id</code>, which is resolved ONCE, when the call is added to the campaign: the
     // call&apos;s own <code>callee_id</code> or, when that is empty, this value&apos;s
     // <code>callee_id</code> at that moment. The result is stored as <code>CampaignCall.phone_number</code>
@@ -1108,7 +1175,11 @@ message CampaignAssignment {
         // calls to it. Only <code>display_name</code>, <code>max_parallel_calls</code>,
         // <code>max_attempts</code>, <code>retry_delay</code>, <code>campaign_common_services_config</code>,
         // <code>campaign_sip_caller_config</code> and <code>calling_window</code> are read; output-only fields
-        // (<code>calling_window.next_window_start</code> included) must be unset.
+        // (<code>calling_window.next_window_start</code> included) must be unset. Its call defaults are
+        // checked as on <code>CreateCampaign</code> and then apply to the calls of this request and to every
+        // later call of the campaign exactly as described at
+        // <a href="index.html#ondewo.vtsi.Campaign">Campaign</a>; the entries of this request are validated
+        // with them merged in.
         Campaign new_campaign = 2;
 
         // Add the calls to the existing campaign with this exact, case-sensitive display name, resolved
@@ -1143,7 +1214,13 @@ message CreateCampaignRequest {
 
     // The campaign to create. Output-only fields must be unset. <code>campaign_common_services_config</code>
     // and <code>campaign_sip_caller_config</code> may be set: they become the defaults of every call of
-    // the campaign (see <a href="index.html#ondewo.vtsi.Campaign">Campaign</a>).
+    // the campaign (see <a href="index.html#ondewo.vtsi.Campaign">Campaign</a>): every call added later takes
+    // each setting from them unless its own entry sets it, and a setting neither sets inherits the
+    // deployment-wide <code>ONDEWO_VTSI_*</code> setting or the built-in default. Only what
+    // <code>campaign_sip_caller_config</code> sets is checked here (<code>INVALID_ARGUMENT</code> naming the
+    // field); <code>campaign_common_services_config</code> is checked with each call when calls are added, so
+    // an out-of-range value in it is refused by <code>AddCallersToCampaign</code> /
+    // <code>AddScheduledCallersToCampaign</code>, not by this RPC.
     Campaign campaign = 2;
 
     // Optional. Partial response: the <code>Campaign</code> field paths to populate, relative to the
@@ -1256,6 +1333,23 @@ message UpdateCampaignRequest {
     //       <code>INVALID_ARGUMENT</code> naming it: name the repeated or map field itself;</li>
     //   <li>a path and a sub-path of it in the same mask act as the shorter path alone.</li>
     // </ul>
+    // <p>For the <code>optional</code> call-behaviour settings this gives a precise way to change one of them
+    // for the whole campaign: a path naming the setting with a value in <code>campaign</code> SETS it for
+    // every call that does not set its own; the same path with the setting left unset in <code>campaign</code>
+    // CLEARS it, so the calls inherit the deployment-wide <code>ONDEWO_VTSI_*</code> setting or the built-in
+    // default again. Example: path
+    // <code>campaign_common_services_config.voice_interaction_config.interruption_handling_config.enabled</code>
+    // with <code>enabled: true</code> makes every later call of the campaign interruptible and leaves every
+    // other stored setting as it is; the same path with <code>enabled</code> unset removes the campaign&apos;s
+    // choice. The path <code>campaign_common_services_config.voice_interaction_config</code> instead REPLACES
+    // the whole voice interaction default with the one sent, dropping every setting the request does not
+    // carry.</p>
+    // <p>Effect on calls: a changed default applies to every campaign call dispatched after the update, its
+    // retries included; a call already running keeps the configuration it was started with, and an idle
+    // pooled caller is reused only while a call&apos;s new effective configuration is the one that caller
+    // runs. <code>campaign_common_services_config</code> is not validated here but with each call, when
+    // calls are added and again at dispatch: an update that makes a waiting call&apos;s effective
+    // configuration invalid fails that call without a retry.</p>
     google.protobuf.FieldMask update_mask = 2;
 
     // Optional. Partial response: the <code>Campaign</code> field paths to populate, relative to the
@@ -1940,6 +2034,10 @@ message RetryCampaignCallsResponse {
 
 // The request message for
 // <a href="index.html#ondewo.vtsi.Campaigns.CloneCampaign">Campaigns.CloneCampaign</a>.
+// <p>The clone gets the source&apos;s <code>campaign_common_services_config</code> and
+// <code>campaign_sip_caller_config</code> as they are stored, credentials included, so its calls behave as
+// the source&apos;s calls would; change a setting of the clone afterwards with <code>UpdateCampaign</code>. A
+// copied call keeps its own stored entry, whose own settings still win over the clone&apos;s defaults.</p>
 message CloneCampaignRequest {
 
     // The campaign to copy. Exactly one must be set; neither is rejected with <code>INVALID_ARGUMENT</code>.
