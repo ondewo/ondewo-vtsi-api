@@ -33,6 +33,9 @@
   `rtp_stats_sample_interval_seconds` (0 or 1 - 3600), `hangup_wait_for_playback_timeout_seconds` (0 - 60),
   `outgoing_dial_watchdog_seconds` (above 30 - 600), `register_interval_seconds` (60 - 86400),
   `call_audio_stream_max_concurrent` (1 - 2) and `call_audio_stream_max_duration_seconds` (1 - 86400).
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `Call.dialed_number = 30` (output only, SHALLOW and FULL
+  views): the inbound number a carrier-trunk caller dialled, from `X-ondewo-dialed-number` (digits with an optional
+  `+`); empty for a call that did not come in over the trunk. Before, only the bot's SIP context carried it.
 * [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) 32 new `optional` fields are declared in the presence guard.
 
 *****************

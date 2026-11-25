@@ -3438,6 +3438,14 @@ message Call {
     // Empty when the call did not pass an IVR menu. Set in the SHALLOW and FULL views
     string ivr_menu_name = 29;
 
+    // Output only. The inbound phone number the caller dialled, as the project&apos;s Asterisk received it from the
+    // carrier trunk (from <code>X-ondewo-dialed-number</code>, which the trunk&apos;s IVR entry hook sets on every
+    // inbound call), e.g. <code>+493052187211</code>: digits with an optional leading <code>+</code>, at most 32
+    // characters. It is the company&apos;s own number, not the caller&apos;s (that is <code>phone_number</code>).
+    // Empty when the call did not come in over the carrier trunk, or the dialled number was not numeric. Set in the
+    // SHALLOW and FULL views
+    string dialed_number = 30;
+
 }
 
 // Narrows a set of calls of one project: the calls <code>ListCalls</code> lists, <code>GetCallStatistics</code> counts and <code>StopAllCalls</code> stops. Every field is optional; an unset field, or an empty repeated field or map, does not filter. Fields are combined with AND, the values within one repeated field with OR (except <code>caller_names</code> and <code>listener_names</code>, which are OR-ed with each other), and the entries of <code>labels</code> with AND. The project is the enclosing request&apos;s <code>vtsi_project_name</code>. An invalid value is rejected with <code>INVALID_ARGUMENT</code> naming the field, before anything is read or stopped.

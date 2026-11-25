@@ -96,8 +96,9 @@ A call that reaches a bot through a menu carries three headers into the bot's SI
 | `X-ondewo-ivr-path` | the option labels taken, e.g. `main:1>billing:2`, at most 256 characters |
 | `X-ondewo-dialed-number` | the inbound number the caller dialled |
 
-The call records the first two in `Call.ivr_menu_display_name = 27` and `Call.ivr_path = 28`, and the resource name
-of the same menu (`projects/<project_uuid>/ivr_menus/<ivr_menu_uuid>`) in `Call.ivr_menu_name = 29`. A call routed
+The call records the first two in `Call.ivr_menu_display_name = 27` and `Call.ivr_path = 28`, the resource name
+of the same menu (`projects/<project_uuid>/ivr_menus/<ivr_menu_uuid>`) in `Call.ivr_menu_name = 29`, and the dialled
+number in `Call.dialed_number = 30` (set for every call that came in over the carrier trunk, menu or not). A call routed
 straight to a person leaves no call record; `IvrMenu.node_stats` (only with the `field_mask` path `node_stats`)
 counts every node entry anyway, approximately, collected about once a minute.
 
