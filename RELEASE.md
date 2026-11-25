@@ -2,6 +2,22 @@
 
 *****************
 
+## Release ONDEWO VTSI API 9.6.1
+
+### Bug Fixes
+
+* Vendored protos byte-identical to the released service clients again: the vendored `ondewo/{nlu,qa,s2t,t2s,sip}`
+  copies are the verbatim `ondewo-nlu-api` 7.6.0, `ondewo-s2t-api` 7.6.0, `ondewo-t2s-api` 6.7.0 and
+  `ondewo-sip-api` 5.7.0 protos once more. 9.6.0 re-wrapped their descriptions (comments only, the descriptor set
+  is unchanged), which changed the docstrings of every client's vendored `*_pb2.pyi` / `*_pb2_grpc.py`, so the
+  Python client 9.6.0 no longer installs byte-identically over `ondewo-nlu-client`, `ondewo-s2t-client`,
+  `ondewo-t2s-client` and `ondewo-sip-client`. `make doc_rendering_fix` / `doc_rendering_check` cover
+  `ondewo/vtsi` only now, and `make release` runs the new `vendored_protos_check`, which fails unless every vendored
+  tree is byte-identical to its API submodule.
+* `ondewo/vtsi` is unchanged; only the Python client is released as 9.6.1.
+
+*****************
+
 ## Release ONDEWO VTSI API 9.6.0
 
 ### New Features
