@@ -270,6 +270,10 @@ checkout_defined_submodule_versions: ## Update submodule versions
 	cp -r "${ONDEWO_T2S_DIR}/ondewo/t2s" ondewo
 	cp -r "${ONDEWO_S2T_DIR}/ondewo/s2t" ondewo
 	cp -r "${ONDEWO_SIP_DIR}/ondewo/sip" ondewo
+	# The vendored copies are published here too, and an upstream tag can predate the one-paragraph-per-line
+	# rule: without this, every `make build` (and so every release, which runs build AFTER the tag) reverted the
+	# reflow of ondewo/{nlu,qa,s2t,t2s,sip} and committed protos that fail doc_rendering_check (9.6.0).
+	$(MAKE) --no-print-directory doc_rendering_fix
 
 ########################################################
 #		Release

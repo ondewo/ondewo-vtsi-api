@@ -228,6 +228,9 @@ Both cover every `ondewo/*/*.proto`, the VENDORED `nlu`/`qa`/`s2t`/`t2s`/`sip` c
 them are published here. The upstream `ondewo-{nlu,s2t,t2s,sip}-api` repositories carry the same guard, so a
 re-vendor of a release that has it stays clean; one of an older release fails the check, and the fix is
 `make doc_rendering_fix` on the copy (comments only), never a move to an unreleased upstream version.
+`make build` runs `doc_rendering_fix` right after copying the vendored trees, so a build is a fixed point: before
+9.6.0 it re-copied the unreflowed upstream protos, committed and pushed them to `master`, and `make release` (which
+runs `build` AFTER the tag) would have put them on `release/<version>` behind a tag that passed the check.
 
 There is deliberately **no `uv` / `ruff` / `mypy` / `pytest` step to mirror**: the only Python in this repo are
 the two read-only checks (`presence/`, `doc_rendering/`), run by their own make targets, which is why
