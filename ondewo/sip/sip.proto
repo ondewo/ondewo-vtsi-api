@@ -18,9 +18,9 @@ package ondewo.sip;
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
-// <p>ONDEWO-SIP API available at <a href="https://github.com/ondewo/ondewo-sip-api">GitHub</a></p>
+// ONDEWO-SIP API available at <a href="https://github.com/ondewo/ondewo-sip-api">GitHub</a>
 service Sip {
-    // <p>SIP LifeCycle is explained at <a href="https://thanhloi2603.wordpress.com/2017/06/10/sip-lifecycle-overview/">here</a></p>
+    // SIP LifeCycle is explained at <a href="https://thanhloi2603.wordpress.com/2017/06/10/sip-lifecycle-overview/">here</a>
 
     // <p>Starts a new SIP session for an account registered at a SIP server. <code>RegisterAccount</code> need to be called before.</p>
     rpc SipStartSession (SipStartSessionRequest) returns (SipStatus) {
@@ -164,13 +164,13 @@ service Sip {
     };
 }
 
-// <p>Ends an ongoing call of the active SIP session of the active SIP account</p>
+// Ends an ongoing call of the active SIP session of the active SIP account
 message SipEndCallRequest{
 
     // Set to <code>True</code> to forcefully hang up the call
     bool hard_hangup = 1;
 
-    // <p>Why the call is being ended</p>
+    // Why the call is being ended
     enum EndCallReason{
 
         // No specific reason given. The call ends as an ordinary hangup, exactly as before this field existed
@@ -203,7 +203,7 @@ message SipEndCallRequest{
     AnsweringMachineDetectionResult amd_result = 3;
 }
 
-// <p>Reports the verdict of the answering machine detection of the ongoing outgoing call</p>
+// Reports the verdict of the answering machine detection of the ongoing outgoing call
 message SipReportAnsweringMachineDetectedRequest{
 
     // Result of the answering machine detection. Written to <code>SipStatus.amd_result</code> of the
@@ -211,11 +211,12 @@ message SipReportAnsweringMachineDetectedRequest{
     AnsweringMachineDetectionResult amd_result = 1;
 }
 
-// <p>Result of the answering machine detection (AMD) of an outbound call</p>
-// <p>Carries identifiers from closed vocabularies only: never audio, transcript text or a phone number</p>
+// Result of the answering machine detection (AMD) of an outbound call
+//
+// Carries identifiers from closed vocabularies only: never audio, transcript text or a phone number
 message AnsweringMachineDetectionResult{
 
-    // <p>Who or what answered the call</p>
+    // Who or what answered the call
     enum Verdict{
 
         // No verdict available
@@ -246,7 +247,7 @@ message AnsweringMachineDetectionResult{
         UNKNOWN = 8;
     }
 
-    // <p>Evidence that led to the verdict</p>
+    // Evidence that led to the verdict
     enum Cause{
 
         // No cause available
@@ -277,7 +278,7 @@ message AnsweringMachineDetectionResult{
         SILENCE = 8;
     }
 
-    // <p>What was done because of the verdict</p>
+    // What was done because of the verdict
     enum ActionTaken{
 
         // No action recorded
@@ -322,7 +323,7 @@ message AnsweringMachineDetectionResult{
     string call_id = 8;
 }
 
-// <p>Request to start the call with the active SIP session of the active SIP account</p>
+// Request to start the call with the active SIP session of the active SIP account
 message SipStartCallRequest{
 
     // SIP account name
@@ -332,7 +333,7 @@ message SipStartCallRequest{
     map<string, string> headers = 2;
 }
 
-// <p>Request for registering a SIP account at a SIP server</p>
+// Request for registering a SIP account at a SIP server
 message SipRegisterAccountRequest{
     // Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or <code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>.
     // Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect to a SIP server running on port <code>5099</code>
@@ -348,7 +349,7 @@ message SipRegisterAccountRequest{
     string outbound_proxy = 4;
 }
 
-// <p>Request for starting a new SIP session for a specified account</p>
+// Request for starting a new SIP session for a specified account
 message SipStartSessionRequest{
     // Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or <code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>.
     // Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect to a SIP server running on port <code>5099</code>
@@ -358,7 +359,7 @@ message SipStartSessionRequest{
     int32 auto_answer_interval = 2;
 }
 
-// <p>Request for transferring a call with or without headers</p>
+// Request for transferring a call with or without headers
 message SipTransferCallRequest{
     // The account name or phone number to transfer the call to
     string transfer_id = 1;
@@ -402,17 +403,11 @@ message SipTransferCallRequest{
     string delegated_request_id = 5;
 }
 
-// <p>How a <code>SipTransferCall</code> handles a transfer that the container parked in
-// <code>SipStatus.delegated_transfer</code> instead of sending it.</p>
-// <p>Every value other than <code>SIP_TRANSFER_DELEGATION_UNSPECIFIED</code> requires the
-// <code>x-ondewo-sip-call-control-token</code> metadatum (otherwise <code>CallControlUnauthenticated</code>) and the
-// <code>x-ondewo-expected-call-id</code> metadatum naming the ongoing call (missing or different:
-// <code>CallScopeMismatch</code>), plus <code>delegated_request_id</code> (otherwise
-// <code>DelegatedRequestMismatch</code>). Refusals are RETURNED in <code>exception_name</code> /
-// <code>description</code> and never assigned to the shared status.</p>
-// <p>A parked transfer that is neither claimed nor ended within <code>SIP_TRANSFER_DELEGATION_CLAIM_TIMEOUT_S</code> is
-// dropped WITHOUT a REFER, and the pipeline is told with <code>SIP_WARM_TRANSFER_OUTCOME_DELEGATION_EXPIRED</code>. A
-// claimed transfer never expires.</p>
+// How a <code>SipTransferCall</code> handles a transfer that the container parked in <code>SipStatus.delegated_transfer</code> instead of sending it.
+//
+// Every value other than <code>SIP_TRANSFER_DELEGATION_UNSPECIFIED</code> requires the <code>x-ondewo-sip-call-control-token</code> metadatum (otherwise <code>CallControlUnauthenticated</code>) and the <code>x-ondewo-expected-call-id</code> metadatum naming the ongoing call (missing or different: <code>CallScopeMismatch</code>), plus <code>delegated_request_id</code> (otherwise <code>DelegatedRequestMismatch</code>). Refusals are RETURNED in <code>exception_name</code> / <code>description</code> and never assigned to the shared status.
+//
+// A parked transfer that is neither claimed nor ended within <code>SIP_TRANSFER_DELEGATION_CLAIM_TIMEOUT_S</code> is dropped WITHOUT a REFER, and the pipeline is told with <code>SIP_WARM_TRANSFER_OUTCOME_DELEGATION_EXPIRED</code>. A claimed transfer never expires.
 enum SipTransferDelegation{
 
     // No delegated transfer is claimed: the request is an ordinary transfer, exactly as before this field existed
@@ -433,12 +428,9 @@ enum SipTransferDelegation{
     SIP_TRANSFER_DELEGATION_DISCARD = 3;
 }
 
-// <p>A transfer that the in-container speech-to-speech pipeline asked for and the container handed to a client instead
-// of sending it (see <code>SipTransferDelegation</code>). Call-scoped: empty when no transfer is parked, when no call
-// is ongoing, and after the call ended.</p>
-// <p><code>SipGetSipStatus</code>, <code>SipGetSipStatusHistory</code> and every other response report only
-// <code>request_id</code>, <code>requested_at</code> and <code>target_is_phone_number</code>. The target and the headers
-// are filled ONLY in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>.</p>
+// A transfer that the in-container speech-to-speech pipeline asked for and the container handed to a client instead of sending it (see <code>SipTransferDelegation</code>). Call-scoped: empty when no transfer is parked, when no call is ongoing, and after the call ended.
+//
+// <code>SipGetSipStatus</code>, <code>SipGetSipStatusHistory</code> and every other response report only <code>request_id</code>, <code>requested_at</code> and <code>target_is_phone_number</code>. The target and the headers are filled ONLY in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>.
 message SipDelegatedTransfer{
 
     // Identifier of the parked transfer, a UUID minted by ONDEWO SIP. Sent back as
@@ -462,7 +454,7 @@ message SipDelegatedTransfer{
     map<string, string> headers = 5;
 }
 
-// <p>Status information for a SIP account, session, or call</p>
+// Status information for a SIP account, session, or call
 message SipStatus{
     // Account name of the sip user. Usually something like <code>sip-user-1@mydomain.com</code> or <code>sip-user-1@192.168.123.123</code> which uses the default SIP port <code>5060</code>.
     // Also a non-default SIP port can be specified via <code>sip-user-1@mydomain.com:5099</code> to connect to a SIP server running on port <code>5099</code>
@@ -625,14 +617,14 @@ message SipStatus{
 
 }
 
-// <p>History of SIP status</p>
+// History of SIP status
 message SipStatusHistoryResponse{
 
     // History of SIP status
     repeated SipStatus status_history = 1;
 }
 
-// <p>Desired setting of one media control flag</p>
+// Desired setting of one media control flag
 enum MediaControlSetting{
 
     // Leave the flag as it is for this owner
@@ -645,8 +637,7 @@ enum MediaControlSetting{
     MEDIA_CONTROL_SETTING_OFF = 2;
 }
 
-// <p>Owner of a media control hold. Each owner holds its own mute and pause; releasing one owner's hold never releases
-// another owner's</p>
+// Owner of a media control hold. Each owner holds its own mute and pause; releasing one owner's hold never releases another owner's
 enum MediaControlOwner{
 
     // Same as <code>MEDIA_CONTROL_OWNER_OPERATOR</code>
@@ -661,7 +652,7 @@ enum MediaControlOwner{
     MEDIA_CONTROL_OWNER_PARTICIPANT = 2;
 }
 
-// <p>Request of <code>SipSetCallMediaControl</code></p>
+// Request of <code>SipSetCallMediaControl</code>
 message SipSetCallMediaControlRequest{
 
     // <code>MEDIA_CONTROL_SETTING_ON</code>: the bot speaks. <code>MEDIA_CONTROL_SETTING_OFF</code>: the bot is muted
@@ -696,7 +687,7 @@ message SipSetCallMediaControlRequest{
     SipWarmTransferOutcomeNotice warm_transfer_outcome = 5;
 }
 
-// <p>Outcome of a warm transfer that the bot tells the caller</p>
+// Outcome of a warm transfer that the bot tells the caller
 enum SipWarmTransferOutcome{
 
     // No outcome
@@ -714,8 +705,7 @@ enum SipWarmTransferOutcome{
     SIP_WARM_TRANSFER_OUTCOME_DELEGATION_EXPIRED = 3;
 }
 
-// <p>One-shot notice of a warm-transfer outcome for the bot. The pipeline tells the caller at most once per
-// <code>request_id</code> and call. Carries no reason text the target gave</p>
+// One-shot notice of a warm-transfer outcome for the bot. The pipeline tells the caller at most once per <code>request_id</code> and call. Carries no reason text the target gave
 message SipWarmTransferOutcomeNotice{
 
     // Identifier of the transfer request of the client (ONDEWO VTSI). Required; the notice is delivered at most once
@@ -741,7 +731,7 @@ message SipWarmTransferOutcomeNotice{
     string fallback_text = 6;
 }
 
-// <p>Answer of the speech-to-speech pipeline to a <code>SipWarmTransferOutcomeNotice</code></p>
+// Answer of the speech-to-speech pipeline to a <code>SipWarmTransferOutcomeNotice</code>
 enum SipWarmTransferOutcomeNoticeStatus{
 
     // No notice was carried
@@ -764,7 +754,7 @@ enum SipWarmTransferOutcomeNoticeStatus{
     SIP_WARM_TRANSFER_OUTCOME_NOTICE_STATUS_PENDING = 5;
 }
 
-// <p>Request of <code>SipSendDtmf</code></p>
+// Request of <code>SipSendDtmf</code>
 message SipSendDtmfRequest{
 
     // The keys to send, in order: <code>0</code>-<code>9</code>, <code>*</code>, <code>#</code>,
@@ -773,7 +763,7 @@ message SipSendDtmfRequest{
     string digits = 1;
 }
 
-// <p>Mode of a <code>SipStreamCallAudio</code> stream</p>
+// Mode of a <code>SipStreamCallAudio</code> stream
 enum SipCallAudioMode{
 
     // Same as <code>SIP_CALL_AUDIO_MODE_LISTEN</code>
@@ -786,7 +776,7 @@ enum SipCallAudioMode{
     SIP_CALL_AUDIO_MODE_TALK = 2;
 }
 
-// <p>Configuration of a <code>SipStreamCallAudio</code> stream. Must be the first request of the stream</p>
+// Configuration of a <code>SipStreamCallAudio</code> stream. Must be the first request of the stream
 message SipCallAudioConfig{
 
     // Mode of the stream. Unspecified means LISTEN
@@ -810,7 +800,7 @@ message SipCallAudioConfig{
     int32 max_duration_s = 6;
 }
 
-// <p>One frame of call audio</p>
+// One frame of call audio
 message SipCallAudioFrame{
 
     // LINEAR16 little-endian mono samples of one frame, i.e. <code>sample_rate_hz * frame_ms / 1000 * 2</code> bytes
@@ -820,7 +810,7 @@ message SipCallAudioFrame{
     uint64 sequence = 2;
 }
 
-// <p>Request of <code>SipStreamCallAudio</code></p>
+// Request of <code>SipStreamCallAudio</code>
 message SipCallAudioRequest{
 
     // One of the following
@@ -837,7 +827,7 @@ message SipCallAudioRequest{
     }
 }
 
-// <p>Why a <code>SipStreamCallAudio</code> stream ended</p>
+// Why a <code>SipStreamCallAudio</code> stream ended
 enum SipCallAudioEndReason{
 
     // No reason recorded
@@ -862,7 +852,7 @@ enum SipCallAudioEndReason{
     SIP_CALL_AUDIO_END_REASON_INTERNAL = 6;
 }
 
-// <p>Sent once when a <code>SipStreamCallAudio</code> stream is connected</p>
+// Sent once when a <code>SipStreamCallAudio</code> stream is connected
 message SipCallAudioStarted{
 
     // Identifier of the stream
@@ -878,7 +868,7 @@ message SipCallAudioStarted{
     SipCallAudioMode mode = 4;
 }
 
-// <p>Counters of a <code>SipStreamCallAudio</code> stream, sent periodically</p>
+// Counters of a <code>SipStreamCallAudio</code> stream, sent periodically
 message SipCallAudioStats{
 
     // Frames sent to the client
@@ -897,7 +887,7 @@ message SipCallAudioStats{
     uint64 frames_discarded = 5;
 }
 
-// <p>Sent once when a <code>SipStreamCallAudio</code> stream ends normally</p>
+// Sent once when a <code>SipStreamCallAudio</code> stream ends normally
 message SipCallAudioEnded{
 
     // Why the stream ended
@@ -907,7 +897,7 @@ message SipCallAudioEnded{
     string detail = 2;
 }
 
-// <p>Response of <code>SipStreamCallAudio</code></p>
+// Response of <code>SipStreamCallAudio</code>
 message SipCallAudioResponse{
 
     // One of the following
@@ -927,7 +917,7 @@ message SipCallAudioResponse{
     }
 }
 
-// <p>Plays a list of wav files</p>
+// Plays a list of wav files
 message SipPlayWavFilesRequest{
 
     // Wav files as bytes in a list that will be played

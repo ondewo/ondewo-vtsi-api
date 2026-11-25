@@ -21,37 +21,19 @@ import "google/protobuf/timestamp.proto";
 // are scoped to the package, so a second <code>ASCENDING</code> / <code>DESCENDING</code> pair cannot exist.
 import "ondewo/vtsi/projects.proto";
 
-// <p>ONDEWO VTSI API</p>
-// <p>Manages the SOFTPHONE ACCOUNTS of a VTSI project: SIP accounts on the project&apos;s Asterisk that
-// a human uses from a softphone such as Zoiper, to call into the project&apos;s listeners or to be reached
-// by the project.</p>
-// <p>A softphone account is NEVER one of the <code>ondewo000N</code> accounts the per-call ondewo-sip
-// containers register with: it has its own SIP credentials, its own endpoint on the Asterisk and, for
-// <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code>, its own client certificate issued by the
-// project&apos;s SOFTPHONE certificate authority.</p>
-// <p><b>Secrets are handed out exactly once.</b> The SIP password and the password-protected PKCS#12
-// bundle carrying the client private key appear only in the responses of
-// <code>CreateSoftphoneAccount</code> and <code>RotateSoftphoneCredentials</code>. VTSI keeps no copy of
-// the private key or of the PKCS#12 password, and stores the SIP password only in the form the Asterisk
-// needs to verify a SIP digest. No other RPC returns a secret; a lost private key or password is
-// recovered by rotating it.</p>
-// <p>Errors are reported as gRPC status codes, not as <code>error_message</code> fields:
-// <code>INVALID_ARGUMENT</code> for a malformed name, filter, field mask or value;
-// <code>NOT_FOUND</code> for an unknown project, account or certificate;
-// <code>ALREADY_EXISTS</code> for a <code>sip_username</code> already taken in the project;
-// <code>FAILED_PRECONDITION</code> when the project or the account is in a state that does not allow the
-// operation (each RPC names its cases); <code>ABORTED</code> when a concurrent change to the same account
-// won, in which case nothing was stored and the request can be retried.</p>
-// <p><b>A change that reduces access is enforced before it is acknowledged.</b> When
-// <code>UpdateSoftphoneAccount</code>, <code>DeleteSoftphoneAccount</code> or
-// <code>RevokeSoftphoneCertificate</code> is stored but the running Asterisk of a deployed project could
-// not be updated, the RPC fails with <code>FAILED_PRECONDITION</code>; the stored change is applied by
-// the next successful change or deployment. <code>CreateSoftphoneAccount</code> and
-// <code>RotateSoftphoneCredentials</code> return their one-time secrets even then.</p>
-// <p>Authorization (only when the server enforces it, see the <code>Projects</code> service): a caller
-// without a credential is <code>UNAUTHENTICATED</code>; every RPC of this service requires
-// <code>PROJECT_DEVELOPER</code> or higher on the account&apos;s project, otherwise
-// <code>PERMISSION_DENIED</code>, also for an unknown project.</p>
+// ONDEWO VTSI API
+//
+// Manages the SOFTPHONE ACCOUNTS of a VTSI project: SIP accounts on the project&apos;s Asterisk that a human uses from a softphone such as Zoiper, to call into the project&apos;s listeners or to be reached by the project.
+//
+// A softphone account is NEVER one of the <code>ondewo000N</code> accounts the per-call ondewo-sip containers register with: it has its own SIP credentials, its own endpoint on the Asterisk and, for <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code>, its own client certificate issued by the project&apos;s SOFTPHONE certificate authority.
+//
+// <b>Secrets are handed out exactly once.</b> The SIP password and the password-protected PKCS#12 bundle carrying the client private key appear only in the responses of <code>CreateSoftphoneAccount</code> and <code>RotateSoftphoneCredentials</code>. VTSI keeps no copy of the private key or of the PKCS#12 password, and stores the SIP password only in the form the Asterisk needs to verify a SIP digest. No other RPC returns a secret; a lost private key or password is recovered by rotating it.
+//
+// Errors are reported as gRPC status codes, not as <code>error_message</code> fields: <code>INVALID_ARGUMENT</code> for a malformed name, filter, field mask or value; <code>NOT_FOUND</code> for an unknown project, account or certificate; <code>ALREADY_EXISTS</code> for a <code>sip_username</code> already taken in the project; <code>FAILED_PRECONDITION</code> when the project or the account is in a state that does not allow the operation (each RPC names its cases); <code>ABORTED</code> when a concurrent change to the same account won, in which case nothing was stored and the request can be retried.
+//
+// <b>A change that reduces access is enforced before it is acknowledged.</b> When <code>UpdateSoftphoneAccount</code>, <code>DeleteSoftphoneAccount</code> or <code>RevokeSoftphoneCertificate</code> is stored but the running Asterisk of a deployed project could not be updated, the RPC fails with <code>FAILED_PRECONDITION</code>; the stored change is applied by the next successful change or deployment. <code>CreateSoftphoneAccount</code> and <code>RotateSoftphoneCredentials</code> return their one-time secrets even then.
+//
+// Authorization (only when the server enforces it, see the <code>Projects</code> service): a caller without a credential is <code>UNAUTHENTICATED</code>; every RPC of this service requires <code>PROJECT_DEVELOPER</code> or higher on the account&apos;s project, otherwise <code>PERMISSION_DENIED</code>, also for an unknown project.
 service Softphones {
 
     //////////////////////////////////////////////////////////////////////////////
@@ -218,10 +200,7 @@ service Softphones {
 // Enums
 //////////////////////////////////////////////////////////////////////////////
 
-// How a softphone account secures its SIP signalling to the project&apos;s Asterisk. Both modes use TLS
-// for signalling, SRTP for media and SIP digest authentication with the account&apos;s own credentials;
-// they differ in which TLS port the softphone connects to and whether it must present a client
-// certificate.
+// How a softphone account secures its SIP signalling to the project&apos;s Asterisk. Both modes use TLS for signalling, SRTP for media and SIP digest authentication with the account&apos;s own credentials; they differ in which TLS port the softphone connects to and whether it must present a client certificate.
 enum SoftphoneTransportSecurity {
 
     // Unspecified: identical to <code>SOFTPHONE_TRANSPORT_SECURITY_CLIENT_CERTIFICATE</code> on create.
@@ -269,8 +248,7 @@ enum SoftphoneCertificateStatus {
     SOFTPHONE_CERTIFICATE_STATUS_REVOKED = 3;
 }
 
-// Reachability of one registered contact of a softphone account, as the project&apos;s Asterisk
-// qualifies it (SIP <code>OPTIONS</code>).
+// Reachability of one registered contact of a softphone account, as the project&apos;s Asterisk qualifies it (SIP <code>OPTIONS</code>).
 enum SoftphoneContactStatus {
 
     // Unspecified. Never returned.
@@ -308,8 +286,7 @@ enum SoftphoneSrtpMode {
 // Resources
 //////////////////////////////////////////////////////////////////////////////
 
-// A SIP account on a VTSI project&apos;s Asterisk for a human using a softphone. Never carries a
-// secret.
+// A SIP account on a VTSI project&apos;s Asterisk for a human using a softphone. Never carries a secret.
 message SoftphoneAccount {
 
     // Output only. Resource name of the softphone account.
@@ -412,9 +389,7 @@ message SoftphoneAccount {
     string description = 22;
 }
 
-// A client certificate issued to a softphone account by the project&apos;s SOFTPHONE certificate
-// authority. Carries public material only: the private key exists solely inside the PKCS#12 bundle that
-// was returned once when the certificate was issued. Every field is output only.
+// A client certificate issued to a softphone account by the project&apos;s SOFTPHONE certificate authority. Carries public material only: the private key exists solely inside the PKCS#12 bundle that was returned once when the certificate was issued. Every field is output only.
 message SoftphoneCertificate {
 
     // Resource name of the certificate.
@@ -474,10 +449,7 @@ message SoftphoneCertificate {
     string revocation_reason = 17;
 }
 
-// ONE-TIME secrets of a softphone account, returned only by <code>CreateSoftphoneAccount</code> and
-// <code>RotateSoftphoneCredentials</code>. VTSI keeps no copy of the private key or of
-// <code>pkcs12_password</code> and cannot return them again: store them now, or rotate later. Never log
-// this message.
+// ONE-TIME secrets of a softphone account, returned only by <code>CreateSoftphoneAccount</code> and <code>RotateSoftphoneCredentials</code>. VTSI keeps no copy of the private key or of <code>pkcs12_password</code> and cannot return them again: store them now, or rotate later. Never log this message.
 message SoftphoneCredentials {
 
     // The SIP digest password. Set on create and on every rotation (a certificate rotation rotates the
@@ -499,8 +471,7 @@ message SoftphoneCredentials {
     SoftphoneCertificate certificate = 4;
 }
 
-// Everything needed to configure a softphone for one account, except the secrets. Every field is output
-// only.
+// Everything needed to configure a softphone for one account, except the secrets. Every field is output only.
 message SoftphoneProvisioning {
 
     // Resource name of the softphone account this describes.
@@ -591,9 +562,7 @@ message SoftphoneProvisioning {
 // Filters and sorting
 //////////////////////////////////////////////////////////////////////////////
 
-// Narrows a softphone account listing. Every field is optional; an unset field or an empty repeated
-// field or map means &quot;do not filter on this&quot;. Fields are combined with AND; the values within
-// one repeated field are combined with OR; the entries of <code>labels</code> are combined with AND.
+// Narrows a softphone account listing. Every field is optional; an unset field or an empty repeated field or map means &quot;do not filter on this&quot;. Fields are combined with AND; the values within one repeated field are combined with OR; the entries of <code>labels</code> are combined with AND.
 message SoftphoneAccountFilter {
 
     // Only accounts with one of these transport securities.
@@ -629,8 +598,7 @@ message SoftphoneAccountFilter {
     optional bool locked = 8;
 }
 
-// Narrows a softphone certificate listing. Combined like
-// <a href="index.html#ondewo.vtsi.SoftphoneAccountFilter">SoftphoneAccountFilter</a>.
+// Narrows a softphone certificate listing. Combined like <a href="index.html#ondewo.vtsi.SoftphoneAccountFilter">SoftphoneAccountFilter</a>.
 message SoftphoneCertificateFilter {
 
     // Only certificates with one of these statuses. Empty matches every status.
@@ -682,8 +650,7 @@ message SoftphoneAccountSorting {
 // Requests and responses
 //////////////////////////////////////////////////////////////////////////////
 
-// The request message for
-// <a href="index.html#ondewo.vtsi.Softphones.CreateSoftphoneAccount">Softphones.CreateSoftphoneAccount</a>.
+// The request message for <a href="index.html#ondewo.vtsi.Softphones.CreateSoftphoneAccount">Softphones.CreateSoftphoneAccount</a>.
 message CreateSoftphoneAccountRequest {
 
     // VTSI project in which to create the account.
@@ -715,8 +682,7 @@ message CreateSoftphoneAccountRequest {
     string idempotency_key = 3;
 }
 
-// The response message for
-// <a href="index.html#ondewo.vtsi.Softphones.CreateSoftphoneAccount">Softphones.CreateSoftphoneAccount</a>.
+// The response message for <a href="index.html#ondewo.vtsi.Softphones.CreateSoftphoneAccount">Softphones.CreateSoftphoneAccount</a>.
 message CreateSoftphoneAccountResponse {
 
     // The created account.
@@ -728,8 +694,7 @@ message CreateSoftphoneAccountResponse {
     SoftphoneCredentials credentials = 2;
 }
 
-// The request message for
-// <a href="index.html#ondewo.vtsi.Softphones.GetSoftphoneAccount">Softphones.GetSoftphoneAccount</a>.
+// The request message for <a href="index.html#ondewo.vtsi.Softphones.GetSoftphoneAccount">Softphones.GetSoftphoneAccount</a>.
 message GetSoftphoneAccountRequest {
 
     // Resource name of the account.
@@ -742,8 +707,7 @@ message GetSoftphoneAccountRequest {
     google.protobuf.FieldMask field_mask = 2;
 }
 
-// The request message for
-// <a href="index.html#ondewo.vtsi.Softphones.UpdateSoftphoneAccount">Softphones.UpdateSoftphoneAccount</a>.
+// The request message for <a href="index.html#ondewo.vtsi.Softphones.UpdateSoftphoneAccount">Softphones.UpdateSoftphoneAccount</a>.
 message UpdateSoftphoneAccountRequest {
 
     // The account to update, identified by <code>softphone_account.name</code>, carrying the new values of
@@ -770,8 +734,7 @@ message UpdateSoftphoneAccountRequest {
     google.protobuf.FieldMask update_mask = 2;
 }
 
-// The request message for
-// <a href="index.html#ondewo.vtsi.Softphones.DeleteSoftphoneAccount">Softphones.DeleteSoftphoneAccount</a>.
+// The request message for <a href="index.html#ondewo.vtsi.Softphones.DeleteSoftphoneAccount">Softphones.DeleteSoftphoneAccount</a>.
 message DeleteSoftphoneAccountRequest {
 
     // Resource name of the account to delete.
@@ -779,8 +742,7 @@ message DeleteSoftphoneAccountRequest {
     string name = 1;
 }
 
-// The response message for
-// <a href="index.html#ondewo.vtsi.Softphones.DeleteSoftphoneAccount">Softphones.DeleteSoftphoneAccount</a>.
+// The response message for <a href="index.html#ondewo.vtsi.Softphones.DeleteSoftphoneAccount">Softphones.DeleteSoftphoneAccount</a>.
 message DeleteSoftphoneAccountResponse {
 
     // Resource name of the deleted account.
@@ -790,8 +752,7 @@ message DeleteSoftphoneAccountResponse {
     int32 revoked_certificate_count = 2;
 }
 
-// The request message for
-// <a href="index.html#ondewo.vtsi.Softphones.ListSoftphoneAccounts">Softphones.ListSoftphoneAccounts</a>.
+// The request message for <a href="index.html#ondewo.vtsi.Softphones.ListSoftphoneAccounts">Softphones.ListSoftphoneAccounts</a>.
 message ListSoftphoneAccountsRequest {
 
     // VTSI project whose accounts to list.
@@ -817,8 +778,7 @@ message ListSoftphoneAccountsRequest {
     SoftphoneAccountSorting softphone_account_sorting = 6;
 }
 
-// The response message for
-// <a href="index.html#ondewo.vtsi.Softphones.ListSoftphoneAccounts">Softphones.ListSoftphoneAccounts</a>.
+// The response message for <a href="index.html#ondewo.vtsi.Softphones.ListSoftphoneAccounts">Softphones.ListSoftphoneAccounts</a>.
 message ListSoftphoneAccountsResponse {
 
     // The accounts of this page.
@@ -828,10 +788,7 @@ message ListSoftphoneAccountsResponse {
     string next_page_token = 2;
 }
 
-// The request message for
-// <a href="index.html#ondewo.vtsi.Softphones.RotateSoftphoneCredentials">Softphones.RotateSoftphoneCredentials</a>.
-// At least one of <code>rotate_sip_password</code> and <code>rotate_certificate</code> must be
-// <code>true</code>.
+// The request message for <a href="index.html#ondewo.vtsi.Softphones.RotateSoftphoneCredentials">Softphones.RotateSoftphoneCredentials</a>. At least one of <code>rotate_sip_password</code> and <code>rotate_certificate</code> must be <code>true</code>.
 message RotateSoftphoneCredentialsRequest {
 
     // Resource name of the account.
@@ -846,8 +803,7 @@ message RotateSoftphoneCredentialsRequest {
     bool rotate_certificate = 3;
 }
 
-// The response message for
-// <a href="index.html#ondewo.vtsi.Softphones.RotateSoftphoneCredentials">Softphones.RotateSoftphoneCredentials</a>.
+// The response message for <a href="index.html#ondewo.vtsi.Softphones.RotateSoftphoneCredentials">Softphones.RotateSoftphoneCredentials</a>.
 message RotateSoftphoneCredentialsResponse {
 
     // The account after the rotation.
@@ -858,8 +814,7 @@ message RotateSoftphoneCredentialsResponse {
     SoftphoneCredentials credentials = 2;
 }
 
-// The request message for
-// <a href="index.html#ondewo.vtsi.Softphones.ListSoftphoneCertificates">Softphones.ListSoftphoneCertificates</a>.
+// The request message for <a href="index.html#ondewo.vtsi.Softphones.ListSoftphoneCertificates">Softphones.ListSoftphoneCertificates</a>.
 message ListSoftphoneCertificatesRequest {
 
     // Required. Whose certificates to list.
@@ -891,8 +846,7 @@ message ListSoftphoneCertificatesRequest {
     optional string page_token = 6;
 }
 
-// The response message for
-// <a href="index.html#ondewo.vtsi.Softphones.ListSoftphoneCertificates">Softphones.ListSoftphoneCertificates</a>.
+// The response message for <a href="index.html#ondewo.vtsi.Softphones.ListSoftphoneCertificates">Softphones.ListSoftphoneCertificates</a>.
 message ListSoftphoneCertificatesResponse {
 
     // The certificates of this page, newest <code>created_at</code> first.
@@ -902,8 +856,7 @@ message ListSoftphoneCertificatesResponse {
     string next_page_token = 2;
 }
 
-// The request message for
-// <a href="index.html#ondewo.vtsi.Softphones.GetSoftphoneCertificate">Softphones.GetSoftphoneCertificate</a>.
+// The request message for <a href="index.html#ondewo.vtsi.Softphones.GetSoftphoneCertificate">Softphones.GetSoftphoneCertificate</a>.
 message GetSoftphoneCertificateRequest {
 
     // Resource name of the certificate.
@@ -915,8 +868,7 @@ message GetSoftphoneCertificateRequest {
     google.protobuf.FieldMask field_mask = 2;
 }
 
-// The request message for
-// <a href="index.html#ondewo.vtsi.Softphones.RevokeSoftphoneCertificate">Softphones.RevokeSoftphoneCertificate</a>.
+// The request message for <a href="index.html#ondewo.vtsi.Softphones.RevokeSoftphoneCertificate">Softphones.RevokeSoftphoneCertificate</a>.
 message RevokeSoftphoneCertificateRequest {
 
     // Resource name of the certificate to revoke.
@@ -928,8 +880,7 @@ message RevokeSoftphoneCertificateRequest {
     string reason = 2;
 }
 
-// The request message for
-// <a href="index.html#ondewo.vtsi.Softphones.GetSoftphoneProvisioning">Softphones.GetSoftphoneProvisioning</a>.
+// The request message for <a href="index.html#ondewo.vtsi.Softphones.GetSoftphoneProvisioning">Softphones.GetSoftphoneProvisioning</a>.
 message GetSoftphoneProvisioningRequest {
 
     // Resource name of the account to provision.
@@ -937,8 +888,7 @@ message GetSoftphoneProvisioningRequest {
     string name = 1;
 }
 
-// The request message for
-// <a href="index.html#ondewo.vtsi.Softphones.GetSoftphoneRegistration">Softphones.GetSoftphoneRegistration</a>.
+// The request message for <a href="index.html#ondewo.vtsi.Softphones.GetSoftphoneRegistration">Softphones.GetSoftphoneRegistration</a>.
 message GetSoftphoneRegistrationRequest {
 
     // Resource name of the account.
@@ -952,8 +902,7 @@ message GetSoftphoneRegistrationRequest {
     google.protobuf.FieldMask field_mask = 2;
 }
 
-// The live registrations of one softphone account on its project&apos;s Asterisk. Every field is output
-// only. Never carries a secret.
+// The live registrations of one softphone account on its project&apos;s Asterisk. Every field is output only. Never carries a secret.
 message SoftphoneRegistration {
 
     // Resource name of the softphone account.

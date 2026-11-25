@@ -17,7 +17,7 @@
 
 # MUST BE THE SAME AS API in Mayor and Minor Version Number
 # example: API 2.9.0 --> Client 2.9.X
-ONDEWO_VTSI_API_VERSION=9.5.0
+ONDEWO_VTSI_API_VERSION=9.6.0
 
 ONDEWO_NLU_API_GIT_BRANCH=tags/7.6.0
 ONDEWO_S2T_API_GIT_BRANCH=tags/7.6.0
@@ -121,6 +121,19 @@ presence_check: ## Check the proto field-presence surface against presence/expec
 
 presence_update: ## Regenerate presence/presence-manifest.json after an intended presence change
 	@$(or ${PRESENCE_PY},${PRESENCE_RUNNER}) presence/check_presence.py --write
+
+# protoc-gen-doc renders file, service, message and enum descriptions with `{{p .Description}}`, which starts a
+# new paragraph at EVERY newline: a description wrapped across source lines renders broken mid-sentence on the
+# published page. These descriptions keep one paragraph per source line (doc_rendering/README.md).
+# Every tree under ondewo/ is published, the vendored nlu/qa/s2t/t2s/sip copies included, so the check covers
+# them too: a re-vendor of an upstream release that predates the same guard fails here (google/ is not published).
+DOC_RENDERING_PROTOS = ondewo/*/*.proto
+
+doc_rendering_check: ## Check that every p-rendered proto description keeps one paragraph per source line
+	@python3 doc_rendering/reflow_proto_docs.py --check ${DOC_RENDERING_PROTOS}
+
+doc_rendering_fix: ## Reflow the p-rendered proto descriptions to one paragraph per source line
+	@python3 doc_rendering/reflow_proto_docs.py ${DOC_RENDERING_PROTOS}
 
 help: ## Print usage info about help targets
 	# (first comment after target starting with double hashes ##)
@@ -307,7 +320,7 @@ checkout_defined_submodule_versions: ## Update submodule versions
 # repositories check out. RUN `make build` AND COMMIT ITS OUTPUT BEFORE `make ondewo_release`.
 .NOTPARALLEL:
 
-RELEASE_STEPS = presence_check create_release_branch create_release_tag build_and_release_to_github_via_docker
+RELEASE_STEPS = presence_check doc_rendering_check create_release_branch create_release_tag build_and_release_to_github_via_docker
 
 release: ${RELEASE_STEPS} ## Automate the entire release process
 	@echo "Release Finished"

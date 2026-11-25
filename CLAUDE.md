@@ -219,9 +219,19 @@ curl -s "https://api.github.com/repos/ondewo/ondewo-vtsi-api/actions/runs?head_s
   | grep -E '"(status|conclusion)"'
 ```
 
-There is deliberately **no `uv` / `ruff` / `mypy` / `pytest` step to mirror**: this repo contains zero Python
-files (`git ls-files '*.py'` is empty), which is why `.pre-commit-config.yaml` carries only language-agnostic
-hooks. The `mypy` and `install_python_requirements` targets still sitting in the `Makefile` are vestigial —
+**A file, service, message or enum description is one paragraph per source line.** protoc-gen-doc renders them
+with `{{p .Description}}`, which starts a new paragraph at every newline, so a description wrapped at 120
+characters is published broken mid-sentence (field, enum-value and method comments are inserted raw and wrap
+freely). `make doc_rendering_check` enforces it (the `Proto field presence` workflow and `make release` run it),
+`make doc_rendering_fix` reflows; rules and the `&#10;` convention inside `<pre>`: `doc_rendering/README.md`.
+Both cover every `ondewo/*/*.proto`, the VENDORED `nlu`/`qa`/`s2t`/`t2s`/`sip` copies included, because all of
+them are published here. The upstream `ondewo-{nlu,s2t,t2s,sip}-api` repositories carry the same guard, so a
+re-vendor of a release that has it stays clean; one of an older release fails the check, and the fix is
+`make doc_rendering_fix` on the copy (comments only), never a move to an unreleased upstream version.
+
+There is deliberately **no `uv` / `ruff` / `mypy` / `pytest` step to mirror**: the only Python in this repo are
+the two read-only checks (`presence/`, `doc_rendering/`), run by their own make targets, which is why
+`.pre-commit-config.yaml` carries only language-agnostic hooks. The `mypy` and `install_python_requirements` targets still sitting in the `Makefile` are vestigial —
 `mypy` even calls `pre-commit run mypy`, a hook id this repo does not define — and are wired into no gate.
 
 ### What is sharp about it

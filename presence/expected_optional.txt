@@ -33,6 +33,9 @@ ondewo.vtsi.AsteriskConfigsVariables.sip_trunk_verify_server                 # n
 ondewo.vtsi.AudioObjectStorageConfig.activate_audio_object_storage           # keyword added in 9.0.0 (OND233-367)
 ondewo.vtsi.AudioObjectStorageServicesActivationConfig.activate_s2t          # keyword added in 9.0.0 (OND233-367)
 ondewo.vtsi.AudioObjectStorageServicesActivationConfig.activate_t2s          # keyword added in 9.0.0 (OND233-367)
+ondewo.vtsi.BotTransferConfig.failed_action                                  # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.BotTransferConfig.outcome_timeout_ms                             # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.BotTransferConfig.warm_transfer_outcome_commit_timeout_seconds   # new field in 9.6.0 (OND236-120)
 ondewo.vtsi.Call.answering_machine_detection_end_description                 # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.Call.common_services_config
 ondewo.vtsi.Call.csi_port
@@ -55,6 +58,7 @@ ondewo.vtsi.CallLogFilter.include_unleveled_lines
 ondewo.vtsi.CallLogFilter.regex
 ondewo.vtsi.CallLogFilter.start_time
 ondewo.vtsi.CallLogFilter.text
+ondewo.vtsi.CommonServicesConfig.max_call_duration_seconds                   # new field in 9.6.0 (OND236-120)
 ondewo.vtsi.CsiPreemptiveGenerationConfig.commit_wait_timeout_seconds        # new field in 9.4.0 (OND236-120)
 ondewo.vtsi.CsiPreemptiveGenerationConfig.enabled                            # new field in 9.4.0 (OND236-120)
 ondewo.vtsi.CsiVtsiConfig.activate_control_messages
@@ -69,19 +73,27 @@ ondewo.vtsi.DictationConfig.s2t_slot_min_duration_off_seconds                # n
 ondewo.vtsi.DtmfConfig.barge_in                                              # new field in 9.4.0 (OND236-120)
 ondewo.vtsi.DtmfConfig.enabled                                               # new field in 9.4.0 (OND236-120)
 ondewo.vtsi.DtmfConfig.inter_digit_timeout_ms                                # new field in 9.4.0 (OND236-120)
+ondewo.vtsi.DtmfConfig.speech_guard_ms                                       # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.DtmfConfig.text_template                                         # new field in 9.6.0 (OND236-120)
 ondewo.vtsi.DtmfConfig.undeclared_policy                                     # new field in 9.4.0 (OND236-120)
 ondewo.vtsi.GetCallRequest.call_view
 ondewo.vtsi.GetCallerRequest.call_view
 ondewo.vtsi.GetListenerRequest.call_view
 ondewo.vtsi.GetScheduledCallerRequest.call_view
+ondewo.vtsi.InterruptionHandlingConfig.ai_teams_cancel_pending_on_interrupt  # new field in 9.6.0 (OND236-120)
 ondewo.vtsi.InterruptionHandlingConfig.backoff_seconds
+ondewo.vtsi.InterruptionHandlingConfig.cancel_on_speech_while_thinking       # new field in 9.6.0 (OND236-120)
 ondewo.vtsi.InterruptionHandlingConfig.enabled
 ondewo.vtsi.InterruptionHandlingConfig.false_interruption_timeout_seconds
 ondewo.vtsi.InterruptionHandlingConfig.first_message_protected_seconds
+ondewo.vtsi.InterruptionHandlingConfig.heard_report_enabled                  # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.InterruptionHandlingConfig.heard_text_alignment_enabled          # new field in 9.6.0 (OND236-120)
 ondewo.vtsi.InterruptionHandlingConfig.interruption_fade_out_ms                    # new field in 9.4.0 (OND236-120)
 ondewo.vtsi.InterruptionHandlingConfig.min_interruption_duration_seconds
 ondewo.vtsi.InterruptionHandlingConfig.min_interruption_words
+ondewo.vtsi.InterruptionHandlingConfig.nlu_turn_control_enabled              # new field in 9.6.0 (OND236-120)
 ondewo.vtsi.InterruptionHandlingConfig.resume_after_false_interruption
+ondewo.vtsi.InterruptionHandlingConfig.t2s_cancel_on_barge_in                # new field in 9.6.0 (OND236-120)
 ondewo.vtsi.InterruptionHandlingConfig.transcribe_on_disabled_interruptions  # keyword added in 9.0.0 (OND233-367)
 ondewo.vtsi.ListCallLogStreamsRequest.filter
 ondewo.vtsi.ListCallLogStreamsRequest.page_token
@@ -119,11 +131,31 @@ ondewo.vtsi.MessageBrokerServicesActivationConfig.activate_t2s               # k
 ondewo.vtsi.NluPreemptiveGenerationConfig.max_drafts_per_turn                # new field in 9.4.0 (OND236-120)
 ondewo.vtsi.NluPreemptiveGenerationConfig.min_interval_seconds               # new field in 9.4.0 (OND236-120)
 ondewo.vtsi.NluPreemptiveGenerationConfig.min_stable_dwell_seconds           # new field in 9.4.0 (OND236-120)
+ondewo.vtsi.NluVtsiConfig.ai_teams_fillers_audible                           # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.NluVtsiConfig.ai_teams_push_max_age_seconds                      # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.NluVtsiConfig.ai_teams_push_max_spoken                           # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.NluVtsiConfig.failure_apology_message                            # new field in 9.6.0 (OND236-120)
 ondewo.vtsi.NluVtsiConfig.platform
+ondewo.vtsi.NluVtsiConfig.session_id_from_sip_context                        # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.ResponseTimingConfig.nlu_call_stream_enabled                     # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.ResponseTimingConfig.nlu_call_stream_turn_quiet_seconds          # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.ResponseTimingConfig.nlu_call_stream_turn_timeout_seconds        # new field in 9.6.0 (OND236-120)
 ondewo.vtsi.ResponseTimingConfig.preemptive_generation_enabled
 ondewo.vtsi.ResponseTimingConfig.silence_end_call_timeout_seconds
+ondewo.vtsi.ResponseTimingConfig.streaming_enabled                           # new field in 9.6.0 (OND236-120)
 ondewo.vtsi.ResponseTimingConfig.t2s_chunked_streaming_enabled
+ondewo.vtsi.ResponseTimingConfig.t2s_max_edge_silence_ms                     # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.ResponseTimingConfig.turn_timeout_intent                         # new field in 9.6.0 (OND236-120)
 ondewo.vtsi.ResponseTimingConfig.turn_timeout_seconds
+ondewo.vtsi.S2tVtsiConfig.failure_sip_trigger                                # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.SipVtsiConfig.call_audio_stream_max_concurrent                   # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.SipVtsiConfig.call_audio_stream_max_duration_seconds             # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.SipVtsiConfig.hangup_wait_for_playback_timeout_seconds           # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.SipVtsiConfig.outgoing_dial_watchdog_seconds                     # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.SipVtsiConfig.playback_latency_ms                                # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.SipVtsiConfig.register_interval_seconds                          # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.SipVtsiConfig.rtp_stats_sample_interval_seconds                  # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.SipVtsiConfig.software_clock_enabled                             # new field in 9.6.0 (OND236-120)
 ondewo.vtsi.SoftTimeoutConfig.max_per_generation
 ondewo.vtsi.SoftTimeoutConfig.timeout_seconds
 ondewo.vtsi.SoftphoneAccount.enabled                                         # new field in 9.0.0 (OND233-367)
@@ -138,6 +170,8 @@ ondewo.vtsi.StreamCallLogsRequest.tail_lines
 ondewo.vtsi.SubscribeVtsiEventsRequest.resume_token                          # new field in 9.0.0 (OND233-367)
 ondewo.vtsi.T2sPreemptiveSynthesisConfig.chunked                             # new field in 9.4.0 (OND236-120)
 ondewo.vtsi.T2sPreemptiveSynthesisConfig.enabled                             # new field in 9.4.0 (OND236-120)
+ondewo.vtsi.T2sVtsiConfig.cache_retention                                    # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.T2sVtsiConfig.synthesize_timeout_seconds                         # new field in 9.6.0 (OND236-120)
 ondewo.vtsi.TurnDetectionConfig.conversation_context_turns                   # new field in 9.4.0 (OND236-120)
 ondewo.vtsi.TurnDetectionConfig.end_of_turn_probability_threshold            # new field in 9.4.0 (OND236-120)
 ondewo.vtsi.TurnDetectionConfig.exact_probability                            # new field in 9.4.0 (OND236-120)
@@ -145,7 +179,12 @@ ondewo.vtsi.TurnDetectionConfig.final_merge_window_seconds                   # n
 ondewo.vtsi.TurnDetectionConfig.incomplete_max_silence_seconds               # new field in 9.4.0 (OND236-120)
 ondewo.vtsi.TurnDetectionConfig.max_endpointing_delay_seconds
 ondewo.vtsi.TurnDetectionConfig.min_endpointing_delay_seconds
+ondewo.vtsi.TurnDetectionConfig.post_unmute_phantom_window_seconds           # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.TurnDetectionConfig.s2t_emit_ms                                  # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.TurnDetectionConfig.s2t_request_end_of_speech_candidate          # new field in 9.6.0 (OND236-120)
+ondewo.vtsi.TurnDetectionConfig.s2t_request_partials                         # new field in 9.6.0 (OND236-120)
 ondewo.vtsi.TurnDetectionConfig.semantic_model_name                          # new field in 9.4.0 (OND236-120)
+ondewo.vtsi.TurnDetectionConfig.smart_turn_threshold                         # new field in 9.6.0 (OND236-120)
 ondewo.vtsi.TurnDetectionConfig.turn_detection_system_prompt                 # keyword added in 9.0.0 (OND233-367)
 ondewo.vtsi.TurnDetectionConfig.turn_detection_user_prompt                   # keyword added in 9.0.0 (OND233-367)
 ondewo.vtsi.TurnDetectionConfig.uncertain_min_words                          # new field in 9.4.0 (OND236-120)

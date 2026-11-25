@@ -68,3 +68,8 @@ jobs:
 
       - name: Check proto field presence
         run: make presence_check PRESENCE_PY=python
+
+      - name: Check that the published proto descriptions render as paragraphs
+        # protoc-gen-doc's `p` filter starts a paragraph at every newline of a file/service/message/enum
+        # description; see doc_rendering/README.md.
+        run: make doc_rendering_check
