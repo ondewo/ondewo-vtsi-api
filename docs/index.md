@@ -1706,8 +1706,7 @@ Request to create a project-scoped technical user (PROJECT_EXECUTOR, 2FA-exempt)
 <a name="ondewo.nlu.CreateProjectTechnicalUserResponse"></a>
 
 ### CreateProjectTechnicalUserResponse
-Response with the freshly minted technical user's credentials.
-The password is returned ONCE and cannot be retrieved later.
+Response with the freshly minted technical user's credentials. The password is returned ONCE and cannot be retrieved later.
 
 
 | Field | Type | Label | Description |
@@ -2997,8 +2996,7 @@ Request to rotate the password of a project-scoped technical user.
 <a name="ondewo.nlu.RotateProjectTechnicalUserPasswordResponse"></a>
 
 ### RotateProjectTechnicalUserPasswordResponse
-Response with the rotated password.
-The password is returned ONCE and cannot be retrieved later.
+Response with the rotated password. The password is returned ONCE and cannot be retrieved later.
 
 
 | Field | Type | Label | Description |
@@ -3102,9 +3100,7 @@ Request to get user in project
 <a name="ondewo.nlu.WarmTransferAgentLexicon"></a>
 
 ### WarmTransferAgentLexicon
-Additional entries of the closed decision lexicon of warm transfer intros in one language, matched before an LLM
-classifies an answer. At most 50 entries in <code>accept_phrases</code> and <code>decline_phrases</code>
-together.
+Additional entries of the closed decision lexicon of warm transfer intros in one language, matched before an LLM classifies an answer. At most 50 entries in <code>accept_phrases</code> and <code>decline_phrases</code> together.
 
 
 | Field | Type | Label | Description |
@@ -3120,8 +3116,7 @@ together.
 <a name="ondewo.nlu.WarmTransferAgentSettings"></a>
 
 ### WarmTransferAgentSettings
-The agent's settings of warm transfer intros. A text a <code>WarmTransferIntroConfig</code> leaves empty falls back
-to the agent's text for the intro's language, then to the built-in default.
+The agent's settings of warm transfer intros. A text a <code>WarmTransferIntroConfig</code> leaves empty falls back to the agent's text for the intro's language, then to the built-in default.
 
 
 | Field | Type | Label | Description |
@@ -3171,8 +3166,7 @@ to the agent's text for the intro's language, then to the built-in default.
 <a name="ondewo.nlu.WarmTransferAgentTexts"></a>
 
 ### WarmTransferAgentTexts
-The default texts of warm transfer intros in one language. An empty text = the built-in default. The fields and
-placeholders are those of the same-named fields of <code>WarmTransferIntroConfig</code>.
+The default texts of warm transfer intros in one language. An empty text = the built-in default. The fields and placeholders are those of the same-named fields of <code>WarmTransferIntroConfig</code>.
 
 
 | Field | Type | Label | Description |
@@ -4407,8 +4401,7 @@ Response after attempting to create a Call Center AI (CCAI service) project.
 <a name="ondewo.nlu.DeleteCcaiProjectRequest"></a>
 
 ### DeleteCcaiProjectRequest
-Request to delete a CCAI service project
-If a deployed CCAI service project was deleted then it was undeployed beforehand automatically
+Request to delete a CCAI service project If a deployed CCAI service project was deleted then it was undeployed beforehand automatically
 
 
 | Field | Type | Label | Description |
@@ -4424,8 +4417,7 @@ If a deployed CCAI service project was deleted then it was undeployed beforehand
 <a name="ondewo.nlu.DeleteCcaiProjectResponse"></a>
 
 ### DeleteCcaiProjectResponse
-Response to delete a CCAI service project
-If a deployed CCAI service project was deleted then it was undeployed beforehand automatically
+Response to delete a CCAI service project If a deployed CCAI service project was deleted then it was undeployed beforehand automatically
 
 
 | Field | Type | Label | Description |
@@ -4652,9 +4644,7 @@ CcaiProjectView defines what the CcaiProject message contains
 ### CcaiServiceType
 Defines the types of CCAI (Call Center AI) services available in the system.
 
-Each service type represents a specific capability or module within the ONDEWO platform
-that enables comprehensive call center and customer interaction management. Services can be
-composed in workflows and are identified by their type, language code, and provider configuration.
+Each service type represents a specific capability or module within the ONDEWO platform that enables comprehensive call center and customer interaction management. Services can be composed in workflows and are identified by their type, language code, and provider configuration.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -4994,8 +4984,7 @@ statistic response
 <a name="ondewo.nlu.StreamNotificationsRequest"></a>
 
 ### StreamNotificationsRequest
-Message for streaming notifications in real time via
-<a href="index.html#ondewo.nlu.Users.StreamNotifications">Users.StreamNotifications</a>.
+Message for streaming notifications in real time via <a href="index.html#ondewo.nlu.Users.StreamNotifications">Users.StreamNotifications</a>.
 
 
 | Field | Type | Label | Description |
@@ -5349,9 +5338,7 @@ The request message for <a href="index.html#ondewo.nlu.Contexts.UpdateContext">C
 ### Contexts
 A context represents additional information included with user input or with an intent returned by the Dialogflow API. Contexts are helpful for differentiating user input which may be vague or have a different meaning depending on additional details from your application such as user setting and preferences, previous user input, where the user is in your application, geographic location, and so on.
 
-You can include contexts as input parameters of a <a href="index.html#ondewo.nlu.Sessions.DetectIntent">DetectIntent</a> (or <a href="index.html#ondewo.nlu.Sessions.StreamingDetectIntent">StreamingDetectIntent</a>) request, or as output contexts included in the returned intent.
-Contexts expire when an intent is matched, after the number of <code>DetectIntent</code> requests specified by the <code>lifespan_count</code> parameter, or after 10 minutes if no intents are matched for a <code>DetectIntent</code> request.
-For more information about contexts, see the <a href="https://dialogflow.com/docs/contexts">Dialogflow documentation</a>.
+You can include contexts as input parameters of a <a href="index.html#ondewo.nlu.Sessions.DetectIntent">DetectIntent</a> (or <a href="index.html#ondewo.nlu.Sessions.StreamingDetectIntent">StreamingDetectIntent</a>) request, or as output contexts included in the returned intent. Contexts expire when an intent is matched, after the number of <code>DetectIntent</code> requests specified by the <code>lifespan_count</code> parameter, or after 10 minutes if no intents are matched for a <code>DetectIntent</code> request. For more information about contexts, see the <a href="https://dialogflow.com/docs/contexts">Dialogflow documentation</a>.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
@@ -5614,9 +5601,7 @@ This message is for the entity status
 <a name="ondewo.nlu.EntityType"></a>
 
 ### EntityType
-Represents an entity type.
-Entity types serve as a tool for extracting parameter values from natural
-language queries.
+Represents an entity type. Entity types serve as a tool for extracting parameter values from natural language queries.
 
 
 | Field | Type | Label | Description |
@@ -5889,9 +5874,7 @@ The request message for <a href="index.html#ondewo.nlu.EntityTypes.UpdateEntityT
 <a name="ondewo.nlu.EntityType.AutoExpansionMode"></a>
 
 ### EntityType.AutoExpansionMode
-Represents different entity type expansion modes. Automated expansion
-allows an agent to recognize values that have not been explicitly listed in
-the entity (for example, new kinds of shopping list items).
+Represents different entity type expansion modes. Automated expansion allows an agent to recognize values that have not been explicitly listed in the entity (for example, new kinds of shopping list items).
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -5957,9 +5940,7 @@ Structure of Entity type sorting field
 <a name="ondewo.nlu.EntityTypeView"></a>
 
 ### EntityTypeView
-Represents the options for views of an entity type.
-An entity type can be a sizable object. Therefore, we provide a resource view that
-does not return all values and synonyms besides the full view that is set by default.
+Represents the options for views of an entity type. An entity type can be a sizable object. Therefore, we provide a resource view that does not return all values and synonyms besides the full view that is set by default.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -5998,13 +5979,11 @@ When you define an entity, you can also include synonyms that all map to that en
 
 There are three types of entities:
 
-<ul>
-  <li><strong>System</strong> - entities that are defined by the Dialogflow API for common data types such as date, time, currency, and so on. A system entity is represented by the <code>EntityType</code> type.</li>
+<ul> <li><strong>System</strong> - entities that are defined by the Dialogflow API for common data types such as date, time, currency, and so on. A system entity is represented by the <code>EntityType</code> type.</li>
 
-  <li><strong>Developer</strong> - entities that are defined by you that represent actionable data that is meaningful to your application. For example, you could define a <code>pizza.sauce</code> entity for red or white pizza sauce, a <code>pizza.cheese</code> entity for the different types of cheese on a pizza, a <code>pizza.topping</code> entity for different toppings, and so on. A developer entity is represented by the <code>EntityType</code> type.</li>
+<li><strong>Developer</strong> - entities that are defined by you that represent actionable data that is meaningful to your application. For example, you could define a <code>pizza.sauce</code> entity for red or white pizza sauce, a <code>pizza.cheese</code> entity for the different types of cheese on a pizza, a <code>pizza.topping</code> entity for different toppings, and so on. A developer entity is represented by the <code>EntityType</code> type.</li>
 
-  <li><strong>User</strong> - entities that are built for an individual user such as favorites, preferences, playlists, and so on. A user entity is represented by the <a href="index.html#ondewo.nlu.SessionEntityType">SessionEntityType</a> type.</li>
-</ul>
+<li><strong>User</strong> - entities that are built for an individual user such as favorites, preferences, playlists, and so on. A user entity is represented by the <a href="index.html#ondewo.nlu.SessionEntityType">SessionEntityType</a> type.</li> </ul>
 
 For more information about entity types, see the <a href="https://dialogflow.com/docs/entities">Dialogflow documentation</a>.
 
@@ -6604,8 +6583,7 @@ This message is a response of getting intent tags
 <a name="ondewo.nlu.Intent"></a>
 
 ### Intent
-Represents an intent.
-Intents convert a number of user expressions or patterns into an action. An action is an extraction of a user command or sentence semantics.
+Represents an intent. Intents convert a number of user expressions or patterns into an action. An action is an extraction of a user command or sentence semantics.
 
 
 | Field | Type | Label | Description |
@@ -7113,8 +7091,7 @@ Represents an example or template that the agent is trained on.
 <a name="ondewo.nlu.Intent.TrainingPhrase.Entity"></a>
 
 ### Intent.TrainingPhrase.Entity
-Represents an entity annotation in a training phrase. The entity can be annotated on the level of
-entity type only or both entity type and entity value.
+Represents an entity annotation in a training phrase. The entity can be annotated on the level of entity type only or both entity type and entity value.
 
 
 | Field | Type | Label | Description |
@@ -7543,9 +7520,7 @@ Structure of intent sorting field
 <a name="ondewo.nlu.IntentView"></a>
 
 ### IntentView
-Represents the options for views of an intent.
-An intent can be a sizable object. Therefore, we provide a resource view that
-does not return training phrases in the response by default.
+Represents the options for views of an intent. An intent can be a sizable object. Therefore, we provide a resource view that does not return training phrases in the response by default.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -7568,13 +7543,11 @@ An intent represents a mapping between input from a user and an action to be tak
 
 You can provide additional information for the Dialogflow API to use to match user input to an intent by adding the following to your intent.
 
-<ul>
-  <li><strong>Contexts</strong> - provide additional context for intent analysis. For example, if an intent is related to an object in your application that plays music, you can provide a context to determine when to match the intent if the user input is &quot;turn it off&quot;.  You can include a context that matches the intent when there is previous user input of &quot;play music&quot;, and not when there is previous user input of &quot;turn on the light&quot;.</li>
+<ul> <li><strong>Contexts</strong> - provide additional context for intent analysis. For example, if an intent is related to an object in your application that plays music, you can provide a context to determine when to match the intent if the user input is &quot;turn it off&quot;.  You can include a context that matches the intent when there is previous user input of &quot;play music&quot;, and not when there is previous user input of &quot;turn on the light&quot;.</li>
 
-  <li><strong>Events</strong> - allow for matching an intent by using an event name instead of user input. Your application can provide an event name and related parameters to the Dialogflow API to match an intent. For example, when your application starts, you can send a welcome event with a user name parameter to the Dialogflow API to match an intent with a personalized welcome message for the user.</li>
+<li><strong>Events</strong> - allow for matching an intent by using an event name instead of user input. Your application can provide an event name and related parameters to the Dialogflow API to match an intent. For example, when your application starts, you can send a welcome event with a user name parameter to the Dialogflow API to match an intent with a personalized welcome message for the user.</li>
 
-  <li><strong>Training phrases</strong> - provide examples of user input to train the Dialogflow API agent to better match intents.</li>
-</ul>
+<li><strong>Training phrases</strong> - provide examples of user input to train the Dialogflow API agent to better match intents.</li> </ul>
 
 For more information about intents, see the <a href="https://dialogflow.com/docs/intents">Dialogflow documentation</a>.
 
@@ -7675,10 +7648,7 @@ Response for AddExamples.
 <a name="ondewo.nlu.ApplyLlmEvaluationAbRolloutRequest"></a>
 
 ### ApplyLlmEvaluationAbRolloutRequest
-Request to apply an A/B rollout: promotes the chosen variant's config to the
-project's classifier default, stops the experiment and writes the audit
-decision. Idempotent — re-applying the same already-applied experiment returns
-the existing decision rather than promoting twice.
+Request to apply an A/B rollout: promotes the chosen variant's config to the project's classifier default, stops the experiment and writes the audit decision. Idempotent — re-applying the same already-applied experiment returns the existing decision rather than promoting twice.
 
 
 | Field | Type | Label | Description |
@@ -8113,8 +8083,7 @@ Response for GetAbExperimentResults: one rollup per variant.
 <a name="ondewo.nlu.GetLlmEvaluationAbRolloutDecisionRequest"></a>
 
 ### GetLlmEvaluationAbRolloutDecisionRequest
-Request to get a single A/B rollout decision (the applied audit record) for an
-experiment.
+Request to get a single A/B rollout decision (the applied audit record) for an experiment.
 
 
 | Field | Type | Label | Description |
@@ -8132,10 +8101,7 @@ experiment.
 <a name="ondewo.nlu.GetLlmEvaluationAbRolloutRecommendationRequest"></a>
 
 ### GetLlmEvaluationAbRolloutRecommendationRequest
-Request to compute a rollout recommendation for an A/B experiment. Read-only /
-stateless — computes the winner-vs-control statistics on demand under the
-supplied guard-rails and returns a LlmEvaluationAbRolloutRecommendation
-without mutating anything.
+Request to compute a rollout recommendation for an A/B experiment. Read-only / stateless — computes the winner-vs-control statistics on demand under the supplied guard-rails and returns a LlmEvaluationAbRolloutRecommendation without mutating anything.
 
 
 | Field | Type | Label | Description |
@@ -8408,8 +8374,7 @@ Response for ListAbExperiments.
 <a name="ondewo.nlu.ListLlmEvaluationAbRolloutDecisionsRequest"></a>
 
 ### ListLlmEvaluationAbRolloutDecisionsRequest
-Request to list A/B rollout decisions within a project, optionally narrowed by
-filter (typically by experiment).
+Request to list A/B rollout decisions within a project, optionally narrowed by filter (typically by experiment).
 
 
 | Field | Type | Label | Description |
@@ -8922,8 +8887,7 @@ Response for ListScorecards.
 <a name="ondewo.nlu.LlmEvaluationAbExperiment"></a>
 
 ### LlmEvaluationAbExperiment
-An A/B experiment: a set of routing variants split over live DetectIntent
-traffic for a (project, language_code) scope.
+An A/B experiment: a set of routing variants split over live DetectIntent traffic for a (project, language_code) scope.
 
 
 | Field | Type | Label | Description |
@@ -8952,8 +8916,7 @@ traffic for a (project, language_code) scope.
 <a name="ondewo.nlu.LlmEvaluationAbExperimentFilter"></a>
 
 ### LlmEvaluationAbExperimentFilter
-Filter conditions for ListAbExperiments. All fields are optional; multiple
-fields set at the same time are combined via logical AND.
+Filter conditions for ListAbExperiments. All fields are optional; multiple fields set at the same time are combined via logical AND.
 
 
 | Field | Type | Label | Description |
@@ -8969,13 +8932,7 @@ fields set at the same time are combined via logical AND.
 <a name="ondewo.nlu.LlmEvaluationAbRolloutDecision"></a>
 
 ### LlmEvaluationAbRolloutDecision
-The persisted audit record of an A/B rollout that an operator explicitly
-applied: it captures which variant's config was promoted to the project's
-classifier default, on which metric, and the statistics at the moment of
-application. Written + returned by <code>LlmEvaluationApplyAbRollout</code>;
-read back via <code>LlmEvaluationGetAbRolloutDecision</code> /
-<code>LlmEvaluationListAbRolloutDecisions</code>. There is no auto-rollout —
-every decision row corresponds to an explicit operator action.
+The persisted audit record of an A/B rollout that an operator explicitly applied: it captures which variant's config was promoted to the project's classifier default, on which metric, and the statistics at the moment of application. Written + returned by <code>LlmEvaluationApplyAbRollout</code>; read back via <code>LlmEvaluationGetAbRolloutDecision</code> / <code>LlmEvaluationListAbRolloutDecisions</code>. There is no auto-rollout — every decision row corresponds to an explicit operator action.
 
 
 | Field | Type | Label | Description |
@@ -9003,8 +8960,7 @@ every decision row corresponds to an explicit operator action.
 <a name="ondewo.nlu.LlmEvaluationAbRolloutDecisionFilter"></a>
 
 ### LlmEvaluationAbRolloutDecisionFilter
-Filter conditions for ListAbRolloutDecisions. All fields are optional;
-multiple fields set at the same time are combined via logical AND.
+Filter conditions for ListAbRolloutDecisions. All fields are optional; multiple fields set at the same time are combined via logical AND.
 
 
 | Field | Type | Label | Description |
@@ -9020,12 +8976,7 @@ multiple fields set at the same time are combined via logical AND.
 <a name="ondewo.nlu.LlmEvaluationAbRolloutRecommendation"></a>
 
 ### LlmEvaluationAbRolloutRecommendation
-A computed, read-only rollout recommendation for an A/B experiment: which
-variant currently wins against the control on the chosen optimize metric,
-under the requested statistical guard-rails. Stateless — recomputed on demand
-by <code>LlmEvaluationGetAbRolloutRecommendation</code> from the per-variant
-results rollup; nothing is persisted and no traffic / config changes. The
-operator decides whether to apply it via <code>LlmEvaluationApplyAbRollout</code>.
+A computed, read-only rollout recommendation for an A/B experiment: which variant currently wins against the control on the chosen optimize metric, under the requested statistical guard-rails. Stateless — recomputed on demand by <code>LlmEvaluationGetAbRolloutRecommendation</code> from the per-variant results rollup; nothing is persisted and no traffic / config changes. The operator decides whether to apply it via <code>LlmEvaluationApplyAbRollout</code>.
 
 
 | Field | Type | Label | Description |
@@ -9080,19 +9031,7 @@ Traffic-splitting configuration for an A/B experiment.
 <a name="ondewo.nlu.LlmEvaluationAbVariant"></a>
 
 ### LlmEvaluationAbVariant
-One routing variant of an A/B experiment. The variant overrides the model used
-for the sessions assigned to it. A variant is one of two shapes depending on
-the project's classifier:
-<ul>
-  <li><b>IntentAgent projects</b> — the variant overrides the LLM connection
-      via <code>ccai_service_names</code> (+ optional <code>model_name</code> /
-      <code>prompt_version</code>).</li>
-  <li><b>RAG projects</b> (<code>IntentRagflowClassifier</code>) — the variant
-      overrides the chat-assistant LLM CcaiService and retrieval parameters via
-      <code>rag_variant_config</code>.</li>
-</ul>
-The two override shapes are mutually exclusive per variant; the server applies
-whichever matches the project's classifier type.
+One routing variant of an A/B experiment. The variant overrides the model used for the sessions assigned to it. A variant is one of two shapes depending on the project's classifier: <ul> <li><b>IntentAgent projects</b> — the variant overrides the LLM connection via <code>ccai_service_names</code> (+ optional <code>model_name</code> / <code>prompt_version</code>).</li> <li><b>RAG projects</b> (<code>IntentRagflowClassifier</code>) — the variant overrides the chat-assistant LLM CcaiService and retrieval parameters via <code>rag_variant_config</code>.</li> </ul> The two override shapes are mutually exclusive per variant; the server applies whichever matches the project's classifier type.
 
 
 | Field | Type | Label | Description |
@@ -9133,9 +9072,7 @@ Per-variant rollup returned by GetAbExperimentResults. Stateless / computed.
 <a name="ondewo.nlu.LlmEvaluationAnnotationQueueItem"></a>
 
 ### LlmEvaluationAnnotationQueueItem
-A human-review annotation-queue item: one per failing session step enqueued by
-the online-evaluation worker. The reviewer annotates (status / reason) and may
-promote the offending session into a regression dataset.
+A human-review annotation-queue item: one per failing session step enqueued by the online-evaluation worker. The reviewer annotates (status / reason) and may promote the offending session into a regression dataset.
 
 
 | Field | Type | Label | Description |
@@ -9163,8 +9100,7 @@ promote the offending session into a regression dataset.
 <a name="ondewo.nlu.LlmEvaluationAnnotationQueueItemFilter"></a>
 
 ### LlmEvaluationAnnotationQueueItemFilter
-Filter conditions for ListAnnotationQueueItems. All fields are optional;
-multiple fields set at the same time are combined via logical AND.
+Filter conditions for ListAnnotationQueueItems. All fields are optional; multiple fields set at the same time are combined via logical AND.
 
 
 | Field | Type | Label | Description |
@@ -9230,8 +9166,7 @@ A dataset is a named collection of evaluation examples plus optional metadata.
 <a name="ondewo.nlu.LlmEvaluationDatasetFilter"></a>
 
 ### LlmEvaluationDatasetFilter
-Filter conditions for ListDatasets. All fields are optional; multiple fields
-set at the same time are combined via logical AND.
+Filter conditions for ListDatasets. All fields are optional; multiple fields set at the same time are combined via logical AND.
 
 
 | Field | Type | Label | Description |
@@ -9350,8 +9285,7 @@ A single example in an evaluation dataset.
 <a name="ondewo.nlu.LlmEvaluationExampleFilter"></a>
 
 ### LlmEvaluationExampleFilter
-Filter conditions for ListExamples. All fields are optional; multiple fields
-set at the same time are combined via logical AND.
+Filter conditions for ListExamples. All fields are optional; multiple fields set at the same time are combined via logical AND.
 
 
 | Field | Type | Label | Description |
@@ -9408,8 +9342,7 @@ A single experiment run over a dataset.
 <a name="ondewo.nlu.LlmEvaluationExperimentFilter"></a>
 
 ### LlmEvaluationExperimentFilter
-Filter conditions for ListExperiments. All fields are optional; multiple
-fields set at the same time are combined via logical AND.
+Filter conditions for ListExperiments. All fields are optional; multiple fields set at the same time are combined via logical AND.
 
 
 | Field | Type | Label | Description |
@@ -9458,8 +9391,7 @@ A single feedback record (score + optional categorical + comment + raw payload).
 <a name="ondewo.nlu.LlmEvaluationFeedbackFilter"></a>
 
 ### LlmEvaluationFeedbackFilter
-Filter conditions for ListFeedback. All fields are optional; multiple fields
-set at the same time are combined via logical AND.
+Filter conditions for ListFeedback. All fields are optional; multiple fields set at the same time are combined via logical AND.
 
 
 | Field | Type | Label | Description |
@@ -9497,11 +9429,7 @@ Judge-LLM configuration used by LLM-as-judge evaluators.
 <a name="ondewo.nlu.LlmEvaluationOnlineConfig"></a>
 
 ### LlmEvaluationOnlineConfig
-An online-evaluation config: a per-(project, language_code) definition that a
-swarm-safe background worker uses to sample already-persisted live session
-steps, score the recorded answer with a reference-free evaluator set, and
-enqueue failing steps into the annotation queue. Mirrors the LlmEvaluationSchedule
-scoping / audit / enabled-flag shape.
+An online-evaluation config: a per-(project, language_code) definition that a swarm-safe background worker uses to sample already-persisted live session steps, score the recorded answer with a reference-free evaluator set, and enqueue failing steps into the annotation queue. Mirrors the LlmEvaluationSchedule scoping / audit / enabled-flag shape.
 
 
 | Field | Type | Label | Description |
@@ -9534,8 +9462,7 @@ scoping / audit / enabled-flag shape.
 <a name="ondewo.nlu.LlmEvaluationOnlineConfigFilter"></a>
 
 ### LlmEvaluationOnlineConfigFilter
-Filter conditions for ListOnlineConfigs. All fields are optional; multiple
-fields set at the same time are combined via logical AND.
+Filter conditions for ListOnlineConfigs. All fields are optional; multiple fields set at the same time are combined via logical AND.
 
 
 | Field | Type | Label | Description |
@@ -9551,11 +9478,7 @@ fields set at the same time are combined via logical AND.
 <a name="ondewo.nlu.LlmEvaluationOnlineResult"></a>
 
 ### LlmEvaluationOnlineResult
-A self-contained online-evaluation result: one row per scored session step.
-Per-criterion feedbacks are stored as an embedded repeated LlmEvaluationFeedback
-list (exactly like LlmEvaluationTurnResult.feedbacks — NOT persisted into the
-experiment-scoped llm_feedback table). Produced by the online-evaluation worker;
-read-only over the API.
+A self-contained online-evaluation result: one row per scored session step. Per-criterion feedbacks are stored as an embedded repeated LlmEvaluationFeedback list (exactly like LlmEvaluationTurnResult.feedbacks — NOT persisted into the experiment-scoped llm_feedback table). Produced by the online-evaluation worker; read-only over the API.
 
 
 | Field | Type | Label | Description |
@@ -9581,8 +9504,7 @@ read-only over the API.
 <a name="ondewo.nlu.LlmEvaluationOnlineResultFilter"></a>
 
 ### LlmEvaluationOnlineResultFilter
-Filter conditions for ListOnlineResults. All fields are optional; multiple
-fields set at the same time are combined via logical AND.
+Filter conditions for ListOnlineResults. All fields are optional; multiple fields set at the same time are combined via logical AND.
 
 
 | Field | Type | Label | Description |
@@ -9599,9 +9521,7 @@ fields set at the same time are combined via logical AND.
 <a name="ondewo.nlu.LlmEvaluationOnlineSessionFilter"></a>
 
 ### LlmEvaluationOnlineSessionFilter
-Optional filter narrowing which already-persisted live session steps an
-online-evaluation config samples. All fields are optional; multiple fields set
-at the same time are combined via logical AND.
+Optional filter narrowing which already-persisted live session steps an online-evaluation config samples. All fields are optional; multiple fields set at the same time are combined via logical AND.
 
 
 | Field | Type | Label | Description |
@@ -9662,8 +9582,7 @@ Per-(project, language_code) evaluation settings singleton.
 <a name="ondewo.nlu.LlmEvaluationReleaseGate"></a>
 
 ### LlmEvaluationReleaseGate
-A release gate: a named set of thresholds over evaluator scores, regression
-deltas and telemetry that decides whether a candidate configuration ships.
+A release gate: a named set of thresholds over evaluator scores, regression deltas and telemetry that decides whether a candidate configuration ships.
 
 
 | Field | Type | Label | Description |
@@ -9717,8 +9636,7 @@ One evaluated check inside a release gate run verdict.
 <a name="ondewo.nlu.LlmEvaluationReleaseGateFilter"></a>
 
 ### LlmEvaluationReleaseGateFilter
-Filter conditions for ListReleaseGates. All fields are optional; multiple
-fields set at the same time are combined via logical AND.
+Filter conditions for ListReleaseGates. All fields are optional; multiple fields set at the same time are combined via logical AND.
 
 
 | Field | Type | Label | Description |
@@ -9765,8 +9683,7 @@ One persisted execution of a release gate: experiments + computed verdict.
 <a name="ondewo.nlu.LlmEvaluationReleaseGateRunFilter"></a>
 
 ### LlmEvaluationReleaseGateRunFilter
-Filter conditions for ListReleaseGateRuns. All fields are optional; multiple
-fields set at the same time are combined via logical AND.
+Filter conditions for ListReleaseGateRuns. All fields are optional; multiple fields set at the same time are combined via logical AND.
 
 
 | Field | Type | Label | Description |
@@ -9782,8 +9699,7 @@ fields set at the same time are combined via logical AND.
 <a name="ondewo.nlu.LlmEvaluationReleaseGateSafetyConfig"></a>
 
 ### LlmEvaluationReleaseGateSafetyConfig
-Safety section of a release gate: a separate adversarial experiment scored
-with safety evaluators.
+Safety section of a release gate: a separate adversarial experiment scored with safety evaluators.
 
 
 | Field | Type | Label | Description |
@@ -9802,8 +9718,7 @@ with safety evaluators.
 <a name="ondewo.nlu.LlmEvaluationReleaseGateThresholds"></a>
 
 ### LlmEvaluationReleaseGateThresholds
-Threshold set evaluated by a release gate. Nested in a dedicated message so
-presence can be detected at the message level (proto3 scalars carry no presence).
+Threshold set evaluated by a release gate. Nested in a dedicated message so presence can be detected at the message level (proto3 scalars carry no presence).
 
 
 | Field | Type | Label | Description |
@@ -9821,8 +9736,7 @@ presence can be detected at the message level (proto3 scalars carry no presence)
 <a name="ondewo.nlu.LlmEvaluationReport"></a>
 
 ### LlmEvaluationReport
-An immutable persisted report artifact (release summaries, gate sign-offs,
-exported evaluation snapshots).
+An immutable persisted report artifact (release summaries, gate sign-offs, exported evaluation snapshots).
 
 
 | Field | Type | Label | Description |
@@ -9849,8 +9763,7 @@ exported evaluation snapshots).
 <a name="ondewo.nlu.LlmEvaluationReportFilter"></a>
 
 ### LlmEvaluationReportFilter
-Filter conditions for ListReports. All fields are optional; multiple fields
-set at the same time are combined via logical AND.
+Filter conditions for ListReports. All fields are optional; multiple fields set at the same time are combined via logical AND.
 
 
 | Field | Type | Label | Description |
@@ -9899,8 +9812,7 @@ A schedule for recurring experiment / release gate runs.
 <a name="ondewo.nlu.LlmEvaluationScheduleFilter"></a>
 
 ### LlmEvaluationScheduleFilter
-Filter conditions for ListSchedules. All fields are optional; multiple fields
-set at the same time are combined via logical AND.
+Filter conditions for ListSchedules. All fields are optional; multiple fields set at the same time are combined via logical AND.
 
 
 | Field | Type | Label | Description |
@@ -9917,8 +9829,7 @@ set at the same time are combined via logical AND.
 <a name="ondewo.nlu.LlmEvaluationScorecard"></a>
 
 ### LlmEvaluationScorecard
-A scorecard: a named weighted multi-criteria roll-up definition applied to
-experiments for release reporting.
+A scorecard: a named weighted multi-criteria roll-up definition applied to experiments for release reporting.
 
 
 | Field | Type | Label | Description |
@@ -9960,8 +9871,7 @@ One weighted criterion row of a scorecard.
 <a name="ondewo.nlu.LlmEvaluationScorecardFilter"></a>
 
 ### LlmEvaluationScorecardFilter
-Filter conditions for ListScorecards. All fields are optional; multiple
-fields set at the same time are combined via logical AND.
+Filter conditions for ListScorecards. All fields are optional; multiple fields set at the same time are combined via logical AND.
 
 
 | Field | Type | Label | Description |
@@ -10016,9 +9926,7 @@ Result of executing one conversation turn of a multi-turn (flow) example.
 <a name="ondewo.nlu.PromoteLlmEvaluationAnnotationQueueItemRequest"></a>
 
 ### PromoteLlmEvaluationAnnotationQueueItemRequest
-Request to promote an annotation-queue item into a regression dataset. Thin
-server-side composition over LlmEvaluationCreateExamplesFromSession; the item
-status is flipped to PROMOTED and the dataset name stamped on success.
+Request to promote an annotation-queue item into a regression dataset. Thin server-side composition over LlmEvaluationCreateExamplesFromSession; the item status is flipped to PROMOTED and the dataset name stamped on success.
 
 
 | Field | Type | Label | Description |
@@ -10055,13 +9963,7 @@ Response for PromoteAnnotationQueueItem.
 <a name="ondewo.nlu.RagVariantConfig"></a>
 
 ### RagVariantConfig
-RAGFlow variant override for an A/B experiment running on a RAG-classifier
-project (<code>IntentRagflowClassifier</code>). Where an IntentAgent variant
-overrides the LLM via <code>ccai_service_names</code>, a RAG variant overrides
-the project's chat-assistant LLM CcaiService and the retrieval parameters used
-when answering the assigned sessions. Override-or-inherit semantics apply per
-field: an empty / zero value means "inherit the project's base
-IntentRagflowClassifier config for this field".
+RAGFlow variant override for an A/B experiment running on a RAG-classifier project (<code>IntentRagflowClassifier</code>). Where an IntentAgent variant overrides the LLM via <code>ccai_service_names</code>, a RAG variant overrides the project's chat-assistant LLM CcaiService and the retrieval parameters used when answering the assigned sessions. Override-or-inherit semantics apply per field: an empty / zero value means "inherit the project's base IntentRagflowClassifier config for this field".
 
 
 | Field | Type | Label | Description |
@@ -10431,12 +10333,7 @@ Lifecycle status of an A/B experiment.
 <a name="ondewo.nlu.LlmEvaluationAbOptimizeMetric"></a>
 
 ### LlmEvaluationAbOptimizeMetric
-The metric an A/B rollout optimizes when comparing each variant against the
-control. Each value maps to a quantity already produced by the per-variant
-results rollup (see GetAbExperimentResults). Higher-is-better vs.
-lower-is-better is implied by the metric (e.g. PASS_RATE / CRITERION_SCORE /
-SAFETY_SCORE are higher-is-better; ERROR_RATE / MEAN_LATENCY are
-lower-is-better) and applied server-side when picking the winner.
+The metric an A/B rollout optimizes when comparing each variant against the control. Each value maps to a quantity already produced by the per-variant results rollup (see GetAbExperimentResults). Higher-is-better vs. lower-is-better is implied by the metric (e.g. PASS_RATE / CRITERION_SCORE / SAFETY_SCORE are higher-is-better; ERROR_RATE / MEAN_LATENCY are lower-is-better) and applied server-side when picking the winner.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -10607,12 +10504,7 @@ Kind of conversation simulation.
 <a name="ondewo.nlu.LlmEvaluations"></a>
 
 ### LlmEvaluations
-LangSmith-style evaluation surface: datasets, examples, experiments, evaluator
-runs, feedback (LLM-as-judge / human / heuristic / custom code / pairwise),
-pairwise comparisons, release gates + persisted gate runs, scorecards,
-per-project evaluation settings (judge configuration), the evaluator registry,
-golden-transcript recording from sessions, conversation simulation
-(standard + adversarial red-teaming), recurring schedules and report artifacts.
+LangSmith-style evaluation surface: datasets, examples, experiments, evaluator runs, feedback (LLM-as-judge / human / heuristic / custom code / pairwise), pairwise comparisons, release gates + persisted gate runs, scorecards, per-project evaluation settings (judge configuration), the evaluator registry, golden-transcript recording from sessions, conversation simulation (standard + adversarial red-teaming), recurring schedules and report artifacts.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
@@ -10703,8 +10595,7 @@ golden-transcript recording from sessions, conversation simulation
 <a name="ondewo.nlu.CaiLogEntry"></a>
 
 ### CaiLogEntry
-A single captured log record. One record may span several physical lines: a Python traceback, a protobuf
-<code>str()</code> dump and a multi-line banner are all one record and are stored and returned as one entry.
+A single captured log record. One record may span several physical lines: a Python traceback, a protobuf <code>str()</code> dump and a multi-line banner are all one record and are stored and returned as one entry.
 
 
 | Field | Type | Label | Description |
@@ -10738,12 +10629,9 @@ A single captured log record. One record may span several physical lines: a Pyth
 <a name="ondewo.nlu.CaiLogFilter"></a>
 
 ### CaiLogFilter
-Narrows a log query. Every field is optional; an empty repeated field means &quot;do not filter on
-this&quot;. Fields are combined with AND; the values within one repeated field are combined with OR.
+Narrows a log query. Every field is optional; an empty repeated field means &quot;do not filter on this&quot;. Fields are combined with AND; the values within one repeated field are combined with OR.
 
-<p>Filters fall into two groups. IDENTITY filters (fields 1 to 19) select which log streams, operations and
-projects are of interest. CONTENT filters (fields 20 to 30) select which entries of those to return. The time
-window (fields 31, 32) is neither.</p>
+Filters fall into two groups. IDENTITY filters (fields 1 to 19) select which log streams, operations and projects are of interest. CONTENT filters (fields 20 to 30) select which entries of those to return. The time window (fields 31, 32) is neither.
 
 
 | Field | Type | Label | Description |
@@ -10779,8 +10667,7 @@ window (fields 31, 32) is neither.</p>
 <a name="ondewo.nlu.CaiLogStream"></a>
 
 ### CaiLogStream
-One capture of one server process or of one container. A server process that restarts, and a container
-recreated under a new id, yield a NEW log stream.
+One capture of one server process or of one container. A server process that restarts, and a container recreated under a new id, yield a NEW log stream.
 
 
 | Field | Type | Label | Description |
@@ -11021,9 +10908,7 @@ The request message for <a href="index.html#ondewo.nlu.Logs.StreamLogs">Logs.Str
 <a name="ondewo.nlu.StreamLogsResponse"></a>
 
 ### StreamLogsResponse
-The response message for <a href="index.html#ondewo.nlu.Logs.StreamLogs">Logs.StreamLogs</a>. The stream
-carries an envelope rather than a bare entry so that a viewer can tell a healthy quiet source from a capture
-that has died.
+The response message for <a href="index.html#ondewo.nlu.Logs.StreamLogs">Logs.StreamLogs</a>. The stream carries an envelope rather than a bare entry so that a viewer can tell a healthy quiet source from a capture that has died.
 
 
 | Field | Type | Label | Description |
@@ -11046,8 +10931,7 @@ that has died.
 <a name="ondewo.nlu.CaiLogCaptureState"></a>
 
 ### CaiLogCaptureState
-The state of CAI&apos;s capture of one log stream. This describes the CAPTURE, not the process or the
-container.
+The state of CAI&apos;s capture of one log stream. This describes the CAPTURE, not the process or the container.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -11062,8 +10946,7 @@ container.
 <a name="ondewo.nlu.CaiLogExportFormat"></a>
 
 ### CaiLogExportFormat
-File format of an <a href="index.html#ondewo.nlu.Logs.ExportLogs">ExportLogs</a> export. Every format is UTF-8
-with <code>\n</code> line endings and one entry per record; a multi-line entry stays one record.
+File format of an <a href="index.html#ondewo.nlu.Logs.ExportLogs">ExportLogs</a> export. Every format is UTF-8 with <code>\n</code> line endings and one entry per record; a multi-line entry stays one record.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -11077,9 +10960,7 @@ with <code>\n</code> line endings and one entry per record; a multi-line entry s
 <a name="ondewo.nlu.CaiLogFilterField"></a>
 
 ### CaiLogFilterField
-Identifies a field of <a href="index.html#ondewo.nlu.CaiLogFilter">CaiLogFilter</a>. Used by
-<a href="index.html#ondewo.nlu.ListLogsResponse">ListLogsResponse.scope_limited_filters</a> to declare which
-filters could only be applied inside the returned window.
+Identifies a field of <a href="index.html#ondewo.nlu.CaiLogFilter">CaiLogFilter</a>. Used by <a href="index.html#ondewo.nlu.ListLogsResponse">ListLogsResponse.scope_limited_filters</a> to declare which filters could only be applied inside the returned window.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -11123,9 +11004,7 @@ The output channel a log stream captures.
 <a name="ondewo.nlu.CaiLogStreamEndReason"></a>
 
 ### CaiLogStreamEndReason
-Why the SERVER ended a <code>StreamLogs</code> stream. Carried by the final
-<a href="index.html#ondewo.nlu.StreamLogsResponse">StreamLogsResponse</a> beside the human-readable
-<code>end_reason</code>. A stream ended by the client has no final message.
+Why the SERVER ended a <code>StreamLogs</code> stream. Carried by the final <a href="index.html#ondewo.nlu.StreamLogsResponse">StreamLogsResponse</a> beside the human-readable <code>end_reason</code>. A stream ended by the client has no final message.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -11145,33 +11024,15 @@ Why the SERVER ended a <code>StreamLogs</code> stream. Carried by the final
 <a name="ondewo.nlu.Logs"></a>
 
 ### Logs
-<p>Reads, follows, exports and erases the logs ONDEWO CAI captures: the log records of the CAI gRPC server
-processes themselves (every worker of every replica), the output of the docker containers that remote
-operations run (build cache, training, RAG crawl, LLM evaluation and simulation, RAGFlow upload / removal /
-re-parse) and of the short-lived helper containers that prepare them (hardware check, GPU pre-allocation).
-Long-running operations that run inside a CAI worker (agent export, import, restore, re-index, ranking
-optimization) are covered too: the server records they emit carry the operation&apos;s name.</p>
-<p>Entries are served from the CAI database, not from the docker daemon, so the logs of a container that was
-already removed, and of a server process that already exited, stay readable until retention or
-<code>DeleteLogs</code> removes them.</p>
-<p><b>Secrets are redacted server-side</b> when an entry is captured and again when it is read, so a
-redaction rule added later also applies to entries captured before it.</p>
-<p>Errors are reported as gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed name, filter,
-cursor, <code>resume_token</code>, <code>page_token</code> or <code>field_mask</code> (each naming the field);
-<code>NOT_FOUND</code> for an unknown log stream or operation, and for one the caller may not read;
-<code>RESOURCE_EXHAUSTED</code> when the server process already serves its maximum of concurrent streams or
-exports; <code>UNAVAILABLE</code> when the logs API is disabled (<code>ONDEWO_NLU_CAI_LOG_API_ENABLED</code>)
-or the database cannot be reached; <code>UNAUTHENTICATED</code> without a valid credential;
-<code>PERMISSION_DENIED</code> when the caller may read no logs at all.</p>
-<p>Authorization: entries that belong to no project (the server&apos;s own records outside any project RPC
-or operation) require the server permission <code>ServerPermission.Logs.ReadServerLogs</code>, granted to
-<code>SERVER_ADMIN</code> by default; a caller holding it reads every entry. Without it a caller reads only
-the entries tagged with a project in which it holds <code>ProjectPermission.Logs.ReadProjectLogs</code>,
-granted to <code>PROJECT_DEVELOPER</code> and above by default; entries of other projects are filtered out
-and are never reported as existing. <code>DeleteLogs</code> requires
-<code>ServerPermission.Logs.DeleteLogs</code>, granted to <code>SERVER_ADMIN</code> only. A long-running
-<code>StreamLogs</code> or <code>ExportLogs</code> re-checks the caller periodically and ends when the access
-was revoked or the credential expired.</p>
+Reads, follows, exports and erases the logs ONDEWO CAI captures: the log records of the CAI gRPC server processes themselves (every worker of every replica), the output of the docker containers that remote operations run (build cache, training, RAG crawl, LLM evaluation and simulation, RAGFlow upload / removal / re-parse) and of the short-lived helper containers that prepare them (hardware check, GPU pre-allocation). Long-running operations that run inside a CAI worker (agent export, import, restore, re-index, ranking optimization) are covered too: the server records they emit carry the operation&apos;s name.
+
+Entries are served from the CAI database, not from the docker daemon, so the logs of a container that was already removed, and of a server process that already exited, stay readable until retention or <code>DeleteLogs</code> removes them.
+
+<b>Secrets are redacted server-side</b> when an entry is captured and again when it is read, so a redaction rule added later also applies to entries captured before it.
+
+Errors are reported as gRPC status codes: <code>INVALID_ARGUMENT</code> for a malformed name, filter, cursor, <code>resume_token</code>, <code>page_token</code> or <code>field_mask</code> (each naming the field); <code>NOT_FOUND</code> for an unknown log stream or operation, and for one the caller may not read; <code>RESOURCE_EXHAUSTED</code> when the server process already serves its maximum of concurrent streams or exports; <code>UNAVAILABLE</code> when the logs API is disabled (<code>ONDEWO_NLU_CAI_LOG_API_ENABLED</code>) or the database cannot be reached; <code>UNAUTHENTICATED</code> without a valid credential; <code>PERMISSION_DENIED</code> when the caller may read no logs at all.
+
+Authorization: entries that belong to no project (the server&apos;s own records outside any project RPC or operation) require the server permission <code>ServerPermission.Logs.ReadServerLogs</code>, granted to <code>SERVER_ADMIN</code> by default; a caller holding it reads every entry. Without it a caller reads only the entries tagged with a project in which it holds <code>ProjectPermission.Logs.ReadProjectLogs</code>, granted to <code>PROJECT_DEVELOPER</code> and above by default; entries of other projects are filtered out and are never reported as existing. <code>DeleteLogs</code> requires <code>ServerPermission.Logs.DeleteLogs</code>, granted to <code>SERVER_ADMIN</code> only. A long-running <code>StreamLogs</code> or <code>ExportLogs</code> re-checks the caller periodically and ends when the access was revoked or the credential expired.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
@@ -11196,8 +11057,7 @@ was revoked or the credential expired.</p>
 <a name="ondewo.nlu.OperationMetadata"></a>
 
 ### OperationMetadata
-Represents the metadata of the long-running operation that can be a parent operation for sub-operations or
-can be a sub-operation itself
+Represents the metadata of the long-running operation that can be a parent operation for sub-operations or can be a sub-operation itself
 
 
 | Field | Type | Label | Description |
@@ -11235,8 +11095,7 @@ can be a sub-operation itself
 <a name="ondewo.nlu.OperationMetadata.OperationType"></a>
 
 ### OperationMetadata.OperationType
-Type of operation.
-It can be creating, importing, exporting, deleting, restoring, building cache, training or exporting benchmark an agent
+Type of operation. It can be creating, importing, exporting, deleting, restoring, building cache, training or exporting benchmark an agent
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -11261,8 +11120,7 @@ It can be creating, importing, exporting, deleting, restoring, building cache, t
 <a name="ondewo.nlu.OperationMetadata.Status"></a>
 
 ### OperationMetadata.Status
-Structure to set status of operation.
-An operation may not be started if NOT_STARTED is set, in progress if IN_PROGRESS, finished if DONE, interrupted if CANCELED or failed if FAILED.
+Structure to set status of operation. An operation may not be started if NOT_STARTED is set, in progress if IN_PROGRESS, finished if DONE, interrupted if CANCELED or failed if FAILED.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -11516,10 +11374,7 @@ All fields below are optional. Multiple fields specified at the same time are ch
 <a name="ondewo.nlu.RemoteOperationContainer"></a>
 
 ### RemoteOperationContainer
-Describes one docker container started by a remote operation. A single operation may start several
-containers sequentially (hardware-check, GPU pre-allocation, build-cache, and one training container
-per algorithm), so containers are enumerated by
-<a href="index.html#ondewo.nlu.Operations.ListRemoteOperationContainers">Operations.ListRemoteOperationContainers</a>.
+Describes one docker container started by a remote operation. A single operation may start several containers sequentially (hardware-check, GPU pre-allocation, build-cache, and one training container per algorithm), so containers are enumerated by <a href="index.html#ondewo.nlu.Operations.ListRemoteOperationContainers">Operations.ListRemoteOperationContainers</a>.
 
 
 | Field | Type | Label | Description |
@@ -11993,17 +11848,13 @@ Project Root Statistics
 <p align="right"><a href="#top">Top</a></p>
 
 ## ondewo/nlu/rag.proto
-File-level comment for <code>ondewo/nlu/rag.proto</code>.
-This file contains a single service <a href="#ondewo.nlu.Rags">Rags</a>. The Rags service provides RAG (Retrieval-Augmented Generation) and web crawler functionality.
-Fields marked as <code>optional</code> carry explicit presence, so that an explicitly set default value (<code>0</code>, <code>false</code>, <code>""</code>) can be distinguished from a field that was never set. Without the <code>optional</code> keyword it would for instance not be possible to distinguish between an integer <code>0</code> and <code>null</code>.
-The marker is applied where that distinction is actually consumed — the partial-update inputs (an unset field leaves the stored value untouched, an explicit default clears it) and the retrieval overrides that are forwarded to RAGFlow (an explicit <code>0.0</code> or <code>false</code> must override the server-side default rather than fall back to it). Fields that carry no such distinction are deliberately left without the keyword, and for message-typed fields it is omitted because proto3 gives them explicit presence anyway.
+File-level comment for <code>ondewo/nlu/rag.proto</code>. This file contains a single service <a href="#ondewo.nlu.Rags">Rags</a>. The Rags service provides RAG (Retrieval-Augmented Generation) and web crawler functionality. Fields marked as <code>optional</code> carry explicit presence, so that an explicitly set default value (<code>0</code>, <code>false</code>, <code>""</code>) can be distinguished from a field that was never set. Without the <code>optional</code> keyword it would for instance not be possible to distinguish between an integer <code>0</code> and <code>null</code>. The marker is applied where that distinction is actually consumed — the partial-update inputs (an unset field leaves the stored value untouched, an explicit default clears it) and the retrieval overrides that are forwarded to RAGFlow (an explicit <code>0.0</code> or <code>false</code> must override the server-side default rather than fall back to it). Fields that carry no such distinction are deliberately left without the keyword, and for message-typed fields it is omitted because proto3 gives them explicit presence anyway.
 
 
 <a name="ondewo.nlu.RagAddCrawlerResultsToDatasetsRequest"></a>
 
 ### RagAddCrawlerResultsToDatasetsRequest
-Request message for adding crawler output to one or more datasets.<br>
-Either <code>crawler_names</code> or <code>crawler_result_names</code> (or both) must be provided.
+Request message for adding crawler output to one or more datasets.<br> Either <code>crawler_names</code> or <code>crawler_result_names</code> (or both) must be provided.
 
 
 | Field | Type | Label | Description |
@@ -12022,8 +11873,7 @@ Either <code>crawler_names</code> or <code>crawler_result_names</code> (or both)
 <a name="ondewo.nlu.RagChunk"></a>
 
 ### RagChunk
-Chunk of text extracted from a document.<br>
-Chunks are the basic retrieval units used for vector similarity search in RAG.
+Chunk of text extracted from a document.<br> Chunks are the basic retrieval units used for vector similarity search in RAG.
 
 
 | Field | Type | Label | Description |
@@ -12050,17 +11900,9 @@ Chunks are the basic retrieval units used for vector similarity search in RAG.
 ### RagCrawler
 RagCrawler definition.
 
-This object represents a reusable crawler profile that can be run multiple times.
-It is modeled after Crawl4AI concepts:
-<ul>
-    <li>seed/sitemap discovery (<code>RagCrawlerSources</code>)</li>
-    <li>URL/domain constraints (<code>RagCrawlerFilters</code>)</li>
-    <li>authentication/session bootstrap (<code>RagCrawlerAuth</code>, <code>RagCrawlerBrowserConfig</code>)</li>
-    <li>run behavior and extraction output (<code>RagCrawlerConfig</code>)</li>
-</ul>
+This object represents a reusable crawler profile that can be run multiple times. It is modeled after Crawl4AI concepts: <ul> <li>seed/sitemap discovery (<code>RagCrawlerSources</code>)</li> <li>URL/domain constraints (<code>RagCrawlerFilters</code>)</li> <li>authentication/session bootstrap (<code>RagCrawlerAuth</code>, <code>RagCrawlerBrowserConfig</code>)</li> <li>run behavior and extraction output (<code>RagCrawlerConfig</code>)</li> </ul>
 
-The same crawler can be executed multiple times; each execution creates
-a separate crawler run and result set.
+The same crawler can be executed multiple times; each execution creates a separate crawler run and result set.
 
 
 | Field | Type | Label | Description |
@@ -12088,8 +11930,7 @@ a separate crawler run and result set.
 ### RagCrawlerAuth
 Authentication configuration.
 
-Supports both browser/form login and HTTP auth patterns used by Crawl4AI pipelines when crawling protected content.
-HTTP Auth is used on all pages of the sources, while html_auth is a separate authentication flow used in the beginning of the crawl to extract the cookies. This is done through a login screen. If HTTP Auth is set, this would ALSO be used on the HTML auth page.
+Supports both browser/form login and HTTP auth patterns used by Crawl4AI pipelines when crawling protected content. HTTP Auth is used on all pages of the sources, while html_auth is a separate authentication flow used in the beginning of the crawl to extract the cookies. This is done through a login screen. If HTTP Auth is set, this would ALSO be used on the HTML auth page.
 
 
 | Field | Type | Label | Description |
@@ -12107,9 +11948,7 @@ HTTP Auth is used on all pages of the sources, while html_auth is a separate aut
 ### RagCrawlerBrowserConfig
 Browser runtime configuration.
 
-This block maps closely to Crawl4AI BrowserConfig and controls browser
-process setup (engine, headless mode, viewport, context, proxy, cookies,
-user-agent behavior, and launch arguments).
+This block maps closely to Crawl4AI BrowserConfig and controls browser process setup (engine, headless mode, viewport, context, proxy, cookies, user-agent behavior, and launch arguments).
 
 
 | Field | Type | Label | Description |
@@ -12144,8 +11983,7 @@ Concurrency and pacing controls for crawler runs.
 ### RagCrawlerConfig
 Crawl run behavior.
 
-This block controls scheduling, traversal, extraction outputs, retries,
-diagnostics capture, and deep crawling options for each crawler run.
+This block controls scheduling, traversal, extraction outputs, retries, diagnostics capture, and deep crawling options for each crawler run.
 
 
 | Field | Type | Label | Description |
@@ -12275,11 +12113,7 @@ Consolidated diagnostics and HTTP execution metadata for a crawl result.
 ### RagCrawlerFilters
 URL and domain restrictions.
 
-Filters are evaluated during link discovery/scheduling and help avoid
-crawling irrelevant, duplicate, or unsafe sections (auth/logout pages,
-marketing subdomains, binary downloads, etc.).
-These include domains to be excluded in the sources (e.g. through sitemaps or seed URLs)
-and domains to be excluded in the deep crawl or extraction of pages to be crawled.
+Filters are evaluated during link discovery/scheduling and help avoid crawling irrelevant, duplicate, or unsafe sections (auth/logout pages, marketing subdomains, binary downloads, etc.). These include domains to be excluded in the sources (e.g. through sitemaps or seed URLs) and domains to be excluded in the deep crawl or extraction of pages to be crawled.
 
 
 | Field | Type | Label | Description |
@@ -12304,8 +12138,7 @@ and domains to be excluded in the deep crawl or extraction of pages to be crawle
 ### RagCrawlerHtmlAuth
 Form/HTML login configuration.
 
-Selector types and selector strings identify login form fields in the page
-DOM. Credentials are then filled before form submission.
+Selector types and selector strings identify login form fields in the page DOM. Credentials are then filled before form submission.
 
 
 | Field | Type | Label | Description |
@@ -12347,8 +12180,7 @@ Incremental crawling: skip re-fetching pages a sitemap reports as unchanged.
 
 A page is reused from the most recent completed run of the same crawler when its sitemap/ <code>&lt;lastmod&gt;</code> is not newer than the <code>page_last_updated_date</code> of the copy that run holds. A reused page is part of the new run exactly like a freshly fetched one; only <code>RagCrawlerResult.last_crawled_date</code> still reports when its content was actually fetched.
 
-A page is always fetched when any of the following holds: its sitemap entry carries no <code>&lt;lastmod&gt;</code>; the most recent completed run did not contain it; there is no completed previous
-run; the crawler configuration changed since that run; or <code>max_age_days</code> has elapsed.
+A page is always fetched when any of the following holds: its sitemap entry carries no <code>&lt;lastmod&gt;</code>; the most recent completed run did not contain it; there is no completed previous run; the crawler configuration changed since that run; or <code>max_age_days</code> has elapsed.
 
 
 | Field | Type | Label | Description |
@@ -12383,8 +12215,7 @@ Metadata extractor configuration.
 ### RagCrawlerResult
 Crawler result entity.
 
-Each result corresponds to one crawled URL in a crawler run and includes
-extracted content, metadata, diagnostics, and optional binary artifacts.
+Each result corresponds to one crawled URL in a crawler run and includes extracted content, metadata, diagnostics, and optional binary artifacts.
 
 
 | Field | Type | Label | Description |
@@ -12408,8 +12239,7 @@ extracted content, metadata, diagnostics, and optional binary artifacts.
 ### RagCrawlerResultsConfig
 Structured output configuration.
 
-Use this block to define result payload shape and metadata behavior,
-similar to Crawl4AI markdown/output-generation toggles.
+Use this block to define result payload shape and metadata behavior, similar to Crawl4AI markdown/output-generation toggles.
 
 
 | Field | Type | Label | Description |
@@ -12466,9 +12296,7 @@ Timeout settings for crawler operations.
 ### RagCrawlerSources
 Crawl entry points.
 
-Both inputs can be provided at the same time:
-- Sitemaps are expanded into a crawl URL list (in discovery order)
-- Seed URLs are appended afterwards (in the order provided)
+Both inputs can be provided at the same time: - Sitemaps are expanded into a crawl URL list (in discovery order) - Seed URLs are appended afterwards (in the order provided)
 
 
 | Field | Type | Label | Description |
@@ -12641,9 +12469,7 @@ Response message for deleting a crawler of a dataset for the specified agent.
 ### RagDeleteCrawlerRunsRequest
 Request message for deleting crawler runs.
 
-Deletion candidates are the union of:
-- explicit run names in <code>crawler_run_names</code>
-- all runs belonging to crawlers listed in <code>crawler_names</code>
+Deletion candidates are the union of: - explicit run names in <code>crawler_run_names</code> - all runs belonging to crawlers listed in <code>crawler_names</code>
 
 If both lists are empty, the call is a no-op.
 
@@ -12852,8 +12678,7 @@ Request message for downloading the document file.
 <a name="ondewo.nlu.RagFileChunk"></a>
 
 ### RagFileChunk
-File chunk for streaming downloads.<br>
-First chunk contains metadata, subsequent chunks only contain data.
+File chunk for streaming downloads.<br> First chunk contains metadata, subsequent chunks only contain data.
 
 
 | Field | Type | Label | Description |
@@ -12971,14 +12796,9 @@ Request message for getting a single crawler result from a crawler run.
 ### RagGetCrawlerResultsRequest
 Request message for getting crawler results of a crawler run.
 
-Results are returned in pages. Request the first page with an empty
-<code>page_token</code>, then continue with each response <code>next_page_token</code>.
+Results are returned in pages. Request the first page with an empty <code>page_token</code>, then continue with each response <code>next_page_token</code>.
 
-Example:
-<pre><code>RagGetCrawlerResults(run_name, page_token="")
--> next_page_token="..."
-RagGetCrawlerResults(run_name, page_token="...")
-</code></pre>
+Example: <pre><code>RagGetCrawlerResults(run_name, page_token="")&#10;-> next_page_token="..."&#10;RagGetCrawlerResults(run_name, page_token="...")&#10;</code></pre>
 
 
 | Field | Type | Label | Description |
@@ -13259,8 +13079,7 @@ Both <code>current_index-&lt;idx&gt;</code> and <code>page_size-&lt;size&gt;</co
 <a name="ondewo.nlu.RagMetadataCondition"></a>
 
 ### RagMetadataCondition
-Condition to filter document metadata on.
-String comparison is always case-insensitive.
+Condition to filter document metadata on. String comparison is always case-insensitive.
 
 
 | Field | Type | Label | Description |
@@ -13295,24 +13114,7 @@ List of document metadata conditions.
 ### RagParserConfig
 Document parser configuration.
 
-Used fields depend on the chunking method of the document.
-<ul>
-    <li><code>naive</code>: uses the following fields (all optional)</li>
-    <ul>
-        <li><code>auto_keywords</code></li>
-        <li><code>auto_questions</code></li>
-        <li><code>chunk_token_num</code></li>
-        <li><code>delimiter</code></li>
-        <li><code>html4excel</code></li>
-        <li><code>layout_recognize</code></li>
-        <li><code>tag_kb_ids</code></li>
-        <li><code>task_page_size</code></li>
-        <li><code>raptor</code></li>
-        <li><code>graphrag</code></li>
-    </ul>
-    <li><code>qa</code>, <code>manual</code>, <code>paper</code>, <code>book</code>, <code>laws</code>, <code>presentation</code>: uses only the <code>raptor</code> field</li>
-    <li><code>table</code>, <code>picture</code>, <code>one</code>, <code>email</code>: does not use any field (expects empty message)</li>
-</ul>
+Used fields depend on the chunking method of the document. <ul> <li><code>naive</code>: uses the following fields (all optional)</li> <ul> <li><code>auto_keywords</code></li> <li><code>auto_questions</code></li> <li><code>chunk_token_num</code></li> <li><code>delimiter</code></li> <li><code>html4excel</code></li> <li><code>layout_recognize</code></li> <li><code>tag_kb_ids</code></li> <li><code>task_page_size</code></li> <li><code>raptor</code></li> <li><code>graphrag</code></li> </ul> <li><code>qa</code>, <code>manual</code>, <code>paper</code>, <code>book</code>, <code>laws</code>, <code>presentation</code>: uses only the <code>raptor</code> field</li> <li><code>table</code>, <code>picture</code>, <code>one</code>, <code>email</code>: does not use any field (expects empty message)</li> </ul>
 
 
 | Field | Type | Label | Description |
@@ -13338,8 +13140,7 @@ Used fields depend on the chunking method of the document.
 <a name="ondewo.nlu.RagPartialSuccess"></a>
 
 ### RagPartialSuccess
-On complete success: no fields set (empty message).
-On partial success/failure: both fields set.
+On complete success: no fields set (empty message). On partial success/failure: both fields set.
 
 
 | Field | Type | Label | Description |
@@ -13396,8 +13197,7 @@ Example: <pre><code>crawler_names = ["projects/p/agent/crawlers/c1"] crawler_res
 <a name="ondewo.nlu.RagRetrievalRequest"></a>
 
 ### RagRetrievalRequest
-Request message for retrieving chunks using vector similarity search.<br>
-Supports hybrid search combining vector similarity with keyword matching.
+Request message for retrieving chunks using vector similarity search.<br> Supports hybrid search combining vector similarity with keyword matching.
 
 
 | Field | Type | Label | Description |
@@ -13456,8 +13256,7 @@ Response message for chunk retrieval.
 ### RagStartCrawlerRequest
 Request message for running a crawler.
 
-This starts a long-running operation and returns immediately.
-Clients should poll operation status via <code>RagGetCrawlerRun</code>.
+This starts a long-running operation and returns immediately. Clients should poll operation status via <code>RagGetCrawlerRun</code>.
 
 
 | Field | Type | Label | Description |
@@ -13526,8 +13325,7 @@ Request message for updating a crawler (partial update).
 <a name="ondewo.nlu.RagUpdateDatasetRequest"></a>
 
 ### RagUpdateDatasetRequest
-Request message for updating an existing dataset.
-The same field constraints as for <code>RagCreateDatasetRequest</code> apply here.
+Request message for updating an existing dataset. The same field constraints as for <code>RagCreateDatasetRequest</code> apply here.
 
 
 | Field | Type | Label | Description |
@@ -13781,8 +13579,7 @@ Metadata conditions logical operators
 <a name="ondewo.nlu.Rags"></a>
 
 ### Rags
-Provides RAG and web crawler endpoints.
-Most of the RAG related endpoints largely mirror <a href="https://github.com/ondewo/ragflow">RAGFlow's</a> HTTP API endpoints. For more information on RAGFlow refer to the <a href="https://ragflow.io/docs/dev/">official documentation</a>
+Provides RAG and web crawler endpoints. Most of the RAG related endpoints largely mirror <a href="https://github.com/ondewo/ragflow">RAGFlow's</a> HTTP API endpoints. For more information on RAGFlow refer to the <a href="https://ragflow.io/docs/dev/">official documentation</a>
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
@@ -13998,8 +13795,7 @@ Represents an audio file resource attached to a session (input recording or gene
 <a name="ondewo.nlu.CancelTurn"></a>
 
 ### CancelTurn
-Cancels a turn. At least one of <code>response_id</code> and <code>client_turn_id</code> must be set; when both
-are, <code>client_turn_id</code> is authoritative.
+Cancels a turn. At least one of <code>response_id</code> and <code>client_turn_id</code> must be set; when both are, <code>client_turn_id</code> is authoritative.
 
 
 | Field | Type | Label | Description |
@@ -14056,8 +13852,7 @@ Optional. If not provided, it will be auto-generated |
 <a name="ondewo.nlu.CreateSessionReviewRequest"></a>
 
 ### CreateSessionReviewRequest
-Request to persist a session review for a given session.
-As a side effect, training data in ondewo-cai may also be updated.
+Request to persist a session review for a given session. As a side effect, training data in ondewo-cai may also be updated.
 
 
 | Field | Type | Label | Description |
@@ -14256,11 +14051,7 @@ This message contains a detected intent
 <a name="ondewo.nlu.DiscardDraft"></a>
 
 ### DiscardDraft
-Discards the session step of a preemptive draft: a turn the client started speculatively on a partial
-transcript and then did not use. The server deletes the session step only when it belongs to this session and its
-request carried <code>QueryParameters.preemptive_draft</code> = true; it answers
-<code>TURN_CONTROL_ACK_STATUS_DRAFT_DISCARDED</code>. Any other step is kept and the server answers
-<code>TURN_CONTROL_ACK_STATUS_UNKNOWN_TURN</code>.
+Discards the session step of a preemptive draft: a turn the client started speculatively on a partial transcript and then did not use. The server deletes the session step only when it belongs to this session and its request carried <code>QueryParameters.preemptive_draft</code> = true; it answers <code>TURN_CONTROL_ACK_STATUS_DRAFT_DISCARDED</code>. Any other step is kept and the server answers <code>TURN_CONTROL_ACK_STATUS_UNKNOWN_TURN</code>.
 
 
 | Field | Type | Label | Description |
@@ -14296,9 +14087,7 @@ Represents a document file resource (e.g., text, markdown, PDF, DOCX).
 <a name="ondewo.nlu.EventInput"></a>
 
 ### EventInput
-Events allow for matching intents by event name instead of the natural language input.
-For instance, input <code>&lt;event: { name: &quot;welcome_event&quot;, parameters: { name: &quot;Sam&quot; } }&gt;</code> can trigger a personalized welcome response.
-The parameter <code>name</code> may be used by the agent in the response: <code>&quot;Hello #welcome_event.name! What can I do for you today?&quot;</code>.
+Events allow for matching intents by event name instead of the natural language input. For instance, input <code>&lt;event: { name: &quot;welcome_event&quot;, parameters: { name: &quot;Sam&quot; } }&gt;</code> can trigger a personalized welcome response. The parameter <code>name</code> may be used by the agent in the response: <code>&quot;Hello #welcome_event.name! What can I do for you today?&quot;</code>.
 
 
 | Field | Type | Label | Description |
@@ -14333,9 +14122,7 @@ The parameter <code>name</code> may be used by the agent in the response: <code>
 <a name="ondewo.nlu.FeedbackFilter"></a>
 
 ### FeedbackFilter
-A key + up/down counts breakdown bucket (by language / intent / author type / ...).
-A feedback-native filter for feedback list + analytics requests, complementing SessionFilter (which
-filters the parent sessions). All set fields are AND-combined; repeated fields are OR-within-field.
+A key + up/down counts breakdown bucket (by language / intent / author type / ...). A feedback-native filter for feedback list + analytics requests, complementing SessionFilter (which filters the parent sessions). All set fields are AND-combined; repeated fields are OR-within-field.
 
 
 | Field | Type | Label | Description |
@@ -14687,9 +14474,7 @@ What the user heard of one spoken message of a turn.
 <a name="ondewo.nlu.HeardReport"></a>
 
 ### HeardReport
-Reports what the user heard of a turn's answer. At least one of <code>response_id</code> and
-<code>client_turn_id</code> must be set. The server keeps the report with the highest <code>revision</code> per
-turn and ignores a lower or equal one.
+Reports what the user heard of a turn's answer. At least one of <code>response_id</code> and <code>client_turn_id</code> must be set. The server keeps the report with the highest <code>revision</code> per turn and ignores a lower or equal one.
 
 
 | Field | Type | Label | Description |
@@ -15493,9 +15278,7 @@ This message is a response of listing session user_ids
 <a name="ondewo.nlu.LlmAgentNodeEvent"></a>
 
 ### LlmAgentNodeEvent
-Emitted on a streaming DetectIntent when a node of an AI Team graph starts, completes or fails.
-A node inside a nested graph (a subgraph, or a member agent of a supervisor or swarm) is reported too,
-with its full <code>llm_agent_node_event_node_path</code>.
+Emitted on a streaming DetectIntent when a node of an AI Team graph starts, completes or fails. A node inside a nested graph (a subgraph, or a member agent of a supervisor or swarm) is reported too, with its full <code>llm_agent_node_event_node_path</code>.
 
 
 | Field | Type | Label | Description |
@@ -15537,9 +15320,7 @@ Per-intent-agent usage rollup across the scope.
 <a name="ondewo.nlu.LlmBaseUrlUsage"></a>
 
 ### LlmBaseUrlUsage
-Per-base-URL usage rollup across the scope. One entry per distinct
-<code>LlmTelemetry.base_url</code>; calls whose model configuration states no base URL are
-grouped under an empty <code>base_url</code>.
+Per-base-URL usage rollup across the scope. One entry per distinct <code>LlmTelemetry.base_url</code>; calls whose model configuration states no base URL are grouped under an empty <code>base_url</code>.
 
 
 | Field | Type | Label | Description |
@@ -15776,9 +15557,7 @@ One reasoning-effort aggregate.
 <a name="ondewo.nlu.LlmRetrievalMetadata"></a>
 
 ### LlmRetrievalMetadata
-Typed view of the chunks retrieved for one LLM call. Populated alongside the
-unstructured <code>outputs.retrieved_chunks</code> Struct (field 18 on
-LlmTelemetry, kept for back-compat); both carry the same chunk list.
+Typed view of the chunks retrieved for one LLM call. Populated alongside the unstructured <code>outputs.retrieved_chunks</code> Struct (field 18 on LlmTelemetry, kept for back-compat); both carry the same chunk list.
 
 
 | Field | Type | Label | Description |
@@ -15793,9 +15572,7 @@ LlmTelemetry, kept for back-compat); both carry the same chunk list.
 <a name="ondewo.nlu.LlmRetrievedChunk"></a>
 
 ### LlmRetrievedChunk
-One retrieved RAG chunk surfaced during an LLM call. Mirrors the five-field
-chunk already emitted into <code>outputs.retrieved_chunks</code> (Struct) plus
-a typed <code>rank</code>.
+One retrieved RAG chunk surfaced during an LLM call. Mirrors the five-field chunk already emitted into <code>outputs.retrieved_chunks</code> (Struct) plus a typed <code>rank</code>.
 
 
 | Field | Type | Label | Description |
@@ -15815,11 +15592,7 @@ a typed <code>rank</code>.
 <a name="ondewo.nlu.LlmSafetyAssessment"></a>
 
 ### LlmSafetyAssessment
-Native safety assessment for one LLM call, computed at telemetry build time by
-a dependency-free (regex / substring) assessor over the call's input / output
-text. Additive, optional: absent when safety scoring is disabled. This is the
-live MONITORING signal; the offline LLM-judge safety evaluators live in
-<code>llm_evaluation.proto</code>.
+Native safety assessment for one LLM call, computed at telemetry build time by a dependency-free (regex / substring) assessor over the call's input / output text. Additive, optional: absent when safety scoring is disabled. This is the live MONITORING signal; the offline LLM-judge safety evaluators live in <code>llm_evaluation.proto</code>.
 
 
 | Field | Type | Label | Description |
@@ -15874,8 +15647,7 @@ One concrete safety finding inside an LlmSafetyAssessment.
 <a name="ondewo.nlu.LlmSafetyStats"></a>
 
 ### LlmSafetyStats
-Native-safety breakdown aggregate across the LLM calls in scope. Computed from
-the per-call LlmSafetyAssessment records.
+Native-safety breakdown aggregate across the LLM calls in scope. Computed from the per-call LlmSafetyAssessment records.
 
 
 | Field | Type | Label | Description |
@@ -15970,10 +15742,7 @@ Telemetry for a single LLM invocation inside one DetectIntent turn.
 <a name="ondewo.nlu.LlmTelemetryReport"></a>
 
 ### LlmTelemetryReport
-Aggregated telemetry across all LLM calls in one DetectIntent turn, or across
-a session / agent-domain scope when used as a statistics report payload. The
-breakdown fields (6+) are populated only for the matching report type; a
-*_LLM_TOTAL_STATISTICS report populates all of them.
+Aggregated telemetry across all LLM calls in one DetectIntent turn, or across a session / agent-domain scope when used as a statistics report payload. The breakdown fields (6+) are populated only for the matching report type; a *_LLM_TOTAL_STATISTICS report populates all of them.
 
 
 | Field | Type | Label | Description |
@@ -16025,8 +15794,7 @@ Emitted on a streaming DetectIntent for each thinking-delta chunk.
 <a name="ondewo.nlu.LlmThinkingMetadata"></a>
 
 ### LlmThinkingMetadata
-Thinking / reasoning block emitted by the model (e.g. Anthropic extended thinking,
-OpenAI o-series reasoning).
+Thinking / reasoning block emitted by the model (e.g. Anthropic extended thinking, OpenAI o-series reasoning).
 
 
 | Field | Type | Label | Description |
@@ -16369,12 +16137,7 @@ Session of a user interaction
 ### SessionFeedback
 A single piece of user feedback about a whole session or a single session step (turn).
 
-The rating is intentionally extensible: <code>rating</code> carries the thumbs signal surfaced in the UI
-today, while <code>score</code> and <code>categorical_value</code> allow richer scales (star / NPS / CSAT)
-to be added later without a schema change. The feedback is pinned to the exact forensic context it is
-about (<code>session_id</code>, <code>session_step_id</code>, <code>response_id</code>,
-<code>session_step_llm_telemetry_id</code>) so the full conversation state up to the feedback can be
-reconstructed from the already-persisted session step.
+The rating is intentionally extensible: <code>rating</code> carries the thumbs signal surfaced in the UI today, while <code>score</code> and <code>categorical_value</code> allow richer scales (star / NPS / CSAT) to be added later without a schema change. The feedback is pinned to the exact forensic context it is about (<code>session_id</code>, <code>session_step_id</code>, <code>response_id</code>, <code>session_step_llm_telemetry_id</code>) so the full conversation state up to the feedback can be reconstructed from the already-persisted session step.
 
 
 | Field | Type | Label | Description |
@@ -16617,10 +16380,7 @@ SessionStep is a single user interaction as part of a session.
 <a name="ondewo.nlu.StreamingDetectIntentRequest"></a>
 
 ### StreamingDetectIntentRequest
-The top-level message sent by the client to the <code>StreamingDetectIntent</code> method.
-Multiple request messages should be sent in order:
-1.  The first message must contain <code>session</code>, <code>query_input</code> plus optionally <code>query_params</code> and/or <code>single_utterance</code>. The message must not contain <code>input_audio</code>.
-2.  If <code>query_input</code> was set to a streaming input audio config, all subsequent messages must contain only <code>input_audio</code>. Otherwise, finish the request stream.
+The top-level message sent by the client to the <code>StreamingDetectIntent</code> method. Multiple request messages should be sent in order: 1.  The first message must contain <code>session</code>, <code>query_input</code> plus optionally <code>query_params</code> and/or <code>single_utterance</code>. The message must not contain <code>input_audio</code>. 2.  If <code>query_input</code> was set to a streaming input audio config, all subsequent messages must contain only <code>input_audio</code>. Otherwise, finish the request stream.
 
 
 | Field | Type | Label | Description |
@@ -16641,10 +16401,7 @@ Multiple request messages should be sent in order:
 <a name="ondewo.nlu.StreamingDetectIntentResponse"></a>
 
 ### StreamingDetectIntentResponse
-The top-level message returned from the <code>StreamingDetectIntent</code> method.
-Multiple response messages can be returned in order:
-1.  If the input was set to streaming audio, the first one or more messages contain <code>recognition_result</code>. Each <code>recognition_result</code> represents a more complete transcript of what the user said. The last <code>recognition_result</code> has <code>is_final</code> set to <code>true</code>.
-2.  The next message contains <code>response_id</code>, <code>query_result</code> and optionally <code>webhook_status</code> if a WebHook was called.
+The top-level message returned from the <code>StreamingDetectIntent</code> method. Multiple response messages can be returned in order: 1.  If the input was set to streaming audio, the first one or more messages contain <code>recognition_result</code>. Each <code>recognition_result</code> represents a more complete transcript of what the user said. The last <code>recognition_result</code> has <code>is_final</code> set to <code>true</code>. 2.  The next message contains <code>response_id</code>, <code>query_result</code> and optionally <code>webhook_status</code> if a WebHook was called.
 
 
 | Field | Type | Label | Description |
@@ -16681,8 +16438,7 @@ Example:
 
 3.  transcript: &quot;to be&quot;
 
-4.  transcript: &quot;to be or not to be&quot;
-    is_final: true
+4.  transcript: &quot;to be or not to be&quot; is_final: true
 
 5.  transcript: &quot; that&apos;s&quot;
 
@@ -16690,17 +16446,13 @@ Example:
 
 7.  recognition_event_type: <code>RECOGNITION_EVENT_END_OF_SINGLE_UTTERANCE</code>
 
-8.  transcript: &quot; that is the question&quot;
-    is_final: true
+8.  transcript: &quot; that is the question&quot; is_final: true
 
 Only two of the responses contain final results (#4 and #8 indicated by <code>is_final: true</code>). Concatenating these generates the full transcript: <code>"to be or not to be that is the question"</code>.
 
 In each response we populate:
 
-<ul>
-    <li>for <code>MESSAGE_TYPE_TRANSCRIPT</code>: <code>transcript</code> and possibly <code>is_final</code>.</li>
-    <li>for <code>MESSAGE_TYPE_END_OF_SINGLE_UTTERANCE</code>: only <code>event_type</code>.</li>
-</ul>
+<ul> <li>for <code>MESSAGE_TYPE_TRANSCRIPT</code>: <code>transcript</code> and possibly <code>is_final</code>.</li> <li>for <code>MESSAGE_TYPE_END_OF_SINGLE_UTTERANCE</code>: only <code>event_type</code>.</li> </ul>
 
 
 | Field | Type | Label | Description |
@@ -16736,8 +16488,7 @@ Represents the natural language text to be processed.
 <a name="ondewo.nlu.TurnControl"></a>
 
 ### TurnControl
-Controls one turn of a session. Sent as <code>StreamingDetectIntentRequest.turn_control</code> on a call-length
-stream, or in an <code>InterruptTurnRequest</code>.
+Controls one turn of a session. Sent as <code>StreamingDetectIntentRequest.turn_control</code> on a call-length stream, or in an <code>InterruptTurnRequest</code>.
 
 
 | Field | Type | Label | Description |
@@ -16845,11 +16596,7 @@ Represents a video file resource (e.g., MP4, AVI).
 <a name="ondewo.nlu.WarmTransferIntroConfig"></a>
 
 ### WarmTransferIntroConfig
-The configuration of one warm transfer intro, as resolved by the caller of
-<code>PrepareWarmTransferIntro</code>. A text left empty (or unset, for an <code>optional</code> field) falls back
-to the agent's default text for the language (<code>Agent.warm_transfer_settings</code>), then to the built-in
-default. Texts are spoken to the target, never to the caller, except <code>caller_declined_message</code> and
-<code>caller_unreachable_message</code>.
+The configuration of one warm transfer intro, as resolved by the caller of <code>PrepareWarmTransferIntro</code>. A text left empty (or unset, for an <code>optional</code> field) falls back to the agent's default text for the language (<code>Agent.warm_transfer_settings</code>), then to the built-in default. Texts are spoken to the target, never to the caller, except <code>caller_declined_message</code> and <code>caller_unreachable_message</code>.
 
 
 | Field | Type | Label | Description |
@@ -16900,8 +16647,7 @@ The outcome of a warm transfer intro. Holds no intro text and no reason text.
 <a name="ondewo.nlu.AudioEncoding"></a>
 
 ### AudioEncoding
-Audio encoding of the audio content sent in the conversational query request.
-Refer to the <a href="/speech/docs/basics">Cloud Speech API documentation</a> for more details.
+Audio encoding of the audio content sent in the conversational query request. Refer to the <a href="/speech/docs/basics">Cloud Speech API documentation</a> for more details.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -17002,8 +16748,7 @@ The scope a feedback filter targets: session-level, step-level, or both.
 <a name="ondewo.nlu.FeedbackTimeGranularity"></a>
 
 ### FeedbackTimeGranularity
-The calendar granularity of a feedback time series. When set (non-unspecified) it overrides the
-fixed-width bucket_width_seconds on the request.
+The calendar granularity of a feedback time series. When set (non-unspecified) it overrides the fixed-width bucket_width_seconds on the request.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -17061,8 +16806,7 @@ Where a safety finding was located in the LLM call.
 <a name="ondewo.nlu.ReasoningEffort"></a>
 
 ### ReasoningEffort
-Effort level for reasoning models (e.g. o1, o3). Controls the trade-off
-between speed and quality.
+Effort level for reasoning models (e.g. o1, o3). Controls the trade-off between speed and quality.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -17091,8 +16835,7 @@ Represents the options for views of resources.
 <a name="ondewo.nlu.Session.View"></a>
 
 ### Session.View
-Represents the options for views of a session.
-A session can be a sizable object. Therefore, we provide a resource view that does not return all data
+Represents the options for views of a session. A session can be a sizable object. Therefore, we provide a resource view that does not return all data
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -17105,8 +16848,7 @@ A session can be a sizable object. Therefore, we provide a resource view that do
 <a name="ondewo.nlu.SessionReview.View"></a>
 
 ### SessionReview.View
-Represents the options for views of a session_review.
-A session_review can be a sizable object. Therefore, we provide a resource view that does not return all data
+Represents the options for views of a session_review. A session_review can be a sizable object. Therefore, we provide a resource view that does not return all data
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -17132,8 +16874,7 @@ Type of the response message.
 <a name="ondewo.nlu.TranscriptionType"></a>
 
 ### TranscriptionType
-Identifies whether a transcription was produced by an automatic
-speech-to-text system or by a human annotator.
+Identifies whether a transcription was produced by an automatic speech-to-text system or by a human annotator.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -18816,7 +18557,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.AcousticModels"></a>
 
 ### AcousticModels
-<p>AcousticModels contains information about different types of acoustic models.</p>
+AcousticModels contains information about different types of acoustic models.
 
 
 | Field | Type | Label | Description |
@@ -18840,7 +18581,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.AddDataToUserLanguageModelRequest"></a>
 
 ### AddDataToUserLanguageModelRequest
-<p>AddDataToUserLanguageModelRequest is used to request the addition of data to a user-specific language model.</p>
+AddDataToUserLanguageModelRequest is used to request the addition of data to a user-specific language model.
 
 
 | Field | Type | Label | Description |
@@ -18856,7 +18597,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.CkptFile"></a>
 
 ### CkptFile
-<p>CkptFile contains information about checkpoint files.</p>
+CkptFile contains information about checkpoint files.
 
 
 | Field | Type | Label | Description |
@@ -18871,7 +18612,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.CreateUserLanguageModelRequest"></a>
 
 ### CreateUserLanguageModelRequest
-<p>CreateUserLanguageModelRequest is used to request the creation of a new user-specific language model.</p>
+CreateUserLanguageModelRequest is used to request the creation of a new user-specific language model.
 
 
 | Field | Type | Label | Description |
@@ -18886,7 +18627,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.DeleteUserLanguageModelRequest"></a>
 
 ### DeleteUserLanguageModelRequest
-<p>DeleteUserLanguageModelRequest is used to request the deletion of a user-specific language model.</p>
+DeleteUserLanguageModelRequest is used to request the deletion of a user-specific language model.
 
 
 | Field | Type | Label | Description |
@@ -18901,7 +18642,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.LanguageModelPipelineId"></a>
 
 ### LanguageModelPipelineId
-<p>LanguageModelPipelineId contains information about a pipeline and its available language models.</p>
+LanguageModelPipelineId contains information about a pipeline and its available language models.
 
 
 | Field | Type | Label | Description |
@@ -18917,7 +18658,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.LanguageModels"></a>
 
 ### LanguageModels
-<p>LanguageModels contains information about language models.</p>
+LanguageModels contains information about language models.
 
 
 | Field | Type | Label | Description |
@@ -18936,7 +18677,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.ListS2tDomainsRequest"></a>
 
 ### ListS2tDomainsRequest
-<p>Request message to list available domains. Optionally also filters can be set.</p>
+Request message to list available domains. Optionally also filters can be set.
 
 
 | Field | Type | Label | Description |
@@ -18952,7 +18693,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.ListS2tDomainsResponse"></a>
 
 ### ListS2tDomainsResponse
-<p>Response message to list available domains</p>
+Response message to list available domains
 
 
 | Field | Type | Label | Description |
@@ -18967,7 +18708,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.ListS2tLanguageModelsRequest"></a>
 
 ### ListS2tLanguageModelsRequest
-<p>ListS2tLanguageModelsRequest is used to request a list of available language models for specified pipelines.</p>
+ListS2tLanguageModelsRequest is used to request a list of available language models for specified pipelines.
 
 
 | Field | Type | Label | Description |
@@ -18982,7 +18723,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.ListS2tLanguageModelsResponse"></a>
 
 ### ListS2tLanguageModelsResponse
-<p>ListS2tLanguageModelsResponse is used to return the available language models for specified pipelines.</p>
+ListS2tLanguageModelsResponse is used to return the available language models for specified pipelines.
 
 
 | Field | Type | Label | Description |
@@ -18997,7 +18738,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.ListS2tLanguagesRequest"></a>
 
 ### ListS2tLanguagesRequest
-<p>ListS2tLanguagesRequest is used to request a list of available languages. Optionally, filters can be set.</p>
+ListS2tLanguagesRequest is used to request a list of available languages. Optionally, filters can be set.
 
 
 | Field | Type | Label | Description |
@@ -19013,7 +18754,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.ListS2tLanguagesResponse"></a>
 
 ### ListS2tLanguagesResponse
-<p>Response message to list available languages</p>
+Response message to list available languages
 
 
 | Field | Type | Label | Description |
@@ -19028,8 +18769,9 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.ListS2tNormalizationPipelinesRequest"></a>
 
 ### ListS2tNormalizationPipelinesRequest
-<p>The request message for <code>ListS2tNormalizationPipelines</code>.</p>
-<p>Filter pipelines by attributes in request.</p>
+The request message for <code>ListS2tNormalizationPipelines</code>.
+
+Filter pipelines by attributes in request.
 
 
 | Field | Type | Label | Description |
@@ -19044,7 +18786,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.ListS2tNormalizationPipelinesResponse"></a>
 
 ### ListS2tNormalizationPipelinesResponse
-<p>The response message for <code>ListS2tNormalizationPipelines</code>.</p>
+The response message for <code>ListS2tNormalizationPipelines</code>.
 
 
 | Field | Type | Label | Description |
@@ -19059,7 +18801,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.ListS2tPipelinesRequest"></a>
 
 ### ListS2tPipelinesRequest
-<p>Request to list all speech-to-text pipelines. Optionally also filter criteria can be set</p>
+Request to list all speech-to-text pipelines. Optionally also filter criteria can be set
 
 
 | Field | Type | Label | Description |
@@ -19077,7 +18819,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.ListS2tPipelinesResponse"></a>
 
 ### ListS2tPipelinesResponse
-<p>ListS2tPipelinesResponse is used to return a list of all speech-to-text pipelines.</p>
+ListS2tPipelinesResponse is used to return a list of all speech-to-text pipelines.
 
 
 | Field | Type | Label | Description |
@@ -19092,7 +18834,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.Logging"></a>
 
 ### Logging
-<p>Logging contains configuration for logging.</p>
+Logging contains configuration for logging.
 
 
 | Field | Type | Label | Description |
@@ -19108,7 +18850,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.OpenaiLlmOptions"></a>
 
 ### OpenaiLlmOptions
-<p>Configuration options for OpenAI client chat completion requests used in turn detection and LLM post-processing.</p>
+Configuration options for OpenAI client chat completion requests used in turn detection and LLM post-processing.
 
 
 | Field | Type | Label | Description |
@@ -19188,7 +18930,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.Parakeet"></a>
 
 ### Parakeet
-<p>Parakeet contains information about the Parakeet model.</p>
+Parakeet contains information about the Parakeet model.
 
 
 | Field | Type | Label | Description |
@@ -19207,7 +18949,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.PostProcessing"></a>
 
 ### PostProcessing
-<p>PostProcessing contains the configuration for post-processing.</p>
+PostProcessing contains the configuration for post-processing.
 
 
 | Field | Type | Label | Description |
@@ -19223,7 +18965,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.PostProcessingOptions"></a>
 
 ### PostProcessingOptions
-<p>Configuration of the post-processing options</p>
+Configuration of the post-processing options
 
 
 | Field | Type | Label | Description |
@@ -19241,7 +18983,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.PostProcessors"></a>
 
 ### PostProcessors
-<p>PostProcessors contains configurations for post-processors.</p>
+PostProcessors contains configurations for post-processors.
 
 
 | Field | Type | Label | Description |
@@ -19258,7 +19000,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.PtFiles"></a>
 
 ### PtFiles
-<p>PtFiles contains information about PT files.</p>
+PtFiles contains information about PT files.
 
 
 | Field | Type | Label | Description |
@@ -19274,8 +19016,9 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.Pyannote"></a>
 
 ### Pyannote
-<p>Pyannote contains configuration for the Pyannote voice activity detection model.</p>
-<p>Library: <a href="https://github.com/pyannote/pyannote-audio/blob/develop/tutorials/voice_activity_detection.ipynb">pyannote-audio</a></p>
+Pyannote contains configuration for the Pyannote voice activity detection model.
+
+Library: <a href="https://github.com/pyannote/pyannote-audio/blob/develop/tutorials/voice_activity_detection.ipynb">pyannote-audio</a>
 
 
 | Field | Type | Label | Description |
@@ -19295,7 +19038,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.S2tCloudProviderConfig"></a>
 
 ### S2tCloudProviderConfig
-<p>Configuration for cloud provider settings for Speech-to-Text (S2T).</p>
+Configuration for cloud provider settings for Speech-to-Text (S2T).
 
 
 | Field | Type | Label | Description |
@@ -19313,7 +19056,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.S2tCloudProviderConfigAmazon"></a>
 
 ### S2tCloudProviderConfigAmazon
-<p>Configuration details specific to the Amazon web service speech-to-text provider.</p>
+Configuration details specific to the Amazon web service speech-to-text provider.
 
 
 | Field | Type | Label | Description |
@@ -19331,7 +19074,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.S2tCloudProviderConfigDeepgram"></a>
 
 ### S2tCloudProviderConfigDeepgram
-<p>Configuration details specific to the Deepgram speech-to-text provider.</p>
+Configuration details specific to the Deepgram speech-to-text provider.
 
 
 | Field | Type | Label | Description |
@@ -19350,7 +19093,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.S2tCloudProviderConfigGoogle"></a>
 
 ### S2tCloudProviderConfigGoogle
-<p>Configuration details specific to the Google speech-to-text provider.</p>
+Configuration details specific to the Google speech-to-text provider.
 
 
 | Field | Type | Label | Description |
@@ -19369,7 +19112,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.S2tCloudProviderConfigMicrosoft"></a>
 
 ### S2tCloudProviderConfigMicrosoft
-<p>Configuration details specific to the Microsoft Azure speech-to-text provider.</p>
+Configuration details specific to the Microsoft Azure speech-to-text provider.
 
 
 | Field | Type | Label | Description |
@@ -19385,7 +19128,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.S2tCloudServiceAmazon"></a>
 
 ### S2tCloudServiceAmazon
-<p>S2tCloudServiceAmazon message contains settings for the Amazon web service Cloud service inference.</p>
+S2tCloudServiceAmazon message contains settings for the Amazon web service Cloud service inference.
 
 
 | Field | Type | Label | Description |
@@ -19405,7 +19148,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.S2tCloudServiceDeepgram"></a>
 
 ### S2tCloudServiceDeepgram
-<p>S2tCloudServiceDeepgram message contains settings for the Deepgram Cloud service inference.</p>
+S2tCloudServiceDeepgram message contains settings for the Deepgram Cloud service inference.
 
 
 | Field | Type | Label | Description |
@@ -19426,7 +19169,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.S2tCloudServiceGoogle"></a>
 
 ### S2tCloudServiceGoogle
-<p>S2tCloudServiceGoogle message contains settings for the Google Cloud service inference.</p>
+S2tCloudServiceGoogle message contains settings for the Google Cloud service inference.
 
 
 | Field | Type | Label | Description |
@@ -19447,7 +19190,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.S2tCloudServiceMicrosoft"></a>
 
 ### S2tCloudServiceMicrosoft
-<p>S2tCloudServiceMicrosoft message contains settings for the Microsoft Azure Cloud service inference.</p>
+S2tCloudServiceMicrosoft message contains settings for the Microsoft Azure Cloud service inference.
 
 
 | Field | Type | Label | Description |
@@ -19464,7 +19207,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.S2tDescription"></a>
 
 ### S2tDescription
-<p>S2tDescription contains descriptive information about the speech-to-text pipeline.</p>
+S2tDescription contains descriptive information about the speech-to-text pipeline.
 
 
 | Field | Type | Label | Description |
@@ -19482,7 +19225,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.S2tGetServiceInfoResponse"></a>
 
 ### S2tGetServiceInfoResponse
-<p>S2tGetServiceInfoResponse is used to return version information about the speech-to-text service.</p>
+S2tGetServiceInfoResponse is used to return version information about the speech-to-text service.
 
 
 | Field | Type | Label | Description |
@@ -19497,7 +19240,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.S2tInference"></a>
 
 ### S2tInference
-<p>S2tInference contains information about inference models used in the speech-to-text pipeline.</p>
+S2tInference contains information about inference models used in the speech-to-text pipeline.
 
 
 | Field | Type | Label | Description |
@@ -19514,7 +19257,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.S2tLlmPostProcessing"></a>
 
 ### S2tLlmPostProcessing
-<p>S2tLlmPostProcessing contains configuration for the speech-to-text postprocessing with LLM.</p>
+S2tLlmPostProcessing contains configuration for the speech-to-text postprocessing with LLM.
 
 
 | Field | Type | Label | Description |
@@ -19540,7 +19283,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.S2tLlmPostProcessingInverseNormalizationOptions"></a>
 
 ### S2tLlmPostProcessingInverseNormalizationOptions
-<p>Configuration of the options to inverse-normalization task in LLM post-processing.</p>
+Configuration of the options to inverse-normalization task in LLM post-processing.
 
 
 | Field | Type | Label | Description |
@@ -19561,7 +19304,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.S2tLlmPostProcessingNormalizationOptions"></a>
 
 ### S2tLlmPostProcessingNormalizationOptions
-<p>Configuration of the options to normalization task in LLM post-processing.</p>
+Configuration of the options to normalization task in LLM post-processing.
 
 
 | Field | Type | Label | Description |
@@ -19582,9 +19325,7 @@ gRPC service for QA functionalities.
 <a name="ondewo.s2t.S2tLlmPostProcessingSubTaskOptions"></a>
 
 ### S2tLlmPostProcessingSubTaskOptions
-<p>Common configuration for an individual LLM post-processing sub-task (e.g. email, phone number,
-date and time, credit card number, social security number, time zone).
-Used by both normalization and inverse-normalization tasks.</p>
+Common configuration for an individual LLM post-processing sub-task (e.g. email, phone number, date and time, credit card number, social security number, time zone). Used by both normalization and inverse-normalization tasks.
 
 
 | Field | Type | Label | Description |
@@ -19600,7 +19341,7 @@ Used by both normalization and inverse-normalization tasks.</p>
 <a name="ondewo.s2t.S2tLlmPostProcessingSummarizationOptions"></a>
 
 ### S2tLlmPostProcessingSummarizationOptions
-<p>Configuration of the options to summarization task in LLM post-processing.</p>
+Configuration of the options to summarization task in LLM post-processing.
 
 
 | Field | Type | Label | Description |
@@ -19618,7 +19359,7 @@ Used by both normalization and inverse-normalization tasks.</p>
 <a name="ondewo.s2t.S2tLlmPostProcessingTranslationOptions"></a>
 
 ### S2tLlmPostProcessingTranslationOptions
-<p>Configuration of the options to translation task in LLM post-processing.</p>
+Configuration of the options to translation task in LLM post-processing.
 
 
 | Field | Type | Label | Description |
@@ -19635,7 +19376,7 @@ Used by both normalization and inverse-normalization tasks.</p>
 <a name="ondewo.s2t.S2tNormalization"></a>
 
 ### S2tNormalization
-<p>S2tNormalization contains configuration for the speech-to-text normalization.</p>
+S2tNormalization contains configuration for the speech-to-text normalization.
 
 
 | Field | Type | Label | Description |
@@ -19651,7 +19392,7 @@ Used by both normalization and inverse-normalization tasks.</p>
 <a name="ondewo.s2t.S2tPipelineId"></a>
 
 ### S2tPipelineId
-<p>The pipeline id for a specific pipeline configuration</p>
+The pipeline id for a specific pipeline configuration
 
 
 | Field | Type | Label | Description |
@@ -19666,11 +19407,11 @@ Used by both normalization and inverse-normalization tasks.</p>
 <a name="ondewo.s2t.Silero"></a>
 
 ### Silero
-<p>Silero contains configuration for the Silero voice activity detection model.</p>
-<p>Unlike <code>Pyannote</code>, Silero is configured with its own parameters rather than
-<code>(min_duration_on, min_duration_off)</code>. They carry exactly the meaning they have
-upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.</p>
-<p>Library: <a href="https://github.com/snakers4/silero-vad">silero-vad</a></p>
+Silero contains configuration for the Silero voice activity detection model.
+
+Unlike <code>Pyannote</code>, Silero is configured with its own parameters rather than <code>(min_duration_on, min_duration_off)</code>. They carry exactly the meaning they have upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.
+
+Library: <a href="https://github.com/snakers4/silero-vad">silero-vad</a>
 
 
 | Field | Type | Label | Description |
@@ -19692,7 +19433,7 @@ upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.</p>
 <a name="ondewo.s2t.Speech2TextConfig"></a>
 
 ### Speech2TextConfig
-<p>Speech2TextConfig is a configuration message for the speech-to-text pipeline</p>
+Speech2TextConfig is a configuration message for the speech-to-text pipeline
 
 
 | Field | Type | Label | Description |
@@ -19714,7 +19455,7 @@ upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.</p>
 <a name="ondewo.s2t.StreamingServer"></a>
 
 ### StreamingServer
-<p>StreamingServer contains information about the streaming server.</p>
+StreamingServer contains information about the streaming server.
 
 
 | Field | Type | Label | Description |
@@ -19732,7 +19473,7 @@ upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.</p>
 <a name="ondewo.s2t.StreamingSpeechRecognition"></a>
 
 ### StreamingSpeechRecognition
-<p>StreamingSpeechRecognition contains information about streaming speech recognition settings.</p>
+StreamingSpeechRecognition contains information about streaming speech recognition settings.
 
 
 | Field | Type | Label | Description |
@@ -19753,7 +19494,7 @@ upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.</p>
 <a name="ondewo.s2t.SymSpell"></a>
 
 ### SymSpell
-<p>SymSpell contains configuration for the SymSpell spelling correction.</p>
+SymSpell contains configuration for the SymSpell spelling correction.
 
 
 | Field | Type | Label | Description |
@@ -19770,7 +19511,7 @@ upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.</p>
 <a name="ondewo.s2t.TrainUserLanguageModelRequest"></a>
 
 ### TrainUserLanguageModelRequest
-<p>TrainUserLanguageModelRequest is used to request the training of a user-specific language model.</p>
+TrainUserLanguageModelRequest is used to request the training of a user-specific language model.
 
 
 | Field | Type | Label | Description |
@@ -19786,7 +19527,7 @@ upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.</p>
 <a name="ondewo.s2t.TranscribeFileRequest"></a>
 
 ### TranscribeFileRequest
-<p>A request to transcribe an audio file</p>
+A request to transcribe an audio file
 
 
 | Field | Type | Label | Description |
@@ -19802,7 +19543,7 @@ upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.</p>
 <a name="ondewo.s2t.TranscribeFileResponse"></a>
 
 ### TranscribeFileResponse
-<p>The response message for a transcribe file request</p>
+The response message for a transcribe file request
 
 
 | Field | Type | Label | Description |
@@ -19819,7 +19560,7 @@ upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.</p>
 <a name="ondewo.s2t.TranscribeRequestConfig"></a>
 
 ### TranscribeRequestConfig
-<p>Configuration for a request to transcribe audio</p>
+Configuration for a request to transcribe audio
 
 
 | Field | Type | Label | Description |
@@ -19844,7 +19585,7 @@ upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.</p>
 <a name="ondewo.s2t.TranscribeStreamRequest"></a>
 
 ### TranscribeStreamRequest
-<p>Request to transcribe an audio stream</p>
+Request to transcribe an audio stream
 
 
 | Field | Type | Label | Description |
@@ -19862,7 +19603,7 @@ upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.</p>
 <a name="ondewo.s2t.TranscribeStreamResponse"></a>
 
 ### TranscribeStreamResponse
-<p>The response message of a stream transcription</p>
+The response message of a stream transcription
 
 
 | Field | Type | Label | Description |
@@ -19885,7 +19626,7 @@ upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.</p>
 <a name="ondewo.s2t.Transcription"></a>
 
 ### Transcription
-<p>The transcription message</p>
+The transcription message
 
 
 | Field | Type | Label | Description |
@@ -19903,7 +19644,7 @@ upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.</p>
 <a name="ondewo.s2t.TranscriptionAlternative"></a>
 
 ### TranscriptionAlternative
-<p>The alternative transcription message</p>
+The alternative transcription message
 
 
 | Field | Type | Label | Description |
@@ -19920,7 +19661,7 @@ upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.</p>
 <a name="ondewo.s2t.TranscriptionReturnOptions"></a>
 
 ### TranscriptionReturnOptions
-<p>Configuration of the return values of a transcribe request</p>
+Configuration of the return values of a transcribe request
 
 
 | Field | Type | Label | Description |
@@ -19943,8 +19684,7 @@ upstream in <code>get_speech_timestamps</code> / <code>VADIterator</code>.</p>
 <a name="ondewo.s2t.TurnDetectionChatLlmOptions"></a>
 
 ### TurnDetectionChatLlmOptions
-<p>TurnDetectionChatLlmOptions configures a chat LLM as the turn detector: the LLM is asked, with the prompts
-below and the transcription of the turn, whether the caller has finished.</p>
+TurnDetectionChatLlmOptions configures a chat LLM as the turn detector: the LLM is asked, with the prompts below and the transcription of the turn, whether the caller has finished.
 
 
 | Field | Type | Label | Description |
@@ -19961,8 +19701,7 @@ below and the transcription of the turn, whether the caller has finished.</p>
 <a name="ondewo.s2t.TurnDetectionContextTurn"></a>
 
 ### TurnDetectionContextTurn
-<p>One turn of the conversation context of the turn detection, read only by
-<code>TurnDetectionEndOfUtteranceLlmOptions</code>.</p>
+One turn of the conversation context of the turn detection, read only by <code>TurnDetectionEndOfUtteranceLlmOptions</code>.
 
 
 | Field | Type | Label | Description |
@@ -19978,9 +19717,7 @@ below and the transcription of the turn, whether the caller has finished.</p>
 <a name="ondewo.s2t.TurnDetectionConversationContext"></a>
 
 ### TurnDetectionConversationContext
-<p>TurnDetectionConversationContext carries the latest turns of the conversation for
-<code>TurnDetectionEndOfUtteranceLlmOptions</code> (see
-<code>TurnDetectionOptions.turn_detection_conversation_context</code>). No other detector reads it.</p>
+TurnDetectionConversationContext carries the latest turns of the conversation for <code>TurnDetectionEndOfUtteranceLlmOptions</code> (see <code>TurnDetectionOptions.turn_detection_conversation_context</code>). No other detector reads it.
 
 
 | Field | Type | Label | Description |
@@ -19995,10 +19732,7 @@ below and the transcription of the turn, whether the caller has finished.</p>
 <a name="ondewo.s2t.TurnDetectionEndOfUtteranceLlmOptions"></a>
 
 ### TurnDetectionEndOfUtteranceLlmOptions
-<p>TurnDetectionEndOfUtteranceLlmOptions configures an end-of-utterance LLM (LiveKit-shaped, e.g.
-<code>livekit/turn-detector</code>) as the turn detector: the model scores the probability of the
-end-of-utterance token after the turn's transcription and, when
-<code>TurnDetectionOptions.turn_detection_conversation_context</code> is set, the turns before it.</p>
+TurnDetectionEndOfUtteranceLlmOptions configures an end-of-utterance LLM (LiveKit-shaped, e.g. <code>livekit/turn-detector</code>) as the turn detector: the model scores the probability of the end-of-utterance token after the turn's transcription and, when <code>TurnDetectionOptions.turn_detection_conversation_context</code> is set, the turns before it.
 
 
 | Field | Type | Label | Description |
@@ -20017,7 +19751,7 @@ end-of-utterance token after the turn's transcription and, when
 <a name="ondewo.s2t.TurnDetectionHoldBand"></a>
 
 ### TurnDetectionHoldBand
-<p>One hold band of <code>TurnDetectionEndOfUtteranceLlmOptions</code>.</p>
+One hold band of <code>TurnDetectionEndOfUtteranceLlmOptions</code>.
 
 
 | Field | Type | Label | Description |
@@ -20033,8 +19767,7 @@ end-of-utterance token after the turn's transcription and, when
 <a name="ondewo.s2t.TurnDetectionHoldBands"></a>
 
 ### TurnDetectionHoldBands
-<p>TurnDetectionHoldBands carries the hold bands of <code>TurnDetectionEndOfUtteranceLlmOptions</code>. No other
-detector reads them.</p>
+TurnDetectionHoldBands carries the hold bands of <code>TurnDetectionEndOfUtteranceLlmOptions</code>. No other detector reads them.
 
 
 | Field | Type | Label | Description |
@@ -20049,9 +19782,7 @@ detector reads them.</p>
 <a name="ondewo.s2t.TurnDetectionOndewoDeFusionOptions"></a>
 
 ### TurnDetectionOndewoDeFusionOptions
-<p>TurnDetectionOndewoDeFusionOptions configures the ONDEWO German fusion turn detector. It combines the ONDEWO
-German text model on vLLM, acoustic heads on Triton and signals computed from the stream into one end-of-turn
-probability. The Triton heads, the text model's served name and the weights file are server settings.</p>
+TurnDetectionOndewoDeFusionOptions configures the ONDEWO German fusion turn detector. It combines the ONDEWO German text model on vLLM, acoustic heads on Triton and signals computed from the stream into one end-of-turn probability. The Triton heads, the text model's served name and the weights file are server settings.
 
 
 | Field | Type | Label | Description |
@@ -20067,8 +19798,7 @@ probability. The Triton heads, the text model's served name and the weights file
 <a name="ondewo.s2t.TurnDetectionOndewoDeOptions"></a>
 
 ### TurnDetectionOndewoDeOptions
-<p>TurnDetectionOndewoDeOptions configures the ONDEWO German turn-detection model as the turn detector. It judges
-the turn from its text and word timing and is served by vLLM.</p>
+TurnDetectionOndewoDeOptions configures the ONDEWO German turn-detection model as the turn detector. It judges the turn from its text and word timing and is served by vLLM.
 
 
 | Field | Type | Label | Description |
@@ -20084,14 +19814,9 @@ the turn from its text and word timing and is served by vLLM.</p>
 <a name="ondewo.s2t.TurnDetectionOptions"></a>
 
 ### TurnDetectionOptions
-<p>TurnDetectionOptions configures turn detection: deciding, at a pause of the caller, whether the caller has
-finished the turn. Exactly one turn detector is chosen by <code>oneof_turn_detector</code>; the fields outside it
-apply to every detector.</p>
-<p>Precedence for every field: the request config's value
-(<code>TranscribeRequestConfig.utterance_detection.turn_detection</code>), then the pipeline config's value
-(<code>StreamingSpeechRecognition.turn_detection</code>), then the server's configured value. When the request
-config chooses a different detector than the pipeline config, the request config's detector is used with only
-its own fields: none of the pipeline config's detector fields carry over.</p>
+TurnDetectionOptions configures turn detection: deciding, at a pause of the caller, whether the caller has finished the turn. Exactly one turn detector is chosen by <code>oneof_turn_detector</code>; the fields outside it apply to every detector.
+
+Precedence for every field: the request config's value (<code>TranscribeRequestConfig.utterance_detection.turn_detection</code>), then the pipeline config's value (<code>StreamingSpeechRecognition.turn_detection</code>), then the server's configured value. When the request config chooses a different detector than the pipeline config, the request config's detector is used with only its own fields: none of the pipeline config's detector fields carry over.
 
 
 | Field | Type | Label | Description |
@@ -20117,9 +19842,9 @@ its own fields: none of the pipeline config's detector fields carry over.</p>
 <a name="ondewo.s2t.TurnDetectionPipecatSmartTurnOptions"></a>
 
 ### TurnDetectionPipecatSmartTurnOptions
-<p>TurnDetectionPipecatSmartTurnOptions configures pipecat Smart Turn v3.2 as the turn detector. It judges the
-turn from the caller's audio alone and is served by Triton.</p>
-<p>Model: <a href="https://github.com/pipecat-ai/smart-turn">pipecat Smart Turn</a></p>
+TurnDetectionPipecatSmartTurnOptions configures pipecat Smart Turn v3.2 as the turn detector. It judges the turn from the caller's audio alone and is served by Triton.
+
+Model: <a href="https://github.com/pipecat-ai/smart-turn">pipecat Smart Turn</a>
 
 
 | Field | Type | Label | Description |
@@ -20139,7 +19864,7 @@ turn from the caller's audio alone and is served by Triton.</p>
 <a name="ondewo.s2t.UtteranceDetectionOptions"></a>
 
 ### UtteranceDetectionOptions
-<p>Configuration of the options to detect utterances</p>
+Configuration of the options to detect utterances
 
 
 | Field | Type | Label | Description |
@@ -20158,7 +19883,7 @@ turn from the caller's audio alone and is served by Triton.</p>
 <a name="ondewo.s2t.VoiceActivityDetection"></a>
 
 ### VoiceActivityDetection
-<p>VoiceActivityDetection contains information about voice activity detection settings.</p>
+VoiceActivityDetection contains information about voice activity detection settings.
 
 
 | Field | Type | Label | Description |
@@ -20179,7 +19904,7 @@ turn from the caller's audio alone and is served by Triton.</p>
 <a name="ondewo.s2t.Wav2Vec"></a>
 
 ### Wav2Vec
-<p>Wav2Vec contains information about the Wav2Vec model.</p>
+Wav2Vec contains information about the Wav2Vec model.
 
 
 | Field | Type | Label | Description |
@@ -20195,7 +19920,7 @@ turn from the caller's audio alone and is served by Triton.</p>
 <a name="ondewo.s2t.Wav2VecTriton"></a>
 
 ### Wav2VecTriton
-<p>Wav2VecTriton contains information about the Wav2Vec model using Triton.</p>
+Wav2VecTriton contains information about the Wav2Vec model using Triton.
 
 
 | Field | Type | Label | Description |
@@ -20215,11 +19940,9 @@ turn from the caller's audio alone and is served by Triton.</p>
 <a name="ondewo.s2t.WespeakerTsd"></a>
 
 ### WespeakerTsd
-<p>WespeakerTsd contains configuration for the WeSpeaker target-speaker detection (TSD)
-model. Given a reference speaker embedding, it decides whether a newly detected utterance
-was spoken by the same person, so that speech from a different speaker (e.g. background
-noise, crosstalk, or a barge-in) can be rejected.</p>
-<p>Library: <a href="https://huggingface.co/pyannote/wespeaker-voxceleb-resnet34-LM">wespeaker-voxceleb-resnet34-LM</a></p>
+WespeakerTsd contains configuration for the WeSpeaker target-speaker detection (TSD) model. Given a reference speaker embedding, it decides whether a newly detected utterance was spoken by the same person, so that speech from a different speaker (e.g. background noise, crosstalk, or a barge-in) can be rejected.
+
+Library: <a href="https://huggingface.co/pyannote/wespeaker-voxceleb-resnet34-LM">wespeaker-voxceleb-resnet34-LM</a>
 
 
 | Field | Type | Label | Description |
@@ -20240,7 +19963,7 @@ noise, crosstalk, or a barge-in) can be rejected.</p>
 <a name="ondewo.s2t.Whisper"></a>
 
 ### Whisper
-<p>Whisper contains information about the Whisper model.</p>
+Whisper contains information about the Whisper model.
 
 
 | Field | Type | Label | Description |
@@ -20258,7 +19981,7 @@ noise, crosstalk, or a barge-in) can be rejected.</p>
 <a name="ondewo.s2t.WhisperTriton"></a>
 
 ### WhisperTriton
-<p>WhisperTriton contains information about the Whisper model using Triton.</p>
+WhisperTriton contains information about the Whisper model using Triton.
 
 
 | Field | Type | Label | Description |
@@ -20280,7 +20003,7 @@ noise, crosstalk, or a barge-in) can be rejected.</p>
 <a name="ondewo.s2t.WordAlternative"></a>
 
 ### WordAlternative
-<p>The word alternative message</p>
+The word alternative message
 
 
 | Field | Type | Label | Description |
@@ -20296,7 +20019,7 @@ noise, crosstalk, or a barge-in) can be rejected.</p>
 <a name="ondewo.s2t.WordDetail"></a>
 
 ### WordDetail
-<p>WordDetail provides word-specific information for recognized words.</p>
+WordDetail provides word-specific information for recognized words.
 
 
 | Field | Type | Label | Description |
@@ -20348,7 +20071,7 @@ The inference backend configuration
 <a name="ondewo.s2t.ReasoningEffort"></a>
 
 ### ReasoningEffort
-<p>Effort level for reasoning models (e.g., o1, o3). Controls the trade-off between speed and quality.</p>
+Effort level for reasoning models (e.g., o1, o3). Controls the trade-off between speed and quality.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -20363,7 +20086,7 @@ The inference backend configuration
 <a name="ondewo.s2t.ServiceTier"></a>
 
 ### ServiceTier
-<p>Latency tier to use for processing an OpenAI request. Affects cost and throughput.</p>
+Latency tier to use for processing an OpenAI request. Affects cost and throughput.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -20379,9 +20102,7 @@ The inference backend configuration
 <a name="ondewo.s2t.TsdMethod"></a>
 
 ### TsdMethod
-<p>TsdMethod selects the model used for target-speaker detection (TSD): deciding whether a
-newly detected utterance came from the main speaker of the call, so that speech from anyone
-else (crosstalk, background speakers, barge-in) can be rejected.</p>
+TsdMethod selects the model used for target-speaker detection (TSD): deciding whether a newly detected utterance came from the main speaker of the call, so that speech from anyone else (crosstalk, background speakers, barge-in) can be rejected.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -20395,7 +20116,7 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 <a name="ondewo.s2t.TurnDetectionContextTurn.Role"></a>
 
 ### TurnDetectionContextTurn.Role
-<p>Who spoke the turn.</p>
+Who spoke the turn.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -20408,7 +20129,7 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 <a name="ondewo.s2t.VadMethod"></a>
 
 ### VadMethod
-<p>VadMethod selects the model used to split the audio stream into utterances.</p>
+VadMethod selects the model used to split the audio stream into utterances.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -20421,7 +20142,7 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 <a name="ondewo.s2t.Verbosity"></a>
 
 ### Verbosity
-<p>Verbosity level for the response output.</p>
+Verbosity level for the response output.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -20439,7 +20160,7 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 <a name="ondewo.s2t.Speech2Text"></a>
 
 ### Speech2Text
-<p>Speech-to-text service</p>
+Speech-to-text service
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
@@ -20474,8 +20195,9 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 <a name="ondewo.sip.AnsweringMachineDetectionResult"></a>
 
 ### AnsweringMachineDetectionResult
-<p>Result of the answering machine detection (AMD) of an outbound call</p>
-<p>Carries identifiers from closed vocabularies only: never audio, transcript text or a phone number</p>
+Result of the answering machine detection (AMD) of an outbound call
+
+Carries identifiers from closed vocabularies only: never audio, transcript text or a phone number
 
 
 | Field | Type | Label | Description |
@@ -20497,7 +20219,7 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 <a name="ondewo.sip.SipCallAudioConfig"></a>
 
 ### SipCallAudioConfig
-<p>Configuration of a <code>SipStreamCallAudio</code> stream. Must be the first request of the stream</p>
+Configuration of a <code>SipStreamCallAudio</code> stream. Must be the first request of the stream
 
 
 | Field | Type | Label | Description |
@@ -20517,7 +20239,7 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 <a name="ondewo.sip.SipCallAudioEnded"></a>
 
 ### SipCallAudioEnded
-<p>Sent once when a <code>SipStreamCallAudio</code> stream ends normally</p>
+Sent once when a <code>SipStreamCallAudio</code> stream ends normally
 
 
 | Field | Type | Label | Description |
@@ -20533,7 +20255,7 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 <a name="ondewo.sip.SipCallAudioFrame"></a>
 
 ### SipCallAudioFrame
-<p>One frame of call audio</p>
+One frame of call audio
 
 
 | Field | Type | Label | Description |
@@ -20549,7 +20271,7 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 <a name="ondewo.sip.SipCallAudioRequest"></a>
 
 ### SipCallAudioRequest
-<p>Request of <code>SipStreamCallAudio</code></p>
+Request of <code>SipStreamCallAudio</code>
 
 
 | Field | Type | Label | Description |
@@ -20566,7 +20288,7 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 <a name="ondewo.sip.SipCallAudioResponse"></a>
 
 ### SipCallAudioResponse
-<p>Response of <code>SipStreamCallAudio</code></p>
+Response of <code>SipStreamCallAudio</code>
 
 
 | Field | Type | Label | Description |
@@ -20584,7 +20306,7 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 <a name="ondewo.sip.SipCallAudioStarted"></a>
 
 ### SipCallAudioStarted
-<p>Sent once when a <code>SipStreamCallAudio</code> stream is connected</p>
+Sent once when a <code>SipStreamCallAudio</code> stream is connected
 
 
 | Field | Type | Label | Description |
@@ -20602,7 +20324,7 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 <a name="ondewo.sip.SipCallAudioStats"></a>
 
 ### SipCallAudioStats
-<p>Counters of a <code>SipStreamCallAudio</code> stream, sent periodically</p>
+Counters of a <code>SipStreamCallAudio</code> stream, sent periodically
 
 
 | Field | Type | Label | Description |
@@ -20621,12 +20343,9 @@ else (crosstalk, background speakers, barge-in) can be rejected.</p>
 <a name="ondewo.sip.SipDelegatedTransfer"></a>
 
 ### SipDelegatedTransfer
-<p>A transfer that the in-container speech-to-speech pipeline asked for and the container handed to a client instead
-of sending it (see <code>SipTransferDelegation</code>). Call-scoped: empty when no transfer is parked, when no call
-is ongoing, and after the call ended.</p>
-<p><code>SipGetSipStatus</code>, <code>SipGetSipStatusHistory</code> and every other response report only
-<code>request_id</code>, <code>requested_at</code> and <code>target_is_phone_number</code>. The target and the headers
-are filled ONLY in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>.</p>
+A transfer that the in-container speech-to-speech pipeline asked for and the container handed to a client instead of sending it (see <code>SipTransferDelegation</code>). Call-scoped: empty when no transfer is parked, when no call is ongoing, and after the call ended.
+
+<code>SipGetSipStatus</code>, <code>SipGetSipStatusHistory</code> and every other response report only <code>request_id</code>, <code>requested_at</code> and <code>target_is_phone_number</code>. The target and the headers are filled ONLY in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>.
 
 
 | Field | Type | Label | Description |
@@ -20661,7 +20380,7 @@ are filled ONLY in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>.
 <a name="ondewo.sip.SipEndCallRequest"></a>
 
 ### SipEndCallRequest
-<p>Ends an ongoing call of the active SIP session of the active SIP account</p>
+Ends an ongoing call of the active SIP session of the active SIP account
 
 
 | Field | Type | Label | Description |
@@ -20678,7 +20397,7 @@ are filled ONLY in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>.
 <a name="ondewo.sip.SipPlayWavFilesRequest"></a>
 
 ### SipPlayWavFilesRequest
-<p>Plays a list of wav files</p>
+Plays a list of wav files
 
 
 | Field | Type | Label | Description |
@@ -20693,7 +20412,7 @@ are filled ONLY in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>.
 <a name="ondewo.sip.SipRegisterAccountRequest"></a>
 
 ### SipRegisterAccountRequest
-<p>Request for registering a SIP account at a SIP server</p>
+Request for registering a SIP account at a SIP server
 
 
 | Field | Type | Label | Description |
@@ -20711,7 +20430,7 @@ are filled ONLY in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>.
 <a name="ondewo.sip.SipReportAnsweringMachineDetectedRequest"></a>
 
 ### SipReportAnsweringMachineDetectedRequest
-<p>Reports the verdict of the answering machine detection of the ongoing outgoing call</p>
+Reports the verdict of the answering machine detection of the ongoing outgoing call
 
 
 | Field | Type | Label | Description |
@@ -20726,7 +20445,7 @@ are filled ONLY in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>.
 <a name="ondewo.sip.SipSendDtmfRequest"></a>
 
 ### SipSendDtmfRequest
-<p>Request of <code>SipSendDtmf</code></p>
+Request of <code>SipSendDtmf</code>
 
 
 | Field | Type | Label | Description |
@@ -20741,7 +20460,7 @@ are filled ONLY in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>.
 <a name="ondewo.sip.SipSetCallMediaControlRequest"></a>
 
 ### SipSetCallMediaControlRequest
-<p>Request of <code>SipSetCallMediaControl</code></p>
+Request of <code>SipSetCallMediaControl</code>
 
 
 | Field | Type | Label | Description |
@@ -20760,7 +20479,7 @@ are filled ONLY in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>.
 <a name="ondewo.sip.SipStartCallRequest"></a>
 
 ### SipStartCallRequest
-<p>Request to start the call with the active SIP session of the active SIP account</p>
+Request to start the call with the active SIP session of the active SIP account
 
 
 | Field | Type | Label | Description |
@@ -20792,7 +20511,7 @@ are filled ONLY in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>.
 <a name="ondewo.sip.SipStartSessionRequest"></a>
 
 ### SipStartSessionRequest
-<p>Request for starting a new SIP session for a specified account</p>
+Request for starting a new SIP session for a specified account
 
 
 | Field | Type | Label | Description |
@@ -20808,7 +20527,7 @@ are filled ONLY in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>.
 <a name="ondewo.sip.SipStatus"></a>
 
 ### SipStatus
-<p>Status information for a SIP account, session, or call</p>
+Status information for a SIP account, session, or call
 
 
 | Field | Type | Label | Description |
@@ -20857,7 +20576,7 @@ are filled ONLY in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>.
 <a name="ondewo.sip.SipStatusHistoryResponse"></a>
 
 ### SipStatusHistoryResponse
-<p>History of SIP status</p>
+History of SIP status
 
 
 | Field | Type | Label | Description |
@@ -20872,7 +20591,7 @@ are filled ONLY in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>.
 <a name="ondewo.sip.SipTransferCallRequest"></a>
 
 ### SipTransferCallRequest
-<p>Request for transferring a call with or without headers</p>
+Request for transferring a call with or without headers
 
 
 | Field | Type | Label | Description |
@@ -20907,8 +20626,7 @@ are filled ONLY in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>.
 <a name="ondewo.sip.SipWarmTransferOutcomeNotice"></a>
 
 ### SipWarmTransferOutcomeNotice
-<p>One-shot notice of a warm-transfer outcome for the bot. The pipeline tells the caller at most once per
-<code>request_id</code> and call. Carries no reason text the target gave</p>
+One-shot notice of a warm-transfer outcome for the bot. The pipeline tells the caller at most once per <code>request_id</code> and call. Carries no reason text the target gave
 
 
 | Field | Type | Label | Description |
@@ -20930,7 +20648,7 @@ are filled ONLY in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>.
 <a name="ondewo.sip.AnsweringMachineDetectionResult.ActionTaken"></a>
 
 ### AnsweringMachineDetectionResult.ActionTaken
-<p>What was done because of the verdict</p>
+What was done because of the verdict
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -20945,7 +20663,7 @@ are filled ONLY in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>.
 <a name="ondewo.sip.AnsweringMachineDetectionResult.Cause"></a>
 
 ### AnsweringMachineDetectionResult.Cause
-<p>Evidence that led to the verdict</p>
+Evidence that led to the verdict
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -20964,7 +20682,7 @@ are filled ONLY in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>.
 <a name="ondewo.sip.AnsweringMachineDetectionResult.Verdict"></a>
 
 ### AnsweringMachineDetectionResult.Verdict
-<p>Who or what answered the call</p>
+Who or what answered the call
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -20983,8 +20701,7 @@ are filled ONLY in the response of a <code>SIP_TRANSFER_DELEGATION_CLAIM</code>.
 <a name="ondewo.sip.MediaControlOwner"></a>
 
 ### MediaControlOwner
-<p>Owner of a media control hold. Each owner holds its own mute and pause; releasing one owner's hold never releases
-another owner's</p>
+Owner of a media control hold. Each owner holds its own mute and pause; releasing one owner's hold never releases another owner's
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -20997,7 +20714,7 @@ another owner's</p>
 <a name="ondewo.sip.MediaControlSetting"></a>
 
 ### MediaControlSetting
-<p>Desired setting of one media control flag</p>
+Desired setting of one media control flag
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -21010,7 +20727,7 @@ another owner's</p>
 <a name="ondewo.sip.SipCallAudioEndReason"></a>
 
 ### SipCallAudioEndReason
-<p>Why a <code>SipStreamCallAudio</code> stream ended</p>
+Why a <code>SipStreamCallAudio</code> stream ended
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -21027,7 +20744,7 @@ another owner's</p>
 <a name="ondewo.sip.SipCallAudioMode"></a>
 
 ### SipCallAudioMode
-<p>Mode of a <code>SipStreamCallAudio</code> stream</p>
+Mode of a <code>SipStreamCallAudio</code> stream
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -21040,7 +20757,7 @@ another owner's</p>
 <a name="ondewo.sip.SipEndCallRequest.EndCallReason"></a>
 
 ### SipEndCallRequest.EndCallReason
-<p>Why the call is being ended</p>
+Why the call is being ended
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -21087,17 +20804,11 @@ Types of status
 <a name="ondewo.sip.SipTransferDelegation"></a>
 
 ### SipTransferDelegation
-<p>How a <code>SipTransferCall</code> handles a transfer that the container parked in
-<code>SipStatus.delegated_transfer</code> instead of sending it.</p>
-<p>Every value other than <code>SIP_TRANSFER_DELEGATION_UNSPECIFIED</code> requires the
-<code>x-ondewo-sip-call-control-token</code> metadatum (otherwise <code>CallControlUnauthenticated</code>) and the
-<code>x-ondewo-expected-call-id</code> metadatum naming the ongoing call (missing or different:
-<code>CallScopeMismatch</code>), plus <code>delegated_request_id</code> (otherwise
-<code>DelegatedRequestMismatch</code>). Refusals are RETURNED in <code>exception_name</code> /
-<code>description</code> and never assigned to the shared status.</p>
-<p>A parked transfer that is neither claimed nor ended within <code>SIP_TRANSFER_DELEGATION_CLAIM_TIMEOUT_S</code> is
-dropped WITHOUT a REFER, and the pipeline is told with <code>SIP_WARM_TRANSFER_OUTCOME_DELEGATION_EXPIRED</code>. A
-claimed transfer never expires.</p>
+How a <code>SipTransferCall</code> handles a transfer that the container parked in <code>SipStatus.delegated_transfer</code> instead of sending it.
+
+Every value other than <code>SIP_TRANSFER_DELEGATION_UNSPECIFIED</code> requires the <code>x-ondewo-sip-call-control-token</code> metadatum (otherwise <code>CallControlUnauthenticated</code>) and the <code>x-ondewo-expected-call-id</code> metadatum naming the ongoing call (missing or different: <code>CallScopeMismatch</code>), plus <code>delegated_request_id</code> (otherwise <code>DelegatedRequestMismatch</code>). Refusals are RETURNED in <code>exception_name</code> / <code>description</code> and never assigned to the shared status.
+
+A parked transfer that is neither claimed nor ended within <code>SIP_TRANSFER_DELEGATION_CLAIM_TIMEOUT_S</code> is dropped WITHOUT a REFER, and the pipeline is told with <code>SIP_WARM_TRANSFER_OUTCOME_DELEGATION_EXPIRED</code>. A claimed transfer never expires.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -21111,7 +20822,7 @@ claimed transfer never expires.</p>
 <a name="ondewo.sip.SipWarmTransferOutcome"></a>
 
 ### SipWarmTransferOutcome
-<p>Outcome of a warm transfer that the bot tells the caller</p>
+Outcome of a warm transfer that the bot tells the caller
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -21125,7 +20836,7 @@ claimed transfer never expires.</p>
 <a name="ondewo.sip.SipWarmTransferOutcomeNoticeStatus"></a>
 
 ### SipWarmTransferOutcomeNoticeStatus
-<p>Answer of the speech-to-speech pipeline to a <code>SipWarmTransferOutcomeNotice</code></p>
+Answer of the speech-to-speech pipeline to a <code>SipWarmTransferOutcomeNotice</code>
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -21145,7 +20856,7 @@ claimed transfer never expires.</p>
 <a name="ondewo.sip.Sip"></a>
 
 ### Sip
-<p>ONDEWO-SIP API available at <a href="https://github.com/ondewo/ondewo-sip-api">GitHub</a></p>
+ONDEWO-SIP API available at <a href="https://github.com/ondewo/ondewo-sip-api">GitHub</a>
 
 <p>SIP LifeCycle is explained at <a href="https://thanhloi2603.wordpress.com/2017/06/10/sip-lifecycle-overview/">here</a></p>
 
@@ -21207,7 +20918,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.Apodization"></a>
 
 ### Apodization
-<p>Apodization message contains settings for apodization postprocessing.</p>
+Apodization message contains settings for apodization postprocessing.
 
 
 | Field | Type | Label | Description |
@@ -21222,7 +20933,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.BatchSynthesizeRequest"></a>
 
 ### BatchSynthesizeRequest
-<p>BatchSynthesizeRequest message is used to send a batch request for synthesis.</p>
+BatchSynthesizeRequest message is used to send a batch request for synthesis.
 
 
 | Field | Type | Label | Description |
@@ -21237,7 +20948,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.BatchSynthesizeResponse"></a>
 
 ### BatchSynthesizeResponse
-<p>BatchSynthesizeResponse message is used to store the responses for a batch synthesis request.</p>
+BatchSynthesizeResponse message is used to store the responses for a batch synthesis request.
 
 
 | Field | Type | Label | Description |
@@ -21252,7 +20963,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.Caching"></a>
 
 ### Caching
-<p>Caching message contains settings for caching.</p>
+Caching message contains settings for caching.
 
 
 | Field | Type | Label | Description |
@@ -21272,7 +20983,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.CompositeInference"></a>
 
 ### CompositeInference
-<p>CompositeInference message combines text-to-mel and mel-to-audio inference settings.</p>
+CompositeInference message combines text-to-mel and mel-to-audio inference settings.
 
 
 | Field | Type | Label | Description |
@@ -21288,7 +20999,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.CreateCustomPhonemizerRequest"></a>
 
 ### CreateCustomPhonemizerRequest
-<p>CreateCustomPhonemizerRequest message represents the request for creating a custom phonemizer.</p>
+CreateCustomPhonemizerRequest message represents the request for creating a custom phonemizer.
 
 
 | Field | Type | Label | Description |
@@ -21304,7 +21015,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.CustomPhonemizerProto"></a>
 
 ### CustomPhonemizerProto
-<p>CustomPhonemizerProto message represents a custom phonemizer.</p>
+CustomPhonemizerProto message represents a custom phonemizer.
 
 
 | Field | Type | Label | Description |
@@ -21320,7 +21031,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.GlowTTS"></a>
 
 ### GlowTTS
-<p>GlowTTS message contains settings for the GlowTTS inference.</p>
+GlowTTS message contains settings for the GlowTTS inference.
 
 
 | Field | Type | Label | Description |
@@ -21341,7 +21052,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.GlowTTSTriton"></a>
 
 ### GlowTTSTriton
-<p>GlowTTSTriton message contains settings for the GlowTTS Triton inference.</p>
+GlowTTSTriton message contains settings for the GlowTTS Triton inference.
 
 
 | Field | Type | Label | Description |
@@ -21364,7 +21075,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.HiFiGan"></a>
 
 ### HiFiGan
-<p>HiFiGan message contains settings for the HiFiGan inference.</p>
+HiFiGan message contains settings for the HiFiGan inference.
 
 
 | Field | Type | Label | Description |
@@ -21382,7 +21093,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.HiFiGanTriton"></a>
 
 ### HiFiGanTriton
-<p>HiFiGanTriton message contains settings for the HiFiGan Triton inference.</p>
+HiFiGanTriton message contains settings for the HiFiGan Triton inference.
 
 
 | Field | Type | Label | Description |
@@ -21400,7 +21111,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.ListCustomPhonemizerRequest"></a>
 
 ### ListCustomPhonemizerRequest
-<p>ListCustomPhonemizerRequest message represents the request for listing custom phonemizers.</p>
+ListCustomPhonemizerRequest message represents the request for listing custom phonemizers.
 
 
 | Field | Type | Label | Description |
@@ -21415,7 +21126,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.ListCustomPhonemizerResponse"></a>
 
 ### ListCustomPhonemizerResponse
-<p>ListCustomPhonemizerResponse message represents the response for listing custom phonemizers.</p>
+ListCustomPhonemizerResponse message represents the response for listing custom phonemizers.
 
 
 | Field | Type | Label | Description |
@@ -21430,9 +21141,11 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.ListT2sDomainsRequest"></a>
 
 ### ListT2sDomainsRequest
-<p>Domain Request representation.</p>
-<p>The request message for ListT2sDomains.</p>
-<p>Filter domains of pipelines by attributed in request.</p>
+Domain Request representation.
+
+The request message for ListT2sDomains.
+
+Filter domains of pipelines by attributed in request.
 
 
 | Field | Type | Label | Description |
@@ -21450,8 +21163,9 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.ListT2sDomainsResponse"></a>
 
 ### ListT2sDomainsResponse
-<p>Domains Response representation.</p>
-<p>The response message for ListT2sDomains.</p>
+Domains Response representation.
+
+The response message for ListT2sDomains.
 
 
 | Field | Type | Label | Description |
@@ -21466,9 +21180,11 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.ListT2sLanguagesRequest"></a>
 
 ### ListT2sLanguagesRequest
-<p>Language Request representation.</p>
-<p>The request message for ListT2sLanguages.</p>
-<p>Filter languages of pipelines by attributed in request.</p>
+Language Request representation.
+
+The request message for ListT2sLanguages.
+
+Filter languages of pipelines by attributed in request.
 
 
 | Field | Type | Label | Description |
@@ -21486,8 +21202,9 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.ListT2sLanguagesResponse"></a>
 
 ### ListT2sLanguagesResponse
-<p>Language Response representation.</p>
-<p>The response message for ListT2sLanguages.</p>
+Language Response representation.
+
+The response message for ListT2sLanguages.
 
 
 | Field | Type | Label | Description |
@@ -21502,8 +21219,9 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.ListT2sNormalizationPipelinesRequest"></a>
 
 ### ListT2sNormalizationPipelinesRequest
-<p>The request message for ListT2sNormalizationPipelines.</p>
-<p>Filter pipelines by attributed in request.</p>
+The request message for ListT2sNormalizationPipelines.
+
+Filter pipelines by attributed in request.
 
 
 | Field | Type | Label | Description |
@@ -21518,8 +21236,9 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.ListT2sNormalizationPipelinesResponse"></a>
 
 ### ListT2sNormalizationPipelinesResponse
-<p>Pipeline Response representation.</p>
-<p>The response message for ListT2sNormalizationPipelines.</p>
+Pipeline Response representation.
+
+The response message for ListT2sNormalizationPipelines.
 
 
 | Field | Type | Label | Description |
@@ -21534,9 +21253,11 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.ListT2sPipelinesRequest"></a>
 
 ### ListT2sPipelinesRequest
-<p>Pipeline Request representation.</p>
-<p>The request message for ListT2sPipelines.</p>
-<p>Filter pipelines by attributed in request.</p>
+Pipeline Request representation.
+
+The request message for ListT2sPipelines.
+
+Filter pipelines by attributed in request.
 
 
 | Field | Type | Label | Description |
@@ -21555,8 +21276,9 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.ListT2sPipelinesResponse"></a>
 
 ### ListT2sPipelinesResponse
-<p>Pipeline Response representation.</p>
-<p>The response message for ListT2sPipelines.</p>
+Pipeline Response representation.
+
+The response message for ListT2sPipelines.
 
 
 | Field | Type | Label | Description |
@@ -21571,7 +21293,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.Logmnse"></a>
 
 ### Logmnse
-<p>Logmnse message contains settings for Logmnse postprocessing.</p>
+Logmnse message contains settings for Logmnse postprocessing.
 
 
 | Field | Type | Label | Description |
@@ -21588,7 +21310,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.Map"></a>
 
 ### Map
-<p>Map message represents a word-to-phoneme mapping in a custom phonemizer.</p>
+Map message represents a word-to-phoneme mapping in a custom phonemizer.
 
 
 | Field | Type | Label | Description |
@@ -21604,7 +21326,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.MbMelganTriton"></a>
 
 ### MbMelganTriton
-<p>MbMelganTriton message contains settings for the MbMelgan Triton inference.</p>
+MbMelganTriton message contains settings for the MbMelgan Triton inference.
 
 
 | Field | Type | Label | Description |
@@ -21623,7 +21345,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.Mel2Audio"></a>
 
 ### Mel2Audio
-<p>Mel2Audio message contains settings for mel-to-audio inference.</p>
+Mel2Audio message contains settings for mel-to-audio inference.
 
 
 | Field | Type | Label | Description |
@@ -21641,7 +21363,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.NormalizeTextRequest"></a>
 
 ### NormalizeTextRequest
-<p>NormalizeTextRequest message is used to request text normalization.</p>
+NormalizeTextRequest message is used to request text normalization.
 
 
 | Field | Type | Label | Description |
@@ -21657,7 +21379,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.NormalizeTextResponse"></a>
 
 ### NormalizeTextResponse
-<p>NormalizeTextResponse message is used to store the normalized text response.</p>
+NormalizeTextResponse message is used to store the normalized text response.
 
 
 | Field | Type | Label | Description |
@@ -21672,7 +21394,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.PhonemizerId"></a>
 
 ### PhonemizerId
-<p>PhonemizerId message represents the ID of a phonemizer.</p>
+PhonemizerId message represents the ID of a phonemizer.
 
 
 | Field | Type | Label | Description |
@@ -21687,7 +21409,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.Postprocessing"></a>
 
 ### Postprocessing
-<p>Postprocessing message contains settings for postprocessing.</p>
+Postprocessing message contains settings for postprocessing.
 
 
 | Field | Type | Label | Description |
@@ -21706,7 +21428,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.Qwen3TtsBase"></a>
 
 ### Qwen3TtsBase
-<p>Qwen3TtsBase message contains settings for inference of qwen3-TTS-Base model.</p>
+Qwen3TtsBase message contains settings for inference of qwen3-TTS-Base model.
 
 
 | Field | Type | Label | Description |
@@ -21726,7 +21448,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.Qwen3TtsCustomVoice"></a>
 
 ### Qwen3TtsCustomVoice
-<p>Qwen3TtsCustomVoice message contains settings for inference of qwen3-TTS-CustomVoice model.</p>
+Qwen3TtsCustomVoice message contains settings for inference of qwen3-TTS-CustomVoice model.
 
 
 | Field | Type | Label | Description |
@@ -21746,7 +21468,7 @@ Not idempotent (no idempotency_level): a retried attempt sends the keys again. |
 <a name="ondewo.t2s.RequestConfig"></a>
 
 ### RequestConfig
-<p>Represents a Configuration for the text to speech conversion.</p>
+Represents a Configuration for the text to speech conversion.
 
 
 | Field | Type | Label | Description |
@@ -21784,7 +21506,7 @@ Note: ondewo-t2s will raise an error if you don&apos;t pass any of the required 
 <a name="ondewo.t2s.SingleInference"></a>
 
 ### SingleInference
-<p>SingleInference message inference settings of text2audio models.</p>
+SingleInference message inference settings of text2audio models.
 
 
 | Field | Type | Label | Description |
@@ -21799,7 +21521,7 @@ Note: ondewo-t2s will raise an error if you don&apos;t pass any of the required 
 <a name="ondewo.t2s.StreamingSynthesizeRequest"></a>
 
 ### StreamingSynthesizeRequest
-<p>StreamingSynthesizeRequest is used to perform streaming synthesize.</p>
+StreamingSynthesizeRequest is used to perform streaming synthesize.
 
 
 | Field | Type | Label | Description |
@@ -21815,9 +21537,9 @@ Note: ondewo-t2s will raise an error if you don&apos;t pass any of the required 
 <a name="ondewo.t2s.StreamingSynthesizeResponse"></a>
 
 ### StreamingSynthesizeResponse
-<p>Represents a Streaming Synthesize Response.</p>
-<p>A Streaming Synthesize Response contains the generated audio, requested text and and
-all other properties of this generated audio.</p>
+Represents a Streaming Synthesize Response.
+
+A Streaming Synthesize Response contains the generated audio, requested text and and all other properties of this generated audio.
 
 
 | Field | Type | Label | Description |
@@ -21839,8 +21561,9 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.SynthesizeRequest"></a>
 
 ### SynthesizeRequest
-<p>Represents a Synthesize Request.</p>
-<p>A Synthesize Request contains the information need to perform a text to speech conversion.</p>
+Represents a Synthesize Request.
+
+A Synthesize Request contains the information need to perform a text to speech conversion.
 
 
 | Field | Type | Label | Description |
@@ -21876,8 +21599,9 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.SynthesizeResponse"></a>
 
 ### SynthesizeResponse
-<p>Represents a Synthesize Response.</p>
-<p>A Synthesize Response contains the generated audio, requested text and all other properties of this generated audio.</p>
+Represents a Synthesize Response.
+
+A Synthesize Response contains the generated audio, requested text and all other properties of this generated audio.
 
 
 | Field | Type | Label | Description |
@@ -21899,7 +21623,7 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.T2SCustomLengthScales"></a>
 
 ### T2SCustomLengthScales
-<p>T2SCustomLengthScales message contains custom length scales for text types.</p>
+T2SCustomLengthScales message contains custom length scales for text types.
 
 
 | Field | Type | Label | Description |
@@ -21921,7 +21645,7 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.T2SDescription"></a>
 
 ### T2SDescription
-<p>T2SDescription message is used to describe the text-to-speech service.</p>
+T2SDescription message is used to describe the text-to-speech service.
 
 
 | Field | Type | Label | Description |
@@ -21941,7 +21665,7 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.T2SGetServiceInfoResponse"></a>
 
 ### T2SGetServiceInfoResponse
-<p>Version information of the service</p>
+Version information of the service
 
 
 | Field | Type | Label | Description |
@@ -21956,7 +21680,7 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.T2SInference"></a>
 
 ### T2SInference
-<p>T2SInference message is used to specify the text-to-speech inference settings.</p>
+T2SInference message is used to specify the text-to-speech inference settings.
 
 
 | Field | Type | Label | Description |
@@ -21974,7 +21698,7 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.T2SNormalization"></a>
 
 ### T2SNormalization
-<p>Represents the configuration for text-to-speech normalization.</p>
+Represents the configuration for text-to-speech normalization.
 
 
 | Field | Type | Label | Description |
@@ -21996,7 +21720,7 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.T2sCloudProviderConfig"></a>
 
 ### T2sCloudProviderConfig
-<p>Configuration for cloud provider settings for Text-to-Speech (T2S).</p>
+Configuration for cloud provider settings for Text-to-Speech (T2S).
 
 
 | Field | Type | Label | Description |
@@ -22013,7 +21737,7 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.T2sCloudProviderConfigElevenLabs"></a>
 
 ### T2sCloudProviderConfigElevenLabs
-<p>Configuration details specific to the Eleven Labs text-to-speech provider.</p>
+Configuration details specific to the Eleven Labs text-to-speech provider.
 
 
 | Field | Type | Label | Description |
@@ -22032,7 +21756,7 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.T2sCloudProviderConfigGoogle"></a>
 
 ### T2sCloudProviderConfigGoogle
-<p>Configuration details specific to the Google text-to-speech provider.</p>
+Configuration details specific to the Google text-to-speech provider.
 
 
 | Field | Type | Label | Description |
@@ -22049,7 +21773,7 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.T2sCloudProviderConfigMicrosoft"></a>
 
 ### T2sCloudProviderConfigMicrosoft
-<p>Configuration details specific to the Microsoft text-to-speech provider.</p>
+Configuration details specific to the Microsoft text-to-speech provider.
 
 
 | Field | Type | Label | Description |
@@ -22064,7 +21788,7 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.T2sCloudServiceAmazon"></a>
 
 ### T2sCloudServiceAmazon
-<p>T2sCloudServiceAmazon message contains settings for the Amazon Cloud service inference.</p>
+T2sCloudServiceAmazon message contains settings for the Amazon Cloud service inference.
 
 
 | Field | Type | Label | Description |
@@ -22080,7 +21804,7 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.T2sCloudServiceElevenLabs"></a>
 
 ### T2sCloudServiceElevenLabs
-<p>T2sCloudServiceElevenLabs message contains settings for the ElevenLabs Cloud service inference.</p>
+T2sCloudServiceElevenLabs message contains settings for the ElevenLabs Cloud service inference.
 
 
 | Field | Type | Label | Description |
@@ -22099,7 +21823,7 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.T2sCloudServiceGoogle"></a>
 
 ### T2sCloudServiceGoogle
-<p>T2sCloudServiceGoogle message contains settings for the Google Cloud service inference.</p>
+T2sCloudServiceGoogle message contains settings for the Google Cloud service inference.
 
 
 | Field | Type | Label | Description |
@@ -22118,7 +21842,7 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.T2sCloudServiceMicrosoft"></a>
 
 ### T2sCloudServiceMicrosoft
-<p>T2sCloudServiceMicrosoft message contains settings for the Microsoft Cloud service inference.</p>
+T2sCloudServiceMicrosoft message contains settings for the Microsoft Cloud service inference.
 
 
 | Field | Type | Label | Description |
@@ -22134,8 +21858,9 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.T2sPipelineId"></a>
 
 ### T2sPipelineId
-<p>Pipeline Id representation.</p>
-<p>Used in the creation, deletion and getter of pipelines.</p>
+Pipeline Id representation.
+
+Used in the creation, deletion and getter of pipelines.
 
 
 | Field | Type | Label | Description |
@@ -22150,7 +21875,7 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.Text2Audio"></a>
 
 ### Text2Audio
-<p>Text2Audio message contains settings for text-to-audio inference.</p>
+Text2Audio message contains settings for text-to-audio inference.
 
 
 | Field | Type | Label | Description |
@@ -22173,7 +21898,7 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.Text2Mel"></a>
 
 ### Text2Mel
-<p>Text2Mel message contains settings for text-to-mel inference.</p>
+Text2Mel message contains settings for text-to-mel inference.
 
 
 | Field | Type | Label | Description |
@@ -22190,7 +21915,7 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.Text2SpeechConfig"></a>
 
 ### Text2SpeechConfig
-<p>Configuration of text-to-speech models representation.</p>
+Configuration of text-to-speech models representation.
 
 
 | Field | Type | Label | Description |
@@ -22210,7 +21935,7 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.UpdateCustomPhonemizerRequest"></a>
 
 ### UpdateCustomPhonemizerRequest
-<p>UpdateCustomPhonemizerRequest message represents the request for updating a custom phonemizer.</p>
+UpdateCustomPhonemizerRequest message represents the request for updating a custom phonemizer.
 
 
 | Field | Type | Label | Description |
@@ -22227,7 +21952,7 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.Vits"></a>
 
 ### Vits
-<p>Vits message contains settings for the Vits inference.</p>
+Vits message contains settings for the Vits inference.
 
 
 | Field | Type | Label | Description |
@@ -22248,7 +21973,7 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.VitsTriton"></a>
 
 ### VitsTriton
-<p>VitsTriton message contains settings for the Vits Triton inference.</p>
+VitsTriton message contains settings for the Vits Triton inference.
 
 
 | Field | Type | Label | Description |
@@ -22271,9 +21996,9 @@ all other properties of this generated audio.</p>
 <a name="ondewo.t2s.VoiceCloningRequest"></a>
 
 ### VoiceCloningRequest
-<p>VoiceCloningRequest message represents the request for cloning a voice.</p>
-<p>A VoiceCloningRequest contains a sample audio of the speaker to be cloned together with
-its transcription and the information about the speaker and the model to use for cloning.</p>
+VoiceCloningRequest message represents the request for cloning a voice.
+
+A VoiceCloningRequest contains a sample audio of the speaker to be cloned together with its transcription and the information about the speaker and the model to use for cloning.
 
 
 | Field | Type | Label | Description |
@@ -22292,7 +22017,7 @@ its transcription and the information about the speaker and the model to use for
 <a name="ondewo.t2s.VoiceSettings"></a>
 
 ### VoiceSettings
-<p>VoiceSettings message contains settings for ElevenLabs inference.</p>
+VoiceSettings message contains settings for ElevenLabs inference.
 
 
 | Field | Type | Label | Description |
@@ -22310,7 +22035,7 @@ its transcription and the information about the speaker and the model to use for
 <a name="ondewo.t2s.Wiener"></a>
 
 ### Wiener
-<p>Wiener message contains settings for Wiener postprocessing.</p>
+Wiener message contains settings for Wiener postprocessing.
 
 
 | Field | Type | Label | Description |
@@ -22331,7 +22056,7 @@ its transcription and the information about the speaker and the model to use for
 <a name="ondewo.t2s.AudioFormat"></a>
 
 ### AudioFormat
-<p>AudioFormat enum represents various audio file formats for storing digital audio data.</p>
+AudioFormat enum represents various audio file formats for storing digital audio data.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -22348,7 +22073,7 @@ its transcription and the information about the speaker and the model to use for
 <a name="ondewo.t2s.Pcm"></a>
 
 ### Pcm
-<p>Represents a pulse-code modulation technique.</p>
+Represents a pulse-code modulation technique.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -22365,8 +22090,7 @@ its transcription and the information about the speaker and the model to use for
 <a name="ondewo.t2s.UpdateCustomPhonemizerRequest.UpdateMethod"></a>
 
 ### UpdateCustomPhonemizerRequest.UpdateMethod
-The update method to be used.
-UpdateMethod enum defines the method for updating custom phonemizers.
+The update method to be used. UpdateMethod enum defines the method for updating custom phonemizers.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
@@ -22383,7 +22107,7 @@ UpdateMethod enum defines the method for updating custom phonemizers.
 <a name="ondewo.t2s.Text2Speech"></a>
 
 ### Text2Speech
-<p>Text2Speech service provides endpoints for text-to-speech generation.</p>
+Text2Speech service provides endpoints for text-to-speech generation.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
