@@ -423,6 +423,17 @@ and `build_gh_release` refuses empty notes again.
 cat RELEASE.md | perl -ne 'print if /<the exact heading> <version>/../^\*{5}/' | wc -l   # must be > 0
 ```
 
+### Two client failures a green preflight does not catch (9.6.0)
+
+- **cpp builds and tests on the HOST**, and its `release_preflight` checks only docker, make, git and perl. The
+  unit tests need libcurl's headers (`find_package(CURL)`); after the host moved to Ubuntu 26.04 they were gone and
+  the release failed at `unit_test` with `Could NOT find CURL`, before anything was pushed. `sudo apt-get install
+  libcurl4-openssl-dev`, then `make release_cpp_client`.
+- **java can be refused by Maven Central for a reason no credential check sees**: `Publishing blocked: your
+  organization has reached its monthly release size limit` (the deployment is uploaded, then fails while
+  publishing). 9.5.2 and 9.6.0 both stopped there; nothing was tagged or pushed, so `make release_java_client`
+  after the reset (or a larger plan) is the whole recovery.
+
 ### Verify the three artefacts separately -- they fail independently
 
 GitHub's release API returned 500 twice in one session, leaving the registry and the tag correct and
