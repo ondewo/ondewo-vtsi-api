@@ -173,6 +173,25 @@ message NluVtsiConfig{
     // the one generated for the call, no <code>c-sip-context</code> is created, and an agent that reads SIP headers
     // from that context finds nothing. There is no deployment-wide setting for it; a value set here wins
     optional bool session_id_from_sip_context = 13;
+
+    // Optional: Seconds a result an AI Teams agent delivers on its own (a push, e.g. the later result of a tool that
+    // ran in the background) may wait at most to be spoken. A push is held while the caller speaks or the bot is
+    // still answering, and spoken once the floor is free; a push that has waited longer than this by then is dropped
+    // without being spoken and reported as dropped with the reason <code>stale</code>, because a result the caller
+    // asked for long ago is confusing once the conversation has moved on. Unit: seconds. Default: 30. Valid range:
+    // 0 - 3600; 0 switches the age limit off (every held push is spoken, subject to
+    // <code>ai_teams_push_max_spoken</code>). Pushes only reach the call with
+    // <code>ResponseTimingConfig.nlu_call_stream_enabled</code>; agents that are not AI Teams agents send none. A set
+    // value wins over the deployment&apos;s <code>ONDEWO_VTSI_CSI_NLU_PUSH_MAX_AGE_SECONDS</code>
+    optional float ai_teams_push_max_age_seconds = 14;
+
+    // Optional: Number of held pushes (see <code>ai_teams_push_max_age_seconds</code>) spoken at most when the floor
+    // becomes free: of the pushes still held after the age limit, only the NEWEST ones up to this number are spoken,
+    // oldest first; every older one is dropped without being spoken and reported as dropped with the reason
+    // <code>coalesced</code>. Example: three tool results arrived while the caller was talking; with 2 the caller
+    // hears the two latest. Default: 2. Valid range: 0 - 16; 0 switches the limit off (every held push is spoken).
+    // A set value wins over the deployment&apos;s <code>ONDEWO_VTSI_CSI_NLU_PUSH_MAX_SPOKEN</code>
+    optional int32 ai_teams_push_max_spoken = 15;
 }
 
 // Bounds of the preemptive (speculative) NLU requests. While preemptive generation is on (<code>CsiVtsiConfig.preemptive_generation_config.enabled</code>), the bot asks the NLU for the answer of a stable partial transcription BEFORE the caller&apos;s final transcription arrives, and uses that draft only when the final transcription matches it; otherwise the draft is discarded and the caller hears nothing of it. A draft never ends the caller&apos;s turn early; it only saves time when it matches. Every extra draft is an extra NLU request, and these bounds limit how many a turn may cost.
@@ -219,6 +238,28 @@ message T2sVtsiConfig{
     // transcription arrives. Unset keeps the built-in defaults listed in <code>T2sPreemptiveSynthesisConfig</code>.
     // Only matters while preemptive generation is on (<code>CsiVtsiConfig.preemptive_generation_config.enabled</code>)
     T2sPreemptiveSynthesisConfig preemptive_synthesis_config = 3;
+
+    // Optional: Seconds one speech synthesis request of the call may take before it is given up (default: 20, valid
+    // range: 1 - 120). A failed or timed-out request of an answer is retried, so a slow text-to-speech service can
+    // keep the caller waiting for several times this value; a lower value gives up sooner. The opening message of
+    // the call stops retrying when the time the caller is kept muted at the start of the call runs out, and an
+    // audible AI Teams filler gets one attempt of at most 1 s, never more than this value. There is no
+    // deployment-wide setting for it; a value set here wins
+    optional float synthesize_timeout_seconds = 4;
+
+    // Optional: How long the synthesized audio of the bot&apos;s answers is kept for reuse (case-insensitive):
+    // <ul>
+    //   <li><code>call</code> (the default when unset): everything synthesized during a call is dropped when the
+    //       call ends. Audio synthesized when the speech-to-speech service starts (the greeting, the answers of
+    //       static intents, fillers) is kept, so the next call still starts without a synthesis wait.</li>
+    //   <li><code>process</code>: nothing is dropped; an utterance repeated in a later call served by the same
+    //       container is not synthesized again. The audio of one caller (e.g. a name or an amount the bot read
+    //       back) then stays in memory while later callers of a listener are served. The audio is reused only for
+    //       the identical request, so it is never played to another caller unless the bot says the same text.</li>
+    // </ul>
+    // Any other value is refused with <code>INVALID_ARGUMENT</code>. There is no deployment-wide setting for it; a
+    // value set here wins
+    optional string cache_retention = 5;
 }
 
 // Speech synthesis of the answer of a preemptive (speculative) draft. With preemptive generation on, the NLU is asked for the answer of a stable partial transcription while the caller is still finishing the sentence; when the final transcription matches that draft, its answer is used instead of asking again, which shortens the pause before the bot speaks. These two switches decide how much of the speech synthesis is done ahead of time as well.
@@ -312,6 +353,16 @@ message CommonServicesConfig{
     // statistics logging, hangup and dial timeouts, the SIP registration and live call audio streams (see
     // <code>SipVtsiConfig</code>). Unset, or an unset field: the container&apos;s default applies
     SipVtsiConfig sip_vtsi_config = 6;
+
+    // Optional: Seconds a call may last at most, counted from when it was connected; then VTSI hangs it up (an
+    // outbound call of a caller, and each inbound call of a listener). Valid range: 1 - 86400; 0 and any value
+    // outside the range are refused with <code>INVALID_ARGUMENT</code>. It can only shorten a call: the
+    // deployment&apos;s own cap on callers (<code>ONDEWO_VTSI_CALLER_MAX_CALL_DURATION_SEC</code>, default 1200 s,
+    // counted from the deployment of the caller; for a pooled caller with that cap off,
+    // <code>ONDEWO_VTSI_CALLER_POOLED_MAX_CALL_DURATION_SEC</code>) still applies, and whichever is reached first
+    // ends the call. Unset: only the deployment&apos;s cap applies, and an inbound call of a listener is not capped.
+    // Example: <code>max_call_duration_seconds=300</code> ends a survey call after five minutes
+    optional uint32 max_call_duration_seconds = 7;
 }
 
 // Media and SIP behaviour of the SIP container that carries the call. A container serves one call, one listener deployment (all its inbound calls) or one pooled persistent caller, and a pooled caller is reused only for a request with the same configuration, so every field applies to the call(s) of exactly this configuration.
@@ -1205,11 +1256,11 @@ message DictationConfig{
 //
 // With <code>enabled=true</code>, caller speech over the bot goes through these steps:
 //
-// (1) Is it an interruption? Speech within <code>first_message_protected_seconds</code> after the greeting started, speech shorter than <code>min_interruption_duration_seconds</code> and sounds without words (&quot;hmm&quot;, &quot;mhm&quot;) are ignored. Otherwise, with the turn detection mode <code>VAD</code> (and whenever no semantic turn detection runs for the call), any recognised speech interrupts; with <code>SEMANTIC_MODEL</code> or <code>AUDIO_MODEL</code> a final transcription with at least one word interrupts at once, and a partial transcription interrupts once it has <code>min_interruption_words</code> words. Speech that does not interrupt is dropped: the bot keeps talking and the speech is not answered.
+// (1) Is it an interruption? Speech within <code>first_message_protected_seconds</code> after the greeting started, speech shorter than <code>min_interruption_duration_seconds</code> and sounds without words (&quot;hmm&quot;, &quot;mhm&quot;) are ignored. Otherwise, with the turn detection mode <code>VAD</code> (and whenever no semantic turn detection runs for the call), any recognised speech interrupts; with <code>SEMANTIC_MODEL</code> or <code>AUDIO_MODEL</code> a final transcription with at least one word interrupts at once, and a partial transcription interrupts once it has <code>min_interruption_words</code> words. Speech that does not interrupt is dropped: the bot keeps talking and the speech is not answered. One exception: a final transcription with at least one word that is refused only because it was shorter than <code>min_interruption_duration_seconds</code> does not stop the bot either, but it is kept and answered as the caller&apos;s next turn once the bot has finished speaking.
 //
 // (2) The bot pauses: its voice fades out over <code>interruption_fade_out_ms</code>, and the rest of its answer is kept.
 //
-// (3) Real or false? If the caller&apos;s speech becomes a complete turn (a final transcription) within <code>false_interruption_timeout_seconds</code>, the interruption is REAL: the rest of the answer is discarded, the bot stays silent for <code>backoff_seconds</code> and then answers what the caller said. Its synthesis is cancelled (<code>t2s_cancel_on_barge_in</code>), and an NLU that supports it is told which turn was cut and what the caller heard of it (<code>nlu_turn_control_enabled</code>, <code>heard_report_enabled</code>). If no turn is committed in time, the interruption is FALSE (a cough, a short noise): with <code>resume_after_false_interruption</code> the bot continues where its voice faded out, else the rest of the answer is dropped, and then, as after a real one, its synthesis is cancelled and a call action it carries is dropped (<code>t2s_cancel_on_barge_in</code>). The window waits for a caller who is still speaking: each partial transcription that changes what the caller said extends it, up to twice <code>false_interruption_timeout_seconds</code> (at most 9 s) after the interruption.
+// (3) Real or false? If the caller&apos;s speech becomes a complete turn (a final transcription) within <code>false_interruption_timeout_seconds</code>, the interruption is REAL: the rest of the answer is discarded, the bot stays silent for <code>backoff_seconds</code> and then answers what the caller said. Its synthesis is cancelled (<code>t2s_cancel_on_barge_in</code>), and an NLU that supports it is told which turn was cut and what the caller heard of it (<code>nlu_turn_control_enabled</code>, <code>heard_report_enabled</code>). If no turn is committed in time, the interruption is FALSE (a cough, a short noise): with <code>resume_after_false_interruption</code> the bot continues where its fade-out ended, so nothing is heard twice, else the rest of the answer is dropped, and then, as after a real one, its synthesis is cancelled and a call action it carries is dropped (<code>t2s_cancel_on_barge_in</code>). The window waits for a caller who is still speaking: each partial transcription that changes what the caller said extends it, up to twice <code>false_interruption_timeout_seconds</code> (at most 9 s) after the interruption.
 //
 // Example: let the caller interrupt, ignore anything shorter than 0.6 s, and never interrupt the first 3 s of the greeting: <code>enabled: true, min_interruption_duration_seconds: 0.6, first_message_protected_seconds: 3</code>
 //
@@ -1229,7 +1280,9 @@ message InterruptionHandlingConfig{
 
     // Optional: Minimum duration in seconds the caller must have been speaking over the bot before it counts as an
     // interruption, measured from the start of the caller&apos;s speech (noise gate) (default: 0.5, valid range:
-    // 0 - 10). Raise it (e.g. 0.8) to let short noises pass without stopping the bot
+    // 0 - 10). Raise it (e.g. 0.8) to let short noises pass without stopping the bot. A final transcription with
+    // at least one word that is too short to interrupt is not lost: it is answered as the caller&apos;s next turn
+    // once the bot has finished speaking
     optional float min_interruption_duration_seconds = 2;
 
     // Optional: Minimum number of words a PARTIAL transcription of caller speech over the bot needs to interrupt
@@ -1248,9 +1301,9 @@ message InterruptionHandlingConfig{
     // an answer is kept for at most 10 s, so a longer window cannot resume it
     optional float false_interruption_timeout_seconds = 4;
 
-    // Optional: After a FALSE interruption, continue the paused answer where the bot&apos;s voice faded out (with a
-    // fade, it fades back in and repeats the faded syllable, as a person would) (default: true). False: the rest of
-    // the answer is dropped
+    // Optional: After a FALSE interruption, continue the paused answer where the bot&apos;s fade-out ended, with a
+    // short fade-in, so nothing the caller already heard is played twice, whatever
+    // <code>interruption_fade_out_ms</code> is (default: true). False: the rest of the answer is dropped
     optional bool resume_after_false_interruption = 5;
 
     // Optional: Seconds of silence after a REAL interruption before the bot&apos;s next answer plays, so the caller
@@ -1415,6 +1468,23 @@ message ResponseTimingConfig{
     // silence at all; -1 turns the trimming off and plays the audio exactly as synthesized. A value outside the range
     // is refused with <code>INVALID_ARGUMENT</code>
     optional int32 t2s_max_edge_silence_ms = 9;
+
+    // Optional: Seconds a caller turn waits at most for the first answer of the NLU on the call-length NLU request
+    // (<code>nlu_call_stream_enabled</code>); past it the turn is treated as a failed NLU request, i.e. the bot
+    // speaks <code>NluVtsiConfig.failure_apology_message</code> (default: 120, valid range: 5 - 600). A lower value
+    // keeps a caller whose NLU hangs from waiting in silence for two minutes, but cuts off an agent that
+    // legitimately thinks longer. Only matters with <code>streaming_enabled</code> and
+    // <code>nlu_call_stream_enabled</code> on; the per-turn request has its own deadline. There is no
+    // deployment-wide setting for it; a value set here wins
+    optional float nlu_call_stream_turn_timeout_seconds = 10;
+
+    // Optional: Seconds of silence on the call-length NLU request after a turn was already answered that end the turn
+    // when the NLU never marks it finished (default: 5, valid range: 1 - 60). While a turn is open the next caller
+    // turn waits behind it, so a lower value frees it sooner; it must stay above the longest pause the agent makes
+    // between two parts of one answer, or the rest of the answer is lost. Only matters with
+    // <code>streaming_enabled</code> and <code>nlu_call_stream_enabled</code> on. There is no deployment-wide
+    // setting for it; a value set here wins
+    optional float nlu_call_stream_turn_quiet_seconds = 11;
 }
 
 // Soft timeout of the call: filler messages (e.g. &quot;One moment please.&quot;) the bot speaks while the answer to a caller turn takes longer than <code>timeout_seconds</code> to prepare, so that the caller does not hear a silent line. The timer starts when the NLU is asked for the answer and is stopped as soon as the answer starts playing; a filler is never played after the answer. With interruptions enabled, the caller can interrupt a filler like any other bot utterance.

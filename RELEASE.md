@@ -36,7 +36,21 @@
 * [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `Call.dialed_number = 30` (output only, SHALLOW and FULL
   views): the inbound number a carrier-trunk caller dialled, from `X-ondewo-dialed-number` (digits with an optional
   `+`); empty for a call that did not come in over the trunk. Before, only the bot's SIP context carried it.
-* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) 32 new `optional` fields are declared in the presence guard.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `NluVtsiConfig.ai_teams_push_max_age_seconds = 14` (0 - 3600, default 30;
+  0 = off) and `ai_teams_push_max_spoken = 15` (0 - 16, default 2; 0 = off): a held AI Teams push older than the
+  age is dropped (`stale`), and of the rest only the newest N are spoken (the others are dropped, `coalesced`).
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `T2sVtsiConfig.synthesize_timeout_seconds = 4` (1 - 120, default 20) and
+  `cache_retention = 5` (`call`, the default, or `process`).
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `ResponseTimingConfig.nlu_call_stream_turn_timeout_seconds = 10` (5 - 600,
+  default 120) and `nlu_call_stream_turn_quiet_seconds = 11` (1 - 60, default 5), the two waits of a turn on the
+  call-length NLU request.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) `CommonServicesConfig.max_call_duration_seconds = 7` (1 - 86400): a per-call
+  cap counted from the connect, for callers and each inbound call of a listener; the deployment's caller cap still
+  applies, the first one reached ends the call.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) Documented: a worded final transcription too short to interrupt the bot is
+  answered as the caller's next turn once the bot finished speaking, and an answer resumed after a FALSE
+  interruption continues where its fade-out ended, so nothing is heard twice.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) 39 new `optional` fields are declared in the presence guard.
 
 *****************
 

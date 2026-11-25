@@ -10,7 +10,7 @@
     "ondewo/vtsi/projects.proto",
     "ondewo/vtsi/softphones.proto"
   ],
-  "optional_field_count": 201,
+  "optional_field_count": 208,
   "fields": [
     {
       "message": "ondewo.vtsi.AnsweringMachineDetectionConfig",
@@ -572,6 +572,17 @@
       "file": "ondewo/vtsi/logs.proto",
       "unset_hex": "",
       "explicit_default_hex": "d20100"
+    },
+    {
+      "message": "ondewo.vtsi.CommonServicesConfig",
+      "field": "max_call_duration_seconds",
+      "number": 7,
+      "type": "uint32",
+      "type_name": null,
+      "json_name": "maxCallDurationSeconds",
+      "file": "ondewo/vtsi/call_configs.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "3800"
     },
     {
       "message": "ondewo.vtsi.CsiPreemptiveGenerationConfig",
@@ -1378,6 +1389,28 @@
     },
     {
       "message": "ondewo.vtsi.NluVtsiConfig",
+      "field": "ai_teams_push_max_age_seconds",
+      "number": 14,
+      "type": "float",
+      "type_name": null,
+      "json_name": "aiTeamsPushMaxAgeSeconds",
+      "file": "ondewo/vtsi/call_configs.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "7500000000"
+    },
+    {
+      "message": "ondewo.vtsi.NluVtsiConfig",
+      "field": "ai_teams_push_max_spoken",
+      "number": 15,
+      "type": "int32",
+      "type_name": null,
+      "json_name": "aiTeamsPushMaxSpoken",
+      "file": "ondewo/vtsi/call_configs.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "7800"
+    },
+    {
+      "message": "ondewo.vtsi.NluVtsiConfig",
       "field": "failure_apology_message",
       "number": 12,
       "type": "string",
@@ -1419,6 +1452,28 @@
       "file": "ondewo/vtsi/call_configs.proto",
       "unset_hex": "",
       "explicit_default_hex": "3800"
+    },
+    {
+      "message": "ondewo.vtsi.ResponseTimingConfig",
+      "field": "nlu_call_stream_turn_quiet_seconds",
+      "number": 11,
+      "type": "float",
+      "type_name": null,
+      "json_name": "nluCallStreamTurnQuietSeconds",
+      "file": "ondewo/vtsi/call_configs.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "5d00000000"
+    },
+    {
+      "message": "ondewo.vtsi.ResponseTimingConfig",
+      "field": "nlu_call_stream_turn_timeout_seconds",
+      "number": 10,
+      "type": "float",
+      "type_name": null,
+      "json_name": "nluCallStreamTurnTimeoutSeconds",
+      "file": "ondewo/vtsi/call_configs.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "5500000000"
     },
     {
       "message": "ondewo.vtsi.ResponseTimingConfig",
@@ -1749,6 +1804,28 @@
       "file": "ondewo/vtsi/call_configs.proto",
       "unset_hex": "",
       "explicit_default_hex": "0800"
+    },
+    {
+      "message": "ondewo.vtsi.T2sVtsiConfig",
+      "field": "cache_retention",
+      "number": 5,
+      "type": "string",
+      "type_name": null,
+      "json_name": "cacheRetention",
+      "file": "ondewo/vtsi/call_configs.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "2a00"
+    },
+    {
+      "message": "ondewo.vtsi.T2sVtsiConfig",
+      "field": "synthesize_timeout_seconds",
+      "number": 4,
+      "type": "float",
+      "type_name": null,
+      "json_name": "synthesizeTimeoutSeconds",
+      "file": "ondewo/vtsi/call_configs.proto",
+      "unset_hex": "",
+      "explicit_default_hex": "2500000000"
     },
     {
       "message": "ondewo.vtsi.TurnDetectionConfig",
