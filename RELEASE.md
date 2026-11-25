@@ -50,6 +50,9 @@
 * [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) Documented: a worded final transcription too short to interrupt the bot is
   answered as the caller's next turn once the bot finished speaking, and an answer resumed after a FALSE
   interruption continues where its fade-out ended, so nothing is heard twice.
+* [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) Documented the new dictation defaults of ondewo-csi: the hold is on by
+  default but only for a turn whose NLU answer asks for a value (`DictationConfig.hold_enabled` unset; `true` adds
+  the generic rule, `false` switches the hold off), and `expected_input_enabled` defaults to `true`.
 * [[OND236-120]](https://ondewo.atlassian.net/browse/OND236-120) 39 new `optional` fields are declared in the presence guard.
 
 *****************

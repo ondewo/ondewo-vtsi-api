@@ -908,7 +908,7 @@ message WarmIntroRecord {
 //
 // Example, a line that collects phone numbers and wants patient turn taking:
 //
-// <pre><code>mode: SEMANTIC_MODEL&#10;turn_eagerness: PATIENT&#10;final_merge_window_seconds: 0.7&#10;dictation_config { hold_enabled: true expected_input_enabled: true }</code></pre>
+// <pre><code>mode: SEMANTIC_MODEL&#10;turn_eagerness: PATIENT&#10;final_merge_window_seconds: 0.7&#10;dictation_config { hold_max_seconds_by_category { key: &quot;phone&quot; value: 3.0 } }</code></pre>
 message TurnDetectionConfig{
 
     // How the end of the caller&apos;s turn is detected
@@ -1096,7 +1096,7 @@ message TurnDetectionConfig{
     // Optional: Configuration of the dictation hold: waiting for the rest of a dictated value (digits, a phone or
     // card number, an IBAN, an address, a date, ...) instead of ending the turn at the caller&apos;s pause between
     // its groups (see <code>DictationConfig</code>). Valid with every mode. Unset, and every unset field of it,
-    // keeps the deployment setting, else the default (off)
+    // keeps the deployment setting, else the default (a hold only for a turn whose NLU answer asks for a value)
     DictationConfig dictation_config = 15;
 
     // Optional: Milliseconds of caller audio the call sends to the speech-to-text service per request (valid range:
@@ -1166,23 +1166,27 @@ message TurnDetectionConfig{
 
 // Configuration of the dictation hold of a call. A caller who dictates a value often pauses 1 - 2.5 s between its groups (&quot;null sechs sechs vier ... eins zwei drei ...&quot;), and the speech-to-text service ends an utterance at every such pause, so without the hold the bot answers half a phone number. With the hold, a final transcription whose dictated value is not complete yet is held until the caller continues, and the groups reach the NLU as ONE turn; a complete value is released at once (a value that is only weakly complete is held at most <code>hold_generic_max_seconds</code>). The value recognition is German (number words, spelled letters, months); the hold is never applied while the bot speaks, and a caller who is not dictating costs no latency.
 //
-// How long a value is held depends on what the bot asked for: with <code>expected_input_enabled</code> the expected value (slot) is read from each NLU answer and its category&apos;s cap applies; without a slot only the generic rule holds (a trailing digit group after a lead-in such as &quot;Kundennummer&quot;, or a trailing &quot;Stiege&quot;, &quot;Stock&quot;, &quot;Tür&quot;, &quot;am&quot;, &quot;um&quot;, ...).
+// The hold is ON by default, but only for a turn whose NLU answer asks for a dictated value (an expected slot, read with <code>expected_input_enabled</code>, also on by default): a turn that asks for no value is never held, so the default adds no latency there. How long a value is held depends on what the bot asked for: the expected value&apos;s category cap applies. The generic rule, a hold WITHOUT an expected value (a trailing digit group after a lead-in such as &quot;Kundennummer&quot;, or a trailing &quot;Stiege&quot;, &quot;Stock&quot;, &quot;Tür&quot;, &quot;am&quot;, &quot;um&quot;, ...), is a guess and stays off unless <code>hold_enabled</code> is set to true.
 //
 // Presence and precedence: every field is applied only when it is set; an unset field keeps the deployment setting (the <code>ONDEWO_VTSI_CSI_DICTATION_*</code> variable named at the field), else the default. A set per-call value wins over the deployment setting. A field that is out of range, and an unknown category, are refused with <code>INVALID_ARGUMENT</code>.
 //
-// Example, a line that collects IBANs from an agent whose prompts ask for them:
+// Example, a line that collects IBANs from an agent whose prompts ask for them and gives an IBAN 4 s (the hold under the expected value is on by default):
 //
-// <pre><code>hold_enabled: true&#10;expected_input_enabled: true&#10;hold_max_seconds_by_category { key: &quot;iban&quot; value: 4.0 }</code></pre>
+// <pre><code>hold_max_seconds_by_category { key: &quot;iban&quot; value: 4.0 }</code></pre>
 message DictationConfig{
 
     // Optional: Hold a final transcription whose dictated value is unfinished, up to the cap of its category (or
-    // the generic cap), instead of committing the turn at the caller&apos;s pause (default: false). The master switch:
-    // with it off, nothing else in this message holds a turn. Deployment setting:
+    // the generic cap), instead of committing the turn at the caller&apos;s pause. Unset (the default): the hold
+    // applies only to a turn whose NLU answer asks for a value (an expected slot, see
+    // <code>expected_input_enabled</code>), and a turn that asks for none is never held. True: the generic rule
+    // (<code>hold_generic_max_seconds</code>) holds turns without an expected value too. False: the master switch is
+    // off, and nothing else in this message holds a turn. Deployment setting:
     // <code>ONDEWO_VTSI_CSI_DICTATION_HOLD_ACTIVE</code>
     optional bool hold_enabled = 1;
 
     // Optional: Read the expected value (slot) from every NLU answer, so that the hold applies the rule and cap of
-    // the value the bot asked for (default: false; without it only the generic rule holds). The slot comes from a
+    // the value the bot asked for (default: true; false leaves the default hold nothing to hold under, and with
+    // <code>hold_enabled</code> true only the generic rule holds). The slot comes from a
     // slot-filling prompt for a required parameter, a read-back intent, or an AI Team&apos;s expected input; every
     // answer replaces it, so a slot never leaks into a later turn. Deployment setting:
     // <code>ONDEWO_VTSI_CSI_DICTATION_EXPECTED_INPUT_ACTIVE</code>
@@ -1191,17 +1195,17 @@ message DictationConfig{
     // Optional: With <code>expected_input_enabled</code>, take a bot answer that reads a complete value back and asks
     // for confirmation (&quot;Ich wiederhole: 0664 1234567. Ist das korrekt?&quot;) as asking to confirm that value,
     // also when the NLU answer carries no read-back marker (default: false). After such a read-back (from the marker
-    // or from this text rule) and with <code>hold_enabled</code>, a lone &quot;nein&quot; is held up to the
+    // or from this text rule) and while the hold is on, a lone &quot;nein&quot; is held up to the
     // <code>confirm_value</code> cap for the correction that usually follows (&quot;Nein, die letzte ist
     // sieben&quot;), and a lone &quot;ja&quot; for 0.6 s. Recognises digit, phone, card, IBAN, BIC and social
     // security numbers read back in German; dates, times, addresses and e-mail addresses are not recognised. No
     // deployment setting exists for it
     optional bool read_back_from_bot_text_enabled = 3;
 
-    // Optional: Seconds the generic rule (no expected value) holds at most, and the longest hold of an expected
-    // value that is only weakly complete (e.g. an address with only the street line, a date with only day and
-    // month) (valid range: 0 - 2; default: 1.5; 0 switches both off). The generic rule holds on a guess, which is
-    // why its ceiling is lower than a category&apos;s. Deployment setting:
+    // Optional: Seconds the generic rule (no expected value; only with <code>hold_enabled</code> true) holds at most,
+    // and the longest hold of an expected value that is only weakly complete (e.g. an address with only the street
+    // line, a date with only day and month) (valid range: 0 - 2; default: 1.5; 0 switches both off). The generic
+    // rule holds on a guess, which is why its ceiling is lower than a category&apos;s. Deployment setting:
     // <code>ONDEWO_VTSI_CSI_DICTATION_HOLD_GENERIC_MAX_SECONDS</code>
     optional float hold_generic_max_seconds = 4;
 
@@ -1225,8 +1229,9 @@ message DictationConfig{
 
     // Optional: Commit the turn as soon as a stable partial transcription shows the expected value complete (and its
     // checksum valid, where it has one), instead of waiting for the speech-to-text service&apos;s end-of-utterance
-    // silence (default: false). Saves the silence wait after a dictated value. Needs <code>hold_enabled</code>,
-    // <code>expected_input_enabled</code> and partial transcriptions; without an expected value it does nothing.
+    // silence (default: false). Saves the silence wait after a dictated value. Needs the hold (not
+    // <code>hold_enabled</code> false), <code>expected_input_enabled</code> and partial transcriptions; without an
+    // expected value it does nothing.
     // Deployment setting: <code>ONDEWO_VTSI_CSI_DICTATION_EARLY_COMMIT_ON_COMPLETE_VALUE</code>
     optional bool early_commit_on_complete_value = 7;
 
