@@ -125,9 +125,24 @@ presence_update: ## Regenerate presence/presence-manifest.json after an intended
 # protoc-gen-doc renders file, service, message and enum descriptions with `{{p .Description}}`, which starts a
 # new paragraph at EVERY newline: a description wrapped across source lines renders broken mid-sentence on the
 # published page. These descriptions keep one paragraph per source line (doc_rendering/README.md).
-# Every tree under ondewo/ is published, the vendored nlu/qa/s2t/t2s/sip copies included, so the check covers
-# them too: a re-vendor of an upstream release that predates the same guard fails here (google/ is not published).
-DOC_RENDERING_PROTOS = ondewo/*/*.proto
+# Only ondewo/vtsi is THIS repository's to reflow. The vendored nlu/qa/s2t/t2s/sip copies must stay byte-identical
+# to the upstream release they were copied from: every client generates its vendored modules from them, and a
+# consumer that installs ondewo-vtsi-client beside the service clients (ondewo-vtsi's
+# test_vendored_protos_lockstep.py) needs those files byte-identical to the service clients' own. Reflowing them
+# (9.6.0, c86ad0d) changed only docstrings and still broke that guard, so 9.6.1 re-vendors them verbatim;
+# vendored_protos_check below pins it. Pinned by doc_rendering/test_reflow_proto_docs.py.
+DOC_RENDERING_PROTOS = ondewo/vtsi/*.proto
+
+VENDORED_PROTO_TREES = ${ONDEWO_NLU_DIR}/ondewo/nlu:ondewo/nlu ${ONDEWO_NLU_DIR}/ondewo/qa:ondewo/qa \
+	${ONDEWO_S2T_DIR}/ondewo/s2t:ondewo/s2t ${ONDEWO_T2S_DIR}/ondewo/t2s:ondewo/t2s ${ONDEWO_SIP_DIR}/ondewo/sip:ondewo/sip
+
+vendored_protos_check: ## Fail unless every vendored ondewo/{nlu,qa,s2t,t2s,sip} tree is byte-identical to its API submodule
+	@status=0; for pair in ${VENDORED_PROTO_TREES}; do \
+		src=$${pair%%:*}; dst=$${pair##*:}; \
+		if [ ! -d "$$src" ]; then echo "vendored_protos_check: $$src is missing (make init_submodules)"; status=1; continue; fi; \
+		diff -rq "$$src" "$$dst" || { echo "vendored_protos_check: $$dst differs from $$src"; status=1; }; \
+	done; \
+	[ "$$status" = 0 ] && echo "vendored_protos_check: every vendored tree is byte-identical to its submodule"; exit $$status
 
 doc_rendering_check: ## Check that every p-rendered proto description keeps one paragraph per source line
 	@python3 doc_rendering/reflow_proto_docs.py --check ${DOC_RENDERING_PROTOS}
@@ -270,9 +285,7 @@ checkout_defined_submodule_versions: ## Update submodule versions
 	cp -r "${ONDEWO_T2S_DIR}/ondewo/t2s" ondewo
 	cp -r "${ONDEWO_S2T_DIR}/ondewo/s2t" ondewo
 	cp -r "${ONDEWO_SIP_DIR}/ondewo/sip" ondewo
-	# The vendored copies are published here too, and an upstream tag can predate the one-paragraph-per-line
-	# rule: without this, every `make build` (and so every release, which runs build AFTER the tag) reverted the
-	# reflow of ondewo/{nlu,qa,s2t,t2s,sip} and committed protos that fail doc_rendering_check (9.6.0).
+	# Reflows ondewo/vtsi only (DOC_RENDERING_PROTOS); the vendored copies above stay verbatim.
 	$(MAKE) --no-print-directory doc_rendering_fix
 
 ########################################################
@@ -324,7 +337,7 @@ checkout_defined_submodule_versions: ## Update submodule versions
 # repositories check out. RUN `make build` AND COMMIT ITS OUTPUT BEFORE `make ondewo_release`.
 .NOTPARALLEL:
 
-RELEASE_STEPS = presence_check doc_rendering_check create_release_branch create_release_tag build_and_release_to_github_via_docker
+RELEASE_STEPS = presence_check doc_rendering_check vendored_protos_check create_release_branch create_release_tag build_and_release_to_github_via_docker
 
 release: ${RELEASE_STEPS} ## Automate the entire release process
 	@echo "Release Finished"

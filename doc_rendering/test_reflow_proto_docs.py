@@ -41,3 +41,23 @@ def test_the_file_description_above_syntax_is_reflowed() -> None:
 def test_it_is_idempotent() -> None:
     once = run("// <p>a\n// b</p>\n// <p>c</p>\nservice S {\n}")
     assert run(once) == once
+
+
+def _makefile_assignment(name: str) -> str:
+    makefile = pathlib.Path(__file__).resolve().parent.parent / "Makefile"
+    for line in makefile.read_text().splitlines():
+        key, sep, value = line.partition("=")
+        if sep and key.strip() == name:
+            return value.strip()
+    raise AssertionError(f"Makefile has no {name} assignment")
+
+
+def test_only_the_vtsi_protos_are_reflowed() -> None:
+    # The vendored ondewo/{nlu,qa,s2t,t2s,sip} copies must stay byte-identical to the upstream release: the
+    # clients generate their vendored modules from them, and ondewo-vtsi's lockstep guard compares those
+    # byte for byte with the service clients' (9.6.0 reflowed them and broke it).
+    assert _makefile_assignment("DOC_RENDERING_PROTOS") == "ondewo/vtsi/*.proto"
+
+
+def test_a_release_checks_the_vendored_trees_against_their_submodules() -> None:
+    assert "vendored_protos_check" in _makefile_assignment("RELEASE_STEPS").split()

@@ -224,13 +224,12 @@ with `{{p .Description}}`, which starts a new paragraph at every newline, so a d
 characters is published broken mid-sentence (field, enum-value and method comments are inserted raw and wrap
 freely). `make doc_rendering_check` enforces it (the `Proto field presence` workflow and `make release` run it),
 `make doc_rendering_fix` reflows; rules and the `&#10;` convention inside `<pre>`: `doc_rendering/README.md`.
-Both cover every `ondewo/*/*.proto`, the VENDORED `nlu`/`qa`/`s2t`/`t2s`/`sip` copies included, because all of
-them are published here. The upstream `ondewo-{nlu,s2t,t2s,sip}-api` repositories carry the same guard, so a
-re-vendor of a release that has it stays clean; one of an older release fails the check, and the fix is
-`make doc_rendering_fix` on the copy (comments only), never a move to an unreleased upstream version.
-`make build` runs `doc_rendering_fix` right after copying the vendored trees, so a build is a fixed point: before
-9.6.0 it re-copied the unreflowed upstream protos, committed and pushed them to `master`, and `make release` (which
-runs `build` AFTER the tag) would have put them on `release/<version>` behind a tag that passed the check.
+Both cover `ondewo/vtsi/*.proto` ONLY. The VENDORED `nlu`/`qa`/`s2t`/`t2s`/`sip` copies stay byte-identical to
+their API submodule (`make vendored_protos_check`, a `make release` step; `doc_rendering/test_reflow_proto_docs.py`
+pins both): the clients generate their vendored modules from them, and ondewo-vtsi's byte-for-byte
+`test_vendored_protos_lockstep.py` compares those with the service clients'. 9.6.0 reflowed them (c86ad0d, comments
+only) and that guard failed against the released `ondewo-vtsi-client` 9.6.0; 9.6.1 re-vendors them verbatim. A
+wrapped description in a vendored copy is fixed upstream, never here.
 
 There is deliberately **no `uv` / `ruff` / `mypy` / `pytest` step to mirror**: the only Python in this repo are
 the two read-only checks (`presence/`, `doc_rendering/`), run by their own make targets, which is why

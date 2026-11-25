@@ -17,8 +17,9 @@ browser renders as a newline. Field, enum-value and method comments keep the usu
 - `make doc_rendering_check` fails when a p-rendered description wraps a paragraph across lines (it runs in
   the `Proto field presence` workflow and before `make release`).
 - `make doc_rendering_fix` reflows them in place; it changes comments only.
-- Both cover every `ondewo/*/*.proto`, the vendored `nlu`, `qa`, `s2t`, `t2s` and `sip` copies included, since
-  all of them are published on this page. The upstream API repositories carry the same guard, so a re-vendor of a
-  release that has it stays clean; a re-vendor of an older release fails the check. Then run
-  `make doc_rendering_fix` on the copy (comments only, the descriptor set stays identical) rather than moving to an
-  unreleased upstream version.
+- Both cover `ondewo/vtsi/*.proto` ONLY. The vendored `nlu`, `qa`, `s2t`, `t2s` and `sip` copies stay byte-identical
+  to the upstream release they were copied from (`make vendored_protos_check`, run by `make release`): every client
+  generates its vendored modules from them, and ondewo-vtsi's `test_vendored_protos_lockstep.py` compares those
+  byte for byte with the service clients' own. 9.6.0 reflowed them (comments only) and that guard failed against
+  the released `ondewo-vtsi-client` 9.6.0; 9.6.1 re-vendors them verbatim. A wrapped description in a vendored
+  copy is fixed upstream, in its API repository, never here.
